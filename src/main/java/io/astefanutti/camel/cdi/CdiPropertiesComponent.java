@@ -18,18 +18,16 @@ package io.astefanutti.camel.cdi;
 import org.apache.camel.component.properties.DefaultPropertiesParser;
 import org.apache.camel.component.properties.PropertiesComponent;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.Properties;
 
-@ApplicationScoped
 @Named("properties")
 class CdiPropertiesComponent extends PropertiesComponent {
 
     @Inject
-    CdiPropertiesComponent(@Configuration Instance<Properties> properties) {
+    CdiPropertiesComponent(@Config Instance<Properties> properties) {
         setPropertiesParser(properties.isUnsatisfied() ? new DefaultPropertiesParser() : new CdiPropertiesParser(properties.get()));
     }
 

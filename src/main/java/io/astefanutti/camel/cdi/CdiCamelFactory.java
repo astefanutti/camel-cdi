@@ -44,6 +44,7 @@ class CdiCamelFactory {
         MockEndpoint endpoint = camelContext.getEndpoint(uri, MockEndpoint.class);
         if (endpoint == null)
             throw new NoSuchEndpointException(uri);
+
         return endpoint;
     }
 

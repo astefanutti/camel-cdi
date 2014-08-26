@@ -15,20 +15,15 @@
  */
 package io.astefanutti.camel.cdi;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import org.apache.camel.spi.Registry;
+import org.apache.camel.util.ObjectHelper;
 
 import javax.enterprise.inject.Vetoed;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
-
-import org.apache.camel.spi.Registry;
-import org.apache.camel.util.ObjectHelper;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 @Vetoed
 class CdiBeanRegistry implements Registry {
