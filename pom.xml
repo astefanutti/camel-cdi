@@ -313,6 +313,13 @@
                 <type>pom</type>
             </dependency>
 
+            <dependency>
+                <groupId>org.jboss.weld</groupId>
+                <artifactId>weld-core-impl</artifactId>
+                <version>${weld.version}</version>
+                <scope>test</scope>
+            </dependency>
+
             <!-- OpenWebBeans -->
 
             <dependency>
@@ -387,9 +394,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- TODO: should be removed when the depchain is included in the BOM
-        see https://github.com/shrinkwrap/descriptors/pull/94
-        and https://issues.jboss.org/browse/SHRINKDESC-154 -->
         <dependency>
             <groupId>org.jboss.shrinkwrap.descriptors</groupId>
             <artifactId>shrinkwrap-descriptors-depchain</artifactId>

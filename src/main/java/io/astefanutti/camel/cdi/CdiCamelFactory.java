@@ -27,6 +27,8 @@ import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.util.CamelContextHelper;
 import org.apache.camel.util.ObjectHelper;
 
+import java.util.Collection;
+
 class CdiCamelFactory {
 
     @Produces
@@ -37,7 +39,7 @@ class CdiCamelFactory {
     @Mock
     @Produces
     private static MockEndpoint createMockEndpoint(InjectionPoint point, CamelContext camelContext) {
-        String uri = point.getAnnotated().getAnnotation(Mock.class).value();
+        String uri = getMandatoryFirstElementOfType(point.getQualifiers(), Mock.class).value();
         if (ObjectHelper.isEmpty(uri))
             uri = "mock:" + point.getMember().getName();
 
@@ -51,17 +53,30 @@ class CdiCamelFactory {
     @Uri("")
     @Produces
     private static Endpoint createEndpoint(InjectionPoint point, CamelContext camelContext) {
-        String uri = point.getAnnotated().getAnnotation(Mock.class).value();
+        String uri = getMandatoryFirstElementOfType(point.getQualifiers(), Uri.class).value();
         return CamelContextHelper.getMandatoryEndpoint(camelContext, uri);
     }
 
     @Uri("")
     @Produces
     private static ProducerTemplate createProducerTemplate(InjectionPoint point, CamelContext camelContext) {
-        Uri uri = point.getAnnotated().getAnnotation(Uri.class);
+        Uri uri = getMandatoryFirstElementOfType(point.getQualifiers(), Uri.class);
         ProducerTemplate producerTemplate = camelContext.createProducerTemplate();
         Endpoint endpoint = CamelContextHelper.getMandatoryEndpoint(camelContext, uri.value());
         producerTemplate.setDefaultEndpoint(endpoint);
         return producerTemplate;
+    }
+
+    private static <E, T extends E> T getMandatoryFirstElementOfType(Collection<E> collection, Class<T> type) {
+        for (E item : collection)
+            if ((item != null) && type.isAssignableFrom(item.getClass()))
+                return uncheckedCast(item);
+
+        throw new IllegalArgumentException("No element of type [" + type.getName() + "] in [" + collection + "]");
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> T uncheckedCast(Object object) {
+        return (T) object;
     }
 }
