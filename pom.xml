@@ -66,6 +66,44 @@
         <shrinkwrap.descriptors.version>2.0.0-alpha-6</shrinkwrap.descriptors.version>
     </properties>
 
+    <profiles>
+        <profile>
+            <id>jacoco</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>prepare-agent</id>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                                <configuration>
+                                    <propertyName>jacoco.agent.arg</propertyName>
+                                    <destFile>${project.build.directory}/jacoco.exec</destFile>
+                                    <append>true</append>
+                                    <includes>
+                                        <include>io.astefanutti.camel.cdi.*</include>
+                                    </includes>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <argLine>${jacoco.agent.arg}</argLine>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
     <build>
         <defaultGoal>clean package</defaultGoal>
 
@@ -100,10 +138,10 @@
                     <artifactId>coveralls-maven-plugin</artifactId>
                     <version>2.2.0</version>
                     <configuration>
-                        <coverageFile>${project.basedir}/impl/target/site/jacoco/jacoco.xml</coverageFile>
-                        <coverallsFile>${project.basedir}/impl/target/coveralls.json</coverallsFile>
+                        <coverageFile>${project.build.directory}/site/jacoco/jacoco.xml</coverageFile>
+                        <coverallsFile>${project.build.directory}/coveralls.json</coverallsFile>
                         <sourceDirectories>
-                            <sourceDirectory>${project.basedir}/impl/src/main/java</sourceDirectory>
+                            <sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
                         </sourceDirectories>
                     </configuration>
                 </plugin>
