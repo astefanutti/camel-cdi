@@ -38,17 +38,6 @@ import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
 @RunWith(Arquillian.class)
 public class UriEndpointRouteTest {
 
-    @Inject
-    @Uri("direct:inbound")
-    private ProducerTemplate inbound;
-
-    @Inject
-    @Uri("mock:outbound")
-    private MockEndpoint outbound;
-
-    @Inject
-    private CamelContext camelContext;
-
     @Deployment
     public static Archive<?> deployment() {
         return ShrinkWrap.create(JavaArchive.class)
@@ -60,15 +49,23 @@ public class UriEndpointRouteTest {
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
+    @Inject
+    @Uri("direct:inbound")
+    private ProducerTemplate inbound;
+
+    @Inject
+    @Uri("mock:outbound")
+    private MockEndpoint outbound;
+
     @Test
     @InSequence(1)
-    public void startCamelContext() throws Exception {
+    public void startCamelContext(CamelContext camelContext) throws Exception {
         camelContext.start();
     }
 
     @Test
     @InSequence(2)
-    public void sendInboundMessage() throws InterruptedException {
+    public void sendMessageToInboundConsumer() throws InterruptedException {
         outbound.expectedMessageCount(1);
         outbound.expectedBodiesReceived("test");
         
@@ -79,7 +76,7 @@ public class UriEndpointRouteTest {
 
     @Test
     @InSequence(3)
-    public void stopCamelContext() throws Exception {
+    public void stopCamelContext(CamelContext camelContext) throws Exception {
         camelContext.stop();
     }
 }
