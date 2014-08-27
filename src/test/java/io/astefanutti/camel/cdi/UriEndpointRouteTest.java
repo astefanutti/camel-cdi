@@ -15,7 +15,7 @@
  */
 package io.astefanutti.camel.cdi;
 
-import io.astefanutti.camel.cdi.bean.SimpleRoute;
+import io.astefanutti.camel.cdi.bean.UriEndpointRoute;
 import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.component.mock.MockEndpoint;
@@ -36,14 +36,14 @@ import java.util.concurrent.TimeUnit;
 import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
 
 @RunWith(Arquillian.class)
-public class SimpleRouteTest {
+public class UriEndpointRouteTest {
 
     @Inject
     @Uri("direct:inbound")
     private ProducerTemplate inbound;
 
     @Inject
-    @Mock("mock:outbound")
+    @Uri("mock:outbound")
     private MockEndpoint outbound;
 
     @Inject
@@ -55,7 +55,7 @@ public class SimpleRouteTest {
             // Camel CDI
             .addPackages(false, Filters.exclude(".*Test.*"), CdiCamelExtension.class.getPackage())
             // Test class
-            .addClass(SimpleRoute.class)
+            .addClass(UriEndpointRoute.class)
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }

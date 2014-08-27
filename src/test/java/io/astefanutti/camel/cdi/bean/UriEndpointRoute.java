@@ -18,7 +18,7 @@ package io.astefanutti.camel.cdi.bean;
 
 import org.apache.camel.builder.RouteBuilder;
 
-public class SimpleRoute extends RouteBuilder {
+public class UriEndpointRoute extends RouteBuilder {
 
     @Override
     public void configure() {

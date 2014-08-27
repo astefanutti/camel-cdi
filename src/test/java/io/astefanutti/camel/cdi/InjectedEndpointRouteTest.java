@@ -43,7 +43,6 @@ public class InjectedEndpointRouteTest {
     private ProducerTemplate inbound;
 
     @Inject
-    @Mock("mock:outbound")
     private MockEndpoint outbound;
 
     @Inject

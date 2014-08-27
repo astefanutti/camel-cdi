@@ -16,6 +16,7 @@
 package io.astefanutti.camel.cdi;
 
 import javax.enterprise.inject.Produces;
+import javax.enterprise.inject.Typed;
 import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.camel.CamelContext;
@@ -32,17 +33,13 @@ import java.util.Collection;
 class CdiCamelFactory {
 
     @Produces
-    private static TypeConverter createTypeConverter(CamelContext camelContext) {
+    private static TypeConverter typeConverter(CamelContext camelContext) {
         return camelContext.getTypeConverter();
     }
 
-    @Mock
     @Produces
-    private static MockEndpoint createMockEndpoint(InjectionPoint point, CamelContext camelContext) {
-        String uri = getMandatoryFirstElementOfType(point.getQualifiers(), Mock.class).value();
-        if (ObjectHelper.isEmpty(uri))
-            uri = "mock:" + point.getMember().getName();
-
+    private static MockEndpoint mockEndpointFromMember(InjectionPoint point, CamelContext camelContext) {
+        String uri = "mock:" + point.getMember().getName();
         MockEndpoint endpoint = camelContext.getEndpoint(uri, MockEndpoint.class);
         if (endpoint == null)
             throw new NoSuchEndpointException(uri);
@@ -52,31 +49,38 @@ class CdiCamelFactory {
 
     @Uri("")
     @Produces
-    private static Endpoint createEndpoint(InjectionPoint point, CamelContext camelContext) {
-        String uri = getMandatoryFirstElementOfType(point.getQualifiers(), Uri.class).value();
+    @Typed(MockEndpoint.class)
+    private static MockEndpoint mockEndpointFromUri(InjectionPoint point, CamelContext camelContext) {
+        String uri = getFirstElementOfType(point.getQualifiers(), Uri.class).value();
+        MockEndpoint endpoint = camelContext.getEndpoint(uri, MockEndpoint.class);
+        if (endpoint == null)
+            throw new NoSuchEndpointException(uri);
+
+        return endpoint;
+    }
+
+    @Uri("")
+    @Produces
+    private static Endpoint endpoint(InjectionPoint point, CamelContext camelContext) {
+        String uri = getFirstElementOfType(point.getQualifiers(), Uri.class).value();
         return CamelContextHelper.getMandatoryEndpoint(camelContext, uri);
     }
 
     @Uri("")
     @Produces
-    private static ProducerTemplate createProducerTemplate(InjectionPoint point, CamelContext camelContext) {
-        Uri uri = getMandatoryFirstElementOfType(point.getQualifiers(), Uri.class);
+    private static ProducerTemplate producerTemplate(InjectionPoint point, CamelContext camelContext) {
+        Uri uri = getFirstElementOfType(point.getQualifiers(), Uri.class);
         ProducerTemplate producerTemplate = camelContext.createProducerTemplate();
         Endpoint endpoint = CamelContextHelper.getMandatoryEndpoint(camelContext, uri.value());
         producerTemplate.setDefaultEndpoint(endpoint);
         return producerTemplate;
     }
 
-    private static <E, T extends E> T getMandatoryFirstElementOfType(Collection<E> collection, Class<T> type) {
+    private static <E, T extends E> T getFirstElementOfType(Collection<E> collection, Class<T> type) {
         for (E item : collection)
             if ((item != null) && type.isAssignableFrom(item.getClass()))
-                return uncheckedCast(item);
+                return ObjectHelper.cast(type, item);
 
         throw new IllegalArgumentException("No element of type [" + type.getName() + "] in [" + collection + "]");
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T> T uncheckedCast(Object object) {
-        return (T) object;
     }
 }

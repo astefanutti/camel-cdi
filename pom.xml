@@ -313,13 +313,6 @@
                 <type>pom</type>
             </dependency>
 
-            <dependency>
-                <groupId>org.jboss.weld</groupId>
-                <artifactId>weld-core-impl</artifactId>
-                <version>${weld.version}</version>
-                <scope>test</scope>
-            </dependency>
-
             <!-- OpenWebBeans -->
 
             <dependency>
