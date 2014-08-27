@@ -15,7 +15,7 @@
  */
 package io.astefanutti.camel.cdi;
 
-import io.astefanutti.camel.cdi.bean.UriEndpointRoute;
+import io.astefanutti.camel.cdi.bean.InjectedEndpointRoute;
 import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.component.mock.MockEndpoint;
@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit;
 import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
 
 @RunWith(Arquillian.class)
-public class UriEndpointRouteTest {
+public class InjectedEndpointTest {
 
     @Deployment
     public static Archive<?> deployment() {
@@ -44,7 +44,7 @@ public class UriEndpointRouteTest {
             // Camel CDI
             .addPackages(false, Filters.exclude(".*Test.*"), CdiCamelExtension.class.getPackage())
             // Test class
-            .addClass(UriEndpointRoute.class)
+            .addClass(InjectedEndpointRoute.class)
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
@@ -54,7 +54,6 @@ public class UriEndpointRouteTest {
     private ProducerTemplate inbound;
 
     @Inject
-    @Uri("mock:outbound")
     private MockEndpoint outbound;
 
     @Test

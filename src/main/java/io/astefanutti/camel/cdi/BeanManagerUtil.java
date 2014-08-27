@@ -32,7 +32,7 @@ final class BeanManagerUtil {
 
     @SuppressWarnings("unchecked")
     static <T> Set<T> getContextualReferences(BeanManager beanManager, Class<T> type, Annotation... qualifiers) {
-        Set<T> references = new HashSet<T>();
+        Set<T> references = new HashSet<>();
         for (Bean<?> bean : beanManager.getBeans(type, qualifiers))
             references.add((T) beanManager.getReference(bean, type, beanManager.createCreationalContext(bean)));
 

@@ -22,6 +22,9 @@ public class PropertyEndpointRoute extends RouteBuilder {
 
     @Override
     public void configure() {
-        from("direct:{{from}}").setHeader("header", simple("properties:header.message")).to("{{to}}");
+        from("direct:{{from}}")
+        .routeId("route")
+        .setHeader("header", simple("properties:header.message"))
+        .to("{{to}}");
     }
 }

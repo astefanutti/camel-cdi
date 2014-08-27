@@ -39,7 +39,7 @@ import java.util.concurrent.TimeUnit;
 import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
 
 @RunWith(Arquillian.class)
-public class PropertyEndpointRouteTest {
+public class PropertyEndpointTest {
 
     @Deployment
     public static Archive<?> deployment() {
