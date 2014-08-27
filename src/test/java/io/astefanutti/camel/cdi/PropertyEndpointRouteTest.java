@@ -19,6 +19,7 @@ import io.astefanutti.camel.cdi.bean.PropertyEndpointRoute;
 import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.component.mock.MockEndpoint;
+import org.apache.camel.component.properties.PropertiesComponent;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
@@ -70,8 +71,9 @@ public class PropertyEndpointRouteTest {
 
     @Test
     @InSequence(1)
-    public void startCamelContext(CamelContext camelContext) throws Exception {
-        camelContext.start();
+    public void startCamelContext(CamelContext context) throws Exception {
+        context.getComponent("properties", PropertiesComponent.class).setLocation("classpath:placeholder.properties");
+        context.start();
     }
 
     @Test
@@ -79,6 +81,7 @@ public class PropertyEndpointRouteTest {
     public void sendMessageToInboundConsumer() throws InterruptedException {
         outbound.expectedMessageCount(1);
         outbound.expectedBodiesReceived("test");
+        outbound.expectedHeaderReceived("header", "message from file");
         
         inbound.sendBody("test");
 
@@ -87,7 +90,7 @@ public class PropertyEndpointRouteTest {
 
     @Test
     @InSequence(3)
-    public void stopCamelContext(CamelContext camelContext) throws Exception {
-        camelContext.stop();
+    public void stopCamelContext(CamelContext context) throws Exception {
+        context.stop();
     }
 }

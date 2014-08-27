@@ -59,8 +59,8 @@ public class UriEndpointRouteTest {
 
     @Test
     @InSequence(1)
-    public void startCamelContext(CamelContext camelContext) throws Exception {
-        camelContext.start();
+    public void startCamelContext(CamelContext context) throws Exception {
+        context.start();
     }
 
     @Test
@@ -76,7 +76,7 @@ public class UriEndpointRouteTest {
 
     @Test
     @InSequence(3)
-    public void stopCamelContext(CamelContext camelContext) throws Exception {
-        camelContext.stop();
+    public void stopCamelContext(CamelContext context) throws Exception {
+        context.stop();
     }
 }
