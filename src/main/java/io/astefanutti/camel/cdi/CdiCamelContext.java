@@ -30,6 +30,9 @@ import javax.inject.Inject;
 @Typed({CamelContext.class, ModelCamelContext.class})
 class CdiCamelContext extends DefaultCamelContext {
 
+    CdiCamelContext() {
+    }
+    
     @Inject
     private CdiCamelContext(BeanManager beanManager) {
         super(new CdiBeanRegistry(beanManager));

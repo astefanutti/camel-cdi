@@ -23,7 +23,7 @@ import javax.enterprise.inject.spi.AfterDeploymentValidation;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Extension;
 
-class CdiCamelExtension implements Extension {
+public class CdiCamelExtension implements Extension {
 
     void configureCamelContext(@Observes AfterDeploymentValidation event, BeanManager beanManager) {
         CamelContext context = BeanManagerUtil.getContextualReference(beanManager, CamelContext.class);

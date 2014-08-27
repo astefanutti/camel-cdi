@@ -4,7 +4,8 @@ install:
   - mvn clean install -Dmaven.test.skip.exec
 
 script:
-  - mvn test -Pjacoco
+  - mvn test -Pjacoco -Pweld
+  - mvn test -Pjacoco -Powb
 
 jdk:
   - oraclejdk7
