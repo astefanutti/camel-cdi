@@ -21,7 +21,6 @@ import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.Endpoint;
-import org.apache.camel.NoSuchEndpointException;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.TypeConverter;
 import org.apache.camel.component.mock.MockEndpoint;
@@ -33,45 +32,37 @@ import java.util.Collection;
 class CdiCamelFactory {
 
     @Produces
-    private static TypeConverter typeConverter(CamelContext camelContext) {
-        return camelContext.getTypeConverter();
+    private static TypeConverter typeConverter(CamelContext context) {
+        return context.getTypeConverter();
     }
 
     @Produces
-    private static MockEndpoint mockEndpointFromMember(InjectionPoint point, CamelContext camelContext) {
+    private static MockEndpoint mockEndpointFromMember(InjectionPoint point, CamelContext context) {
         String uri = "mock:" + point.getMember().getName();
-        MockEndpoint endpoint = camelContext.getEndpoint(uri, MockEndpoint.class);
-        if (endpoint == null)
-            throw new NoSuchEndpointException(uri);
-
-        return endpoint;
+        return CamelContextHelper.getMandatoryEndpoint(context, uri, MockEndpoint.class);
     }
 
     @Uri("")
     @Produces
     @Typed(MockEndpoint.class)
-    private static MockEndpoint mockEndpointFromUri(InjectionPoint point, CamelContext camelContext) {
+    private static MockEndpoint mockEndpointFromUri(InjectionPoint point, CamelContext context) {
         String uri = getFirstElementOfType(point.getQualifiers(), Uri.class).value();
-        MockEndpoint endpoint = camelContext.getEndpoint(uri, MockEndpoint.class);
-        if (endpoint == null)
-            throw new NoSuchEndpointException(uri);
-
-        return endpoint;
+        return CamelContextHelper.getMandatoryEndpoint(context, uri, MockEndpoint.class);
     }
 
     @Uri("")
     @Produces
-    private static Endpoint endpoint(InjectionPoint point, CamelContext camelContext) {
+    private static Endpoint endpoint(InjectionPoint point, CamelContext context) {
         String uri = getFirstElementOfType(point.getQualifiers(), Uri.class).value();
-        return CamelContextHelper.getMandatoryEndpoint(camelContext, uri);
+        return CamelContextHelper.getMandatoryEndpoint(context, uri);
     }
 
     @Uri("")
     @Produces
-    private static ProducerTemplate producerTemplate(InjectionPoint point, CamelContext camelContext) {
+    private static ProducerTemplate producerTemplate(InjectionPoint point, CamelContext context) {
         Uri uri = getFirstElementOfType(point.getQualifiers(), Uri.class);
-        ProducerTemplate producerTemplate = camelContext.createProducerTemplate();
-        Endpoint endpoint = CamelContextHelper.getMandatoryEndpoint(camelContext, uri.value());
+        ProducerTemplate producerTemplate = context.createProducerTemplate();
+        Endpoint endpoint = CamelContextHelper.getMandatoryEndpoint(context, uri.value());
         producerTemplate.setDefaultEndpoint(endpoint);
         return producerTemplate;
     }
