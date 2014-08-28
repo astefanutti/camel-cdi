@@ -15,11 +15,11 @@
  */
 package io.astefanutti.camel.cdi;
 
+import io.astefanutti.camel.cdi.bean.CustomPropertiesCamelContext;
 import io.astefanutti.camel.cdi.bean.PropertyEndpointRoute;
 import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.apache.camel.component.properties.PropertiesComponent;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
@@ -46,6 +46,8 @@ public class PropertyEndpointTest {
         return ShrinkWrap.create(JavaArchive.class)
             // Camel CDI
             .addPackages(false, Filters.exclude(".*Test.*"), CdiCamelExtension.class.getPackage())
+            // Custom Camel context
+            .addClass(CustomPropertiesCamelContext.class)
             // Test class
             .addClass(PropertyEndpointRoute.class)
             // Bean archive deployment descriptor
@@ -72,7 +74,6 @@ public class PropertyEndpointTest {
     @Test
     @InSequence(1)
     public void startCamelContext(CamelContext context) throws Exception {
-        context.getComponent("properties", PropertiesComponent.class).setLocation("classpath:placeholder.properties");
         context.start();
     }
 

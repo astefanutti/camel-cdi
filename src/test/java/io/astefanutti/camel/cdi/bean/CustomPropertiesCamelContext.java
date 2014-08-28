@@ -17,42 +17,26 @@ package io.astefanutti.camel.cdi.bean;
 
 
 import io.astefanutti.camel.cdi.CdiCamelContext;
-import org.apache.camel.util.ObjectHelper;
+import org.apache.camel.component.properties.PropertiesComponent;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 
 @ApplicationScoped
-public class CustomCamelContext extends CdiCamelContext {
+public class CustomPropertiesCamelContext extends CdiCamelContext {
 
-    CustomCamelContext() {
+    CustomPropertiesCamelContext() {
     }
 
     @Inject
-    private CustomCamelContext(BeanManager beanManager) {
+    private CustomPropertiesCamelContext(BeanManager beanManager) {
         super(beanManager);
     }
 
-    @Override
     @PostConstruct
-    public void start() {
-        try {
-            super.start();
-        } catch (Exception cause) {
-            throw ObjectHelper.wrapRuntimeCamelException(cause);
-        }
-    }
-
-    @Override
-    @PreDestroy
-    public void stop() {
-        try {
-            super.stop();
-        } catch (Exception cause) {
-            throw ObjectHelper.wrapRuntimeCamelException(cause);
-        }
+    public void addPropertiesLocation() {
+        getComponent("properties", PropertiesComponent.class).setLocation("classpath:placeholder.properties");
     }
 }

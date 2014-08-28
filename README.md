@@ -59,6 +59,6 @@ _Camel CDI_ is currently successfully tested with the following containers:
 
 ## License
 
-Copyright © 2013-2014, Antonin Stefanutti
+Copyright © 2014, Antonin Stefanutti
 
 Published under Apache Software License 2.0, see LICENSE

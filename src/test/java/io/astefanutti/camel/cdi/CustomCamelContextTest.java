@@ -15,7 +15,7 @@
  */
 package io.astefanutti.camel.cdi;
 
-import io.astefanutti.camel.cdi.bean.CustomCamelContext;
+import io.astefanutti.camel.cdi.bean.CustomLifecycleCamelContext;
 import io.astefanutti.camel.cdi.bean.UriEndpointRoute;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.component.mock.MockEndpoint;
@@ -43,7 +43,7 @@ public class CustomCamelContextTest {
             // Camel CDI
             .addPackages(false, Filters.exclude(".*Test.*"), CdiCamelExtension.class.getPackage())
             // Custom Camel context
-            .addClass(CustomCamelContext.class)
+            .addClass(CustomLifecycleCamelContext.class)
             // Test class
             .addClass(UriEndpointRoute.class)
             // Bean archive deployment descriptor
