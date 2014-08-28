@@ -25,10 +25,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Vetoed
-final class BeanManagerUtil {
-
-    private BeanManagerUtil() {
-    }
+final class BeanManagerHelper {
 
     @SuppressWarnings("unchecked")
     static <T> Set<T> getContextualReferences(BeanManager beanManager, Class<T> type, Annotation... qualifiers) {

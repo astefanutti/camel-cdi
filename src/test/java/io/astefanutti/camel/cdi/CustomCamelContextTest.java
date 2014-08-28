@@ -15,13 +15,12 @@
  */
 package io.astefanutti.camel.cdi;
 
+import io.astefanutti.camel.cdi.bean.CustomCamelContext;
 import io.astefanutti.camel.cdi.bean.UriEndpointRoute;
-import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.arquillian.junit.InSequence;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.Filters;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -36,13 +35,15 @@ import java.util.concurrent.TimeUnit;
 import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
 
 @RunWith(Arquillian.class)
-public class UriEndpointTest {
+public class CustomCamelContextTest {
 
     @Deployment
     public static Archive<?> deployment() {
         return ShrinkWrap.create(JavaArchive.class)
             // Camel CDI
             .addPackages(false, Filters.exclude(".*Test.*"), CdiCamelExtension.class.getPackage())
+            // Custom Camel context
+            .addClass(CustomCamelContext.class)
             // Test class
             .addClass(UriEndpointRoute.class)
             // Bean archive deployment descriptor
@@ -58,13 +59,6 @@ public class UriEndpointTest {
     private MockEndpoint outbound;
 
     @Test
-    @InSequence(1)
-    public void startCamelContext(CamelContext context) throws Exception {
-        context.start();
-    }
-
-    @Test
-    @InSequence(2)
     public void sendMessageToInboundConsumer() throws InterruptedException {
         outbound.expectedMessageCount(1);
         outbound.expectedBodiesReceived("test");
@@ -72,11 +66,5 @@ public class UriEndpointTest {
         inbound.sendBody("test");
 
         assertIsSatisfied(2L, TimeUnit.SECONDS, outbound);
-    }
-
-    @Test
-    @InSequence(3)
-    public void stopCamelContext(CamelContext context) throws Exception {
-        context.stop();
     }
 }

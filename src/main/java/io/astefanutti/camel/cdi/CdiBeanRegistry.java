@@ -37,28 +37,24 @@ final class CdiBeanRegistry implements Registry {
     @Override
     public Object lookupByName(String name) {
         ObjectHelper.notEmpty(name, "name");
-        return BeanManagerUtil.getContextualReference(beanManager, name, true, Object.class);
+        return BeanManagerHelper.getContextualReference(beanManager, name, true, Object.class);
     }
 
     @Override
     public <T> T lookupByNameAndType(String name, Class<T> type) {
         ObjectHelper.notEmpty(name, "name");
         ObjectHelper.notNull(type, "type");
-        return BeanManagerUtil.getContextualReference(beanManager, name, true, type);
+        return BeanManagerHelper.getContextualReference(beanManager, name, true, type);
     }
 
     @Override
     public <T> Map<String, T> findByTypeWithName(Class<T> type) {
         ObjectHelper.notNull(type, "type");
         Map<String, T> references = new HashMap<>();
-        Set<Bean<?>> beans = beanManager.getBeans(type, AnyLiteral.INSTANCE);
-
-        if (beans == null)
-            return references;
-
-        for (Bean<?> bean : beans)
+        for (Bean<?> bean : beanManager.getBeans(type, AnyLiteral.INSTANCE))
+            // FIXME: check if the bean has the @Named qualifier instead
             if (bean.getName() != null)
-                references.put(bean.getName(), BeanManagerUtil.getContextualReference(beanManager, type, bean));
+                references.put(bean.getName(), BeanManagerHelper.getContextualReference(beanManager, type, bean));
 
         return references;
     }
@@ -66,7 +62,7 @@ final class CdiBeanRegistry implements Registry {
     @Override
     public <T> Set<T> findByType(Class<T> type) {
         ObjectHelper.notNull(type, "type");
-        return BeanManagerUtil.getContextualReferences(beanManager, type, AnyLiteral.INSTANCE);
+        return BeanManagerHelper.getContextualReferences(beanManager, type, AnyLiteral.INSTANCE);
     }
 
     @Override

@@ -18,11 +18,11 @@ package io.astefanutti.camel.cdi;
 import javax.enterprise.inject.Any;
 import javax.enterprise.util.AnnotationLiteral;
 
-public final class AnyLiteral extends AnnotationLiteral<Any> implements Any {
+final class AnyLiteral extends AnnotationLiteral<Any> implements Any {
 
     private static final long serialVersionUID = 1L;
 
-    public static final Any INSTANCE = new AnyLiteral();
+    static final Any INSTANCE = new AnyLiteral();
 
     private AnyLiteral() {
     }

@@ -16,6 +16,10 @@
         <level value="INFO" />
     </logger>
 
+    <logger name="org.apache.webbeans">
+        <level value="INFO" />
+    </logger>
+
     <logger name="org.apache.camel">
         <level value="INFO" />
     </logger>

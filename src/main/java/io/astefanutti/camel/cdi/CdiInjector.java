@@ -15,7 +15,6 @@
  */
 package io.astefanutti.camel.cdi;
 
-import org.apache.camel.IsSingleton;
 import org.apache.camel.spi.Injector;
 
 import javax.enterprise.inject.spi.BeanManager;
@@ -33,7 +32,7 @@ final class CdiInjector implements Injector {
 
     @Override
     public <T> T newInstance(Class<T> type) {
-        T bean = BeanManagerUtil.getContextualReference(manager, type, true);
+        T bean = BeanManagerHelper.getContextualReference(manager, type, true);
         if (bean != null)
             return type.cast(bean);
 
@@ -42,12 +41,6 @@ final class CdiInjector implements Injector {
 
     @Override
     public <T> T newInstance(Class<T> type, Object instance) {
-        if (instance instanceof IsSingleton) {
-            boolean singleton = ((IsSingleton) instance).isSingleton();
-            if (singleton)
-                return type.cast(instance);
-        }
-
-        return newInstance(type);
+        return injector.newInstance(type, instance);
     }
 }

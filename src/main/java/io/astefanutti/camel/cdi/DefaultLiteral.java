@@ -15,21 +15,15 @@
  */
 package io.astefanutti.camel.cdi;
 
-import org.apache.camel.impl.DefaultCamelContext;
+import javax.enterprise.inject.Default;
+import javax.enterprise.util.AnnotationLiteral;
 
-import javax.enterprise.inject.Vetoed;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.inject.Inject;
+final class DefaultLiteral extends AnnotationLiteral<Default> implements Default {
 
-@Vetoed
-public class CdiCamelContext extends DefaultCamelContext {
+    private static final long serialVersionUID = 1L;
 
-    protected CdiCamelContext() {
-    }
-    
-    @Inject
-    protected CdiCamelContext(BeanManager beanManager) {
-        setRegistry(new CdiBeanRegistry(beanManager));
-        setInjector(new CdiInjector(getInjector(), beanManager));
+    static final Default INSTANCE = new DefaultLiteral();
+
+    private DefaultLiteral() {
     }
 }
