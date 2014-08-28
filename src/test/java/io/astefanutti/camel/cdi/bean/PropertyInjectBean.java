@@ -13,23 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.astefanutti.camel.cdi;
+package io.astefanutti.camel.cdi.bean;
 
-import org.apache.camel.impl.DefaultCamelContext;
+import org.apache.camel.Handler;
+import org.apache.camel.Headers;
+import org.apache.camel.PropertyInject;
 
-import javax.enterprise.inject.Vetoed;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.inject.Inject;
+import java.util.Map;
 
-@Vetoed
-public class CdiCamelContext extends DefaultCamelContext {
+public class PropertyInjectBean {
 
-    protected CdiCamelContext() {
-    }
-    
-    @Inject
-    protected CdiCamelContext(BeanManager beanManager) {
-        setRegistry(new CdiBeanRegistry(beanManager));
-        setInjector(new CdiInjector(getInjector(), beanManager, this));
+    @PropertyInject("property")
+    String property;
+
+    @Handler
+    public void process(@Headers Map<String, Object> headers) {
+        headers.put("header", property);
     }
 }

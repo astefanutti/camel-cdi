@@ -32,17 +32,4 @@ class CdiPropertiesComponent extends PropertiesComponent {
     CdiPropertiesComponent(@Config Instance<Properties> properties) {
         setPropertiesParser(properties.isUnsatisfied() ? new DefaultPropertiesParser() : new CdiPropertiesParser(properties.get()));
     }
-
-    @Override
-    public String parseUri(String uri) throws Exception {
-        return parseUri(uri, getLocations());
-    }
-
-    @Override
-    public String parseUri(String uri, String... paths) throws Exception {
-        if (uri.contains(getPrefixToken()))
-            return super.parseUri(uri, paths);
-        else
-            return uri;
-    }
 }
