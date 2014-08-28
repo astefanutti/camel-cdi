@@ -24,16 +24,16 @@ class CdiInjector implements Injector {
 
     private final Injector injector;
 
-    private final BeanManager beanManager;
+    private final BeanManager manager;
 
-    CdiInjector(Injector parent, BeanManager beanManager) {
-        this.injector = parent;
-        this.beanManager = beanManager;
+    CdiInjector(Injector injector, BeanManager manager) {
+        this.injector = injector;
+        this.manager = manager;
     }
 
     @Override
     public <T> T newInstance(Class<T> type) {
-        T bean = BeanManagerUtil.getContextualReference(beanManager, type, true);
+        T bean = BeanManagerUtil.getContextualReference(manager, type, true);
         if (bean != null)
             return type.cast(bean);
 
@@ -47,6 +47,7 @@ class CdiInjector implements Injector {
             if (singleton)
                 return type.cast(instance);
         }
+
         return newInstance(type);
     }
 }

@@ -18,13 +18,10 @@ package io.astefanutti.camel.cdi.bean;
 
 import org.apache.camel.builder.RouteBuilder;
 
-public class PropertyEndpointRoute extends RouteBuilder {
+public class InjectedTypeConverterRoute extends RouteBuilder {
 
     @Override
     public void configure() {
-        from("direct:{{from}}")
-        .routeId("route")
-        .setHeader("header").simple("properties:header.message")
-        .to("{{to}}");
+        from("direct:inbound").convertBodyTo(TypeConverterOutput.class).to("mock:outbound");
     }
 }

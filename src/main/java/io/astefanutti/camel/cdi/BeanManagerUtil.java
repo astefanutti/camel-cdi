@@ -52,10 +52,6 @@ final class BeanManagerUtil {
         return getContextualReference(manager, type, beans);
     }
 
-    static <T> T getContextualReference(BeanManager manager, Class<T> type, Annotation... qualifiers) {
-        return getContextualReference(manager, type, false, qualifiers);
-    }
-
     static <T> T getContextualReference(BeanManager manager, Class<T> type, boolean optional, Annotation... qualifiers) {
         Set<Bean<?>> beans = manager.getBeans(type, qualifiers);
 

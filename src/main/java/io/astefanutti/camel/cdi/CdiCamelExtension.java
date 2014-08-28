@@ -26,7 +26,7 @@ import javax.enterprise.inject.spi.Extension;
 public class CdiCamelExtension implements Extension {
 
     void configureCamelContext(@Observes AfterDeploymentValidation event, BeanManager beanManager) {
-        CamelContext context = BeanManagerUtil.getContextualReference(beanManager, CamelContext.class);
+        CamelContext context = BeanManagerUtil.getContextualReference(beanManager, CamelContext.class, false);
 
         for (RoutesBuilder builder : BeanManagerUtil.getContextualReferences(beanManager, RoutesBuilder.class)) {
             try {

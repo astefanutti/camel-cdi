@@ -16,15 +16,15 @@
 package io.astefanutti.camel.cdi.bean;
 
 
-import org.apache.camel.builder.RouteBuilder;
+public class TypeConverterInput {
 
-public class PropertyEndpointRoute extends RouteBuilder {
+    private String property;
 
-    @Override
-    public void configure() {
-        from("direct:{{from}}")
-        .routeId("route")
-        .setHeader("header").simple("properties:header.message")
-        .to("{{to}}");
+    public String getProperty() {
+        return property;
+    }
+
+    public void setProperty(String property) {
+        this.property = property;
     }
 }
