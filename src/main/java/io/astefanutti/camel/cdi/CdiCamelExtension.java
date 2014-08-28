@@ -16,19 +16,39 @@
 package io.astefanutti.camel.cdi;
 
 import org.apache.camel.CamelContext;
+import org.apache.camel.Converter;
 import org.apache.camel.RoutesBuilder;
 
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.AfterDeploymentValidation;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Extension;
+import javax.enterprise.inject.spi.ProcessAnnotatedType;
+import javax.enterprise.inject.spi.WithAnnotations;
+import java.util.Collections;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class CdiCamelExtension implements Extension {
 
-    void configureCamelContext(@Observes AfterDeploymentValidation event, BeanManager beanManager) {
-        CamelContext context = BeanManagerUtil.getContextualReference(beanManager, CamelContext.class, false);
+    private final Set<Class<?>> typeConverters = Collections.newSetFromMap(new ConcurrentHashMap<Class<?>, Boolean>());
 
-        for (RoutesBuilder builder : BeanManagerUtil.getContextualReferences(beanManager, RoutesBuilder.class)) {
+    void processTypeConverters(@Observes @WithAnnotations(Converter.class) ProcessAnnotatedType<?> event) {
+        typeConverters.add(event.getAnnotatedType().getJavaClass());
+    }
+
+    void configureCamelContext(@Observes AfterDeploymentValidation event, BeanManager manager) {
+        CamelContext context = BeanManagerUtil.getContextualReference(manager, CamelContext.class, false);
+
+        // add type converter beans to the Camel context
+        if (!typeConverters.isEmpty()) {
+            CdiTypeConverterLoader loader = new CdiTypeConverterLoader();
+            for (Class<?> typeConverter : typeConverters)
+                loader.loadConverterMethods(context.getTypeConverterRegistry(), typeConverter);
+        }
+
+        // instantiate route builders and add them to the Camel context
+        for (RoutesBuilder builder : BeanManagerUtil.getContextualReferences(manager, RoutesBuilder.class)) {
             try {
                 context.addRoutes(builder);
             } catch (Exception exception) {

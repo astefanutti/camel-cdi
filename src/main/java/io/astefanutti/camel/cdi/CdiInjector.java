@@ -20,7 +20,7 @@ import org.apache.camel.spi.Injector;
 
 import javax.enterprise.inject.spi.BeanManager;
 
-class CdiInjector implements Injector {
+final class CdiInjector implements Injector {
 
     private final Injector injector;
 

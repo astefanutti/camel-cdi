@@ -15,10 +15,6 @@
  */
 package io.astefanutti.camel.cdi;
 
-import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.Typed;
-import javax.enterprise.inject.spi.InjectionPoint;
-
 import org.apache.camel.CamelContext;
 import org.apache.camel.Endpoint;
 import org.apache.camel.ProducerTemplate;
@@ -27,9 +23,12 @@ import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.util.CamelContextHelper;
 import org.apache.camel.util.ObjectHelper;
 
+import javax.enterprise.inject.Produces;
+import javax.enterprise.inject.Typed;
+import javax.enterprise.inject.spi.InjectionPoint;
 import java.util.Collection;
 
-class CdiCamelFactory {
+final class CdiCamelFactory {
 
     @Produces
     private static TypeConverter typeConverter(CamelContext context) {
@@ -37,6 +36,7 @@ class CdiCamelFactory {
     }
 
     @Produces
+    @Typed(MockEndpoint.class)
     private static MockEndpoint mockEndpointFromMember(InjectionPoint point, CamelContext context) {
         String uri = "mock:" + point.getMember().getName();
         return CamelContextHelper.getMandatoryEndpoint(context, uri, MockEndpoint.class);

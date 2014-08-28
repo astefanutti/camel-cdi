@@ -13,18 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.astefanutti.camel.cdi.bean;
+package io.astefanutti.camel.cdi;
 
 
-public class TypeConverterOutput {
-    
-    private String property;
-    
-    public String getProperty() {
-        return property;
+import org.apache.camel.impl.converter.AnnotationTypeConverterLoader;
+import org.apache.camel.spi.TypeConverterRegistry;
+
+import javax.enterprise.inject.Vetoed;
+
+@Vetoed
+final class CdiTypeConverterLoader extends AnnotationTypeConverterLoader {
+
+    CdiTypeConverterLoader() {
+        super(null);
     }
 
-    public void setProperty(String property) {
-        this.property = property;
+    @Override
+    protected void loadConverterMethods(TypeConverterRegistry registry, Class<?> type) {
+        super.loadConverterMethods(registry, type);
     }
 }

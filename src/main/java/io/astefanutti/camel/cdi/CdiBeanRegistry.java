@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Vetoed
-class CdiBeanRegistry implements Registry {
+final class CdiBeanRegistry implements Registry {
 
     private final BeanManager beanManager;
 

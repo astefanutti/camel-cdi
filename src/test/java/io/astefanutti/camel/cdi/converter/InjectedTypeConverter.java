@@ -15,8 +15,8 @@
  */
 package io.astefanutti.camel.cdi.converter;
 
-import io.astefanutti.camel.cdi.bean.TypeConverterInput;
-import io.astefanutti.camel.cdi.bean.TypeConverterOutput;
+import io.astefanutti.camel.cdi.pojo.TypeConverterInput;
+import io.astefanutti.camel.cdi.pojo.TypeConverterOutput;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Converter;
 

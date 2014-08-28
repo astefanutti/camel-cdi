@@ -22,7 +22,7 @@ import javax.enterprise.inject.Vetoed;
 import org.apache.camel.component.properties.DefaultPropertiesParser;
 
 @Vetoed
-class CdiPropertiesParser extends DefaultPropertiesParser {
+final class CdiPropertiesParser extends DefaultPropertiesParser {
 
     private final Properties properties;
 

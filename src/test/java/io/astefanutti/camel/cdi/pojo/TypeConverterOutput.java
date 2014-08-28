@@ -13,16 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.astefanutti.camel.cdi.bean;
+package io.astefanutti.camel.cdi.pojo;
 
 
-import io.astefanutti.camel.cdi.pojo.TypeConverterOutput;
-import org.apache.camel.builder.RouteBuilder;
+public class TypeConverterOutput {
+    
+    private String property;
+    
+    public String getProperty() {
+        return property;
+    }
 
-public class InjectedTypeConverterRoute extends RouteBuilder {
-
-    @Override
-    public void configure() {
-        from("direct:inbound").convertBodyTo(TypeConverterOutput.class).to("mock:outbound");
+    public void setProperty(String property) {
+        this.property = property;
     }
 }
