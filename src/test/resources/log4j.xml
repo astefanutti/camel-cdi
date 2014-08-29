@@ -13,7 +13,7 @@
     <!-- Loggers -->
 
     <logger name="org.jboss.weld">
-        <level value="DEBUG" />
+        <level value="INFO" />
     </logger>
 
     <logger name="org.apache.webbeans">

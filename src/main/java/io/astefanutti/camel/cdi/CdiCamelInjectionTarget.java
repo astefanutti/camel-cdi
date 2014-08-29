@@ -41,6 +41,7 @@ final class CdiCamelInjectionTarget<T> implements InjectionTarget<T> {
     public void inject(T instance, CreationalContext<T> ctx) {
         delegate.inject(instance, ctx);
         try {
+            // TODO: see how to retrieve the bean name
             processor.postProcessAfterInitialization(instance, instance.getClass().getName());
             processor.postProcessBeforeInitialization(instance, instance.getClass().getName());
         } catch (Exception cause) {

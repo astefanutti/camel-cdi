@@ -49,7 +49,7 @@ public class CdiCamelExtension implements Extension {
     private void processTypeConverters(@Observes @WithAnnotations(Converter.class) ProcessAnnotatedType<?> pat) {
         typeConverters.add(pat.getAnnotatedType().getJavaClass());
     }
-    
+
     private void processCamelContextAware(@Observes ProcessAnnotatedType<? extends CamelContextAware> pat) {
         camelBeans.add(pat.getAnnotatedType());
     }
@@ -67,7 +67,7 @@ public class CdiCamelExtension implements Extension {
     private void processCamelContextBean(@Observes ProcessBean<? extends CamelContext> pb) {
         hasCamelContext = true;
     }
-    
+
     private void addDefaultCamelContext(@Observes AfterBeanDiscovery abd, BeanManager manager) {
         // FIXME: understand why this is not working anymore when ProcessInjectionTarget is decorated in injectCamelAnnotations
         //if (manager.getBeans(CamelContext.class, AnyLiteral.INSTANCE, DefaultLiteral.INSTANCE).isEmpty())

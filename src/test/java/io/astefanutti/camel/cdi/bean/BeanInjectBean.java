@@ -13,25 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.astefanutti.camel.cdi;
+package io.astefanutti.camel.cdi.bean;
 
-import org.apache.camel.impl.DefaultCamelContext;
+import org.apache.camel.BeanInject;
 
-import javax.enterprise.inject.Vetoed;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.inject.Inject;
+public class BeanInjectBean {
 
-@Vetoed
-public class CdiCamelContext extends DefaultCamelContext {
-
-    protected CdiCamelContext() {
-    }
+    @BeanInject
+    private PropertyInjectBean injectBeanField;
     
-    @Inject
-    protected CdiCamelContext(BeanManager beanManager) {
-        setRegistry(new CdiBeanRegistry(beanManager));
-        setInjector(new CdiInjector(getInjector(), beanManager));
-        // Explicitly load the properties component as NPE can be thrown when the CamelContext isn't started yet
-        lookupPropertiesComponent();
+    private PropertyInjectBean injectBeanMethod;
+
+    public PropertyInjectBean getInjectBeanField() {
+        return injectBeanField;
+    }
+
+    @BeanInject
+    public void setInjectBeanMethod(PropertyInjectBean bean) {
+        injectBeanMethod = bean;
+    }
+
+    public PropertyInjectBean getInjectBeanMethod() {
+        return injectBeanMethod;
     }
 }
