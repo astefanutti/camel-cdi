@@ -30,6 +30,6 @@ public class CdiCamelContext extends DefaultCamelContext {
     @Inject
     protected CdiCamelContext(BeanManager beanManager) {
         setRegistry(new CdiBeanRegistry(beanManager));
-        setInjector(new CdiInjector(getInjector(), beanManager, this));
+        setInjector(new CdiInjector(getInjector(), beanManager));
     }
 }

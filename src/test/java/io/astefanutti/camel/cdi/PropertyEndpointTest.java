@@ -46,7 +46,7 @@ public class PropertyEndpointTest {
         return ShrinkWrap.create(JavaArchive.class)
             // Camel CDI
             .addPackages(false, Filters.exclude(".*Test.*"), CdiCamelExtension.class.getPackage())
-            //Custom Camel contex
+            //Custom Camel context
             .addClass(CustomPropertiesCamelContext.class)
             // Test class
             .addClass(PropertyEndpointRoute.class)
