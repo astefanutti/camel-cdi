@@ -25,16 +25,13 @@ import javax.enterprise.inject.spi.BeanManager;
 final class CdiCamelBeanPostProcessor extends DefaultCamelBeanPostProcessor {
 
     private final BeanManager manager;
-    
-    private final CdiCamelExtension extension;
 
-    CdiCamelBeanPostProcessor(BeanManager manager, CdiCamelExtension extension) {
+    CdiCamelBeanPostProcessor(BeanManager manager) {
         this.manager = manager;
-        this.extension = extension;
     }
 
     @Override
     public CamelContext getOrLookupCamelContext() {
-        return extension.getCamelContext(manager);
+        return BeanManagerHelper.getContextualReference(manager, CamelContext.class, false);
     }
 }

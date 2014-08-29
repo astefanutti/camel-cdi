@@ -13,25 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.astefanutti.camel.cdi;
+package io.astefanutti.camel.cdi.bean;
 
-import org.apache.camel.impl.DefaultCamelContext;
+import org.apache.camel.CamelContext;
+import org.apache.camel.CamelContextAware;
 
-import javax.enterprise.inject.Vetoed;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.inject.Inject;
+import javax.enterprise.context.ApplicationScoped;
 
-@Vetoed
-public class CdiCamelContext extends DefaultCamelContext {
+@ApplicationScoped
+public class CamelContextAwareBean implements CamelContextAware {
 
-    protected CdiCamelContext() {
+    private CamelContext camelContext;
+
+    @Override
+    public void setCamelContext(CamelContext camelContext) {
+        this.camelContext = camelContext;
     }
 
-    @Inject
-    protected CdiCamelContext(BeanManager beanManager) {
-        setRegistry(new CdiBeanRegistry(beanManager));
-        setInjector(new CdiInjector(getInjector(), beanManager));
-        // Explicitly load the properties component as NPE can be thrown when the CamelContext isn't started yet
-        lookupPropertiesComponent();
+    @Override
+    public CamelContext getCamelContext() {
+        return camelContext;
     }
 }

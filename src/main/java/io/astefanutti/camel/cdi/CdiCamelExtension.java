@@ -60,7 +60,7 @@ public class CdiCamelExtension implements Extension {
 
     private <T> void camelBeanIntegrationPostProcessor(@Observes ProcessInjectionTarget<T> pit, BeanManager manager) {
         if (camelBeans.contains(pit.getAnnotatedType()))
-            pit.setInjectionTarget(new CdiCamelInjectionTarget<>(pit.getInjectionTarget(), manager, this));
+            pit.setInjectionTarget(new CdiCamelInjectionTarget<>(pit.getInjectionTarget(), manager));
     }
 
     // FIXME: remove when bean manager solution with ProcessInjectionTarget decorator works
@@ -69,7 +69,7 @@ public class CdiCamelExtension implements Extension {
     }
 
     private void addDefaultCamelContext(@Observes AfterBeanDiscovery abd, BeanManager manager) {
-        // FIXME: understand why this is not working anymore when ProcessInjectionTarget is decorated in injectCamelAnnotations
+        // FIXME: understand why this is not working anymore when ProcessInjectionTarget is decorated in processCamelAnnotations
         //if (manager.getBeans(CamelContext.class, AnyLiteral.INSTANCE, DefaultLiteral.INSTANCE).isEmpty())
         if (!hasCamelContext)
             abd.addBean(new CdiCamelContextBean(manager));
@@ -93,9 +93,5 @@ public class CdiCamelExtension implements Extension {
                 adv.addDeploymentProblem(exception);
             }
         }
-    }
-
-    CamelContext getCamelContext(BeanManager manager) {
-        return BeanManagerHelper.getContextualReference(manager, CamelContext.class, false);
     }
 }

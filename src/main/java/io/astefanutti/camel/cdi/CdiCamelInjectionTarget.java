@@ -27,16 +27,16 @@ import java.util.Set;
 
 @Vetoed
 final class CdiCamelInjectionTarget<T> implements InjectionTarget<T> {
-    
+
     private final InjectionTarget<T> delegate;
 
     private final CdiCamelBeanPostProcessor processor;
 
-    CdiCamelInjectionTarget(InjectionTarget<T> delegate, BeanManager manager, CdiCamelExtension extension) {
+    CdiCamelInjectionTarget(InjectionTarget<T> delegate, BeanManager manager) {
         this.delegate = delegate;
-        this.processor = new CdiCamelBeanPostProcessor(manager, extension);
+        this.processor = new CdiCamelBeanPostProcessor(manager);
     }
-    
+
     @Override
     public void inject(T instance, CreationalContext<T> ctx) {
         delegate.inject(instance, ctx);
@@ -72,6 +72,11 @@ final class CdiCamelInjectionTarget<T> implements InjectionTarget<T> {
     @Override
     public Set<InjectionPoint> getInjectionPoints() {
         return delegate.getInjectionPoints();
+    }
+
+    @Override
+    public String toString() {
+        return delegate.toString();
     }
 
     @Override
