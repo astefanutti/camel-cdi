@@ -5,7 +5,8 @@ install:
 
 script:
   - mvn test -Pjacoco -Pweld
-  - mvn test -Pjacoco -Powb
+  - mvn test -Pjacoco -Powb -pl envs/se
+  - mvn test -Pjacoco -Pwildfly -pl envs/ee
 
 jdk:
   - oraclejdk7
@@ -18,5 +19,5 @@ notifications:
       - antonin.stefanutti@gmail.com
 
 after_success:
-  - mvn jacoco:report
+  - mvn jacoco:report -pl impl
   - mvn -N coveralls:jacoco
