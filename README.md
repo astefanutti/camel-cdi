@@ -49,13 +49,16 @@ The objective of this project is to alleviate all these concerns, provide additi
 
 _Camel CDI_ is currently successfully tested with the following containers:
 
-| Container        | Version       | Specification          | Arquillian Container Adapter      |
-| ---------------- | ------------- | ---------------------- | --------------------------------- |
-| [Weld SE][]      | `2.2.4.Final` | [CDI 1.2][JSR 346 1.2] | `arquillian-weld-se-embedded-1.1` |
-| [OpenWebBeans][] | `2.0.0`       | [CDI 1.1][JSR 346 1.1] | `owb-arquillian-standalone`       |
+| Container        | Version       | Specification          | Arquillian Container Adapter           |
+| ---------------- | ------------- | ---------------------- | -------------------------------------- |
+| [Weld SE][]      | `2.2.4.Final` | [CDI 1.2][JSR 346 1.2] | `arquillian-weld-se-embedded-1.1`      |
+| [OpenWebBeans][] | `2.0.0`       | [CDI 1.1][JSR 346 1.1] | `owb-arquillian-standalone`            |
+| [Weld EE][]      | `2.2.4.Final` | [CDI 1.2][JSR 346 1.2] | `arquillian-weld-ee-embedded-1.1`      |
+| [WildFly][]      | `8.1.0.Final` | [Java EE 7][]          | `wildfly-arquillian-container-managed` |
 
 [Weld SE]: http://weld.cdi-spec.org/
 [OpenWebBeans]: http://openwebbeans.apache.org/
+[Java EE 7]: https://jcp.org/en/jsr/detail?id=342
 
 ## License
 
