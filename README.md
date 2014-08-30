@@ -57,6 +57,8 @@ _Camel CDI_ is currently successfully tested with the following containers:
 | [WildFly][]      | `8.1.0.Final` | [Java EE 7][]          | `wildfly-arquillian-container-managed` |
 
 [Weld SE]: http://weld.cdi-spec.org/
+[Weld EE]: http://weld.cdi-spec.org/
+[WildFly]: http://www.wildfly.org/
 [OpenWebBeans]: http://openwebbeans.apache.org/
 [Java EE 7]: https://jcp.org/en/jsr/detail?id=342
 
