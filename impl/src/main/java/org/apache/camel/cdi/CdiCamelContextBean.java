@@ -15,9 +15,6 @@
  */
 package org.apache.camel.cdi;
 
-import org.apache.camel.CamelContext;
-import org.apache.camel.model.ModelCamelContext;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
@@ -41,7 +38,7 @@ final class CdiCamelContextBean implements Bean<CdiCamelContext>, PassivationCap
 
     CdiCamelContextBean(BeanManager manager) {
         AnnotatedType<CdiCamelContext> annotatedType = manager.createAnnotatedType(CdiCamelContext.class);
-        this.types = Collections.unmodifiableSet(new HashSet<Type>(Arrays.asList(CamelContext.class, ModelCamelContext.class)));
+        this.types = Collections.unmodifiableSet(annotatedType.getTypeClosure());
         this.target = manager.createInjectionTarget(annotatedType);
     }
 

@@ -21,6 +21,17 @@
         </testResources>
     </build>
 
+    <dependencies>
+
+        <!-- provided dependencies -->
+
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+        </dependency>
+
+    </dependencies>
+
     <profiles>
 
         <profile>
@@ -35,13 +46,6 @@
             </properties>
 
             <dependencies>
-
-                <!-- provided dependencies -->
-
-                <dependency>
-                    <groupId>javax</groupId>
-                    <artifactId>javaee-api</artifactId>
-                </dependency>
 
                 <!-- test dependencies -->
 
