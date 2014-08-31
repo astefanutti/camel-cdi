@@ -32,7 +32,7 @@ final class CdiInjector implements Injector {
 
     @Override
     public <T> T newInstance(Class<T> type) {
-        T instance = BeanManagerHelper.getContextualReference(manager, type, true);
+        T instance = BeanManagerHelper.getReferenceByType(manager, type);
         if (instance != null)
             return instance;
         else 

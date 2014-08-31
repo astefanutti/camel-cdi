@@ -28,33 +28,33 @@ import java.util.Set;
 @Vetoed
 final class CdiBeanRegistry implements Registry {
 
-    private final BeanManager beanManager;
+    private final BeanManager manager;
 
-    CdiBeanRegistry(BeanManager beanManager) {
-        this.beanManager = beanManager;
+    CdiBeanRegistry(BeanManager manager) {
+        this.manager = manager;
     }
 
     @Override
     public Object lookupByName(String name) {
         ObjectHelper.notEmpty(name, "name");
-        return BeanManagerHelper.getContextualReference(beanManager, name, true, Object.class);
+        return BeanManagerHelper.getReferenceByName(manager, name, Object.class);
     }
 
     @Override
     public <T> T lookupByNameAndType(String name, Class<T> type) {
         ObjectHelper.notEmpty(name, "name");
         ObjectHelper.notNull(type, "type");
-        return BeanManagerHelper.getContextualReference(beanManager, name, true, type);
+        return BeanManagerHelper.getReferenceByName(manager, name, type);
     }
 
     @Override
     public <T> Map<String, T> findByTypeWithName(Class<T> type) {
         ObjectHelper.notNull(type, "type");
         Map<String, T> references = new HashMap<>();
-        for (Bean<?> bean : beanManager.getBeans(type, AnyLiteral.INSTANCE))
+        for (Bean<?> bean : manager.getBeans(type, AnyLiteral.INSTANCE))
             // FIXME: check if the bean has the @Named qualifier instead
             if (bean.getName() != null)
-                references.put(bean.getName(), BeanManagerHelper.getContextualReference(beanManager, type, bean));
+                references.put(bean.getName(), BeanManagerHelper.<T>getReference(manager, type, bean));
 
         return references;
     }
@@ -62,7 +62,7 @@ final class CdiBeanRegistry implements Registry {
     @Override
     public <T> Set<T> findByType(Class<T> type) {
         ObjectHelper.notNull(type, "type");
-        return BeanManagerHelper.getContextualReferences(beanManager, type, AnyLiteral.INSTANCE);
+        return BeanManagerHelper.getReferencesByType(manager, type, AnyLiteral.INSTANCE);
     }
 
     @Override

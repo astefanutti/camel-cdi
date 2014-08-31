@@ -20,55 +20,43 @@ import javax.enterprise.inject.Vetoed;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import java.lang.annotation.Annotation;
-import java.util.Arrays;
+import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;
 
 @Vetoed
 final class BeanManagerHelper {
 
-    @SuppressWarnings("unchecked")
-    static <T> Set<T> getContextualReferences(BeanManager beanManager, Class<T> type, Annotation... qualifiers) {
+    static <T> Set<T> getReferencesByType(BeanManager manager, Class<T> type, Annotation... qualifiers) {
+        return getReferencesByType(manager, (Type) type, qualifiers);
+    }
+
+    static <T> Set<T> getReferencesByType(BeanManager manager, Type type, Annotation... qualifiers) {
         Set<T> references = new HashSet<>();
-        for (Bean<?> bean : beanManager.getBeans(type, qualifiers))
-            references.add((T) beanManager.getReference(bean, type, beanManager.createCreationalContext(bean)));
+        for (Bean<?> bean : manager.getBeans(type, qualifiers))
+            references.add(BeanManagerHelper.<T>getReference(manager, type, bean));
 
         return references;
     }
 
-    static <T> T getContextualReference(BeanManager manager, String name, boolean optional, Class<T> type) {
+    static <T> T getReferenceByName(BeanManager manager, String name, Class<T> type) {
         Set<Bean<?>> beans = manager.getBeans(name);
+        if (beans == null || beans.isEmpty())
+            return null;
 
-        if ((beans == null) || beans.isEmpty()) {
-            if (optional)
-                return null;
-
-            throw new IllegalStateException("Could not find beans for type [" + type + "] and name [" + name + "]");
-        }
-
-        return getContextualReference(manager, type, beans);
+        return getReference(manager, type, manager.resolve(beans));
     }
 
-    static <T> T getContextualReference(BeanManager manager, Class<T> type, boolean optional, Annotation... qualifiers) {
+    static <T> T getReferenceByType(BeanManager manager, Class<T> type, Annotation... qualifiers) {
         Set<Bean<?>> beans = manager.getBeans(type, qualifiers);
+        if (beans == null || beans.isEmpty())
+            return null;
 
-        if ((beans == null) || beans.isEmpty()) {
-            if (optional)
-                return null;
-
-            throw new IllegalStateException("Could not find beans for type [" + type + "] and qualifiers " + Arrays.toString(qualifiers));
-        }
-
-        return getContextualReference(manager, type, beans);
-    }
-
-    static <T> T getContextualReference(BeanManager manager, Class<T> type, Bean<?> bean) {
-        return getContextualReference(manager, type, new HashSet<>(Arrays.<Bean<?>>asList(bean)));
+        return getReference(manager, type, manager.resolve(beans));
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> T getContextualReference(BeanManager manager, Class<T> type, Set<Bean<?>> beans) {
-        Bean<?> bean = manager.resolve(beans);
+    static <T> T getReference(BeanManager manager, Type type, Bean<?> bean) {
         CreationalContext<?> context = manager.createCreationalContext(bean);
         return (T) manager.getReference(bean, type, context);
     }

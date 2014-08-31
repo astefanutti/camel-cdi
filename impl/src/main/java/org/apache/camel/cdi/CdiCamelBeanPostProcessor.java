@@ -32,6 +32,6 @@ final class CdiCamelBeanPostProcessor extends DefaultCamelBeanPostProcessor {
 
     @Override
     public CamelContext getOrLookupCamelContext() {
-        return BeanManagerHelper.getContextualReference(manager, CamelContext.class, false);
+        return BeanManagerHelper.getReferenceByType(manager, CamelContext.class);
     }
 }

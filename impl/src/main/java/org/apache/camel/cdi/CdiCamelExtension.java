@@ -47,6 +47,8 @@ public class CdiCamelExtension implements Extension {
 
     private final Set<AnnotatedType<?>> camelBeans = Collections.newSetFromMap(new ConcurrentHashMap<AnnotatedType<?>, Boolean>());
 
+    private final Set<AnnotatedType<?>> eagerBeans = Collections.newSetFromMap(new ConcurrentHashMap<AnnotatedType<?>, Boolean>());
+
     private void processTypeConverters(@Observes @WithAnnotations(Converter.class) ProcessAnnotatedType<?> pat) {
         typeConverters.add(pat.getAnnotatedType().getJavaClass());
     }
@@ -57,6 +59,10 @@ public class CdiCamelExtension implements Extension {
 
     private void processCamelAnnotations(@Observes @WithAnnotations({BeanInject.class, Consume.class, EndpointInject.class, Produce.class, PropertyInject.class, }) ProcessAnnotatedType<?> pat) {
         camelBeans.add(pat.getAnnotatedType());
+    }
+
+    private void processConsumeBeans(@Observes @WithAnnotations(Consume.class) ProcessAnnotatedType<?> pat) {
+        eagerBeans.add(pat.getAnnotatedType());
     }
 
     private <T> void camelBeanIntegrationPostProcessor(@Observes ProcessInjectionTarget<T> pit, BeanManager manager) {
@@ -77,7 +83,7 @@ public class CdiCamelExtension implements Extension {
     }
 
     private void configureCamelContext(@Observes AfterDeploymentValidation adv, BeanManager manager) {
-        CamelContext context = BeanManagerHelper.getContextualReference(manager, CamelContext.class, false);
+        CamelContext context = BeanManagerHelper.getReferenceByType(manager, CamelContext.class);
 
         // add type converter beans to the Camel context
         if (!typeConverters.isEmpty()) {
@@ -87,12 +93,16 @@ public class CdiCamelExtension implements Extension {
         }
 
         // instantiate route builders and add them to the Camel context
-        for (RoutesBuilder builder : BeanManagerHelper.getContextualReferences(manager, RoutesBuilder.class)) {
+        for (RoutesBuilder builder : BeanManagerHelper.getReferencesByType(manager, RoutesBuilder.class, AnyLiteral.INSTANCE)) {
             try {
                 context.addRoutes(builder);
             } catch (Exception exception) {
                 adv.addDeploymentProblem(exception);
             }
         }
+
+        // trigger eager beans instantiation
+        for (AnnotatedType<?> type : eagerBeans)
+            BeanManagerHelper.getReferencesByType(manager, type.getBaseType(), AnyLiteral.INSTANCE);
     }
 }

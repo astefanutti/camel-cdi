@@ -20,10 +20,11 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -42,11 +43,11 @@ public class CamelEE7Test {
                     .as(JavaArchive.class))
             .addAsModule(
                 ShrinkWrap.create(JavaArchive.class)
-                .addClass(Bootstrap.class)
-                .addClass(HelloCamel.class)
-                // FIXME: Test class must be added until ARQ-659 is fixed
-                .addClass(CamelEE7Test.class)
-                .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml"));
+                    .addClass(Bootstrap.class)
+                    .addClass(HelloCamel.class)
+                    // FIXME: Test class must be added until ARQ-659 is fixed
+                    .addClass(CamelEE7Test.class)
+                    .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml"));
     }
 
     @Test

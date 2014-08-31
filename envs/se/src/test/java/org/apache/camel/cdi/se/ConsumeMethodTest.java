@@ -15,12 +15,15 @@
  */
 package org.apache.camel.cdi.se;
 
+import org.apache.camel.CamelContext;
+import org.apache.camel.ProducerTemplate;
 import org.apache.camel.cdi.CdiCamelExtension;
-import org.apache.camel.cdi.Config;
-import org.apache.camel.cdi.se.bean.BeanInjectBean;
-import org.apache.camel.cdi.se.bean.PropertyInjectBean;
+import org.apache.camel.cdi.Uri;
+import org.apache.camel.cdi.se.bean.ConsumeMethodBean;
+import org.apache.camel.component.mock.MockEndpoint;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit.InSequence;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -28,17 +31,13 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
-import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
 
 @RunWith(Arquillian.class)
-public class BeanInjectTest {
+public class ConsumeMethodTest {
 
     @Deployment
     public static Archive<?> deployment() {
@@ -46,32 +45,39 @@ public class BeanInjectTest {
             // Camel CDI
             .addPackage(CdiCamelExtension.class.getPackage())
             // Test classes
-            .addClass(BeanInjectBean.class)
-            .addClass(PropertyInjectBean.class)
+            .addClass(ConsumeMethodBean.class)
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
-    @Config
-    @Produces
-    private static Properties configuration() {
-        Properties configuration = new Properties();
-        configuration.put("property", "value");
-        return configuration;
-    }
+    @Inject
+    @Uri("seda:inbound")
+    private ProducerTemplate inbound;
 
     @Inject
-    private BeanInjectBean bean;
+    @Uri("mock:outbound")
+    private MockEndpoint outbound;
 
     @Test
-    public void propertyInjectField() {
-        assertThat(bean.getInjectBeanField(), is(notNullValue()));
-        assertThat(bean.getInjectBeanField().getProperty(), is(equalTo("value")));
+    @InSequence(1)
+    public void startCamelContext(CamelContext context) throws Exception {
+        context.start();
     }
 
     @Test
-    public void propertyInjectMethod() {
-        assertThat(bean.getInjectBeanMethod(), is(notNullValue()));
-        assertThat(bean.getInjectBeanMethod().getProperty(), is(equalTo("value")));
+    @InSequence(2)
+    public void consumeAnnotation() throws InterruptedException {
+        outbound.expectedMessageCount(1);
+        outbound.expectedBodiesReceived("test");
+
+        inbound.sendBody("test");
+
+        assertIsSatisfied(2L, TimeUnit.SECONDS, outbound);
+    }
+
+    @Test
+    @InSequence(3)
+    public void stopCamelContext(CamelContext context) throws Exception {
+        context.stop();
     }
 }
