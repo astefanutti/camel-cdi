@@ -20,8 +20,10 @@ import org.apache.camel.Consume;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.cdi.Uri;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+@ApplicationScoped
 public class ConsumeMethodBean {
 
     @Inject

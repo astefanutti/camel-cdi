@@ -85,24 +85,22 @@ public class CdiCamelExtension implements Extension {
     private void configureCamelContext(@Observes AfterDeploymentValidation adv, BeanManager manager) {
         CamelContext context = BeanManagerHelper.getReferenceByType(manager, CamelContext.class);
 
-        // add type converter beans to the Camel context
-        if (!typeConverters.isEmpty()) {
-            CdiTypeConverterLoader loader = new CdiTypeConverterLoader();
-            for (Class<?> typeConverter : typeConverters)
-                loader.loadConverterMethods(context.getTypeConverterRegistry(), typeConverter);
-        }
+        // Add type converter beans to the Camel context
+        CdiTypeConverterLoader loader = new CdiTypeConverterLoader();
+        for (Class<?> typeConverter : typeConverters)
+            loader.loadConverterMethods(context.getTypeConverterRegistry(), typeConverter);
 
-        // instantiate route builders and add them to the Camel context
-        for (RoutesBuilder builder : BeanManagerHelper.getReferencesByType(manager, RoutesBuilder.class, AnyLiteral.INSTANCE)) {
+        // Instantiate route builders and add them to the Camel context
+        for (RoutesBuilder builder : BeanManagerHelper.getReferencesByType(manager, RoutesBuilder.class, AnyLiteral.INSTANCE))
             try {
                 context.addRoutes(builder);
             } catch (Exception exception) {
                 adv.addDeploymentProblem(exception);
             }
-        }
 
-        // trigger eager beans instantiation
+        // Trigger eager beans instantiation
         for (AnnotatedType<?> type : eagerBeans)
-            BeanManagerHelper.getReferencesByType(manager, type.getBaseType(), AnyLiteral.INSTANCE);
+            // Calling toString is necessary to force the initialization of normal-scoped beans
+            BeanManagerHelper.getReferencesByType(manager, type.getBaseType(), AnyLiteral.INSTANCE).toString();
     }
 }
