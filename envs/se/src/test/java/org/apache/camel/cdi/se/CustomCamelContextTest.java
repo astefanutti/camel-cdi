@@ -60,7 +60,7 @@ public class CustomCamelContextTest {
     private MockEndpoint outbound;
 
     @Test
-    public void sendMessageToInboundConsumer() throws InterruptedException {
+    public void sendMessageToInbound() throws InterruptedException {
         outbound.expectedMessageCount(1);
         outbound.expectedBodiesReceived("test");
 

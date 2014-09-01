@@ -15,13 +15,12 @@
  */
 package org.apache.camel.cdi.se;
 
-import org.apache.camel.cdi.CdiCamelExtension;
-import org.apache.camel.cdi.Config;
-import org.apache.camel.cdi.Uri;
-import org.apache.camel.cdi.se.bean.CustomPropertiesCamelContext;
-import org.apache.camel.cdi.se.bean.PropertyEndpointRoute;
 import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
+import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.cdi.CdiCamelExtension;
+import org.apache.camel.cdi.Uri;
+import org.apache.camel.cdi.se.bean.ProduceTemplateBean;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -33,62 +32,46 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.enterprise.inject.Produces;
-import javax.inject.Inject;
-import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
 
 @RunWith(Arquillian.class)
-public class PropertyEndpointTest {
+public class ProduceTemplateTest {
 
     @Deployment
     public static Archive<?> deployment() {
         return ShrinkWrap.create(JavaArchive.class)
             // Camel CDI
             .addPackage(CdiCamelExtension.class.getPackage())
-            //Custom Camel context
-            .addClass(CustomPropertiesCamelContext.class)
             // Test class
-            .addClass(PropertyEndpointRoute.class)
+            .addClass(ProduceTemplateBean.class)
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
-    @Config
-    @Produces
-    private static Properties configuration() {
-        Properties configuration = new Properties();
-        configuration.put("from", "inbound");
-        configuration.put("to", "mock:outbound");
-        return configuration;
-    }
-
-    @Inject
-    @Uri("direct:{{from}}")
-    private ProducerTemplate inbound;
-
-    @Inject
-    @Uri("mock:outbound")
-    private MockEndpoint outbound;
-
     @Test
     @InSequence(1)
-    public void startCamelContext(CamelContext context) throws Exception {
+    public void configureAndStartCamelContext(CamelContext context) throws Exception {
+        context.addRoutes(new RouteBuilder() {
+            @Override
+            public void configure() throws Exception {
+                from("direct:inbound").bean(ProduceTemplateBean.class);
+            }
+        });
+
         context.start();
     }
 
     @Test
     @InSequence(2)
-    public void sendMessageToInbound() throws InterruptedException {
-        outbound.expectedMessageCount(1);
-        outbound.expectedBodiesReceived("test");
-        outbound.expectedHeaderReceived("header", "message from file");
+    public void sendMessageToInbound(@Uri("direct:inbound") ProducerTemplate in, @Uri("mock:outbound") MockEndpoint out) throws InterruptedException {
+        out.expectedMessageCount(1);
+        out.expectedBodiesReceived("test-processed");
         
-        inbound.sendBody("test");
+        in.sendBody("test");
 
-        assertIsSatisfied(2L, TimeUnit.SECONDS, outbound);
+        assertIsSatisfied(2L, TimeUnit.SECONDS, out);
     }
 
     @Test

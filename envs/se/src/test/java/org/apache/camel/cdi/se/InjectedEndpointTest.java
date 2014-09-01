@@ -65,7 +65,7 @@ public class InjectedEndpointTest {
 
     @Test
     @InSequence(2)
-    public void sendMessageToInboundConsumer() throws InterruptedException {
+    public void sendMessageToInbound() throws InterruptedException {
         outbound.expectedMessageCount(1);
         outbound.expectedBodiesReceived("test");
         

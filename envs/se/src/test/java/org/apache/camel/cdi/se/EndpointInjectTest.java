@@ -15,13 +15,11 @@
  */
 package org.apache.camel.cdi.se;
 
-import org.apache.camel.cdi.CdiCamelExtension;
-import org.apache.camel.cdi.Config;
-import org.apache.camel.cdi.Uri;
-import org.apache.camel.cdi.se.bean.CustomPropertiesCamelContext;
-import org.apache.camel.cdi.se.bean.PropertyEndpointRoute;
 import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
+import org.apache.camel.cdi.CdiCamelExtension;
+import org.apache.camel.cdi.Uri;
+import org.apache.camel.cdi.se.bean.EndpointInjectRoute;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -33,40 +31,27 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
-import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
 
 @RunWith(Arquillian.class)
-public class PropertyEndpointTest {
+public class EndpointInjectTest {
 
     @Deployment
     public static Archive<?> deployment() {
         return ShrinkWrap.create(JavaArchive.class)
             // Camel CDI
             .addPackage(CdiCamelExtension.class.getPackage())
-            //Custom Camel context
-            .addClass(CustomPropertiesCamelContext.class)
             // Test class
-            .addClass(PropertyEndpointRoute.class)
+            .addClass(EndpointInjectRoute.class)
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
-    @Config
-    @Produces
-    private static Properties configuration() {
-        Properties configuration = new Properties();
-        configuration.put("from", "inbound");
-        configuration.put("to", "mock:outbound");
-        return configuration;
-    }
-
     @Inject
-    @Uri("direct:{{from}}")
+    @Uri("direct:inbound")
     private ProducerTemplate inbound;
 
     @Inject
@@ -84,7 +69,6 @@ public class PropertyEndpointTest {
     public void sendMessageToInbound() throws InterruptedException {
         outbound.expectedMessageCount(1);
         outbound.expectedBodiesReceived("test");
-        outbound.expectedHeaderReceived("header", "message from file");
         
         inbound.sendBody("test");
 
