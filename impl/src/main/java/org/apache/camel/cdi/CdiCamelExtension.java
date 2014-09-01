@@ -49,29 +49,29 @@ public class CdiCamelExtension implements Extension {
 
     private final Set<AnnotatedType<?>> eagerBeans = Collections.newSetFromMap(new ConcurrentHashMap<AnnotatedType<?>, Boolean>());
 
-    private void processTypeConverters(@Observes @WithAnnotations(Converter.class) ProcessAnnotatedType<?> pat) {
+    private void typeConverters(@Observes @WithAnnotations(Converter.class) ProcessAnnotatedType<?> pat) {
         typeConverters.add(pat.getAnnotatedType().getJavaClass());
     }
 
-    private void processCamelContextAware(@Observes ProcessAnnotatedType<? extends CamelContextAware> pat) {
+    private void camelContextAware(@Observes ProcessAnnotatedType<? extends CamelContextAware> pat) {
         camelBeans.add(pat.getAnnotatedType());
     }
 
-    private void processCamelAnnotations(@Observes @WithAnnotations({BeanInject.class, Consume.class, EndpointInject.class, Produce.class, PropertyInject.class, }) ProcessAnnotatedType<?> pat) {
+    private void camelAnnotations(@Observes @WithAnnotations({BeanInject.class, Consume.class, EndpointInject.class, Produce.class, PropertyInject.class, }) ProcessAnnotatedType<?> pat) {
         camelBeans.add(pat.getAnnotatedType());
     }
 
-    private void processConsumeBeans(@Observes @WithAnnotations(Consume.class) ProcessAnnotatedType<?> pat) {
+    private void consumeBeans(@Observes @WithAnnotations(Consume.class) ProcessAnnotatedType<?> pat) {
         eagerBeans.add(pat.getAnnotatedType());
     }
 
-    private <T> void camelBeanIntegrationPostProcessor(@Observes ProcessInjectionTarget<T> pit, BeanManager manager) {
+    private <T> void camelBeansPostProcessor(@Observes ProcessInjectionTarget<T> pit, BeanManager manager) {
         if (camelBeans.contains(pit.getAnnotatedType()))
             pit.setInjectionTarget(new CdiCamelInjectionTarget<>(pit.getInjectionTarget(), manager));
     }
 
     // FIXME: remove when bean manager solution with ProcessInjectionTarget decorator works
-    private void processCamelContextBean(@Observes ProcessBean<? extends CamelContext> pb) {
+    private void camelContextBean(@Observes ProcessBean<? extends CamelContext> pb) {
         hasCamelContext = true;
     }
 
