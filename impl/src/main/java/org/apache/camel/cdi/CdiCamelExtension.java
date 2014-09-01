@@ -70,14 +70,14 @@ public class CdiCamelExtension implements Extension {
             pit.setInjectionTarget(new CdiCamelInjectionTarget<>(pit.getInjectionTarget(), manager));
     }
 
-    // FIXME: remove when bean manager solution with ProcessInjectionTarget decorator works
+    // FIXME: remove when WELD-1729 is fixed
     private void camelContextBean(@Observes ProcessBean<? extends CamelContext> pb) {
         hasCamelContext = true;
     }
 
     private void addDefaultCamelContext(@Observes AfterBeanDiscovery abd, BeanManager manager) {
-        // FIXME: understand why this is not working anymore when ProcessInjectionTarget is decorated in processCamelAnnotations
-        //if (manager.getBeans(CamelContext.class, AnyLiteral.INSTANCE, DefaultLiteral.INSTANCE).isEmpty())
+        // FIXME: not working with Weld 2.x, see WELD-1729
+        //if (manager.getBeans(CamelContext.class).isEmpty())
         if (!hasCamelContext)
             abd.addBean(new CdiCamelContextBean(manager));
     }
