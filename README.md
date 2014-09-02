@@ -13,6 +13,7 @@
 
 [CDI]: http://www.cdi-spec.org/
 [Camel]: http://camel.apache.org/
+[JSR 299]: https://jcp.org/en/jsr/detail?id=299
 [JSR 346]: https://jcp.org/en/jsr/detail?id=346
 [JSR 346 1.1]: https://jcp.org/aboutJava/communityprocess/final/jsr346/index.html
 [JSR 346 1.2]: https://jcp.org/aboutJava/communityprocess/mrel/jsr346/index.html
@@ -22,13 +23,14 @@
 ## About
 
 Since version `2.10` of Camel, the [Camel CDI][] component supports the integration of Camel in CDI enabled environments. However, some experiments and _battlefield_ tests prove it troublesome to use because of the following concerns:
++ It relies on older [CDI 1.0][JSR 299] version of the specification and makes incorrect usages of [container lifecycle events][] as documented in [Assignability of type variables, raw and parameterized types]. As a consequence, it does not work properly with newer implementation versions like Weld 2.x and containers like Wildfly 8.x as reported in [CAMEL-7760][] among other issues.
 + It relies on Apache [DeltaSpike][] and its `BeanManagerProvider` class to retrieve the `BeanManager` instance during the CDI container initialisation. That may not be suitable in complex container scenarios, for example, in multi CDI container per JVM context, as reported in [CAMEL-6338][] and that causes [CAMEL-6095][] and [CAMEL-6937][].
 + It relies on _DeltaSpike_ and its [configuration mechanism][DeltaSpike Configuration Mechanism] to source configuration locations for the [Properties component][]. While this is suitable for most use cases, it relies on the `ServiceLoader` mechanism to support custom [configuration sources][ConfigSource] that may not be suitable in more complex container scenarios and relates to [CAMEL-5986].
-+ Besides, while _DeltaSpike_ is a valuable addition to the CDI ecosystem, having a direct dependency on it is questionable from a design standpoint as opposed to relying on standard CDI mechanism for producing the Camel configuration properties and delegating as a plugable strategy the configuration sourcing concern and implementation choice to the application itself.
++ Besides, while _DeltaSpike_ is a valuable addition to the CDI ecosystem, Camel CDI having a direct dependency on it is questionable from a design standpoint as opposed to relying on standard CDI mechanism for producing the Camel configuration properties and delegating as a plugable strategy the configuration sourcing concern and implementation choice to the application itself.
 + It declares a `CamelContext` CDI bean that's automatically instantiated and started with a `@PostConstruct` lifecycle callback called before the CDI container is completely initialized. That prevents, among other side effects, proper advising of Camel routes as documented in [Camel AdviceWith][].
 + It uses the `@ContextName` annotation to bind routes to the `CamelContext` instance specified by name as an attempt to provide multi-context support. However, that is an incomplete feature from the CDI programming model standpoint as discussed in [CAMEL-5566][] and that causes [CAMEL-5742][].
 
-The objective of this project is to alleviate all these concerns, provide additional features, and have that improved version of the CDI Camel component contributed back in the official codeline.
+The objective of this project is to alleviate all these concerns, provide additional features, and have that improved version of the Camel CDI component contributed back in the official codeline.
 
 [Camel CDI]: http://camel.apache.org/cdi.html
 [DeltaSpike]: https://deltaspike.apache.org/
@@ -36,12 +38,15 @@ The objective of this project is to alleviate all these concerns, provide additi
 [ConfigSource]: https://deltaspike.apache.org/configuration.html#custom-config-sources
 [Camel AdviceWith]: http://camel.apache.org/advicewith.html
 [Properties component]: http://camel.apache.org/properties
-[CAMEL-5566]: CAMEL-5566
-[CAMEL-5742]: CAMEL-5742
+[CAMEL-5566]: https://issues.apache.org/jira/browse/CAMEL-5566
+[CAMEL-5742]: https://issues.apache.org/jira/browse/CAMEL-5742
 [CAMEL-5986]: https://issues.apache.org/jira/browse/CAMEL-5986
 [CAMEL-6338]: https://issues.apache.org/jira/browse/CAMEL-6338
 [CAMEL-6095]: https://issues.apache.org/jira/browse/CAMEL-6095
 [CAMEL-6937]: https://issues.apache.org/jira/browse/CAMEL-6937
+[CAMEL-7760]: https://issues.apache.org/jira/browse/CAMEL-7760
+[container lifecycle events]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#init_events
+[Assignability of type variables, raw and parameterized types]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#observers_assignability
 
 ## Getting Started
 
