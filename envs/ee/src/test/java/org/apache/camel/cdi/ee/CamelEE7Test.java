@@ -15,6 +15,7 @@
  */
 package org.apache.camel.cdi.ee;
 
+import org.apache.camel.cdi.ee.category.Integration;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
@@ -24,15 +25,16 @@ import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
-
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 @RunWith(Arquillian.class)
+@Category(Integration.class)
 public class CamelEE7Test {
 
     @Deployment
-    public static Archive<?> createTestArchive() {
+    public static Archive<?> deployment() {
         return ShrinkWrap.create(EnterpriseArchive.class, "camel-ee7.ear")
             .addAsLibraries(
                 Maven.configureResolver()

@@ -45,6 +45,18 @@
                 <arquillian.protocol>Local</arquillian.protocol>
             </properties>
 
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <excludedGroups>org.apache.camel.cdi.ee.category.Integration</excludedGroups>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+
             <dependencies>
 
                 <!-- test dependencies -->
