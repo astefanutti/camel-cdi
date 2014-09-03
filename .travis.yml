@@ -1,11 +1,15 @@
 language: java
 
+branches:
+  only:
+    - master
+
 install:
   - mvn clean install -Dmaven.test.skip.exec
 
 script:
   - mvn test -Pjacoco -Pweld
-  - mvn test -Pjacoco -Powb -pl envs/se
+#  - mvn test -Pjacoco -Powb -pl envs/se
   - mvn test -Pjacoco -Pwildfly -pl envs/ee
 
 jdk:
