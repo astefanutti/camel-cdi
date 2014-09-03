@@ -51,6 +51,14 @@ final class CdiCamelFactory {
     }
 
     @Uri("")
+    @ContextName("")
+    @Produces
+    @Typed(MockEndpoint.class)
+    private static MockEndpoint mockEndpointFromUriForContext(InjectionPoint point, CdiCamelExtension extension) {
+        return mockEndpointFromUri(point, extension.getCamelContext(getFirstElementOfType(point.getQualifiers(), ContextName.class).value()));
+    }
+
+    @Uri("")
     @Produces
     private static Endpoint endpoint(InjectionPoint point, CamelContext context) {
         String uri = getFirstElementOfType(point.getQualifiers(), Uri.class).value();
@@ -67,11 +75,18 @@ final class CdiCamelFactory {
         return producerTemplate;
     }
 
-    private static <E, T extends E> T getFirstElementOfType(Collection<E> collection, Class<T> type) {
+    @Uri("")
+    @ContextName("")
+    @Produces
+    private static ProducerTemplate producerTemplateForContext(InjectionPoint point, CdiCamelExtension extension) {
+        return producerTemplate(point, extension.getCamelContext(getFirstElementOfType(point.getQualifiers(), ContextName.class).value()));
+    }
+
+    static <E, T extends E> T getFirstElementOfType(Collection<E> collection, Class<T> type) {
         for (E item : collection)
             if ((item != null) && type.isAssignableFrom(item.getClass()))
                 return ObjectHelper.cast(type, item);
 
-        throw new IllegalArgumentException("No element of type [" + type.getName() + "] in [" + collection + "]");
+        return null;
     }
 }

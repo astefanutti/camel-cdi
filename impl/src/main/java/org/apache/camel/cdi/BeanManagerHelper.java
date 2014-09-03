@@ -55,6 +55,10 @@ final class BeanManagerHelper {
         return getReference(manager, type, manager.resolve(beans));
     }
 
+    static <T> T getReferenceByType(BeanManager manager, Class<T> type, Bean<?> bean) {
+        return getReference(manager, (Type) type, bean);
+    }
+
     @SuppressWarnings("unchecked")
     static <T> T getReference(BeanManager manager, Type type, Bean<?> bean) {
         CreationalContext<?> context = manager.createCreationalContext(bean);
