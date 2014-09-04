@@ -21,13 +21,14 @@ final class ContextNameLiteral extends AnnotationLiteral<ContextName> implements
 
     private static final long serialVersionUID = 1L;
 
-    static final ContextNameLiteral INSTANCE = new ContextNameLiteral();
+    private final String name;
 
-    private ContextNameLiteral() {
+    ContextNameLiteral(String name) {
+        this.name = name;
     }
 
     @Override
     public String value() {
-        return "";
+        return name;
     }
 }

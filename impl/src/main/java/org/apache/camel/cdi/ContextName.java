@@ -15,7 +15,6 @@
  */
 package org.apache.camel.cdi;
 
-import javax.enterprise.util.Nonbinding;
 import javax.inject.Qualifier;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -27,5 +26,5 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER})
 public @interface ContextName {
 
-    @Nonbinding String value();
+    String value();
 }
