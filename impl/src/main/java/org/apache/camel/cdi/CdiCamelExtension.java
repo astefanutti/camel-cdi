@@ -22,8 +22,10 @@ import org.apache.camel.Consume;
 import org.apache.camel.Converter;
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Produce;
+import org.apache.camel.ProducerTemplate;
 import org.apache.camel.PropertyInject;
 import org.apache.camel.RoutesBuilder;
+import org.apache.camel.component.mock.MockEndpoint;
 
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
@@ -34,9 +36,12 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.enterprise.inject.spi.ProcessBean;
+import javax.enterprise.inject.spi.ProcessBeanAttributes;
 import javax.enterprise.inject.spi.ProcessInjectionTarget;
 import javax.enterprise.inject.spi.WithAnnotations;
+import java.lang.annotation.Annotation;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -51,7 +56,7 @@ public class CdiCamelExtension implements Extension {
 
     private final Set<AnnotatedType<?>> eagerBeans = Collections.newSetFromMap(new ConcurrentHashMap<AnnotatedType<?>, Boolean>());
 
-    private final Map<String, CamelContext> camelContexts = new ConcurrentHashMap<>();
+    private final Set<Annotation> contextNames = Collections.newSetFromMap(new ConcurrentHashMap<Annotation, Boolean>());
 
     private void typeConverters(@Observes @WithAnnotations(Converter.class) ProcessAnnotatedType<?> pat) {
         typeConverters.add(pat.getAnnotatedType().getJavaClass());
@@ -61,12 +66,17 @@ public class CdiCamelExtension implements Extension {
         camelBeans.add(pat.getAnnotatedType());
     }
 
-    private void camelAnnotations(@Observes @WithAnnotations({BeanInject.class, Consume.class, EndpointInject.class, Produce.class, PropertyInject.class, }) ProcessAnnotatedType<?> pat) {
+    private void camelAnnotations(@Observes @WithAnnotations({BeanInject.class, Consume.class, EndpointInject.class, Produce.class, PropertyInject.class}) ProcessAnnotatedType<?> pat) {
         camelBeans.add(pat.getAnnotatedType());
     }
 
     private void consumeBeans(@Observes @WithAnnotations(Consume.class) ProcessAnnotatedType<?> pat) {
         eagerBeans.add(pat.getAnnotatedType());
+    }
+
+    private void camelContextNames(@Observes ProcessAnnotatedType<? extends CamelContext> pat) {
+        if (pat.getAnnotatedType().isAnnotationPresent(ContextName.class))
+            contextNames.add(pat.getAnnotatedType().getAnnotation(ContextName.class));
     }
 
     private <T> void camelBeansPostProcessor(@Observes ProcessInjectionTarget<T> pit, BeanManager manager) {
@@ -80,6 +90,14 @@ public class CdiCamelExtension implements Extension {
             hasDefaultCamelContext = true;
     }
 
+    private void mockEndpoints(@Observes ProcessBeanAttributes<MockEndpoint> pba) {
+        pba.setBeanAttributes(new BeanAttributesDecorator<>(pba.getBeanAttributes(), contextNames));
+    }
+
+    private void producerTemplates(@Observes ProcessBeanAttributes<ProducerTemplate> pba) {
+        pba.setBeanAttributes(new BeanAttributesDecorator<>(pba.getBeanAttributes(), contextNames));
+    }
+
     private void addDefaultCamelContext(@Observes AfterBeanDiscovery abd, BeanManager manager) {
         // FIXME: not working with Weld 2.x, see WELD-1729
         //if (manager.getBeans(CamelContext.class).isEmpty())
@@ -90,9 +108,11 @@ public class CdiCamelExtension implements Extension {
     private void configureCamelContext(@Observes AfterDeploymentValidation adv, BeanManager manager) {
         // Instantiate the Camel contexts
         CamelContext defaultContext = BeanManagerHelper.getReferenceByType(manager, CamelContext.class);
-        for (Bean<?> bean : manager.getBeans(CamelContext.class, AnyLiteral.INSTANCE, ContextNameLiteral.INSTANCE)) {
+        Map<String, CamelContext> camelContexts = new HashMap<>();
+        for (Bean<?> bean : manager.getBeans(CamelContext.class, AnyLiteral.INSTANCE)) {
             ContextName name = CdiCamelFactory.getFirstElementOfType(bean.getQualifiers(), ContextName.class);
-            camelContexts.put(name.value(), BeanManagerHelper.getReferenceByType(manager, CamelContext.class, bean));
+            if (name != null)
+                camelContexts.put(name.value(), BeanManagerHelper.getReferenceByType(manager, CamelContext.class, bean));
         }
 
         // Add type converter beans to the Camel contexts
@@ -121,9 +141,5 @@ public class CdiCamelExtension implements Extension {
         } catch (Exception exception) {
             adv.addDeploymentProblem(exception);
         }
-    }
-
-    CamelContext getCamelContext(String name) {
-        return camelContexts.get(name);
     }
 }

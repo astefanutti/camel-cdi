@@ -51,14 +51,6 @@ final class CdiCamelFactory {
     }
 
     @Uri("")
-    @ContextName("")
-    @Produces
-    @Typed(MockEndpoint.class)
-    private static MockEndpoint mockEndpointFromUriForContext(InjectionPoint point, CdiCamelExtension extension) {
-        return mockEndpointFromUri(point, extension.getCamelContext(getFirstElementOfType(point.getQualifiers(), ContextName.class).value()));
-    }
-
-    @Uri("")
     @Produces
     private static Endpoint endpoint(InjectionPoint point, CamelContext context) {
         String uri = getFirstElementOfType(point.getQualifiers(), Uri.class).value();
@@ -73,13 +65,6 @@ final class CdiCamelFactory {
         Endpoint endpoint = CamelContextHelper.getMandatoryEndpoint(context, uri.value());
         producerTemplate.setDefaultEndpoint(endpoint);
         return producerTemplate;
-    }
-
-    @Uri("")
-    @ContextName("")
-    @Produces
-    private static ProducerTemplate producerTemplateForContext(InjectionPoint point, CdiCamelExtension extension) {
-        return producerTemplate(point, extension.getCamelContext(getFirstElementOfType(point.getQualifiers(), ContextName.class).value()));
     }
 
     static <E, T extends E> T getFirstElementOfType(Collection<E> collection, Class<T> type) {
