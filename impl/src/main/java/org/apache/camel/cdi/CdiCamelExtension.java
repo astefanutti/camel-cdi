@@ -57,7 +57,7 @@ public class CdiCamelExtension implements Extension {
         camelBeans.add(pat.getAnnotatedType());
     }
 
-    private void camelAnnotations(@Observes @WithAnnotations({BeanInject.class, Consume.class, EndpointInject.class, Produce.class, PropertyInject.class, }) ProcessAnnotatedType<?> pat) {
+    private void camelAnnotations(@Observes @WithAnnotations({BeanInject.class, Consume.class, EndpointInject.class, Produce.class, PropertyInject.class}) ProcessAnnotatedType<?> pat) {
         camelBeans.add(pat.getAnnotatedType());
     }
 
