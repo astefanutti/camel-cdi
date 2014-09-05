@@ -25,6 +25,7 @@ import org.apache.camel.cdi.CdiCamelExtension;
 import org.apache.camel.cdi.ContextName;
 import org.apache.camel.cdi.Uri;
 import org.apache.camel.cdi.se.bean.FirstCamelContextBean;
+import org.apache.camel.cdi.se.bean.FirstCamelContextRoute;
 import org.apache.camel.cdi.se.bean.SecondCamelContextBean;
 import org.apache.camel.cdi.se.bean.UriEndpointRoute;
 import org.apache.camel.component.mock.MockEndpoint;
@@ -55,11 +56,11 @@ public class MultiCamelContextTest {
         return ShrinkWrap.create(JavaArchive.class)
             // Camel CDI
             .addPackage(CdiCamelExtension.class.getPackage())
-            // Custom Camel contexts
-            .addClass(FirstCamelContextBean.class)
-            .addClass(SecondCamelContextBean.class)
             // Test class
             .addClass(UriEndpointRoute.class)
+            .addClass(FirstCamelContextBean.class)
+            .addClass(FirstCamelContextRoute.class)
+            .addClass(SecondCamelContextBean.class)
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
@@ -94,13 +95,6 @@ public class MultiCamelContextTest {
     @Test
     @InSequence(1)
     public void configureAndStartCamelContexts() throws Exception {
-        firstCamelContext.addRoutes(new RouteBuilder() {
-            @Override
-            public void configure() throws Exception {
-                from("direct:inbound").setHeader("context").constant("first").to("mock:outbound");
-            }
-        });
-
         secondCamelContext.addRoutes(new RouteBuilder() {
             @Override
             public void configure() throws Exception {
