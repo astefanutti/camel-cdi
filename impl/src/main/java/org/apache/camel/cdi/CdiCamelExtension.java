@@ -86,8 +86,7 @@ public class CdiCamelExtension implements Extension {
 
     // FIXME: remove when WELD-1729 is fixed
     private void camelContextBean(@Observes ProcessBean<? extends CamelContext> pb) {
-        if (pb.getBean().getQualifiers().contains(DefaultLiteral.INSTANCE))
-            hasDefaultCamelContext = true;
+        hasDefaultCamelContext = true;
     }
 
     private void mockEndpoints(@Observes ProcessBeanAttributes<MockEndpoint> pba) {
@@ -100,33 +99,29 @@ public class CdiCamelExtension implements Extension {
 
     private void addDefaultCamelContext(@Observes AfterBeanDiscovery abd, BeanManager manager) {
         // FIXME: not working with Weld 2.x, see WELD-1729
-        //if (manager.getBeans(CamelContext.class).isEmpty())
+        //if (manager.getBeans(CamelContext.class, AnyLiteral.INSTANCE).isEmpty())
         if (!hasDefaultCamelContext)
             abd.addBean(new CdiCamelContextBean(manager));
     }
 
     private void configureCamelContexts(@Observes AfterDeploymentValidation adv, BeanManager manager) {
         // Instantiate the Camel contexts
-        CamelContext defaultContext = BeanManagerHelper.getReferenceByType(manager, CamelContext.class);
         Map<String, CamelContext> camelContexts = new HashMap<>();
         for (Bean<?> bean : manager.getBeans(CamelContext.class, AnyLiteral.INSTANCE)) {
             ContextName name = CdiSpiHelper.getQualifierByType(bean, ContextName.class);
-            if (name != null)
-                camelContexts.put(name.value(), BeanManagerHelper.getReferenceByType(manager, CamelContext.class, bean));
+            camelContexts.put(name != null ? name.value() : "camel-cdi", BeanManagerHelper.getReferenceByType(manager, CamelContext.class, bean));
         }
 
         // Add type converter beans to the Camel contexts
         CdiTypeConverterLoader loader = new CdiTypeConverterLoader();
-        for (Class<?> typeConverter : typeConverters) {
-            loader.loadConverterMethods(defaultContext.getTypeConverterRegistry(), typeConverter);
+        for (Class<?> typeConverter : typeConverters)
             for (CamelContext context : camelContexts.values())
                 loader.loadConverterMethods(context.getTypeConverterRegistry(), typeConverter);
-        }
 
         // Instantiate route builders and add them to the corresponding Camel contexts
         for (Bean<?> bean : manager.getBeans(RoutesBuilder.class, AnyLiteral.INSTANCE)) {
             ContextName name = CdiSpiHelper.getQualifierByType(bean, ContextName.class);
-            addRouteToContext(bean, name != null ? camelContexts.get(name.value()) : defaultContext, manager, adv);
+            addRouteToContext(bean, camelContexts.get(name != null ? name.value() : "camel-cdi"), manager, adv);
         }
 
         // Trigger eager beans instantiation

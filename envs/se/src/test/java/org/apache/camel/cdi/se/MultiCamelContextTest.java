@@ -24,6 +24,7 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.cdi.CdiCamelExtension;
 import org.apache.camel.cdi.ContextName;
 import org.apache.camel.cdi.Uri;
+import org.apache.camel.cdi.se.bean.DefaultCamelContextBean;
 import org.apache.camel.cdi.se.bean.FirstCamelContextBean;
 import org.apache.camel.cdi.se.bean.FirstCamelContextRoute;
 import org.apache.camel.cdi.se.bean.SecondCamelContextBean;
@@ -57,6 +58,7 @@ public class MultiCamelContextTest {
             // Camel CDI
             .addPackage(CdiCamelExtension.class.getPackage())
             // Test class
+            .addClass(DefaultCamelContextBean.class)
             .addClass(UriEndpointRoute.class)
             .addClass(FirstCamelContextBean.class)
             .addClass(FirstCamelContextRoute.class)
@@ -66,7 +68,8 @@ public class MultiCamelContextTest {
     }
 
     @Inject
-    CamelContext defaultCamelContext;
+    // Support bean class injection support for custom beans
+    DefaultCamelContextBean defaultCamelContext;
 
     @Inject @Uri("direct:inbound")
     private ProducerTemplate defaultInbound;
@@ -83,7 +86,8 @@ public class MultiCamelContextTest {
     @Inject @ContextName("first") @Uri("mock:outbound")
     private MockEndpoint firstOutbound;
 
-    @Inject @ContextName("second")
+    @Inject
+    @ContextName("second")
     CamelContext secondCamelContext;
 
     @Inject @ContextName("second") @Uri("direct:inbound")
