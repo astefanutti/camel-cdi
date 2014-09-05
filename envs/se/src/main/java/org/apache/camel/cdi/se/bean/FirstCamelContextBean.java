@@ -24,14 +24,14 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 
 @ApplicationScoped
-@ContextName("multi")
-public class MultiCamelContextBean extends CdiCamelContext {
+@ContextName("first")
+public class FirstCamelContextBean extends CdiCamelContext {
 
-    MultiCamelContextBean() {
+    FirstCamelContextBean() {
     }
 
     @Inject
-    private MultiCamelContextBean(BeanManager beanManager) {
+    private FirstCamelContextBean(BeanManager beanManager) {
         super(beanManager);
     }
 }

@@ -21,57 +21,59 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.camel.TypeConverter;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.util.CamelContextHelper;
-import org.apache.camel.util.ObjectHelper;
 
+import javax.enterprise.inject.Any;
+import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Typed;
 import javax.enterprise.inject.spi.InjectionPoint;
-import java.util.Collection;
 
 final class CdiCamelFactory {
 
     @Produces
-    private static TypeConverter typeConverter(CamelContext context) {
+    private static TypeConverter typeConverter(InjectionPoint ip, @Any Instance<CamelContext> instance) {
+        ContextName name = CdiSpiHelper.getQualifierByType(ip, ContextName.class);
+        CamelContext context = instance.select(name != null ? name : DefaultLiteral.INSTANCE).get();
         return context.getTypeConverter();
     }
 
     @Produces
     @Typed(MockEndpoint.class)
-    private static MockEndpoint mockEndpointFromMember(InjectionPoint point, CamelContext context) {
-        String uri = "mock:" + point.getMember().getName();
+    private static MockEndpoint mockEndpointFromMember(InjectionPoint ip, @Any Instance<CamelContext> instance) {
+        ContextName name = CdiSpiHelper.getQualifierByType(ip, ContextName.class);
+        CamelContext context = instance.select(name != null ? name : DefaultLiteral.INSTANCE).get();
+        String uri = "mock:" + ip.getMember().getName();
         return CamelContextHelper.getMandatoryEndpoint(context, uri, MockEndpoint.class);
     }
 
     @Uri("")
     @Produces
     @Typed(MockEndpoint.class)
-    private static MockEndpoint mockEndpointFromUri(InjectionPoint point, CamelContext context) {
-        String uri = getFirstElementOfType(point.getQualifiers(), Uri.class).value();
+    private static MockEndpoint mockEndpointFromUri(InjectionPoint ip, @Any Instance<CamelContext> instance) {
+        ContextName name = CdiSpiHelper.getQualifierByType(ip, ContextName.class);
+        CamelContext context = instance.select(name != null ? name : DefaultLiteral.INSTANCE).get();
+        String uri = CdiSpiHelper.getQualifierByType(ip, Uri.class).value();
         return CamelContextHelper.getMandatoryEndpoint(context, uri, MockEndpoint.class);
     }
 
     @Uri("")
     @Produces
-    private static Endpoint endpoint(InjectionPoint point, CamelContext context) {
-        String uri = getFirstElementOfType(point.getQualifiers(), Uri.class).value();
+    private static Endpoint endpoint(InjectionPoint ip, @Any Instance<CamelContext> instance) {
+        ContextName name = CdiSpiHelper.getQualifierByType(ip, ContextName.class);
+        CamelContext context = instance.select(name != null ? name : DefaultLiteral.INSTANCE).get();
+        String uri = CdiSpiHelper.getQualifierByType(ip, Uri.class).value();
         return CamelContextHelper.getMandatoryEndpoint(context, uri);
     }
 
     @Uri("")
     @Produces
-    private static ProducerTemplate producerTemplate(InjectionPoint point, CamelContext context) {
-        Uri uri = getFirstElementOfType(point.getQualifiers(), Uri.class);
+    private static ProducerTemplate producerTemplate(InjectionPoint ip, @Any Instance<CamelContext> instance) {
+        ContextName name = CdiSpiHelper.getQualifierByType(ip, ContextName.class);
+        CamelContext context = instance.select(name != null ? name : DefaultLiteral.INSTANCE).get();
         ProducerTemplate producerTemplate = context.createProducerTemplate();
-        Endpoint endpoint = CamelContextHelper.getMandatoryEndpoint(context, uri.value());
+        String uri = CdiSpiHelper.getQualifierByType(ip, Uri.class).value();
+        Endpoint endpoint = CamelContextHelper.getMandatoryEndpoint(context, uri);
         producerTemplate.setDefaultEndpoint(endpoint);
         return producerTemplate;
-    }
-
-    static <E, T extends E> T getFirstElementOfType(Collection<E> collection, Class<T> type) {
-        for (E item : collection)
-            if ((item != null) && type.isAssignableFrom(item.getClass()))
-                return ObjectHelper.cast(type, item);
-
-        return null;
     }
 }

@@ -105,12 +105,12 @@ public class CdiCamelExtension implements Extension {
             abd.addBean(new CdiCamelContextBean(manager));
     }
 
-    private void configureCamelContext(@Observes AfterDeploymentValidation adv, BeanManager manager) {
+    private void configureCamelContexts(@Observes AfterDeploymentValidation adv, BeanManager manager) {
         // Instantiate the Camel contexts
         CamelContext defaultContext = BeanManagerHelper.getReferenceByType(manager, CamelContext.class);
         Map<String, CamelContext> camelContexts = new HashMap<>();
         for (Bean<?> bean : manager.getBeans(CamelContext.class, AnyLiteral.INSTANCE)) {
-            ContextName name = CdiCamelFactory.getFirstElementOfType(bean.getQualifiers(), ContextName.class);
+            ContextName name = CdiSpiHelper.getQualifierByType(bean, ContextName.class);
             if (name != null)
                 camelContexts.put(name.value(), BeanManagerHelper.getReferenceByType(manager, CamelContext.class, bean));
         }
@@ -125,7 +125,7 @@ public class CdiCamelExtension implements Extension {
 
         // Instantiate route builders and add them to the corresponding Camel contexts
         for (Bean<?> bean : manager.getBeans(RoutesBuilder.class, AnyLiteral.INSTANCE)) {
-            ContextName name = CdiCamelFactory.getFirstElementOfType(bean.getQualifiers(), ContextName.class);
+            ContextName name = CdiSpiHelper.getQualifierByType(bean, ContextName.class);
             addRouteToContext(bean, name != null ? camelContexts.get(name.value()) : defaultContext, manager, adv);
         }
 
