@@ -69,7 +69,7 @@ public class MultiCamelContextTest {
 
     @Inject
     // Support bean class injection support for custom beans
-    DefaultCamelContextBean defaultCamelContext;
+    private DefaultCamelContextBean defaultCamelContext;
 
     @Inject @Uri("direct:inbound")
     private ProducerTemplate defaultInbound;
@@ -78,7 +78,7 @@ public class MultiCamelContextTest {
     private MockEndpoint defaultOutbound;
 
     @Inject @ContextName("first")
-    CamelContext firstCamelContext;
+    private CamelContext firstCamelContext;
 
     @Inject @ContextName("first") @Uri("direct:inbound")
     private ProducerTemplate firstInbound;
@@ -86,9 +86,8 @@ public class MultiCamelContextTest {
     @Inject @ContextName("first") @Uri("mock:outbound")
     private MockEndpoint firstOutbound;
 
-    @Inject
-    @ContextName("second")
-    CamelContext secondCamelContext;
+    @Inject @ContextName("second")
+    private CamelContext secondCamelContext;
 
     @Inject @ContextName("second") @Uri("direct:inbound")
     private ProducerTemplate secondInbound;
