@@ -79,7 +79,7 @@ final class CdiCamelContextBean implements Bean<CdiCamelContext>, PassivationCap
 
     @Override
     public String getName() {
-        return "cdi-camel-context";
+        return "camel-cdi";
     }
 
     @Override
