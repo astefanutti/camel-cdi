@@ -68,7 +68,7 @@ public class MultiCamelContextTest {
     }
 
     @Inject
-    // Support bean class injection support for custom beans
+    // Support bean class injection for custom beans
     private DefaultCamelContextBean defaultCamelContext;
 
     @Inject @Uri("direct:inbound")
@@ -97,6 +97,18 @@ public class MultiCamelContextTest {
 
     @Test
     @InSequence(1)
+    public void verifyCamelContexts() {
+        assertThat(defaultCamelContext.getName(), is(equalTo("camel-cdi")));
+        assertThat(firstCamelContext.getName(), is(equalTo("first")));
+        assertThat(secondCamelContext.getName(), is(equalTo("second")));
+
+        assertThat(defaultOutbound.getCamelContext().getName(), is(equalTo(defaultCamelContext.getName())));
+        assertThat(firstOutbound.getCamelContext().getName(), is(equalTo(firstCamelContext.getName())));
+        assertThat(secondOutbound.getCamelContext().getName(), is(equalTo(secondCamelContext.getName())));
+    }
+
+    @Test
+    @InSequence(2)
     public void configureAndStartCamelContexts() throws Exception {
         secondCamelContext.addRoutes(new RouteBuilder() {
             @Override
@@ -111,19 +123,11 @@ public class MultiCamelContextTest {
     }
 
     @Test
-    @InSequence(2)
-    public void verifyCamelContexts() {
-        assertThat(defaultOutbound.getCamelContext().getName(), is(equalTo(defaultCamelContext.getName())));
-        assertThat(firstOutbound.getCamelContext().getName(), is(equalTo(firstCamelContext.getName())));
-        assertThat(secondOutbound.getCamelContext().getName(), is(equalTo(secondCamelContext.getName())));
-    }
-
-    @Test
     @InSequence(3)
     public void sendMessageToDefaultCamelContextInbound() throws InterruptedException {
         defaultOutbound.expectedMessageCount(1);
         defaultOutbound.expectedBodiesReceived("test-default");
-        defaultOutbound.message(0).exchange().matches(fromCamelContext(defaultCamelContext));
+        defaultOutbound.message(0).exchange().matches(fromCamelContext("camel-cdi"));
 
         defaultInbound.sendBody("test-default");
 
@@ -136,7 +140,7 @@ public class MultiCamelContextTest {
         firstOutbound.expectedMessageCount(1);
         firstOutbound.expectedBodiesReceived("test-first");
         firstOutbound.expectedHeaderReceived("context", "first");
-        firstOutbound.message(0).exchange().matches(fromCamelContext(firstCamelContext));
+        firstOutbound.message(0).exchange().matches(fromCamelContext("first"));
 
         firstInbound.sendBody("test-first");
 
@@ -149,7 +153,7 @@ public class MultiCamelContextTest {
         secondOutbound.expectedMessageCount(1);
         secondOutbound.expectedBodiesReceived("test-second");
         secondOutbound.expectedHeaderReceived("context", "second");
-        secondOutbound.message(0).exchange().matches(fromCamelContext(secondCamelContext));
+        secondOutbound.message(0).exchange().matches(fromCamelContext("second"));
 
         secondInbound.sendBody("test-second");
 
@@ -164,11 +168,11 @@ public class MultiCamelContextTest {
         secondCamelContext.stop();
     }
 
-    private static Expression fromCamelContext(final CamelContext context) {
+    private static Expression fromCamelContext(final String name) {
         return new PredicateToExpressionAdapter(new Predicate() {
             @Override
             public boolean matches(Exchange exchange) {
-                return exchange.getContext().getName().equals(context.getName());
+                return exchange.getContext().getName().equals(name);
             }
         });
     }

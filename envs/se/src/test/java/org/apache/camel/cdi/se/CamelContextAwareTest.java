@@ -17,7 +17,6 @@ package org.apache.camel.cdi.se;
 
 import org.apache.camel.cdi.CdiCamelExtension;
 import org.apache.camel.cdi.se.bean.CamelContextAwareBean;
-import org.apache.camel.impl.DefaultCamelContextNameStrategy;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -29,6 +28,7 @@ import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -38,9 +38,6 @@ public class CamelContextAwareTest {
 
     @Deployment
     public static Archive<?> deployment() {
-        // Work-around to reset the name strategy static counter as the tests run in a single JVM
-        DefaultCamelContextNameStrategy.setCounter(0);
-
         return ShrinkWrap.create(JavaArchive.class)
             // Camel CDI
             .addPackage(CdiCamelExtension.class.getPackage())
@@ -58,6 +55,6 @@ public class CamelContextAwareTest {
         assertThat(bean.getCamelContext(), is(notNullValue()));
         // FIXME: find a way to avoid Camel context naming strategy incremented
         // when proxies are created
-        //assertThat(bean.getCamelContext().getName(), is(equalTo("camel-1")));
+        assertThat(bean.getCamelContext().getName(), is(equalTo("camel-cdi")));
     }
 }

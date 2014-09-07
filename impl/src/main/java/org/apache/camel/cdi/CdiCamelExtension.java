@@ -26,6 +26,7 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.camel.PropertyInject;
 import org.apache.camel.RoutesBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
+import org.apache.camel.impl.ExplicitCamelContextNameStrategy;
 
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
@@ -109,7 +110,9 @@ public class CdiCamelExtension implements Extension {
         Map<String, CamelContext> camelContexts = new HashMap<>();
         for (Bean<?> bean : manager.getBeans(CamelContext.class, AnyLiteral.INSTANCE)) {
             ContextName name = CdiSpiHelper.getQualifierByType(bean, ContextName.class);
-            camelContexts.put(name != null ? name.value() : "camel-cdi", BeanManagerHelper.getReferenceByType(manager, CamelContext.class, bean));
+            CamelContext context = BeanManagerHelper.getReferenceByType(manager, CamelContext.class, bean);
+            context.setNameStrategy(new ExplicitCamelContextNameStrategy(name != null ? name.value() : "camel-cdi"));
+            camelContexts.put(context.getName(), context);
         }
 
         // Add type converter beans to the Camel contexts
