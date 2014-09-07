@@ -26,6 +26,7 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.camel.PropertyInject;
 import org.apache.camel.RoutesBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
+import org.apache.camel.impl.DefaultCamelContextNameStrategy;
 import org.apache.camel.impl.ExplicitCamelContextNameStrategy;
 
 import javax.enterprise.event.Observes;
@@ -34,6 +35,7 @@ import javax.enterprise.inject.spi.AfterDeploymentValidation;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.DeploymentException;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.enterprise.inject.spi.ProcessBean;
@@ -106,12 +108,25 @@ public class CdiCamelExtension implements Extension {
     }
 
     private void configureCamelContexts(@Observes AfterDeploymentValidation adv, BeanManager manager) {
+        String defaultContextName = "camel-cdi";
+
         // Instantiate the Camel contexts
         Map<String, CamelContext> camelContexts = new HashMap<>();
         for (Bean<?> bean : manager.getBeans(CamelContext.class, AnyLiteral.INSTANCE)) {
             ContextName name = CdiSpiHelper.getQualifierByType(bean, ContextName.class);
-            CamelContext context = BeanManagerHelper.getReferenceByType(manager, CamelContext.class, bean);
-            context.setNameStrategy(new ExplicitCamelContextNameStrategy(name != null ? name.value() : "camel-cdi"));
+            CamelContext context;
+            if (name != null) {
+                context = BeanManagerHelper.getReferenceByType(manager, CamelContext.class, name);
+                // Enforce context name based on the @ContextName qualifier
+                context.setNameStrategy(new ExplicitCamelContextNameStrategy(name.value()));
+            } else {
+                context = BeanManagerHelper.getReferenceByType(manager, CamelContext.class, DefaultLiteral.INSTANCE);
+                // Do not override custom name for the @Default context
+                if (context.getNameStrategy() instanceof DefaultCamelContextNameStrategy)
+                    context.setNameStrategy(new ExplicitCamelContextNameStrategy(defaultContextName));
+                else
+                    defaultContextName = context.getName();
+            }
             camelContexts.put(context.getName(), context);
         }
 
@@ -124,7 +139,11 @@ public class CdiCamelExtension implements Extension {
         // Instantiate route builders and add them to the corresponding Camel contexts
         for (Bean<?> bean : manager.getBeans(RoutesBuilder.class, AnyLiteral.INSTANCE)) {
             ContextName name = CdiSpiHelper.getQualifierByType(bean, ContextName.class);
-            addRouteToContext(bean, camelContexts.get(name != null ? name.value() : "camel-cdi"), manager, adv);
+            CamelContext context = camelContexts.get(name != null ? name.value() : defaultContextName);
+            if (context != null)
+                addRouteToContext(bean, context, manager, adv);
+            else
+                adv.addDeploymentProblem(new DeploymentException("No corresponding Camel context found for RouteBuilder bean [" + bean + "]"));
         }
 
         // Trigger eager beans instantiation

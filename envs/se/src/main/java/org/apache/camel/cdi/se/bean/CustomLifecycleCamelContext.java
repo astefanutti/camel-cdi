@@ -34,6 +34,7 @@ public class CustomLifecycleCamelContext extends CdiCamelContext {
     @Inject
     private CustomLifecycleCamelContext(BeanManager beanManager) {
         super(beanManager);
+        setName("custom");
     }
 
     @Override
