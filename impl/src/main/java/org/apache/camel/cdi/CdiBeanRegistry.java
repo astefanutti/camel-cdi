@@ -36,20 +36,16 @@ final class CdiBeanRegistry implements Registry {
 
     @Override
     public Object lookupByName(String name) {
-        ObjectHelper.notEmpty(name, "name");
         return BeanManagerHelper.getReferenceByName(manager, name, Object.class);
     }
 
     @Override
     public <T> T lookupByNameAndType(String name, Class<T> type) {
-        ObjectHelper.notEmpty(name, "name");
-        ObjectHelper.notNull(type, "type");
         return BeanManagerHelper.getReferenceByName(manager, name, type);
     }
 
     @Override
     public <T> Map<String, T> findByTypeWithName(Class<T> type) {
-        ObjectHelper.notNull(type, "type");
         Map<String, T> references = new HashMap<>();
         for (Bean<?> bean : manager.getBeans(type, AnyLiteral.INSTANCE))
             // FIXME: check if the bean has the @Named qualifier instead
@@ -61,7 +57,6 @@ final class CdiBeanRegistry implements Registry {
 
     @Override
     public <T> Set<T> findByType(Class<T> type) {
-        ObjectHelper.notNull(type, "type");
         return BeanManagerHelper.getReferencesByType(manager, type, AnyLiteral.INSTANCE);
     }
 
