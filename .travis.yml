@@ -9,7 +9,7 @@ install:
 
 script:
   - mvn test -Pjacoco -Pweld
-# disabled until https://issues.apache.org/jira/browse/OWB-977 is properly implemented
+# disabled until issue with repeatable qualifiers is worked out
 # - mvn test -Pjacoco -Powb -pl envs/se
   - mvn test -Pjacoco -Pwildfly -pl envs/ee
 

@@ -17,15 +17,15 @@ package org.apache.camel.cdi.se;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
-import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.cdi.CdiCamelExtension;
 import org.apache.camel.cdi.ContextName;
 import org.apache.camel.cdi.Uri;
 import org.apache.camel.cdi.se.bean.DefaultCamelContextBean;
+import org.apache.camel.cdi.se.bean.EndpointInjectRoute;
 import org.apache.camel.cdi.se.bean.FirstCamelContextBean;
-import org.apache.camel.cdi.se.bean.FirstCamelContextRoute;
+import org.apache.camel.cdi.se.bean.FirstCamelContextEndpointInjectRoute;
 import org.apache.camel.cdi.se.bean.SecondCamelContextBean;
-import org.apache.camel.cdi.se.bean.UriEndpointRoute;
+import org.apache.camel.cdi.se.bean.SecondCamelContextEndpointInjectRoute;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -42,31 +42,28 @@ import java.util.concurrent.TimeUnit;
 
 import static org.apache.camel.cdi.se.expression.ExchangeExpression.fromCamelContext;
 import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
-public class MultiCamelContextTest {
+public class MultiContextEndpointInjectTest {
 
     @Deployment
     public static Archive<?> deployment() {
         return ShrinkWrap.create(JavaArchive.class)
             // Camel CDI
             .addPackage(CdiCamelExtension.class.getPackage())
-            // Test class
+            // Test classes
             .addClass(DefaultCamelContextBean.class)
-            .addClass(UriEndpointRoute.class)
+            .addClass(EndpointInjectRoute.class)
             .addClass(FirstCamelContextBean.class)
-            .addClass(FirstCamelContextRoute.class)
+            .addClass(FirstCamelContextEndpointInjectRoute.class)
             .addClass(SecondCamelContextBean.class)
+            .addClass(SecondCamelContextEndpointInjectRoute.class)
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Inject
-    // Support bean class injection for custom beans
-    private DefaultCamelContextBean defaultCamelContext;
+    private CamelContext defaultCamelContext;
 
     @Inject @Uri("direct:inbound")
     private ProducerTemplate defaultInbound;
@@ -94,33 +91,14 @@ public class MultiCamelContextTest {
 
     @Test
     @InSequence(1)
-    public void verifyCamelContexts() {
-        assertThat(defaultCamelContext.getName(), is(equalTo("camel-cdi")));
-        assertThat(firstCamelContext.getName(), is(equalTo("first")));
-        assertThat(secondCamelContext.getName(), is(equalTo("second")));
-
-        assertThat(defaultOutbound.getCamelContext().getName(), is(equalTo(defaultCamelContext.getName())));
-        assertThat(firstOutbound.getCamelContext().getName(), is(equalTo(firstCamelContext.getName())));
-        assertThat(secondOutbound.getCamelContext().getName(), is(equalTo(secondCamelContext.getName())));
-    }
-
-    @Test
-    @InSequence(2)
-    public void configureAndStartCamelContexts() throws Exception {
-        secondCamelContext.addRoutes(new RouteBuilder() {
-            @Override
-            public void configure() throws Exception {
-                from("direct:inbound").setHeader("context").constant("second").to("mock:outbound");
-            }
-        });
-
+    public void startCamelContexts() throws Exception {
         defaultCamelContext.start();
         firstCamelContext.start();
         secondCamelContext.start();
     }
 
     @Test
-    @InSequence(3)
+    @InSequence(2)
     public void sendMessageToDefaultCamelContextInbound() throws InterruptedException {
         defaultOutbound.expectedMessageCount(1);
         defaultOutbound.expectedBodiesReceived("test-default");
@@ -132,7 +110,7 @@ public class MultiCamelContextTest {
     }
 
     @Test
-    @InSequence(4)
+    @InSequence(3)
     public void sendMessageToFirstCamelContextInbound() throws InterruptedException {
         firstOutbound.expectedMessageCount(1);
         firstOutbound.expectedBodiesReceived("test-first");
@@ -145,7 +123,7 @@ public class MultiCamelContextTest {
     }
 
     @Test
-    @InSequence(5)
+    @InSequence(4)
     public void sendMessageToSecondCamelContextInbound() throws InterruptedException {
         secondOutbound.expectedMessageCount(1);
         secondOutbound.expectedBodiesReceived("test-second");
@@ -158,7 +136,7 @@ public class MultiCamelContextTest {
     }
 
     @Test
-    @InSequence(6)
+    @InSequence(5)
     public void stopCamelContexts() throws Exception {
         defaultCamelContext.stop();
         firstCamelContext.stop();
