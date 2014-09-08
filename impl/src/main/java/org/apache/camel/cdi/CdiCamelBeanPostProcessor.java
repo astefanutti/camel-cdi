@@ -45,24 +45,20 @@ final class CdiCamelBeanPostProcessor extends DefaultCamelBeanPostProcessor {
         ReflectionHelper.doWithFields(bean.getClass(), new ReflectionHelper.FieldCallback() {
             public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
                 PropertyInject propertyInject = field.getAnnotation(PropertyInject.class);
-                if (propertyInject != null && getPostProcessorHelper().matchContext(propertyInject.context())) {
+                if (propertyInject != null && getPostProcessorHelper().matchContext(propertyInject.context()))
                     injectFieldProperty(field, propertyInject.value(), propertyInject.defaultValue(), bean, beanName);
-                }
 
                 BeanInject beanInject = field.getAnnotation(BeanInject.class);
-                if (beanInject != null && getPostProcessorHelper().matchContext(beanInject.context())) {
+                if (beanInject != null && getPostProcessorHelper().matchContext(beanInject.context()))
                     injectFieldBean(field, beanInject.value(), bean, beanName);
-                }
 
                 EndpointInject endpointInject = field.getAnnotation(EndpointInject.class);
-                if (endpointInject != null) {
+                if (endpointInject != null)
                     injectField(field, endpointInject.uri(), endpointInject.ref(), endpointInject.property(), endpointInject.context(), bean, beanName);
-                }
 
                 Produce produce = field.getAnnotation(Produce.class);
-                if (produce != null && getPostProcessorHelper().matchContext(produce.context())) {
-                    injectField(field, produce.uri(), produce.ref(), produce.property(), bean, beanName);
-                }
+                if (produce != null)
+                    injectField(field, produce.uri(), produce.ref(), produce.property(), produce.context(), bean, beanName);
             }
         });
     }
