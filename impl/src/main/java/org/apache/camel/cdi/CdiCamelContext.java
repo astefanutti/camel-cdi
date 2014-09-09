@@ -15,6 +15,7 @@
  */
 package org.apache.camel.cdi;
 
+import org.apache.camel.Component;
 import org.apache.camel.impl.DefaultCamelContext;
 
 import javax.enterprise.inject.Vetoed;
@@ -29,9 +30,12 @@ public class CdiCamelContext extends DefaultCamelContext {
 
     @Inject
     protected CdiCamelContext(BeanManager beanManager) {
-        setRegistry(new CdiBeanRegistry(beanManager));
+        setRegistry(new CdiBeanRegistry(beanManager, this));
         setInjector(new CdiInjector(getInjector(), beanManager));
-        // Explicitly load the properties component as NPE can be thrown when the Camel context is interacted with but not started yet
-        lookupPropertiesComponent();
+    }
+
+
+    Component loadPropertiesComponent() {
+        return super.lookupPropertiesComponent();
     }
 }

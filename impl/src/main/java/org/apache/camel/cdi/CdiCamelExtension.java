@@ -112,21 +112,23 @@ public class CdiCamelExtension implements Extension {
 
         // Instantiate the Camel contexts
         Map<String, CamelContext> camelContexts = new HashMap<>();
-        for (Bean<?> bean : manager.getBeans(CamelContext.class, AnyLiteral.INSTANCE)) {
+        for (Bean<?> bean : manager.getBeans(CdiCamelContext.class, AnyLiteral.INSTANCE)) {
             ContextName name = CdiSpiHelper.getQualifierByType(bean, ContextName.class);
-            CamelContext context;
+            CdiCamelContext context;
             if (name != null) {
-                context = BeanManagerHelper.getReferenceByType(manager, CamelContext.class, name);
+                context = BeanManagerHelper.getReferenceByType(manager, CdiCamelContext.class, name);
                 // Enforce context name based on the @ContextName qualifier
                 context.setNameStrategy(new ExplicitCamelContextNameStrategy(name.value()));
             } else {
-                context = BeanManagerHelper.getReferenceByType(manager, CamelContext.class, DefaultLiteral.INSTANCE);
+                context = BeanManagerHelper.getReferenceByType(manager, CdiCamelContext.class, DefaultLiteral.INSTANCE);
                 // Do not override custom name for the @Default context
                 if (context.getNameStrategy() instanceof DefaultCamelContextNameStrategy)
                     context.setNameStrategy(new ExplicitCamelContextNameStrategy(defaultContextName));
                 else
                     defaultContextName = context.getName();
             }
+            // Explicitly load the properties component as NPE can be thrown when the Camel context is interacted with but not started yet
+            context.loadPropertiesComponent();
             camelContexts.put(context.getName(), context);
         }
 

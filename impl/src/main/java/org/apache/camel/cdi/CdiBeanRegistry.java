@@ -15,8 +15,8 @@
  */
 package org.apache.camel.cdi;
 
+import org.apache.camel.CamelContext;
 import org.apache.camel.spi.Registry;
-import org.apache.camel.util.ObjectHelper;
 
 import javax.enterprise.inject.Vetoed;
 import javax.enterprise.inject.spi.Bean;
@@ -30,8 +30,11 @@ final class CdiBeanRegistry implements Registry {
 
     private final BeanManager manager;
 
-    CdiBeanRegistry(BeanManager manager) {
+    private final CamelContext context;
+
+    CdiBeanRegistry(BeanManager manager, CamelContext context) {
         this.manager = manager;
+        this.context = context;
     }
 
     @Override
@@ -41,7 +44,8 @@ final class CdiBeanRegistry implements Registry {
 
     @Override
     public <T> T lookupByNameAndType(String name, Class<T> type) {
-        return BeanManagerHelper.getReferenceByName(manager, name, type);
+        T reference = BeanManagerHelper.getReferenceByName(manager, context.getName() + ":" + name, type);
+        return reference != null ? reference : BeanManagerHelper.getReferenceByName(manager, name, type);
     }
 
     @Override

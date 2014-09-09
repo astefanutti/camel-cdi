@@ -15,21 +15,15 @@
  */
 package org.apache.camel.cdi;
 
-import org.apache.camel.component.properties.DefaultPropertiesParser;
 import org.apache.camel.component.properties.PropertiesComponent;
 
-import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.Typed;
-import javax.inject.Inject;
-import javax.inject.Named;
+import javax.enterprise.inject.Vetoed;
 import java.util.Properties;
 
-@Named("properties")
-@Typed(PropertiesComponent.class)
-class CdiPropertiesComponent extends PropertiesComponent {
+@Vetoed
+public final class CdiPropertiesComponent extends PropertiesComponent {
 
-    @Inject
-    CdiPropertiesComponent(@Config Instance<Properties> properties) {
-        setPropertiesParser(properties.isUnsatisfied() ? new DefaultPropertiesParser() : new CdiPropertiesParser(properties.get()));
+    public CdiPropertiesComponent(Properties properties) {
+        setPropertiesParser(new CdiPropertiesParser(properties));
     }
 }

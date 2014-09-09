@@ -16,9 +16,10 @@
 package org.apache.camel.cdi.se;
 
 import org.apache.camel.cdi.CdiCamelExtension;
-import org.apache.camel.cdi.Config;
+import org.apache.camel.cdi.CdiPropertiesComponent;
 import org.apache.camel.cdi.se.bean.BeanInjectBean;
 import org.apache.camel.cdi.se.bean.PropertyInjectBean;
+import org.apache.camel.component.properties.PropertiesComponent;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -28,8 +29,10 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.Properties;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -52,12 +55,13 @@ public class BeanInjectTest {
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
-    @Config
     @Produces
-    private static Properties configuration() {
+    @ApplicationScoped
+    @Named("properties")
+    private static PropertiesComponent configuration() {
         Properties configuration = new Properties();
         configuration.put("property", "value");
-        return configuration;
+        return new CdiPropertiesComponent(configuration);
     }
 
     @Inject

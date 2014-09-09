@@ -19,7 +19,7 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.cdi.CdiCamelExtension;
-import org.apache.camel.cdi.Config;
+import org.apache.camel.cdi.CdiPropertiesComponent;
 import org.apache.camel.cdi.ContextName;
 import org.apache.camel.cdi.Uri;
 import org.apache.camel.cdi.se.bean.DefaultCamelContextBean;
@@ -29,6 +29,7 @@ import org.apache.camel.cdi.se.bean.PropertyInjectBean;
 import org.apache.camel.cdi.se.bean.SecondCamelContextBean;
 import org.apache.camel.cdi.se.bean.SecondCamelContextPropertyInjectBean;
 import org.apache.camel.component.mock.MockEndpoint;
+import org.apache.camel.component.properties.PropertiesComponent;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
@@ -39,8 +40,10 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
@@ -95,22 +98,23 @@ public class MultiContextPropertyInjectTest {
     @Inject @ContextName("second") @Uri("mock:out")
     private MockEndpoint secondOutbound;
 
-    @Config
     @Produces
-    private static Properties defaultCamelContextConfiguration() {
+    @ApplicationScoped
+    @Named("properties")
+    private static PropertiesComponent defaultCamelContextConfiguration() {
         Properties configuration = new Properties();
         configuration.put("property", "default");
-        return configuration;
+        return new CdiPropertiesComponent(configuration);
     }
 
-//    @Config
-//    @Produces
-//    @ContextName("second")
-//    private static Properties secondCamelContextConfiguration() {
-//        Properties configuration = new Properties();
-//        configuration.put("property", "second");
-//        return configuration;
-//    }
+    @Produces
+    @ApplicationScoped
+    @Named("second:properties")
+    private static PropertiesComponent secondCamelContextConfiguration() {
+        Properties configuration = new Properties();
+        configuration.put("property", "second");
+        return new CdiPropertiesComponent(configuration);
+    }
 
     @Test
     @InSequence(1)
@@ -182,7 +186,7 @@ public class MultiContextPropertyInjectTest {
     public void sendMessageToSecondCamelContextInbound() throws InterruptedException {
         secondOutbound.expectedMessageCount(1);
         secondOutbound.expectedBodiesReceived("test");
-        secondOutbound.expectedHeaderReceived("header", "default");
+        secondOutbound.expectedHeaderReceived("header", "second");
 
         secondInbound.sendBody("test");
 
@@ -192,7 +196,7 @@ public class MultiContextPropertyInjectTest {
     @Test
     @InSequence(7)
     public void retrieveReferenceFromSecondCamelContext(SecondCamelContextPropertyInjectBean bean) {
-        assertThat(bean.getProperty(), is(equalTo("default")));
+        assertThat(bean.getProperty(), is(equalTo("second")));
     }
 
     @Test
