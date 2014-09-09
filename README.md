@@ -62,9 +62,9 @@ This project fixes the following issues currently opened in the Camel CDI backlo
 
 ### Improved Features
 
-###### Multiple Camel Contexts
+##### Multiple Camel Contexts
 
-The official Camel CDI declares the `ContextName` annotation that can be used to declare multiple `CamelContext` instances. However that annotation is not declared as a CDI qualifier and does not fit nicely in the CDI programming model as discussed in [CAMEL-5566][]. That improved version alleviates that concerns so that the `ContextName` annotation can be used as a proper CDI qualifier, e.g.:
+The official Camel CDI declares the `ContextName` annotation that can be used to declare multiple `CamelContext` instances. However that annotation is not declared as a CDI qualifier and does not fit nicely in the CDI programming model as discussed in [CAMEL-5566][]. That improved version alleviates that concern so that the `ContextName` annotation can be used as a proper CDI qualifier, e.g.:
 
 ```java
 @ApplicationScoped
@@ -86,7 +86,7 @@ And then:
 CamelContext firstCamelContext;
 ```
 
-###### Camel Beans Integration
+##### Camel Beans Integration
 
 The [bean integration][] support with multiple Camel contexts has been improved so that beans and components can be declared per Camel context.
 
@@ -98,7 +98,8 @@ class FirstCamelContextRoute extends RouteBuilder {
 
     @Override
     public void configure() {
-        // Lookup CDI bean with qualifier @ContextName("first") then @Default if any
+        // Lookup CDI bean with qualifier @ContextName("first")
+        // Then @Default if any
         from("...").bean(Bean.class);
     }
 }
@@ -112,7 +113,8 @@ class FirstCamelContextRoute extends RouteBuilder {
 
     @Override
     public void configure() {
-        // Lookup CDI bean with qualifier @Named("first:beanName") then @Named("beanName") if any
+        // Lookup CDI bean with qualifier @Named("first:beanName")
+        // Then @Named("beanName") if any
         from("...").beanRef("beanName");
     }
 }
@@ -123,7 +125,7 @@ class FirstCamelContextRoute extends RouteBuilder {
 [bean integration]: http://camel.apache.org/bean-integration.html
 [Ambiguous EL names]: [http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#ambig_names]
 
-###### Camel Annotations Support
+##### Camel Annotations Support
 
 Camel comes with a set of [annotations][Camel annotations] that are supported by Camel CDI for both standard CDI injection and Camel [bean integration][], e.g.:
 
@@ -144,7 +146,7 @@ Endpoint secondContextInboundEndpoint;
 
 [Camel annotations]: http://camel.apache.org/bean-integration.html#BeanIntegration-Annotations
 
-###### Camel Context Customization
+##### Camel Context Customization
 
 ```java
 @ApplicationScoped
@@ -156,8 +158,8 @@ class CustomCamelContext extends CdiCamelContext {
         // Set the Camel context name
         setName("custom");
         // Add properties location
-        PropertiesComponent properties = getComponent("properties", PropertiesComponent.class)
-        properties.setLocation("classpath:placeholder.properties");
+        getComponent("properties", PropertiesComponent.class)
+            .setLocation("classpath:placeholder.properties");
     }
 
     // Bind the Camel context lifecycle to that of the bean
@@ -175,7 +177,7 @@ class CustomCamelContext extends CdiCamelContext {
 
 ### New Features
 
-###### Type Converter Beans
+##### Type Converter Beans
 
 CDI beans annotated with the `@Converter` annotation are automatically registered in the corresponding Camel context, e.g.:
 
@@ -193,7 +195,7 @@ Note that CDI injection is supported within the type converters.
 
 ### Existing features
 
-###### Camel Route Builders
+##### Camel Route Builders
 
 ```java
 @ContextName("first")
@@ -201,12 +203,15 @@ class FirstCamelContextRoute extends RouteBuilder {
 
     @Override
     public void configure() {
-        from("direct:inbound").setHeader("context").constant("first").to("mock:outbound");
+        from("direct:inbound")
+        .setHeader("context")
+            .constant("first")
+        .to("mock:outbound");
     }
 }
 ```
 
-###### Camel CDI Beans
+##### Camel CDI Beans
 
 Camel CDI declares some producer method beans that can be used to inject Camel objects, e.g.:
 
@@ -220,7 +225,7 @@ ProducerTemplate producerTemplate;
 MockEndpoint mockEndpoint;
 ```
 
-## What are the Supported Containers?
+## What are the supported Containers?
 
 This improved version of _Camel CDI_ is currently successfully tested with the following containers:
 
