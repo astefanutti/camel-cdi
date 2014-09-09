@@ -24,11 +24,11 @@
 
 Since version `2.10` of Camel, the [Camel CDI][] component supports the integration of Camel in CDI enabled environments. However, some experiments and _battlefield_ tests prove it troublesome to use because of the following concerns:
 + It relies on older [CDI 1.0][JSR 299] version of the specification and makes incorrect usages of [container lifecycle events][] w.r.t. [Assignability of type variables, raw and parameterized types]. As a consequence, it does not work properly with newer implementation versions like Weld 2.x and containers like Wildfly 8.x as reported in [CAMEL-7760][] among other issues.
-+ It relies on Apache [DeltaSpike][] and its `BeanManagerProvider` class to retrieve the `BeanManager` instance during the CDI container initialisation. That may not be suitable in complex container configurations, for example, in multi CDI container per JVM context, as reported in [CAMEL-6338][] and that causes [CAMEL-6095][] and [CAMEL-6937][].
++ It relies on Apache [DeltaSpike][] and its `BeanManagerProvider` class to retrieve the `BeanManager` instance during the CDI container initialisation. That may not be suitable in complex container configurations, for example, in multiple CDI containers per JVM context, as reported in [CAMEL-6338][] and that causes [CAMEL-6095][] and [CAMEL-6937][].
 + It relies on _DeltaSpike_ and its [configuration mechanism][DeltaSpike Configuration Mechanism] to source configuration locations for the [Properties component][]. While this is suitable for most use cases, it relies on the `ServiceLoader` mechanism to support custom [configuration sources][ConfigSource] that may not be suitable in more complex container configurations and relates to [CAMEL-5986].
 + Besides, while _DeltaSpike_ is a valuable addition to the CDI ecosystem, Camel CDI having a direct dependency on it is questionable from a design standpoint as opposed to relying on standard Camel mechanism for producing the Camel Properties component and delegating, as a plugable strategy, the configuration sourcing concern and implementation choice to the application itself or eventually using the [Java EE Configuration JSR] when available.
 + It declares a `CamelContext` CDI bean that's automatically instantiated and started with a `@PostConstruct` lifecycle callback called before the CDI container is completely initialized. That prevents, among other side effects, proper advising of Camel routes as documented in [Camel AdviceWith][].
-+ It uses the `@ContextName` annotation to bind routes to the `CamelContext` instance specified by name as an attempt to provide multi-context support. However, that is an incomplete feature from the CDI programming model standpoint as discussed in [CAMEL-5566][] and that causes [CAMEL-5742][].
++ It uses the `@ContextName` annotation to bind routes to the `CamelContext` instance specified by name as an attempt to provide support for multiple Camel contexts per application. However, that is an incomplete feature from the CDI programming model standpoint as discussed in [CAMEL-5566][] and that causes [CAMEL-5742][].
 
 The objective of this project is to alleviate all these concerns, provide additional features, and have that improved version of the Camel CDI component contributed back in the official codeline.
 
@@ -69,22 +69,24 @@ The official Camel CDI declares the `ContextName` annotation that can be used to
 ```java
 @ApplicationScoped
 @ContextName("first")
-public class FirstCamelContext extends CdiCamelContext {
+class FirstCamelContext extends CdiCamelContext {
 
     @Inject
-    private FirstCamelContext(BeanManager beanManager) {
+    FirstCamelContext(BeanManager beanManager) {
         super(beanManager);
     }
 }
 ```
 
-And then:
+And then by declaring an [injected field][], e.g.:
 
 ```java
 @Inject
 @ContextName("first")
 CamelContext firstCamelContext;
 ```
+
+[injected field]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#injected_fields
 
 ##### Camel Beans Integration
 
@@ -134,7 +136,7 @@ Camel comes with a set of [annotations][Camel annotations] that are supported by
 String property;
 ```
 
-Unfortunately, the official version of Camel CDI does not support the `context` attribute declared on these annotations as part of the multi Camel contexts support. That improved version provides that support, e.g.:
+Unfortunately, the official version of Camel CDI does not support the `context` attribute declared on these annotations as part of the multiple Camel contexts support. That improved version provides that support, e.g.:
 
 ```java
 @EndpointInject(uri = "direct:inbound", context = "first")
