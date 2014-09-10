@@ -21,22 +21,12 @@ import org.apache.camel.component.properties.PropertiesComponent;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.inject.Inject;
 
 @ApplicationScoped
 public class CustomPropertiesCamelContext extends CdiCamelContext {
 
-    CustomPropertiesCamelContext() {
-    }
-
-    @Inject
-    private CustomPropertiesCamelContext(BeanManager beanManager) {
-        super(beanManager);
-    }
-
     @PostConstruct
-    public void addPropertiesLocation() {
+    void addPropertiesLocation() {
         getComponent("properties", PropertiesComponent.class).setLocation("classpath:placeholder.properties");
     }
 }

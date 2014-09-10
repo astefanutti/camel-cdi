@@ -55,6 +55,7 @@ final class CdiCamelContextBean implements Bean<CdiCamelContext>, PassivationCap
     @Override
     public CdiCamelContext create(CreationalContext<CdiCamelContext> creational) {
         CdiCamelContext context = target.produce(creational);
+        target.inject(context, creational);
         target.postConstruct(context);
         creational.push(context);
         return context;

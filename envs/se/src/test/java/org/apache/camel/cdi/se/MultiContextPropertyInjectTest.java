@@ -101,20 +101,20 @@ public class MultiContextPropertyInjectTest {
     @Produces
     @ApplicationScoped
     @Named("properties")
-    private static PropertiesComponent defaultCamelContextConfiguration() {
+    private static PropertiesComponent configuration() {
         Properties configuration = new Properties();
         configuration.put("property", "default");
         return new CdiPropertiesComponent(configuration);
     }
 
-    @Produces
-    @ApplicationScoped
-    @Named("second:properties")
-    private static PropertiesComponent secondCamelContextConfiguration() {
-        Properties configuration = new Properties();
-        configuration.put("property", "second");
-        return new CdiPropertiesComponent(configuration);
-    }
+//    @Produces
+//    @ApplicationScoped
+//    @Named("second:properties")
+//    private static PropertiesComponent secondCamelContextConfiguration() {
+//        Properties configuration = new Properties();
+//        configuration.put("property", "second");
+//        return new CdiPropertiesComponent(configuration);
+//    }
 
     @Test
     @InSequence(1)
@@ -186,7 +186,7 @@ public class MultiContextPropertyInjectTest {
     public void sendMessageToSecondCamelContextInbound() throws InterruptedException {
         secondOutbound.expectedMessageCount(1);
         secondOutbound.expectedBodiesReceived("test");
-        secondOutbound.expectedHeaderReceived("header", "second");
+        secondOutbound.expectedHeaderReceived("header", "default");
 
         secondInbound.sendBody("test");
 
@@ -196,7 +196,7 @@ public class MultiContextPropertyInjectTest {
     @Test
     @InSequence(7)
     public void retrieveReferenceFromSecondCamelContext(SecondCamelContextPropertyInjectBean bean) {
-        assertThat(bean.getProperty(), is(equalTo("second")));
+        assertThat(bean.getProperty(), is(equalTo("default")));
     }
 
     @Test

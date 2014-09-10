@@ -22,24 +22,18 @@ import org.apache.camel.util.ObjectHelper;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 
 @ApplicationScoped
 public class CustomLifecycleCamelContext extends CdiCamelContext {
 
-    CustomLifecycleCamelContext() {
-    }
-
     @Inject
-    private CustomLifecycleCamelContext(BeanManager beanManager) {
-        super(beanManager);
+    CustomLifecycleCamelContext() {
         setName("custom");
     }
 
-    @Override
     @PostConstruct
-    public void start() {
+    void postConstruct() {
         try {
             super.start();
         } catch (Exception cause) {
@@ -47,9 +41,8 @@ public class CustomLifecycleCamelContext extends CdiCamelContext {
         }
     }
 
-    @Override
     @PreDestroy
-    public void stop() {
+    void preDestroy() {
         try {
             super.stop();
         } catch (Exception cause) {

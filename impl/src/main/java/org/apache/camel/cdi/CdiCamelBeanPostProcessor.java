@@ -43,7 +43,7 @@ final class CdiCamelBeanPostProcessor extends DefaultCamelBeanPostProcessor {
 
     protected void injectFields(final Object bean, final String beanName) {
         ReflectionHelper.doWithFields(bean.getClass(), new ReflectionHelper.FieldCallback() {
-            public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
+            public void doWith(Field field) throws IllegalAccessException {
                 PropertyInject propertyInject = field.getAnnotation(PropertyInject.class);
                 if (propertyInject != null)
                     injectFieldProperty(field, propertyInject.value(), propertyInject.defaultValue(), propertyInject.context(), bean, beanName);
@@ -63,25 +63,25 @@ final class CdiCamelBeanPostProcessor extends DefaultCamelBeanPostProcessor {
         });
     }
 
-    public void injectField(Field field, String endpointUri, String endpointRef, String endpointProperty, String endpointContext, Object bean, String beanName) {
-        ReflectionHelper.setField(field, bean, getPostProcessorHelper(endpointContext).getInjectionValue(field.getType(), endpointUri, endpointRef, endpointProperty, field.getName(), bean, beanName));
+    public void injectField(Field field, String uri, String ref, String property, String context, Object bean, String beanName) {
+        ReflectionHelper.setField(field, bean, getPostProcessorHelper(context).getInjectionValue(field.getType(), uri, ref, property, field.getName(), bean, beanName));
     }
 
-    public void injectFieldProperty(Field field, String propertyName, String propertyDefaultValue, String propertyContext, Object bean, String beanName) {
-        ReflectionHelper.setField(field, bean, getPostProcessorHelper(propertyContext).getInjectionPropertyValue(field.getType(), propertyName, propertyDefaultValue, field.getName(), bean, beanName));
+    public void injectFieldProperty(Field field, String property, String defaultValue, String context, Object bean, String beanName) {
+        ReflectionHelper.setField(field, bean, getPostProcessorHelper(context).getInjectionPropertyValue(field.getType(), property, defaultValue, field.getName(), bean, beanName));
     }
 
-    public CamelPostProcessorHelper getPostProcessorHelper(String endpointContext) {
-        CamelPostProcessorHelper helper = postProcessorHelpers.get(endpointContext);
+    public CamelPostProcessorHelper getPostProcessorHelper(String context) {
+        CamelPostProcessorHelper helper = postProcessorHelpers.get(context);
         if (helper == null) {
-            helper = new CamelPostProcessorHelper(getOrLookupCamelContext(endpointContext));
-            postProcessorHelpers.put(endpointContext, helper);
+            helper = new CamelPostProcessorHelper(getOrLookupCamelContext(context));
+            postProcessorHelpers.put(context, helper);
         }
         return helper;
     }
 
-    public CamelContext getOrLookupCamelContext(String endpointContext) {
-        return BeanManagerHelper.getReferenceByType(manager, CamelContext.class, endpointContext.isEmpty() ? DefaultLiteral.INSTANCE : new ContextNameLiteral(endpointContext));
+    public CamelContext getOrLookupCamelContext(String context) {
+        return BeanManagerHelper.getReferenceByType(manager, CamelContext.class, context.isEmpty() ? DefaultLiteral.INSTANCE : new ContextNameLiteral(context));
     }
 
     public CamelContext getOrLookupCamelContext() {

@@ -19,17 +19,8 @@ package org.apache.camel.cdi.se.bean;
 import org.apache.camel.cdi.CdiCamelContext;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.inject.Inject;
 
 @ApplicationScoped
 public class DefaultCamelContextBean extends CdiCamelContext {
 
-    DefaultCamelContextBean() {
-    }
-
-    @Inject
-    private DefaultCamelContextBean(BeanManager beanManager) {
-        super(beanManager);
-    }
 }

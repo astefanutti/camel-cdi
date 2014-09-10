@@ -20,18 +20,9 @@ import org.apache.camel.cdi.CdiCamelContext;
 import org.apache.camel.cdi.ContextName;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.inject.Inject;
 
 @ApplicationScoped
 @ContextName("second")
 public class SecondCamelContextBean extends CdiCamelContext {
 
-    SecondCamelContextBean() {
-    }
-
-    @Inject
-    private SecondCamelContextBean(BeanManager beanManager) {
-        super(beanManager);
-    }
 }

@@ -127,8 +127,6 @@ public class CdiCamelExtension implements Extension {
                 else
                     defaultContextName = context.getName();
             }
-            // Explicitly load the properties component as NPE can be thrown when the Camel context is interacted with but not started yet
-            context.loadPropertiesComponent();
             camelContexts.put(context.getName(), context);
         }
 

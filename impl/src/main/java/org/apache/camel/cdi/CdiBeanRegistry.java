@@ -15,7 +15,6 @@
  */
 package org.apache.camel.cdi;
 
-import org.apache.camel.CamelContext;
 import org.apache.camel.spi.Registry;
 
 import javax.enterprise.inject.Vetoed;
@@ -30,11 +29,8 @@ final class CdiBeanRegistry implements Registry {
 
     private final BeanManager manager;
 
-    private final CamelContext context;
-
-    CdiBeanRegistry(BeanManager manager, CamelContext context) {
+    CdiBeanRegistry(BeanManager manager) {
         this.manager = manager;
-        this.context = context;
     }
 
     @Override
@@ -44,15 +40,13 @@ final class CdiBeanRegistry implements Registry {
 
     @Override
     public <T> T lookupByNameAndType(String name, Class<T> type) {
-        T reference = BeanManagerHelper.getReferenceByName(manager, context.getName() + ":" + name, type);
-        return reference != null ? reference : BeanManagerHelper.getReferenceByName(manager, name, type);
+        return BeanManagerHelper.getReferenceByName(manager, name, type);
     }
 
     @Override
     public <T> Map<String, T> findByTypeWithName(Class<T> type) {
         Map<String, T> references = new HashMap<>();
         for (Bean<?> bean : manager.getBeans(type, AnyLiteral.INSTANCE))
-            // FIXME: check if the bean has the @Named qualifier instead
             if (bean.getName() != null)
                 references.put(bean.getName(), BeanManagerHelper.<T>getReference(manager, type, bean));
 
