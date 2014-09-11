@@ -30,7 +30,15 @@ Since version `2.10` of Camel, the [Camel CDI][] component supports the integrat
 + It declares a `CamelContext` CDI bean that's automatically instantiated and started with a `@PostConstruct` lifecycle callback called before the CDI container is completely initialized. That prevents, among other side effects, proper advising of Camel routes as documented in [Camel AdviceWith][].
 + It uses the `@ContextName` annotation to bind routes to the `CamelContext` instance specified by name as an attempt to provide support for multiple Camel contexts per application. However, that is an incomplete feature from the CDI programming model standpoint as discussed in [CAMEL-5566][] and that causes [CAMEL-5742][].
 
-The objective of this project is to alleviate all these concerns, provide additional features, and have that improved version of the Camel CDI component contributed back into the official codeline.
+The objective of this project is to alleviate all these concerns, provide additional features, and have that improved version of the Camel CDI component contributed back into the official codeline. In the meantime, you can get it from Maven Central with the following coordinates:
+
+```xml
+<dependency>
+    <groupId>io.astefanutti.camel.cdi</groupId>
+    <artifactId>camel-cdi</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
 
 [Camel CDI]: http://camel.apache.org/cdi.html
 [DeltaSpike]: https://deltaspike.apache.org/
