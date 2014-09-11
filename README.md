@@ -41,8 +41,9 @@ The objective of this project is to alleviate all these concerns, provide additi
 [CAMEL-5566]: https://issues.apache.org/jira/browse/CAMEL-5566
 [CAMEL-5742]: https://issues.apache.org/jira/browse/CAMEL-5742
 [CAMEL-5986]: https://issues.apache.org/jira/browse/CAMEL-5986
-[CAMEL-6338]: https://issues.apache.org/jira/browse/CAMEL-6338
 [CAMEL-6095]: https://issues.apache.org/jira/browse/CAMEL-6095
+[CAMEL-6336]: https://issues.apache.org/jira/browse/CAMEL-6336
+[CAMEL-6338]: https://issues.apache.org/jira/browse/CAMEL-6338
 [CAMEL-6937]: https://issues.apache.org/jira/browse/CAMEL-6937
 [CAMEL-7760]: https://issues.apache.org/jira/browse/CAMEL-7760
 [container lifecycle events]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#init_events
@@ -56,6 +57,7 @@ The objective of this project is to alleviate all these concerns, provide additi
 This project fixes the following issues currently opened in the Camel CDI backlog:
 - [CAMEL-5742]: The `@ContextName` should only refer to a `CamelContext` and not create a new `CamelContext` on the fly
 - [CAMEL-5986]: Property placeholders do not work for CDI injection
+- [CAMEL-6336]: Camel CDI uses `postConstruct` to inject in CDI beans
 - [CAMEL-6338]: Camel CDI shouldn't use DeltaSpike bean manager provider in the `CamelExtension`
 - [CAMEL-6937]: `BeanManager` cannot be retrieved when Camel CDI is deployed in Karaf
 - [CAMEL-7760]: WELD-001409: Ambiguous dependencies for type `CdiCamelContext`
