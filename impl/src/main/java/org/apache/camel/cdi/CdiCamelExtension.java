@@ -51,8 +51,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class CdiCamelExtension implements Extension {
 
-    private boolean hasDefaultCamelContext;
-
     private final Set<Class<?>> typeConverters = Collections.newSetFromMap(new ConcurrentHashMap<Class<?>, Boolean>());
 
     private final Set<AnnotatedType<?>> camelBeans = Collections.newSetFromMap(new ConcurrentHashMap<AnnotatedType<?>, Boolean>());
@@ -87,11 +85,6 @@ public class CdiCamelExtension implements Extension {
             pit.setInjectionTarget(new CdiCamelInjectionTarget<>(pit.getInjectionTarget(), manager));
     }
 
-    // FIXME: remove when WELD-1729 is fixed
-    private void camelContextBean(@Observes ProcessBean<? extends CamelContext> pb) {
-        hasDefaultCamelContext = true;
-    }
-
     private void mockEndpoints(@Observes ProcessBeanAttributes<MockEndpoint> pba) {
         pba.setBeanAttributes(new BeanAttributesDecorator<>(pba.getBeanAttributes(), contextNames));
     }
@@ -101,9 +94,7 @@ public class CdiCamelExtension implements Extension {
     }
 
     private void addDefaultCamelContext(@Observes AfterBeanDiscovery abd, BeanManager manager) {
-        // FIXME: not working with Weld 2.x, see WELD-1729
-        //if (manager.getBeans(CamelContext.class, AnyLiteral.INSTANCE).isEmpty())
-        if (!hasDefaultCamelContext)
+        if (manager.getBeans(CamelContext.class, AnyLiteral.INSTANCE).isEmpty())
             abd.addBean(new CdiCamelContextBean(manager));
     }
 

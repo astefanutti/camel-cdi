@@ -59,7 +59,7 @@
         <cdi.version>1.2</cdi.version>
         <javaee.version>7.0</javaee.version>
         <slf4j.version>1.7.7</slf4j.version>
-        <weld.version>2.2.4.Final</weld.version>
+        <weld.version>2.2.5.Final</weld.version>
         <owb.version>2.0.0-SNAPSHOT</owb.version>
         <wildfly.version>8.1.0.Final</wildfly.version>
         <arquillian.version>1.1.5.Final</arquillian.version>
