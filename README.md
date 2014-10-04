@@ -78,7 +78,7 @@ This version of Camel CDI is currently successfully tested with the following co
 | ---------------- | ------------- | ---------------------- | -------------------------------------- |
 | [Weld SE][]      | `2.2.5.Final` | [CDI 1.2][JSR 346 1.2] | `arquillian-weld-se-embedded-1.1`      |
 | [Weld EE][]      | `2.2.5.Final` | [CDI 1.2][JSR 346 1.2] | `arquillian-weld-ee-embedded-1.1`      |
-| [OpenWebBeans][] | `1.5.0`       | [CDI 1.1][JSR 346 1.1] | `owb-arquillian-standalone`            |
+| [OpenWebBeans][] | `1.5.0`       | [CDI 1.2][JSR 346 1.2] | `owb-arquillian-standalone`            |
 | [WildFly][]      | `8.1.0.Final` | [Java EE 7][]          | `wildfly-arquillian-container-managed` |
 
 WildFly 8.x requires to be patched with Weld 2.2+ as documented in [Weld 2.2 on WildFly][].
