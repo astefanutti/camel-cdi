@@ -1,6 +1,6 @@
 # CDI extension for Camel
 
-[![Build Status][Travis badge]][Travis build] [![Coverage Status][Coveralls badge]][Coveralls build] [![Dependency Status][VersionEye badge]][VersionEye build]
+[![Build Status][Travis badge]][Travis build] [![Coverage Status][Coveralls badge]][Coveralls build] [![Dependency Status][VersionEye badge]][VersionEye build] [![Maven Central][Maven Central badge]][Maven Central build]
 
 [Travis badge]: https://travis-ci.org/astefanutti/camel-cdi.svg
 [Travis build]: https://travis-ci.org/astefanutti/camel-cdi
@@ -8,6 +8,8 @@
 [Coveralls build]: https://coveralls.io/r/astefanutti/camel-cdi
 [VersionEye badge]: https://www.versioneye.com/user/projects/53fca400e09da310ea0006c4/badge.svg
 [VersionEye build]: https://www.versioneye.com/user/projects/53fca400e09da310ea0006c4
+[Maven Central badge]: http://img.shields.io/maven-central/v/io.astefanutti.camel.cdi/camel-cdi.svg
+[Maven Central build]: http://repo1.maven.org/maven2/io/astefanutti/camel/cdi/camel-cdi/1.0.0/
 
 [CDI][] portable extension for Apache [Camel][] compliant with [JSR 346: Contexts and Dependency Injection for Java<sup>TM</sup> EE 1.2][JSR 346 1.2].
 
