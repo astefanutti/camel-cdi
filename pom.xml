@@ -228,7 +228,7 @@
             <dependency>
                 <groupId>org.apache.geronimo.specs</groupId>
                 <artifactId>geronimo-jcdi_1.1_spec</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>1.0-alpha-1</version>
                 <scope>provided</scope>
             </dependency>
 
@@ -242,21 +242,7 @@
             <dependency>
                 <groupId>org.apache.geronimo.specs</groupId>
                 <artifactId>geronimo-interceptor_1.2_spec</artifactId>
-                <version>1.0-SNAPSHOT</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.geronimo.specs</groupId>
-                <artifactId>geronimo-el_2.2_spec</artifactId>
-                <version>1.0.4</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.geronimo.specs</groupId>
-                <artifactId>geronimo-annotation_1.2_spec</artifactId>
-                <version>1.0.MR2-SNAPSHOT</version>
+                <version>1.0-alpha-1</version>
                 <scope>provided</scope>
             </dependency>
 
@@ -294,13 +280,6 @@
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>4.11</version>
-                <scope>test</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.mockito</groupId>
-                <artifactId>mockito-core</artifactId>
-                <version>1.9.5</version>
                 <scope>test</scope>
             </dependency>
 
