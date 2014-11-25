@@ -16,6 +16,7 @@
     <modules>
         <module>example</module>
         <module>features</module>
+        <module>itest</module>
     </modules>
 
 </project>

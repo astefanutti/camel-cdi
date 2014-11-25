@@ -55,6 +55,7 @@
                         <Export-Package>${camel.osgi.export.pkg}</Export-Package>
                         <Import-Package>${camel.osgi.import.pkg}</Import-Package>
                         <DynamicImport-Package>${camel.osgi.dynamic}</DynamicImport-Package>
+                        <Provide-Capability>org.ops4j.pax.cdi.extension; extension=camel-cdi</Provide-Capability>
                         <Private-Package>${camel.osgi.private.pkg}</Private-Package>
                         <Implementation-Title>Apache Camel CDI</Implementation-Title>
                         <Implementation-Version>${project.version}</Implementation-Version>

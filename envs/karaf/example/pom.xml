@@ -48,6 +48,10 @@
                         <Bundle-SymbolicName>${camel.osgi.symbolic.name}</Bundle-SymbolicName>
                         <Export-Package>${camel.osgi.export.pkg}</Export-Package>
                         <Import-Package>${camel.osgi.import.pkg}</Import-Package>
+                        <Require-Capability>
+                            osgi.extender; filter:="(osgi.extender=pax.cdi)",
+                            org.ops4j.pax.cdi.extension; filter:="(extension=camel-cdi)"
+                        </Require-Capability>
                         <DynamicImport-Package>${camel.osgi.dynamic}</DynamicImport-Package>
                         <Private-Package>${camel.osgi.private.pkg}</Private-Package>
                         <Implementation-Title>Apache Camel CDI :: Karaf Example</Implementation-Title>
