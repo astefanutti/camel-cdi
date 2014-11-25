@@ -15,6 +15,7 @@
     <modules>
         <module>ee</module>
         <module>se</module>
+        <module>karaf</module>
     </modules>
 
     <profiles>

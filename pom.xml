@@ -66,6 +66,7 @@
         <arquillian.weld.version>1.0.0.CR8</arquillian.weld.version>
         <shrinkwrap.resolver.version>2.1.1</shrinkwrap.resolver.version>
         <shrinkwrap.descriptors.version>2.0.0-alpha-6</shrinkwrap.descriptors.version>
+        <maven-bundle-plugin.version>2.3.7</maven-bundle-plugin.version>
     </properties>
 
     <modules>

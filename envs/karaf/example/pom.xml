@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
+        <artifactId>karaf</artifactId>
         <groupId>io.astefanutti.camel.cdi</groupId>
-        <artifactId>camel-cdi-parent</artifactId>
         <version>1.1-SNAPSHOT</version>
     </parent>
+    <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>camel-cdi</artifactId>
-    <name>Camel CDI Component</name>
+    <artifactId>example</artifactId>
+    <name>Camel CDI Karaf :: Example</name>
     <packaging>bundle</packaging>
 
     <properties>
         <!-- OSGI Properties -->
         <camel.osgi.dynamic />
         <camel.osgi.export.pkg>
-            org.apache.camel.cdi.*
+            org.apache.camel.cdi.karaf.*
         </camel.osgi.export.pkg>
         <camel.osgi.import.pkg>
             !${camel.osgi.export.pkg},
@@ -28,16 +29,9 @@
     </properties>
 
     <dependencies>
-        <!-- compile dependencies -->
         <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-core</artifactId>
-        </dependency>
-
-        <!-- provided dependencies -->
-        <dependency>
-            <groupId>javax.enterprise</groupId>
-            <artifactId>cdi-api</artifactId>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
         </dependency>
     </dependencies>
 
@@ -50,13 +44,13 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-Name>${project.artifactId}</Bundle-Name>
+                        <Bundle-Name>Camel CDI :: Karaf Example</Bundle-Name>
                         <Bundle-SymbolicName>${camel.osgi.symbolic.name}</Bundle-SymbolicName>
                         <Export-Package>${camel.osgi.export.pkg}</Export-Package>
                         <Import-Package>${camel.osgi.import.pkg}</Import-Package>
                         <DynamicImport-Package>${camel.osgi.dynamic}</DynamicImport-Package>
                         <Private-Package>${camel.osgi.private.pkg}</Private-Package>
-                        <Implementation-Title>Apache Camel CDI</Implementation-Title>
+                        <Implementation-Title>Apache Camel CDI :: Karaf Example</Implementation-Title>
                         <Implementation-Version>${project.version}</Implementation-Version>
                         <Karaf-Info>Camel;${project.artifactId}=${project.version}</Karaf-Info>
                     </instructions>
@@ -64,5 +58,6 @@
             </plugin>
         </plugins>
     </build>
+
 
 </project>
