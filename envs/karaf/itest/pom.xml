@@ -19,14 +19,7 @@
     </properties>
 
     <dependencies>
-        <!-- Karaf Test Framework Version -->
-<!--        <dependency>
-            <groupId>org.apache.karaf.tooling.exam</groupId>
-            <artifactId>org.apache.karaf.tooling.exam.container</artifactId>
-            <version>${karaf-tooling.version}</version>
-            <scope>test</scope>
-        </dependency>-->
-        <!-- Pax Exam version you would like to use. At least 2.2.x is required. -->
+        <!-- Pax Exam -->
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam</artifactId>
@@ -49,10 +42,12 @@
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam-container-karaf</artifactId>
             <version>${pax-exam.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.karaf</groupId>
