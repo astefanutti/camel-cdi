@@ -9,7 +9,7 @@
     
 * Install the Weld Container using the feature command
     
-    feature:install weld
+    feature:install pax-cdi-1.2-weld
     
 * Check the bundles deployed   
  
@@ -40,9 +40,13 @@
     
     feature:repo-add camel 2.14.0
     
-* Install camel & camel-cdi
+* Install camel
     
     feature:install camel
+    
+* Add features
+    
+    feature:repo-add mvn:io.astefanutti.camel.cdi/features/1.1-SNAPSHOT/xml/features    
     feature:install camel-cdi
     
 * Check
