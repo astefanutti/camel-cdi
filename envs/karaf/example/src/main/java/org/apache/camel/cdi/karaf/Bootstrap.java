@@ -16,6 +16,7 @@
 package org.apache.camel.cdi.karaf;
 
 import org.apache.camel.CamelContext;
+import org.apache.camel.cdi.CdiCamelContext;
 import org.apache.camel.cdi.ContextName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,7 @@ public class Bootstrap {
 
     @Inject
     @ContextName("simple")
-    CamelContext context;
+    CdiCamelContext context;
 
     Logger logger = LoggerFactory.getLogger(Bootstrap.class);
 
