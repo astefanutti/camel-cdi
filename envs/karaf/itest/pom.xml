@@ -54,7 +54,7 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Karaf
+        <!-- Karaf -->
         <dependency>
             <groupId>org.apache.karaf</groupId>
             <artifactId>apache-karaf</artifactId>
@@ -62,7 +62,6 @@
             <type>zip</type>
             <scope>test</scope>
         </dependency>
-        -->
 
         <!-- Arquillian -->
         <dependency>

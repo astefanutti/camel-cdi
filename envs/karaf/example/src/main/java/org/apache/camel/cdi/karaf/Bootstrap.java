@@ -16,7 +16,6 @@
 package org.apache.camel.cdi.karaf;
 
 import org.apache.camel.CamelContext;
-import org.apache.camel.cdi.CdiCamelContext;
 import org.apache.camel.cdi.ContextName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,13 +28,14 @@ import java.util.logging.Level;
 public class Bootstrap {
 
     @Inject
-    //@ContextName("simple")
+    @ContextName("simple")
     CamelContext context;
 
     Logger logger = LoggerFactory.getLogger(Bootstrap.class);
 
     @PostConstruct
     public void init() {
+
         logger.info(">> Create CamelContext and register Camel Route.");
 
         try {

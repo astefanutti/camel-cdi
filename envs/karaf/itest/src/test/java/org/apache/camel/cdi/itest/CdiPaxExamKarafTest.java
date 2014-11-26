@@ -54,7 +54,7 @@ public class CdiPaxExamKarafTest {
                 logLevel(LogLevelOption.LogLevel.INFO),
 
                 // Option to be used to do remote debugging
-                debugConfiguration("5005", true),
+                // debugConfiguration("5005", true),
 
                 // Load Features Camel, Camel-cdi & PAX CDI, Weld
                 features(
