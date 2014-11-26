@@ -33,7 +33,7 @@ public class SimpleCamelRoute extends RouteBuilder {
             .setBody().constant("Camel CDI Example")
               .log("Message received : ${body} for the Context : ${header.context}")
             .setBody().constant("CDI")
-            .bean(HelloCamel.class,"sayHello")
-            .log(">> Response : ${body}");
+            .bean(HelloBean.class,"sayHello")
+              .log(">> Response : ${body}");
     }
 }
