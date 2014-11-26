@@ -16,7 +16,9 @@
 package org.apache.camel.cdi.karaf;
 
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.cdi.ContextName;
 
+@ContextName("simple")
 public class SimpleCamelRoute extends RouteBuilder {
 
     @Override
