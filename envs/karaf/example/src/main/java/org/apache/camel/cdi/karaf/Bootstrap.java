@@ -23,14 +23,16 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.logging.Level;
 
+@ApplicationScoped
 public class Bootstrap {
 
     @Inject
     @ContextName("simple")
-    CdiCamelContext context;
+    CamelContext context;
 
     Logger logger = LoggerFactory.getLogger(Bootstrap.class);
 
