@@ -26,6 +26,6 @@ public class SimpleCamelRoute extends RouteBuilder {
         from("timer://start")
             .setHeader("context").constant("first")
             .setBody().constant("Camel CDI Example")
-            .log("Message received : ${body} - Context : ${context}");
+            .log("Message received : ${body} - Context : ${header.context}");
     }
 }

@@ -17,9 +17,31 @@ package org.apache.camel.cdi.karaf;
 
 import org.apache.camel.cdi.CdiCamelContext;
 import org.apache.camel.cdi.ContextName;
+import org.apache.camel.util.ObjectHelper;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 @ContextName("simple")
-public class SimpleCamelContext extends CdiCamelContext {  }
+public class SimpleCamelContext extends CdiCamelContext {
+
+    @PostConstruct
+    void postConstruct() {
+        try {
+            super.start();
+        } catch (Exception cause) {
+            throw ObjectHelper.wrapRuntimeCamelException(cause);
+        }
+    }
+
+    @PreDestroy
+    void preDestroy() {
+        try {
+            super.stop();
+        } catch (Exception cause) {
+            throw ObjectHelper.wrapRuntimeCamelException(cause);
+        }
+    }
+}
