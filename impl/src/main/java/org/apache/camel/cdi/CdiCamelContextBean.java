@@ -15,6 +15,8 @@
  */
 package org.apache.camel.cdi;
 
+import org.apache.camel.util.ObjectHelper;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
@@ -33,13 +35,21 @@ import java.util.Set;
 final class CdiCamelContextBean implements Bean<CdiCamelContext>, PassivationCapable {
 
     private final Set<Type> types;
+    private final String name;
+    private final String camelContextName;
 
     private final InjectionTarget<CdiCamelContext> target;
 
-    CdiCamelContextBean(BeanManager manager) {
+    public CdiCamelContextBean(BeanManager beanManager) {
+        this(beanManager, "CamelContext", "");
+    }
+
+    CdiCamelContextBean(BeanManager manager, String name, String camelContextName) {
         AnnotatedType<CdiCamelContext> annotatedType = manager.createAnnotatedType(CdiCamelContext.class);
         this.types = Collections.unmodifiableSet(annotatedType.getTypeClosure());
         this.target = manager.createInjectionTarget(annotatedType);
+        this.name = name;
+        this.camelContextName = camelContextName;
     }
 
     @Override
@@ -55,6 +65,9 @@ final class CdiCamelContextBean implements Bean<CdiCamelContext>, PassivationCap
     @Override
     public CdiCamelContext create(CreationalContext<CdiCamelContext> creational) {
         CdiCamelContext context = target.produce(creational);
+        if (ObjectHelper.isNotEmpty(camelContextName)) {
+            context.setName(camelContextName);
+        }
         target.inject(context, creational);
         target.postConstruct(context);
         creational.push(context);
@@ -80,7 +93,7 @@ final class CdiCamelContextBean implements Bean<CdiCamelContext>, PassivationCap
 
     @Override
     public String getName() {
-        return "camel-cdi";
+        return name;
     }
 
     @Override
