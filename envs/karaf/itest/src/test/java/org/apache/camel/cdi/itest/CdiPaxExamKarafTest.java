@@ -59,7 +59,7 @@ public class CdiPaxExamKarafTest {
                 // Load Features Camel, Camel-cdi & PAX CDI, Weld
                 features(
                         maven().groupId("org.ops4j.pax.cdi").artifactId("pax-cdi-features").type("xml").classifier("features").version("0.8.0"),
-                        "weld"
+                        "pax-cdi-1.2-weld"
                 ),
                 features(
                         maven().groupId("org.apache.camel.karaf").artifactId("apache-camel").type("xml").classifier("features").version("2.14.0"),
