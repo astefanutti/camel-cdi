@@ -23,6 +23,7 @@
             !${camel.osgi.export.pkg},
             org.apache.camel.*,
             org.apache.camel.cdi.*,
+            org.apache.camel.support,
             *
         </camel.osgi.import.pkg>
         <camel.osgi.private.pkg>!*</camel.osgi.private.pkg>
