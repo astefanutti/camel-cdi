@@ -66,7 +66,7 @@ public class CdiPaxExamKarafTest {
                         "camel"
                 ),
                 features(
-                        maven().groupId("io.astefanutti.camel.cdi").artifactId("karaf").type("xml").classifier("features").version("1.1-SNAPSHOT"),
+                        maven().groupId("io.astefanutti.camel.cdi").artifactId("features").type("xml").classifier("features").version("1.1-SNAPSHOT"),
                         "camel-cdi"
                 ),
                 // Install example
