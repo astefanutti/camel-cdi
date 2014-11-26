@@ -26,5 +26,9 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER})
 public @interface ContextName {
 
-    String value();
+    /**
+     * Returns the name of the CamelContext to add the routes to.
+     * If no value is specified then the default CamelContext is used.
+     */
+    String value() default "";
 }
