@@ -30,6 +30,9 @@ public class SimpleCamelContext extends CdiCamelContext {
     @PostConstruct
     void postConstruct() {
         try {
+            // Enable Tracing
+            super.setTracing(false);
+            // Start Context
             super.start();
         } catch (Exception cause) {
             throw ObjectHelper.wrapRuntimeCamelException(cause);

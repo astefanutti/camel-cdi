@@ -15,17 +15,25 @@
  */
 package org.apache.camel.cdi.karaf;
 
+import org.apache.camel.Endpoint;
+import org.apache.camel.EndpointInject;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.cdi.ContextName;
 
 @ContextName("simple")
 public class SimpleCamelRoute extends RouteBuilder {
 
+    @EndpointInject(uri="timer://start", context = "simple")
+    private Endpoint timerEP;
+
     @Override
     public void configure() {
-        from("timer://start")
-            .setHeader("context").constant("first")
+        from(timerEP)
+            .setHeader("context").constant("simple")
             .setBody().constant("Camel CDI Example")
-            .log("Message received : ${body} - Context : ${header.context}");
+              .log("Message received : ${body} for the Context : ${header.context}")
+            .setBody().constant("CDI")
+            .bean(HelloCamel.class,"sayHello")
+            .log(">> Response : ${body}");
     }
 }
