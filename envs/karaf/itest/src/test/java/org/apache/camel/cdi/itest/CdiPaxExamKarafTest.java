@@ -55,7 +55,6 @@ public class CdiPaxExamKarafTest {
 
                 // Option to be used to do remote debugging
                 debugConfiguration("5005", true),
-                systemTimeout(0),
 
                 // Load Features Camel, Camel-cdi & PAX CDI, Weld
                 features(
