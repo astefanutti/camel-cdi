@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -42,14 +43,22 @@
         <connection>scm:git:git@github.com:astefanutti/camel-cdi.git</connection>
         <developerConnection>scm:git:git@github.com:astefanutti/camel-cdi.git</developerConnection>
         <url>scm:git:git@github.com:astefanutti/camel-cdi.git</url>
-      <tag>HEAD</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
 
     <repositories>
         <!-- TODO: remove when OWB 1.5.0 is released -->
         <repository>
             <id>apache-snapshots</id>
             <url>http://repository.apache.org/snapshots/</url>
+        </repository>
+        <repository>
+            <id>jboss-releases</id>
+            <url>http://repository.jboss.org/nexus/content/repositories/releases</url>
+        </repository>
+        <repository>
+            <id>maven - central</id>
+            <url>http://repo1.maven.org/maven2/</url>
         </repository>
     </repositories>
 
@@ -63,6 +72,7 @@
         <owb.version>1.5.0-SNAPSHOT</owb.version>
         <wildfly.version>8.1.0.Final</wildfly.version>
         <arquillian.version>1.1.5.Final</arquillian.version>
+        <arquillian-osgi.version>2.1.0.CR18</arquillian-osgi.version>
         <arquillian.weld.version>1.0.0.CR8</arquillian.weld.version>
         <shrinkwrap.resolver.version>2.1.1</shrinkwrap.resolver.version>
         <shrinkwrap.descriptors.version>2.0.0-alpha-6</shrinkwrap.descriptors.version>
@@ -394,5 +404,6 @@
 
         </dependencies>
     </dependencyManagement>
+
 
 </project>

@@ -1,3 +1,18 @@
+/**
+ * Copyright (C) 2014 Antonin Stefanutti (antonin.stefanutti@gmail.com)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.apache.camel.cdi.itest;
 
 import org.junit.Test;
@@ -22,9 +37,9 @@ import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.*;
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.features;
 
 @RunWith(PaxExam.class)
-public class CdiKarafTest {
+public class CdiPaxExamKarafTest {
 
-    protected static final transient Logger LOG = LoggerFactory.getLogger(CdiKarafTest.class);
+    protected static final transient Logger LOG = LoggerFactory.getLogger(CdiPaxExamKarafTest.class);
 
     private static final MavenArtifactUrlReference KARAF_URL = maven("org.apache.karaf", "apache-karaf", karafVersion()).type("zip");
 
@@ -39,7 +54,8 @@ public class CdiKarafTest {
                 logLevel(LogLevelOption.LogLevel.INFO),
 
                 // Option to be used to do remote debugging
-                // debugConfiguration("5005", true),
+                debugConfiguration("5005", true),
+                systemTimeout(0),
 
                 // Load Features Camel, Camel-cdi & PAX CDI, Weld
                 features(

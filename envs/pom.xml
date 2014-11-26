@@ -125,7 +125,6 @@
     <dependencies>
 
         <!-- compile dependencies -->
-
         <dependency>
             <groupId>io.astefanutti.camel.cdi</groupId>
             <artifactId>camel-cdi</artifactId>
@@ -135,7 +134,6 @@
         <!-- provided dependencies -->
 
         <!-- test dependencies -->
-
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
