@@ -26,4 +26,12 @@ public final class CdiPropertiesComponent extends PropertiesComponent {
     public CdiPropertiesComponent(Properties properties) {
         setPropertiesParser(new CdiPropertiesParser(properties));
     }
+
+    public CdiPropertiesComponent(String location) {
+        setLocation(location);
+    }
+
+    public CdiPropertiesComponent(String...locations) {
+        setLocations(locations);
+    }
 }
