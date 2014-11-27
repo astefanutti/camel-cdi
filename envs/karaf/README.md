@@ -15,6 +15,7 @@
     
 * Check the bundles deployed   
  
+    ```
     list
     
     ID | State  | Lvl | Version     | Name
@@ -37,6 +38,7 @@
     82 | Active |  80 | 1.2.0.Beta1 | Weld OSGi Bundle
     83 | Active |  80 | 0.8.0       | OPS4J Pax CDI Weld Adapter
     84 | Active |  80 | 2.1.1.Final | Weld OSGi Bundle
+    ```
     
 * Install camel repo
     
