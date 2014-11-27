@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>examples</artifactId>
+        <groupId>io.astefanutti.camel.cdi</groupId>
+        <version>1.1-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>contextname-hellobean</artifactId>
+    <name>Camel CDI Karaf :: Example :: @ContextName &amp; Hello Bean</name>
+    <packaging>bundle</packaging>
+
+    <properties>
+        <!-- OSGI Properties -->
+        <camel.osgi.dynamic />
+        <camel.osgi.export.pkg>
+            org.apache.camel.cdi.karaf.*
+        </camel.osgi.export.pkg>
+        <camel.osgi.import.pkg>
+            !${camel.osgi.export.pkg},
+            org.apache.camel.*,
+            org.apache.camel.cdi.*,
+            org.apache.camel.support,
+            *
+        </camel.osgi.import.pkg>
+        <camel.osgi.private.pkg>!*</camel.osgi.private.pkg>
+        <camel.osgi.symbolic.name>${project.groupId}.${project.artifactId}</camel.osgi.symbolic.name>
+        <camel.osgi.bundle.name>Camel CDI :: @ContextName &amp; HelloBean injected</camel.osgi.bundle.name>
+    </properties>
+
+</project>
