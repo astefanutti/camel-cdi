@@ -5,7 +5,9 @@
 * Download and install Apache Karaf 3.x - http://karaf.apache.org/index/community/download.html#Karaf3.0.2
 * Move to the bin directory, open a terminal and launch Apache Karaf
 
+    ```
     ./karaf
+    ```
     
 * Install the Weld Container using the feature command
     
