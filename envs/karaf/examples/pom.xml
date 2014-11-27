@@ -9,26 +9,9 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>example</artifactId>
-    <name>Camel CDI Karaf :: Example</name>
-    <packaging>bundle</packaging>
-
-    <properties>
-        <!-- OSGI Properties -->
-        <camel.osgi.dynamic />
-        <camel.osgi.export.pkg>
-            org.apache.camel.cdi.karaf.*
-        </camel.osgi.export.pkg>
-        <camel.osgi.import.pkg>
-            !${camel.osgi.export.pkg},
-            org.apache.camel.*,
-            org.apache.camel.cdi.*,
-            org.apache.camel.support,
-            *
-        </camel.osgi.import.pkg>
-        <camel.osgi.private.pkg>!*</camel.osgi.private.pkg>
-        <camel.osgi.symbolic.name>${project.groupId}.${project.artifactId}</camel.osgi.symbolic.name>
-    </properties>
+    <artifactId>examples</artifactId>
+    <name>Camel CDI Karaf :: Examples</name>
+    <packaging>pom</packaging>
 
     <dependencies>
         <dependency>
@@ -46,7 +29,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-Name>Camel CDI :: Karaf Example</Bundle-Name>
+                        <Bundle-Name>${camel.osgi.bundle.name}</Bundle-Name>
                         <Bundle-SymbolicName>${camel.osgi.symbolic.name}</Bundle-SymbolicName>
                         <Export-Package>${camel.osgi.export.pkg}</Export-Package>
                         <Import-Package>${camel.osgi.import.pkg}</Import-Package>
@@ -64,6 +47,10 @@
             </plugin>
         </plugins>
     </build>
+
+    <modules>
+        <module>ContextNameAndHelloBean</module>
+    </modules>
 
 
 </project>

@@ -40,11 +40,11 @@
     
     feature:repo-add camel 2.14.0
     
-* Install camel
+* Install camel features (= core camel libraries)
     
     feature:install camel
     
-* Add features
+* Add features of the camel cdi project
     
     feature:repo-add mvn:io.astefanutti.camel.cdi/features/1.1-SNAPSHOT/xml/features    
     feature:install camel-cdi
@@ -61,6 +61,8 @@
     121 | Active |  80 | 3.0.0          | Expression Language 3.0 API
     122 | Active |  80 | 1.1.0.SNAPSHOT | camel-cdi
     
-* Install Camel CDI example
+* Install Camel CDI examples
+
+Simple case : @ContextName("simple") and HelloBean
         
-  bundle:install mvn:io.astefanutti.camel.cdi/example/1.1-SNAPSHOT      
+  bundle:install mvn:io.astefanutti.camel.cdi/contextname-hellobean/1.1-SNAPSHOT      

@@ -17,6 +17,7 @@ package org.apache.camel.cdi.karaf;
 
 import org.apache.camel.cdi.CdiCamelContext;
 import org.apache.camel.cdi.ContextName;
+import org.apache.camel.component.properties.PropertiesComponent;
 import org.apache.camel.util.ObjectHelper;
 
 import javax.annotation.PostConstruct;
@@ -32,8 +33,13 @@ public class SimpleCamelContext extends CdiCamelContext {
         try {
             // Enable Tracing
             super.setTracing(false);
+
+            // Define PropertyPlaceHolder
+            getComponent("properties", PropertiesComponent.class).setLocation("classpath:placeholder.properties");
+
             // Start Context
             super.start();
+
         } catch (Exception cause) {
             throw ObjectHelper.wrapRuntimeCamelException(cause);
         }
