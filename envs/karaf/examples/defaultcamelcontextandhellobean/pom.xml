@@ -9,8 +9,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>contextname-hellobean</artifactId>
-    <name>Camel CDI :: Example :: @ContextName &amp; Hello Bean injected.</name>
+    <artifactId>defaultcamelcontext-hellobean</artifactId>
+    <name>Camel CDI :: Example :: Default CamelContext &amp; Hello Bean injected.</name>
     <packaging>bundle</packaging>
 
     <properties>

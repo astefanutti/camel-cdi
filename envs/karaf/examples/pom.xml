@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>examples</artifactId>
-    <name>Camel CDI Karaf :: Examples</name>
+    <name>Camel CDI :: Examples</name>
     <packaging>pom</packaging>
 
     <dependencies>
@@ -49,7 +49,8 @@
     </build>
 
     <modules>
-        <module>ContextNameAndHelloBean</module>
+        <module>contextnameandhellobean</module>
+        <module>defaultcamelcontextandhellobean</module>
     </modules>
 
 

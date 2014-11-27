@@ -14,7 +14,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>example</module>
+        <module>examples</module>
         <module>features</module>
         <module>itest</module>
     </modules>
