@@ -17,14 +17,19 @@
         <!-- OSGI Properties -->
         <camel.osgi.dynamic />
         <camel.osgi.export.pkg>
-            org.apache.camel.cdi.karaf.*
+            org.apache.camel.cdi.example2.*
         </camel.osgi.export.pkg>
         <camel.osgi.import.pkg>
-            !${camel.osgi.export.pkg},
-            org.apache.camel.*,
-            org.apache.camel.cdi.*,
-            org.apache.camel.support,
-            *
+            javax.annotation,
+            javax.enterprise.context,
+            javax.inject,
+            org.apache.camel;version="[2.14,3)",
+            org.apache.camel.builder;version="[2.14,3)",
+            org.apache.camel.cdi;version="[1.1,2)",
+            org.apache.camel.component.properties;version="[2.14,3)",
+            org.apache.camel.model;version="[2.14,3)",
+            org.apache.camel.support;version="[2.14,3)",
+            org.apache.camel.util;version="[2.14,3)"
         </camel.osgi.import.pkg>
         <camel.osgi.private.pkg>!*</camel.osgi.private.pkg>
         <camel.osgi.symbolic.name>${project.groupId}.${project.artifactId}</camel.osgi.symbolic.name>

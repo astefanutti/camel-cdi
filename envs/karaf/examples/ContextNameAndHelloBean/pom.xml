@@ -17,7 +17,7 @@
         <!-- OSGI Properties -->
         <camel.osgi.dynamic />
         <camel.osgi.export.pkg>
-            org.apache.camel.cdi.karaf.*
+            org.apache.camel.cdi.example1.*
         </camel.osgi.export.pkg>
         <camel.osgi.import.pkg>
             !${camel.osgi.export.pkg},

@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.camel.cdi.karaf;
+package org.apache.camel.cdi.example1;
 
 import org.apache.camel.Body;
 
 public class HelloBean {
 
-    public String sayHello(@Body String message) { return "Hello " + message + " user.";}
+    public String sayHello(@Body String message) { return "Hello " + message + " user for example 1.";}
 }

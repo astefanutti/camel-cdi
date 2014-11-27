@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.camel.cdi.karaf;
+package org.apache.camel.cdi.example2;
 
 import org.apache.camel.Endpoint;
 import org.apache.camel.EndpointInject;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.cdi.ContextName;
 import org.apache.camel.cdi.Uri;
 
 import javax.inject.Inject;
@@ -40,7 +39,7 @@ public class SimpleCamelRoute extends RouteBuilder {
         from(timerEP).routeId("timerToDirect")
             .setHeader("context")
               .constant("simple")
-            .setBody().constant("Camel CDI Example")
+            .setBody().constant("Camel CDI Example 2")
               .log("Message received : ${body} for the Context : ${header.context}")
             .setHeader("header.message")
               .simple("properties:header.message")
