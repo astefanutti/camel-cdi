@@ -11,6 +11,8 @@
     
     feature:install pax-cdi-1.2-weld
     
+* ! Weld-2.2.6.Final should be installed    
+    
 * Check the bundles deployed   
  
     list
