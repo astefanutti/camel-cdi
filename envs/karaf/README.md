@@ -11,7 +11,9 @@
     
 * Install the Weld Container using the feature command
     
+    ```
     feature:install pax-cdi-1.2-weld
+    ```
     
 * ! Weld-2.2.6.Final should be installed    
     
@@ -43,20 +45,22 @@
     ```
     
 * Install camel repo
-    
+    ```
     feature:repo-add camel 2.14.0
+    ```
     
 * Install camel features (= core camel libraries)
-    
+    ```
     feature:install camel
+    ```
     
 * Add features of the camel cdi project
-    
+    ```    
     feature:repo-add mvn:io.astefanutti.camel.cdi/features/1.1-SNAPSHOT/xml/features    
     feature:install camel-cdi
-    
+    ```    
 * Check
-       
+    ```
      99 | Active |  50 | 2.14.0         | camel-core
     100 | Active |  50 | 2.14.0         | camel-karaf-commands
     115 | Active |  50 | 1.1.1          | geronimo-jta_1.1_spec
@@ -66,13 +70,14 @@
     120 | Active |  80 | 1.2.0          | CDI APIs
     121 | Active |  80 | 3.0.0          | Expression Language 3.0 API
     122 | Active |  80 | 1.1.0.SNAPSHOT | camel-cdi
-    
+    ```    
 * Install Camel CDI examples
 
 Simple case : @ContextName("simple") and HelloBean
-        
+  ```        
   bundle:install mvn:io.astefanutti.camel.cdi/contextname-hellobean/1.1-SNAPSHOT 
-       
+  ```       
 Simple case : Default CamelContextName created by the CDI extension and HelloBean
-
+  ```
   bundle:install mvn:io.astefanutti.camel.cdi/defaultcamelcontext-hellobean/1.1-SNAPSHOT      
+  ```
