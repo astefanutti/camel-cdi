@@ -60,6 +60,7 @@
     feature:install camel-cdi
     ```    
 * Check
+    
     ```
      99 | Active |  50 | 2.14.0         | camel-core
     100 | Active |  50 | 2.14.0         | camel-karaf-commands
