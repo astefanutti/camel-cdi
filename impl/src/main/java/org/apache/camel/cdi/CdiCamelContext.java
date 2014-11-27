@@ -16,8 +16,10 @@
 package org.apache.camel.cdi;
 
 import org.apache.camel.impl.DefaultCamelContext;
+import org.apache.camel.util.ObjectHelper;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.enterprise.inject.Vetoed;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
@@ -29,10 +31,29 @@ public class CdiCamelContext extends DefaultCamelContext {
     private BeanManager manager;
 
     @PostConstruct
-    private void postConstruct() {
-        setRegistry(new CdiBeanRegistry(manager));
-        setInjector(new CdiInjector(getInjector(), manager));
-        // Explicitly load the properties component as NPE can be thrown when the Camel context is interacted with but not started yet
-        lookupPropertiesComponent();
+    @Override
+    public void start() {
+        try {
+            // Add BeanRegistry & Camel Injector
+            setRegistry(new CdiBeanRegistry(manager));
+            setInjector(new CdiInjector(getInjector(), manager));
+            // Explicitly load the properties component as NPE can be thrown when the Camel context is interacted with but not started yet
+            lookupPropertiesComponent();
+
+            // Start CamelContext
+            super.start();
+        } catch (Exception e) {
+            throw ObjectHelper.wrapRuntimeCamelException(e);
+        }
+    }
+
+    @PreDestroy
+    @Override
+    public void stop() {
+        try {
+            super.stop();
+        } catch (Exception e) {
+            throw ObjectHelper.wrapRuntimeCamelException(e);
+        }
     }
 }
