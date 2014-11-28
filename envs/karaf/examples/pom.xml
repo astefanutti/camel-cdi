@@ -77,7 +77,7 @@
     </build>
 
     <modules>
-        <module>contextnameandhellobean</module>
+        <module>ContextNameAndHelloBean</module>
         <module>defaultcamelcontextandhellobean</module>
     </modules>
 
