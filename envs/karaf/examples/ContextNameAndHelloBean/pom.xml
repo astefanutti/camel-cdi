@@ -29,6 +29,9 @@
         <camel.osgi.private.pkg>!*</camel.osgi.private.pkg>
         <camel.osgi.symbolic.name>${project.groupId}.${project.artifactId}</camel.osgi.symbolic.name>
         <camel.osgi.bundle.name>${project.name}</camel.osgi.bundle.name>
+
+        <!-- Main Class to Boot -->
+        <example.main.class>org.jboss.weld.environment.se.StartMain</example.main.class>
     </properties>
 
 </project>
