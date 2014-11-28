@@ -25,6 +25,11 @@
             <email>antonin.stefanutti@gmail.com</email>
             <timezone>+1</timezone>
         </developer>
+        <developer>
+            <name>Charles Moulliard</name>
+            <email>ch007m@gmail.com</email>
+            <timezone>+1</timezone>
+        </developer>
     </developers>
 
     <licenses>
