@@ -15,18 +15,16 @@
  */
 package org.apache.camel.cdi.example1;
 
-import org.jboss.weld.environment.se.bindings.Parameters;
-import org.jboss.weld.environment.se.events.ContainerInitialized;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.Initialized;
 import javax.enterprise.event.Observes;
 import javax.inject.Singleton;
-import java.util.List;
 
 @Singleton
 public class BootStrap {
 
-    public void start(@Observes ContainerInitialized event, @Parameters List<String> parameters) {
+    public void start(@Observes @Initialized(ApplicationScoped.class) Object event) {
         System.out.println("Camel CDI :: Example 1 will be started");
     }
-
 }
