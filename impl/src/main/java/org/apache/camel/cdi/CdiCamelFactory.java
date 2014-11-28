@@ -57,6 +57,16 @@ final class CdiCamelFactory {
         return CamelContextHelper.getMandatoryEndpoint(context, uri, MockEndpoint.class);
     }
 
+    @Mock("")
+    @Produces
+    @Typed(MockEndpoint.class)
+    private static MockEndpoint createMockEndpoint(InjectionPoint ip, @Any Instance<CamelContext> instance) {
+        ContextName name = CdiSpiHelper.getQualifierByType(ip, ContextName.class);
+        CamelContext context = instance.select(name != null ? name : DefaultLiteral.INSTANCE).get();
+        String uri = CdiSpiHelper.getQualifierByType(ip, Mock.class).value();
+        return CamelContextHelper.getMandatoryEndpoint(context, uri, MockEndpoint.class);
+    }
+
     @Uri("")
     @Produces
     private static Endpoint endpoint(InjectionPoint ip, @Any Instance<CamelContext> instance) {
