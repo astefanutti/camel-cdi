@@ -21,12 +21,12 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.CamelContextAware;
 import org.apache.camel.Consume;
 import org.apache.camel.Converter;
+import org.apache.camel.Endpoint;
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.PropertyInject;
 import org.apache.camel.RoutesBuilder;
-import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.impl.DefaultCamelContextNameStrategy;
 import org.apache.camel.impl.ExplicitCamelContextNameStrategy;
 
@@ -85,7 +85,7 @@ public class CdiCamelExtension implements Extension {
             pit.setInjectionTarget(new CdiCamelInjectionTarget<>(pit.getInjectionTarget(), manager));
     }
 
-    private void mockEndpoints(@Observes ProcessBeanAttributes<MockEndpoint> pba) {
+    private <T extends Endpoint> void producerEndpoints(@Observes ProcessBeanAttributes<T> pba) {
         pba.setBeanAttributes(new BeanAttributesDecorator<>(pba.getBeanAttributes(), contextNames));
     }
 
