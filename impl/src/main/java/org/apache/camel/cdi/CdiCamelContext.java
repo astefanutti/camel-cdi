@@ -32,30 +32,11 @@ public class CdiCamelContext extends DefaultCamelContext {
     private BeanManager manager;
 
     @PostConstruct
-    @Override
-    public void start() {
-        try {
-            // Add BeanRegistry & Camel Injector
-            setRegistry(new CdiBeanRegistry(manager));
-            setInjector(new CdiInjector(getInjector(), manager));
-            // Explicitly load the properties component as NPE can be thrown when the Camel context is interacted with but not started yet
-            lookupPropertiesComponent();
-
-            // TODO: do not automatically the Camel context and find a proper solution to meet all use cases
-            // Start CamelContext
-            super.start();
-        } catch (Exception e) {
-            throw ObjectHelper.wrapRuntimeCamelException(e);
-        }
-    }
-
-    @PreDestroy
-    @Override
-    public void stop() {
-        try {
-            super.stop();
-        } catch (Exception e) {
-            throw ObjectHelper.wrapRuntimeCamelException(e);
-        }
+    void postConstruct() {
+        // Add BeanRegistry & Camel Injector
+        setRegistry(new CdiBeanRegistry(manager));
+        setInjector(new CdiInjector(getInjector(), manager));
+        // Explicitly load the properties component as NPE can be thrown when the Camel context is interacted with but not started yet
+        lookupPropertiesComponent();
     }
 }

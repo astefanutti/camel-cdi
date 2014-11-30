@@ -31,19 +31,13 @@ public class SimpleCamelContext extends CdiCamelContext {
 
     @PostConstruct
     void postConstruct() {
-        try {
-            // Enable Tracing
-            super.setTracing(false);
+        // Enable Tracing
+        super.setTracing(false);
 
-            // Define PropertyPlaceHolder
-            getComponent("properties", PropertiesComponent.class).setLocation("classpath:placeholder.properties");
+        // Define PropertyPlaceHolder
+        getComponent("properties", PropertiesComponent.class).setLocation("classpath:placeholder.properties");
 
-            // Start Context
-            super.start();
-
-        } catch (Exception cause) {
-            throw ObjectHelper.wrapRuntimeCamelException(cause);
-        }
+        // We could have started the context here
     }
 
     @PreDestroy

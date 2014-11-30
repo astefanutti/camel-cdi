@@ -18,13 +18,13 @@ package org.apache.camel.cdi;
 
 import javax.enterprise.util.AnnotationLiteral;
 
-final class ContextNameLiteral extends AnnotationLiteral<ContextName> implements ContextName {
+public final class ContextNameLiteral extends AnnotationLiteral<ContextName> implements ContextName {
 
     private static final long serialVersionUID = 1L;
 
     private final String name;
 
-    ContextNameLiteral(String name) {
+    public ContextNameLiteral(String name) {
         this.name = name;
     }
 

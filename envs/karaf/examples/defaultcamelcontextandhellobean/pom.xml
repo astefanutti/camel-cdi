@@ -20,21 +20,32 @@
             org.apache.camel.cdi.example2.*
         </camel.osgi.export.pkg>
         <camel.osgi.import.pkg>
-            javax.annotation,
-            javax.enterprise.context,
-            javax.enterprise.inject,
-            javax.inject,
-            org.apache.camel;version="[2.14,3)",
-            org.apache.camel.builder;version="[2.14,3)",
-            org.apache.camel.cdi;version="[1.1,2)",
-            org.apache.camel.component.properties;version="[2.14,3)",
-            org.apache.camel.model;version="[2.14,3)",
-            org.apache.camel.support;version="[2.14,3)",
-            org.apache.camel.util;version="[2.14,3)"
+            !${camel.osgi.export.pkg},
+            org.apache.camel.*,
+            org.apache.camel.cdi.*,
+            org.apache.camel.support,
+            *
         </camel.osgi.import.pkg>
         <camel.osgi.private.pkg>!*</camel.osgi.private.pkg>
         <camel.osgi.symbolic.name>${project.groupId}.${project.artifactId}</camel.osgi.symbolic.name>
         <camel.osgi.bundle.name>${project.name}</camel.osgi.bundle.name>
+
+        <!-- Main Class to Boot -->
+        <example.main.class>org.apache.camel.cdi.example2.BootStrap</example.main.class>
     </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+    </dependencies>
 
 </project>
