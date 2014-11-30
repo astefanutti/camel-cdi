@@ -21,7 +21,6 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.camel.cdi.CdiCamelExtension;
 import org.apache.camel.cdi.Uri;
 import org.apache.camel.cdi.se.bean.SimpleCamelRoute;
-import org.apache.camel.cdi.se.bean.UriEndpointRoute;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -30,8 +29,6 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -64,7 +61,6 @@ public class DefaultCamelContextTest {
 
     @Test
     @InSequence(1)
-    //@Before
     public void startCamelContext(CamelContext context) throws Exception {
         context.start();
     }
@@ -82,7 +78,6 @@ public class DefaultCamelContextTest {
 
     @Test
     @InSequence(3)
-    //@After
     public void stopCamelContext(CamelContext context) throws Exception {
         context.stop();
     }

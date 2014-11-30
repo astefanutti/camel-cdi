@@ -34,8 +34,9 @@ import java.util.Set;
 @Vetoed
 final class CdiBeanRegistry implements Registry {
 
+    private final Logger logger = LoggerFactory.getLogger(CdiBeanRegistry.class);
+
     private final BeanManager manager;
-    private static final Logger LOG = LoggerFactory.getLogger(CdiBeanRegistry.class);
 
     CdiBeanRegistry(BeanManager manager) {
         this.manager = manager;
@@ -44,7 +45,7 @@ final class CdiBeanRegistry implements Registry {
     @Override
     public Object lookupByName(String name) {
         ObjectHelper.notEmpty(name, "name");
-        LOG.trace("Looking up bean with name {}", name);
+        logger.trace("Looking up bean with name {}", name);
         return BeanManagerHelper.getReferenceByName(manager, name, Object.class);
     }
 
@@ -52,15 +53,14 @@ final class CdiBeanRegistry implements Registry {
     public <T> T lookupByNameAndType(String name, Class<T> type) {
         ObjectHelper.notEmpty(name, "name");
         ObjectHelper.notNull(type, "type");
-        LOG.trace("Looking up bean with name {} of type {}", name, type);
+        logger.trace("Looking up bean with name {} of type {}", name, type);
         return BeanManagerHelper.getReferenceByName(manager, name, type);
     }
 
     @Override
     public <T> Map<String, T> findByTypeWithName(Class<T> type) {
         ObjectHelper.notNull(type, "type");
-
-        LOG.trace("Lookups based of type {}", type);
+        logger.trace("Looking up named beans of type {}", type);
         Map<String, T> references = new HashMap<>();
         for (Bean<?> bean : manager.getBeans(type, AnyLiteral.INSTANCE))
             if (bean.getName() != null)
@@ -72,7 +72,7 @@ final class CdiBeanRegistry implements Registry {
     @Override
     public <T> Set<T> findByType(Class<T> type) {
         ObjectHelper.notNull(type, "type");
-        LOG.trace("Lookups based of type {}", type);
+        logger.trace("Looking up beans of type {}", type);
         return BeanManagerHelper.getReferencesByType(manager, type, AnyLiteral.INSTANCE);
     }
 
@@ -93,6 +93,6 @@ final class CdiBeanRegistry implements Registry {
 
     @Override
     public String toString() {
-        return "Cdi Bean Registry[" + System.identityHashCode(this) + "]";
+        return "Cdi Bean Registry [" + System.identityHashCode(this) + "]";
     }
 }
