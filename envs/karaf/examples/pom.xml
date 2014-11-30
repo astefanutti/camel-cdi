@@ -14,6 +14,7 @@
     <packaging>pom</packaging>
 
     <dependencies>
+        <!-- Java EE & Weld -->
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-api</artifactId>
@@ -57,7 +58,6 @@
                     </instructions>
                 </configuration>
             </plugin>
-
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
@@ -71,6 +71,32 @@
                 <configuration>
                     <mainClass>${example.main.class}</mainClass>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-maven-plugin</artifactId>
+                <version>${camel.version}</version>
+                <configuration>
+                    <useCDI>true</useCDI>
+                </configuration>
+                <dependencies>
+                    <!-- lets use Deltaspike with Weld2 -->
+                    <dependency>
+                        <groupId>org.apache.deltaspike.cdictrl</groupId>
+                        <artifactId>deltaspike-cdictrl-weld</artifactId>
+                        <version>${deltaspike-version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.jboss.weld.se</groupId>
+                        <artifactId>weld-se-core</artifactId>
+                        <version>${weld.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.jboss.weld</groupId>
+                        <artifactId>weld-core-impl</artifactId>
+                        <version>${weld.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
 
         </plugins>
