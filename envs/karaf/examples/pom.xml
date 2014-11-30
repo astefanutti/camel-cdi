@@ -91,6 +91,11 @@
                         <artifactId>weld-se-core</artifactId>
                         <version>${weld.version}</version>
                     </dependency>
+                    <dependency>
+                        <groupId>org.jboss.weld</groupId>
+                        <artifactId>weld-core-impl</artifactId>
+                        <version>${weld.version}</version>
+                    </dependency>
                 </dependencies>
             </plugin>
 
