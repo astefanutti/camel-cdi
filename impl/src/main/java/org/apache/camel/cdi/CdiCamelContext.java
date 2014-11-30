@@ -41,6 +41,7 @@ public class CdiCamelContext extends DefaultCamelContext {
             // Explicitly load the properties component as NPE can be thrown when the Camel context is interacted with but not started yet
             lookupPropertiesComponent();
 
+            // TODO: do not automatically the Camel context and find a proper solution to meet all use cases
             // Start CamelContext
             super.start();
         } catch (Exception e) {
