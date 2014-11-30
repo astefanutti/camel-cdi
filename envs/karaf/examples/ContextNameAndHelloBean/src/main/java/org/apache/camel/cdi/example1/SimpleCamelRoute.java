@@ -32,10 +32,11 @@ public class SimpleCamelRoute extends RouteBuilder {
 
     @Inject
     @Uri("direct:continue")
+    @ContextName("simple")
     private Endpoint directEP;
 
     @Inject
-    HelloBean helloBean;
+    private HelloBean helloBean;
 
     @Override
     public void configure() {
