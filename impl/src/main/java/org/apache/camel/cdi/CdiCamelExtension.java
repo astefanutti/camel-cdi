@@ -95,7 +95,7 @@ public class CdiCamelExtension implements Extension {
 
     private void addDefaultCamelContext(@Observes AfterBeanDiscovery abd, BeanManager manager) {
         if (manager.getBeans(CamelContext.class, AnyLiteral.INSTANCE).isEmpty())
-            abd.addBean(new CdiCamelContextBean(manager));
+            abd.addBean(new CdiCamelContextBean(manager, "camel-cdi"));
     }
 
     private void configureCamelContexts(@Observes AfterDeploymentValidation adv, BeanManager manager) {

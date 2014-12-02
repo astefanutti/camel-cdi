@@ -20,5 +20,7 @@ import org.apache.camel.Body;
 
 public class HelloBean {
 
-    public String sayHello(@Body String message) { return "Hello " + message + " user for example 1.";}
+    public String sayHello(@Body String message) {
+        return "Hello " + message + " user for example 1.";
+    }
 }

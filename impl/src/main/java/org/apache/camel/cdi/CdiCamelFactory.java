@@ -57,6 +57,7 @@ final class CdiCamelFactory {
         return CamelContextHelper.getMandatoryEndpoint(context, uri, MockEndpoint.class);
     }
 
+    // TODO: confirm whether it can be removed
     @Mock("")
     @Produces
     @Typed(MockEndpoint.class)

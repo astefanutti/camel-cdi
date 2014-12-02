@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.camel.cdi.example1;
+package org.apache.camel.cdi.example2;
 
 
 import org.apache.camel.CamelContext;
-import org.apache.camel.cdi.ContextNameLiteral;
 import org.jboss.weld.environment.se.StartMain;
 import org.jboss.weld.environment.se.WeldContainer;
 
@@ -30,18 +29,19 @@ import java.util.concurrent.CountDownLatch;
 public class BootStrap {
 
     void start(@Observes @Initialized(ApplicationScoped.class) Object event) {
-        System.out.println("Camel CDI :: Example 1 will be started");
+        System.out.println("Camel CDI :: Example 2 will be started");
+        // We could have started the Camel context here
     }
 
-    void shutdown(@Observes @Destroyed(ApplicationScoped.class) Object event) {
-        System.out.println("Camel CDI :: Example 1 will be stopped");
-        // The context is stopped in the @PostConstruct lifecycle callback
+    void shutdown(@Observes @Destroyed(ApplicationScoped.class) Object event, CamelContext context) throws Exception {
+        System.out.println("Camel CDI :: Example 2 will be stopped");
+        context.stop();
     }
 
     public static void main(String[] args) throws Exception {
         WeldContainer container = new StartMain(args).go();
-        // Get a reference to the Camel context named "simple"
-        CamelContext context = container.instance().select(CamelContext.class, new ContextNameLiteral("simple")).get();
+        // Fet a reference to the default Camel context
+        CamelContext context = container.instance().select(CamelContext.class).get();
         // Start it
         context.start();
         // And wait until the JVM exits
