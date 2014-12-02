@@ -71,7 +71,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <camel.version>2.14.0</camel.version>
         <cdi.version>1.2</cdi.version>
-        <deltaspike-version>1.0.3</deltaspike-version>
+        <deltaspike.version>1.1.0</deltaspike.version>
         <javaee.version>7.0</javaee.version>
         <slf4j.version>1.7.7</slf4j.version>
         <weld.version>2.2.6.Final</weld.version>
