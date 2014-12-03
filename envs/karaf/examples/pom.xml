@@ -20,17 +20,7 @@
             <artifactId>javaee-api</artifactId>
         </dependency>
 
-        <!-- lets use Deltaspike with Weld2 -->
-        <dependency>
-            <groupId>org.apache.deltaspike.cdictrl</groupId>
-            <artifactId>deltaspike-cdictrl-api</artifactId>
-            <version>${deltaspike.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.deltaspike.cdictrl</groupId>
-            <artifactId>deltaspike-cdictrl-weld</artifactId>
-            <version>${deltaspike.version}</version>
-        </dependency>
+        <!-- Weld2 -->
         <dependency>
             <groupId>org.jboss.weld.se</groupId>
             <artifactId>weld-se</artifactId>
@@ -48,6 +38,19 @@
             <groupId>org.jboss.weld</groupId>
             <artifactId>weld-core-impl</artifactId>
         </dependency>
+
+        <!-- DeltaSpike -->
+        <dependency>
+            <groupId>org.apache.deltaspike.cdictrl</groupId>
+            <artifactId>deltaspike-cdictrl-api</artifactId>
+            <version>${deltaspike.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.deltaspike.cdictrl</groupId>
+            <artifactId>deltaspike-cdictrl-weld</artifactId>
+            <version>${deltaspike.version}</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -90,9 +93,9 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.apache.camel</groupId>
+                <groupId>io.astefanutti.camel.cdi</groupId>
                 <artifactId>camel-maven-plugin</artifactId>
-                <version>${camel.version}</version>
+                <version>${project.version}</version>
                 <configuration>
                     <useCDI>true</useCDI>
                 </configuration>

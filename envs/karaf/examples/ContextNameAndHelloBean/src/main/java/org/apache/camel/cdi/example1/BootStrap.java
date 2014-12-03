@@ -21,6 +21,7 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.cdi.ContextNameLiteral;
 import org.jboss.weld.environment.se.StartMain;
 import org.jboss.weld.environment.se.WeldContainer;
+import org.jboss.weld.environment.se.events.ContainerInitialized;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.Destroyed;
@@ -32,11 +33,12 @@ public class BootStrap {
 
     void start(@Observes @Initialized(ApplicationScoped.class) Object event) {
         System.out.println("Camel CDI :: Example 1 will be started");
+        // The context is started in the @PostConstruct lifecycle callback (see class SimpleCamelContext)
     }
 
     void shutdown(@Observes @Destroyed(ApplicationScoped.class) Object event) {
         System.out.println("Camel CDI :: Example 1 will be stopped");
-        // The context is stopped in the @PostConstruct lifecycle callback
+        // The context is stopped in the @PReDestroy lifecycle callback (see class SimpleCamelContext)
     }
 
     public static void main(String[] args) throws Exception {

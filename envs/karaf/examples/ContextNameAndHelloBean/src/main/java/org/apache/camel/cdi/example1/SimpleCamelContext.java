@@ -30,7 +30,7 @@ import javax.enterprise.context.ApplicationScoped;
 public class SimpleCamelContext extends CdiCamelContext {
 
     @PostConstruct
-    void postConstruct() {
+    void postConstruct() throws Exception {
         // Enable Tracing
         super.setTracing(false);
 
@@ -38,6 +38,7 @@ public class SimpleCamelContext extends CdiCamelContext {
         getComponent("properties", PropertiesComponent.class).setLocation("classpath:placeholder.properties");
 
         // We could have started the context here
+        super.start();
     }
 
     @PreDestroy
