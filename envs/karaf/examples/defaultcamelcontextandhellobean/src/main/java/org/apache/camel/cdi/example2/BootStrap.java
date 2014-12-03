@@ -28,9 +28,9 @@ import java.util.concurrent.CountDownLatch;
 
 public class BootStrap {
 
-    void start(@Observes @Initialized(ApplicationScoped.class) Object event) {
+    void start(@Observes @Initialized(ApplicationScoped.class) Object event, CamelContext context) throws Exception {
         System.out.println("Camel CDI :: Example 2 will be started");
-        // We could have started the Camel context here
+        context.start();
     }
 
     void shutdown(@Observes @Destroyed(ApplicationScoped.class) Object event, CamelContext context) throws Exception {
