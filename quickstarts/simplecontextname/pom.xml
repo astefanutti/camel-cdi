@@ -11,7 +11,7 @@
 
     <artifactId>simplecontextname</artifactId>
     <name>Camel CDI :: Quickstarts :: @ContextName &amp; Hello Bean injected.</name>
-    <packaging>bundle</packaging>
+    <packaging>${packaging.type}</packaging>
 
     <properties>
         <!-- OSGI Properties -->

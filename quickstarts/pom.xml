@@ -13,6 +13,10 @@
     <name>Camel CDI :: Quickstarts</name>
     <packaging>pom</packaging>
 
+    <properties>
+        <packaging.type>${packaging.type}</packaging.type>
+    </properties>
+
     <dependencies>
         <!-- Java EE & Weld -->
         <dependency>
@@ -55,31 +59,6 @@
 
     <build>
         <plugins>
-            <!-- Felix Maven Plugin -->
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <version>${maven-bundle-plugin.version}</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Bundle-Name>${camel.osgi.bundle.name}</Bundle-Name>
-                        <Bundle-SymbolicName>${camel.osgi.symbolic.name}</Bundle-SymbolicName>
-                        <Export-Package>${camel.osgi.export.pkg}</Export-Package>
-                        <Import-Package>${camel.osgi.import.pkg}</Import-Package>
-                        <Require-Capability>
-                            osgi.extender; filter:="(osgi.extender=pax.cdi)",
-                            org.ops4j.pax.cdi.extension; filter:="(extension=camel-cdi)"
-                        </Require-Capability>
-                        <DynamicImport-Package>${camel.osgi.dynamic}</DynamicImport-Package>
-                        <Private-Package>${camel.osgi.private.pkg}</Private-Package>
-                        <Implementation-Title>Apache Camel CDI :: Karaf Example</Implementation-Title>
-                        <Implementation-Version>${project.version}</Implementation-Version>
-                        <Karaf-Info>Camel;${project.artifactId}=${project.version}</Karaf-Info>
-                    </instructions>
-                </configuration>
-            </plugin>
-
             <!-- Maven Exec Plugin -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -106,8 +85,92 @@
                 </configuration>
             </plugin>
 
+            <!-- Wildfly Maven Plugin -->
+            <plugin>
+                <groupId>org.wildfly.plugins</groupId>
+                <artifactId>wildfly-maven-plugin</artifactId>
+                <version>1.0.2.Final</version>
+            </plugin>
+
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>bundle</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <packaging.type>bundle</packaging.type>
+            </properties>
+            <build>
+                <plugins>
+                    <!-- Felix Maven Plugin -->
+                    <plugin>
+                        <groupId>org.apache.felix</groupId>
+                        <artifactId>maven-bundle-plugin</artifactId>
+                        <version>${maven-bundle-plugin.version}</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <instructions>
+                                <Bundle-Name>${camel.osgi.bundle.name}</Bundle-Name>
+                                <Bundle-SymbolicName>${camel.osgi.symbolic.name}</Bundle-SymbolicName>
+                                <Export-Package>${camel.osgi.export.pkg}</Export-Package>
+                                <Import-Package>${camel.osgi.import.pkg}</Import-Package>
+                                <Require-Capability>
+                                    osgi.extender; filter:="(osgi.extender=pax.cdi)",
+                                    org.ops4j.pax.cdi.extension; filter:="(extension=camel-cdi)"
+                                </Require-Capability>
+                                <DynamicImport-Package>${camel.osgi.dynamic}</DynamicImport-Package>
+                                <Private-Package>${camel.osgi.private.pkg}</Private-Package>
+                                <Implementation-Title>Apache Camel CDI :: Karaf Example</Implementation-Title>
+                                <Implementation-Version>${project.version}</Implementation-Version>
+                                <Karaf-Info>Camel;${project.artifactId}=${project.version}</Karaf-Info>
+                            </instructions>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>war</id>
+            <properties>
+                <packaging.type>war</packaging.type>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-war-plugin</artifactId>
+                        <configuration>
+                            <webResources>
+                                <!-- place the legal files under the META-INF folder -->
+                                <resource>
+                                    <directory>src/main/resources/META-INF</directory>
+                                    <targetPath>META-INF</targetPath>
+                                    <includes>
+                                        <include>*.txt</include>
+                                    </includes>
+                                </resource>
+                                <!-- place beans.xml where it's expected to be, that's under the path WEB-INF/beans.xml -->
+                                <resource>
+                                    <directory>src/main/resources/META-INF</directory>
+                                    <targetPath>WEB-INF</targetPath>
+                                    <includes>
+                                        <include>beans.xml</include>
+                                    </includes>
+                                </resource>
+                            </webResources>
+                            <!-- exclude beans.xml from the root of the WAR -->
+                            <packagingExcludes>beans.xml</packagingExcludes>
+                            <failOnMissingWebXml>false</failOnMissingWebXml>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <modules>
         <module>simplecontextname</module>
