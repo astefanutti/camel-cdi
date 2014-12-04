@@ -1,7 +1,7 @@
 # Camel CDI - Quickstarts
 
-Welcome to the Camel CDI quickstarts which demonstrates how to use the Camel CDI annotations (@ContextName, @Uri, ...) and
-how to use them for projects deployed into a Web Container/Java EE application/Modular platform or Java SE.
+Welcome to the Camel CDI quickstarts which demonstrates how to use the Camel CDI annotations (@ContextName, @Uri, ...) within your projects 
+& how to run or deploy them into the different containers.
 
 The quickstarts are categorized accordingly to the use case & annotations being used:
 
