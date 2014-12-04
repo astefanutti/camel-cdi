@@ -22,7 +22,6 @@
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-api</artifactId>
-            <scope>provided</scope>
         </dependency>
 
         <!-- Weld2 -->
@@ -98,7 +97,13 @@
                 <artifactId>wildfly-maven-plugin</artifactId>
                 <version>1.0.2.Final</version>
                 <configuration>
-                    <artifact>org.wildfly:wildfly-dist:8.2.0.Final</artifact>
+                    <version>8.2.0.Final</version>
+                    <execute-commands>
+                        <commands>
+                            <command>/subsystem=logging/logger=org.jboss.weld:add(level=DEBUG,handlers=[debug])</command>
+                            <command>/subsystem=logging/logger=org.apache.camel:add(level=DEBUG,handlers=[debug])</command>
+                        </commands>
+                    </execute-commands>
                 </configuration>
             </plugin>
         </plugins>
