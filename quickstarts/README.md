@@ -44,19 +44,20 @@ blabla blabla
     
 * REMARK : As PAx-CDI Weld (= version 0.9) will deploy a older version of Weld, we have to do a manipulation to install the 
   version of Weld-2.2.6.Final that we have qualified for that release. So, remove the deployed bundle of weld and install the version 2.2.6.Final
- * Retrieve the bundle number of weld deployed 
-```
-list | grep -i weld
-115 | Active |  80 | 2.2.4.Final | Weld OSGi Bundle
-```
- * Remove it
-```
-uninstall 115
-```
- * Install Weld 2.2.6.Final
-```
-install -s mvn:org.jboss.weld/weld-osgi-bundle/2.2.6.Final
-```
+  
+  * Retrieve the bundle number of weld deployed 
+    ```
+    list | grep -i weld
+    115 | Active |  80 | 2.2.4.Final | Weld OSGi Bundle
+    ```
+  * Remove it
+    ```
+    uninstall 115
+    ```
+  * Install Weld 2.2.6.Final
+    ```
+    install -s mvn:org.jboss.weld/weld-osgi-bundle/2.2.6.Final
+    ```
 
 * Control the list of the bundles deployed. They should contain OPS4J Pax CDI & Weld and 
   the bundles required like JBoss Logging, Guava, CDI APIs, JSR330, EL, ...
