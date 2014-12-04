@@ -15,12 +15,14 @@
 
     <properties>
         <!-- OSGI Properties -->
-        <camel.osgi.dynamic />
+        <camel.osgi.dynamic/>
         <camel.osgi.export.pkg>
             org.apache.camel.cdi.example1.*
         </camel.osgi.export.pkg>
         <camel.osgi.import.pkg>
             !${camel.osgi.export.pkg},
+            javax.annotation;version="[1.1,2)",
+            org.jboss.weld.environment.se;resolution:=optional,
             org.apache.camel.*,
             org.apache.camel.cdi.*,
             org.apache.camel.support,
@@ -35,16 +37,24 @@
     </properties>
 
     <dependencies>
+        <!-- Camel -->
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.astefanutti.camel.cdi</groupId>
+            <artifactId>camel-cdi</artifactId>
+            <version>1.1-SNAPSHOT</version>
+        </dependency>
+        <!-- Logging -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-            <scope>runtime</scope>
         </dependency>
-
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
-            <scope>runtime</scope>
         </dependency>
     </dependencies>
 

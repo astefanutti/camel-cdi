@@ -28,31 +28,47 @@ blabla blabla
 ### Installation
 
 * Download and install Apache Karaf 3.x - http://karaf.apache.org/index/community/download.html#Karaf3.0.2
-* Move to the bin directory, open a terminal and launch Apache Karaf
+* open a terminal on your machine (Unix/Windows), move to the bin directory and launch Apache Karaf
 
     ```
-    ./karaf
+    ./karaf or karaf.bat
     ```
     
-* Install the Weld Container using the feature command
+* Install the Weld Container using the feature command. When this command is excuted the bundles defined within the features XML file
+  will be downloaded and deployed into the Karaf container.
     
     ```
+    feature:repo-add mvn:org.ops4j.pax.cdi/pax-cdi-features/0.9.0/xml/features
     feature:install pax-cdi-1.2-weld
     ```
     
-* ! Weld-2.2.6.Final should be installed    
-    
-* Check the bundles deployed   
+* REMARK : As PAx-CDI Weld (= version 0.9) will deploy a older version of Weld, we have to do a manipulation to install the 
+  version of Weld-2.2.6.Final that we have qualified for that release. So, remove the deployed bundle of weld and install the version 2.2.6.Final
+** Retrieve the bundle number of weld deployed 
+```
+list | grep -i weld
+115 | Active |  80 | 2.2.4.Final | Weld OSGi Bundle
+```
+** Remove it
+```
+uninstall 115
+```
+** Install Weld 2.2.6.Final
+```
+install -s mvn:org.jboss.weld/weld-osgi-bundle/2.2.6.Final
+```
+
+* Control the list of the bundles deployed. They should contain OPS4J Pax CDI & Weld and 
+  the bundles required like JBoss Logging, Guava, CDI APIs, JSR330, EL, ...
  
     ```
     list
-    
     ID | State  | Lvl | Version     | Name
-    -----------------------------------------------------------------------------------------------------------
-    67 | Active |  80 | 1.0         | Apache Geronimo Java Contexts and Dependency Injection (JSR-299) Spec API
-    68 | Active |  80 | 1.0         | Apache Geronimo JSR-330 Spec API
-    69 | Active |  80 | 1.0         | Interceptor 1.1
-    70 | Active |  80 | 1.0.3       | Apache Geronimo Expression Language Spec 2.2
+    ---------------------------------------------------------------------------
+    67 | Active |  80 | 1.2         | javax.interceptor API
+    68 | Active |  80 | 1.2.0       | CDI APIs
+    69 | Active |  80 | 1.0         | Apache Geronimo JSR-330 Spec API
+    70 | Active |  80 | 3.0.0       | Expression Language 3.0 API
     71 | Active |  80 | 1.7.1       | OPS4J Pax Swissbox :: Tracker
     72 | Active |  80 | 1.7.1       | OPS4J Pax Swissbox :: Lifecycle
     73 | Active |  80 | 1.7.1       | OPS4J Pax Swissbox :: Extender
@@ -64,25 +80,25 @@ blabla blabla
     79 | Active |  80 | 0.8.0       | OPS4J Pax CDI Service Provider Interface
     80 | Active |  80 | 0.8.0       | OPS4J Pax CDI Portable Extension for OSGi
     81 | Active |  80 | 0.8.0       | OPS4J Pax CDI Extender for Bean Bundles
-    82 | Active |  80 | 1.2.0.Beta1 | Weld OSGi Bundle
-    83 | Active |  80 | 0.8.0       | OPS4J Pax CDI Weld Adapter
-    84 | Active |  80 | 2.1.1.Final | Weld OSGi Bundle
+    83 | Active |  80 | 3.1.3.GA    | JBoss Logging 3
+    84 | Active |  80 | 13.0.1      | Guava: Google Core Libraries for Java
+    85 | Active |  80 | 0.8.0       | OPS4J Pax CDI Weld Adapter
+    86 | Active |  80 | 2.2.6.Final | Weld OSGi Bundle
     ```
     
-* Install camel repo
+* Now, we can install the repository containing the camel features
     ```
     feature:repo-add camel 2.14.0
     ```
     
-* Install camel features (= core camel libraries)
+* And next, the features of camel that we need to run the quickstarts (= core camel libraries)
     ```
     feature:install camel
     ```
     
-* Add features of the camel cdi project
+* The following step will consist in installing the new camel-cdi component
     ```    
-    feature:repo-add mvn:io.astefanutti.camel.cdi/features/1.1-SNAPSHOT/xml/features    
-    feature:install camel-cdi
+    install -s mvn:io.astefanutti.camel.cdi/camel-cdi
     ```    
 * Check
     
@@ -97,16 +113,16 @@ blabla blabla
     121 | Active |  80 | 3.0.0          | Expression Language 3.0 API
     122 | Active |  80 | 1.1.0.SNAPSHOT | camel-cdi
     ```    
-* Install Camel CDI examples
+* Install one of the quickstarts
 
-Simple case : @ContextName("simple") and HelloBean
+** Simple case : @ContextName("simple") and HelloBean
 
   ```        
-  bundle:install mvn:io.astefanutti.camel.cdi/contextname-hellobean/1.1-SNAPSHOT 
+  install -s mvn:io.astefanutti.camel.cdi/simplecontextname/1.1-SNAPSHOT 
   ```       
 
-Simple case : Default CamelContextName created by the CDI extension and HelloBean
+** Simple case : Default CamelContextName created by the CDI extension and HelloBean
 
   ```
-  bundle:install mvn:io.astefanutti.camel.cdi/defaultcamelcontext-hellobean/1.1-SNAPSHOT      
+  install -s mvn:io.astefanutti.camel.cdi/defaultcamelcontext/1.1-SNAPSHOT      
   ```
