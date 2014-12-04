@@ -1,6 +1,6 @@
 # Camel CDI - QuickStarts
 
-* [Some Text](This is a text)
+* [Some Text](Some Text)
 
 ### Some Text ###
 
