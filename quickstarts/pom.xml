@@ -139,20 +139,28 @@
                 <packaging.type>war</packaging.type>
             </properties>
             <build>
+                <resources>
+                    <resource>
+                        <directory>src/main/resources/META-INF</directory>
+                        <targetPath>WEB-INF/classes/META-INF</targetPath>
+                        <excludes>
+                            <exclude>beans.xml</exclude>
+                        </excludes>
+                    </resource>
+                    <resource>
+                        <directory>src/main/resources</directory>
+                        <includes>
+                            <include>log4j.xml</include>
+                            <include>*.properties</include>
+                        </includes>
+                    </resource>
+                </resources>
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-war-plugin</artifactId>
                         <configuration>
                             <webResources>
-                                <!-- place the legal files under the META-INF folder -->
-                                <resource>
-                                    <directory>src/main/resources/META-INF</directory>
-                                    <targetPath>META-INF</targetPath>
-                                    <includes>
-                                        <include>*.txt</include>
-                                    </includes>
-                                </resource>
                                 <!-- place beans.xml where it's expected to be, that's under the path WEB-INF/beans.xml -->
                                 <resource>
                                     <directory>src/main/resources/META-INF</directory>
