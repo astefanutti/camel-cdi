@@ -3,14 +3,14 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>karaf</artifactId>
+        <artifactId>camel-cdi-parent</artifactId>
         <groupId>io.astefanutti.camel.cdi</groupId>
         <version>1.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>examples</artifactId>
-    <name>Camel CDI :: Examples</name>
+    <artifactId>quickstarts</artifactId>
+    <name>Camel CDI :: Quickstarts</name>
     <packaging>pom</packaging>
 
     <dependencies>
@@ -55,6 +55,7 @@
 
     <build>
         <plugins>
+            <!-- Felix Maven Plugin -->
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
@@ -78,6 +79,8 @@
                     </instructions>
                 </configuration>
             </plugin>
+
+            <!-- Maven Exec Plugin -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
@@ -92,6 +95,8 @@
                     <mainClass>${example.main.class}</mainClass>
                 </configuration>
             </plugin>
+
+            <!-- Camel Maven Plugin -->
             <plugin>
                 <groupId>io.astefanutti.camel.cdi</groupId>
                 <artifactId>camel-maven-plugin</artifactId>
@@ -105,8 +110,8 @@
     </build>
 
     <modules>
-        <module>ContextNameAndHelloBean</module>
-        <module>defaultcamelcontextandhellobean</module>
+        <module>simplecontextname</module>
+        <module>defaultcamelcontext</module>
     </modules>
 
 

@@ -1,3 +1,7 @@
+# Camel CDI - QuickStarts
+
+
+
 # Karaf Instructions
 
 ## Installation
@@ -75,10 +79,13 @@
 * Install Camel CDI examples
 
 Simple case : @ContextName("simple") and HelloBean
+
   ```        
   bundle:install mvn:io.astefanutti.camel.cdi/contextname-hellobean/1.1-SNAPSHOT 
   ```       
+
 Simple case : Default CamelContextName created by the CDI extension and HelloBean
+
   ```
   bundle:install mvn:io.astefanutti.camel.cdi/defaultcamelcontext-hellobean/1.1-SNAPSHOT      
   ```
