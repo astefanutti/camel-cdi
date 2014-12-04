@@ -5,12 +5,12 @@ Welcome to the Camel CDI quickstarts which demonstrates how to use the Camel CDI
 
 The quickstarts are categorized accordingly to the use case & annotations being used:
 
-* [@ContextName annotation](#@contextname-annotation)
+* [@ContextName annotation](#contextname-annotation)
 * [Default CamelContext](#default-camelcontext)
 
 Here are the instructions to follow to run or deploy the project using one of the different container :
 
-* [Modular - OSGI Platform](#modular-osgi-platform)
+* [Modular - OSGI Platform](#modular---osgi-platform)
 * Java SE
 * Web Container (Tomcat, Jetty)
 * Java EE (Wildfly)
