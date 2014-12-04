@@ -1,7 +1,8 @@
 # Camel CDI - QuickStarts
 
-* auto-gen TOC:
-{:toc}
+* [Some Text](This is a text)
+
+### Some Text ###
 
 
 # Karaf Instructions
