@@ -21,7 +21,6 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.cdi.ContextNameLiteral;
 import org.jboss.weld.environment.se.StartMain;
 import org.jboss.weld.environment.se.WeldContainer;
-import org.jboss.weld.environment.se.events.ContainerInitialized;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.Destroyed;
