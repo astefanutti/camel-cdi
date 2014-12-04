@@ -15,7 +15,7 @@ Here are the instructions to follow to run or deploy the project using one of th
 * Web Container (Tomcat, Jetty)
 * Java EE (Wildfly)
 
-## @ContextName annotation
+## ContextName annotation
 
 blabla blabla
 
