@@ -1,21 +1,31 @@
-# Camel CDI - QuickStarts
+# Camel CDI - Quickstarts
 
-* [Camel CDI example using the @ContextName annotation](#camel-cdi-example)
-* [Link to Header 3](#header-3)
+Welcome to the Camel CDI quickstarts which demonstrates how to use the Camel CDI annotations (@ContextName, @Uri, ...) and
+how to use them for projects deployed into a Web Container/Java EE application/Modular platform or Java SE.
 
-## Camel CDI Example
+The quickstarts are categorized accordingly to the use case & annotations being used:
+
+* [@ContextName annotation](#@contextname-annotation)
+* [Default CamelContext](#default-camelcontext)
+
+Here are the instructions to follow to run or deploy the project using one of the different container :
+
+* [Modular - OSGI Platform](#modular-osgi-platform)
+* Java SE
+* Web Container (Tomcat, Jetty)
+* Java EE (Wildfly)
+
+## @ContextName annotation
 
 blabla blabla
 
-## Header 3
+## Default CamelContext
 
 blabla blabla
 
+## Modular - OSGI Platform
 
-
-# Karaf Instructions
-
-## Installation
+### Installation
 
 * Download and install Apache Karaf 3.x - http://karaf.apache.org/index/community/download.html#Karaf3.0.2
 * Move to the bin directory, open a terminal and launch Apache Karaf
