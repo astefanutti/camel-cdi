@@ -38,7 +38,7 @@ public class BootStrap {
 
     void shutdown(@Observes @Destroyed(ApplicationScoped.class) Object event) {
         System.out.println("Camel CDI :: Example 1 will be stopped");
-        // The context is stopped in the @PReDestroy lifecycle callback (see class SimpleCamelContext)
+        // The context is stopped in the @PreDestroy lifecycle callback (see class SimpleCamelContext)
     }
 
     public static void main(String[] args) throws Exception {

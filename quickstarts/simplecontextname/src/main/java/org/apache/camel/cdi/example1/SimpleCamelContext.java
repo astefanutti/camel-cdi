@@ -30,15 +30,18 @@ import javax.enterprise.context.ApplicationScoped;
 public class SimpleCamelContext extends CdiCamelContext {
 
     @PostConstruct
-    void postConstruct() throws Exception {
+    void postConstruct() {
         // Enable Tracing
         super.setTracing(false);
 
         // Define PropertyPlaceHolder
         getComponent("properties", PropertiesComponent.class).setLocation("classpath:placeholder.properties");
 
-        // We could have started the context here
-        super.start();
+        try {
+            super.start();
+        } catch (Exception cause) {
+            throw ObjectHelper.wrapRuntimeCamelException(cause);
+        }
     }
 
     @PreDestroy
