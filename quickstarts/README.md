@@ -1,9 +1,9 @@
 # Camel CDI - QuickStarts
 
-* [Link to Header 2](#header-2)
+* [Camel CDI example using the @ContextName annotation](#camel-cdi-example)
 * [Link to Header 3](#header-3)
 
-## Header 2
+## Camel CDI Example
 
 blabla blabla
 
