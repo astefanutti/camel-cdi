@@ -11,7 +11,7 @@
 
     <artifactId>defaultcamelcontext</artifactId>
     <name>Camel CDI :: Quickstarts :: Default CamelContext &amp; Hello Bean injected.</name>
-    <packaging>bundle</packaging>
+    <packaging>${packaging.type}</packaging>
 
     <properties>
         <!-- OSGI Properties -->
