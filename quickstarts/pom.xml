@@ -161,10 +161,18 @@
                             <exclude>beans.xml</exclude>
                         </excludes>
                     </resource>
+                    <!-- WildFly Doc - In a WAR or JAR deployment the configuration file can be in either the META-INF or WEB-INF directories -->
+                    <resource>
+                        <directory>src/main/resources</directory>
+                        <targetPath>WEB-INF</targetPath>
+                        <includes>
+                            <include>log4j.xml</include>
+                        </includes>
+                    </resource>
+                    <!-- Copy Properties Files -->
                     <resource>
                         <directory>src/main/resources</directory>
                         <includes>
-                            <include>log4j.xml</include>
                             <include>*.properties</include>
                         </includes>
                     </resource>
