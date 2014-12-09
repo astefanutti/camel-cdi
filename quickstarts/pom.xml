@@ -94,8 +94,10 @@
                     <version>${wildfly.version}</version>
                     <execute-commands>
                         <commands>
-                            <command>/subsystem=logging/logger=org.jboss.weld:add(level=DEBUG,handlers=[debug])</command>
-                            <command>/subsystem=logging/logger=org.apache.camel:add(level=DEBUG,handlers=[debug])</command>
+                            <command>/subsystem=logging/logger=org.jboss.weld:add(level=DEBUG,handlers=[debug])
+                            </command>
+                            <command>/subsystem=logging/logger=org.apache.camel:add(level=DEBUG,handlers=[debug])
+                            </command>
                         </commands>
                     </execute-commands>
                 </configuration>
@@ -228,6 +230,13 @@
                     <artifactId>weld-servlet</artifactId>
                     <scope>runtime</scope>
                 </dependency>
+
+                <!-- Jetty -->
+                <dependency>
+                    <groupId>org.eclipse.jetty</groupId>
+                    <artifactId>jetty-servlet</artifactId>
+                    <version>${maven-jetty-plugin.version}</version>
+                </dependency>
             </dependencies>
             <build>
                 <plugins>
@@ -236,6 +245,11 @@
                         <groupId>org.eclipse.jetty</groupId>
                         <artifactId>jetty-maven-plugin</artifactId>
                         <version>${maven-jetty-plugin.version}</version>
+                        <configuration>
+                            <webApp>
+                                <jettyEnvXml>src/main/webapp-jetty/WEB-INF/jetty-env.xml</jettyEnvXml>
+                            </webApp>
+                        </configuration>
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
