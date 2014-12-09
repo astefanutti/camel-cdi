@@ -59,7 +59,7 @@
 
     <build>
         <plugins>
-            <!-- Maven Exec Plugin -->
+            <!-- Java SE - Standalone using Weld Main class of the JAR : Maven Exec Plugin -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
@@ -75,7 +75,7 @@
                 </configuration>
             </plugin>
 
-            <!-- Camel Maven Plugin -->
+            <!--  Java SE - Standalone using DeltaSpike to launch Weld2 container : Camel Maven Plugin -->
             <plugin>
                 <groupId>io.astefanutti.camel.cdi</groupId>
                 <artifactId>camel-maven-plugin</artifactId>
@@ -85,13 +85,13 @@
                 </configuration>
             </plugin>
 
-            <!-- Wildfly Maven Plugin -->
+            <!-- JEE Container embedding Weld2 container : Wildfly Maven Plugin -->
             <plugin>
                 <groupId>org.wildfly.plugins</groupId>
                 <artifactId>wildfly-maven-plugin</artifactId>
-                <version>1.0.2.Final</version>
+                <version>${maven-wildfly-plugin.version}</version>
                 <configuration>
-                    <version>8.2.0.Final</version>
+                    <version>${wildfly.version}</version>
                     <execute-commands>
                         <commands>
                             <command>/subsystem=logging/logger=org.jboss.weld:add(level=DEBUG,handlers=[debug])</command>
@@ -189,6 +189,64 @@
                             <!-- exclude beans.xml from the root of the WAR -->
                             <packagingExcludes>beans.xml</packagingExcludes>
                             <failOnMissingWebXml>false</failOnMissingWebXml>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>jetty</id>
+            <properties>
+                <packaging.type>war</packaging.type>
+            </properties>
+            <dependencies>
+                <!-- Java EE Api -->
+                <dependency>
+                    <groupId>javax</groupId>
+                    <artifactId>javaee-api</artifactId>
+                    <scope>runtime</scope>
+                </dependency>
+
+                <!-- Weld2 -->
+                <dependency>
+                    <groupId>org.jboss.weld.se</groupId>
+                    <artifactId>weld-se-core</artifactId>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.jboss.weld.servlet</groupId>
+                    <artifactId>weld-servlet</artifactId>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.jboss.weld</groupId>
+                    <artifactId>weld-core-impl</artifactId>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.jboss.weld.servlet</groupId>
+                    <artifactId>weld-servlet</artifactId>
+                    <scope>runtime</scope>
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <!-- Web Container : Jetty Plugin -->
+                    <plugin>
+                        <groupId>org.eclipse.jetty</groupId>
+                        <artifactId>jetty-maven-plugin</artifactId>
+                        <version>${maven-jetty-plugin.version}</version>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-war-plugin</artifactId>
+                        <configuration>
+                            <webResources>
+                                <resource>
+                                    <directory>src/main/webapp-jetty</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </webResources>
                         </configuration>
                     </plugin>
                 </plugins>
