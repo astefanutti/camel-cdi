@@ -31,6 +31,12 @@ The different examples can be launched using the Main BootStrap class part of ea
 mvn clean compile exec:java
 ```
 
+Alternatively, you can also use the Camel Maven plugin able to start a Weld2 container with the DeltaSpike BootStrap Manager
+
+```
+mvn clean compile camel:run
+```
+
 
 ## Web Container
 
