@@ -11,7 +11,7 @@ The quickstarts are categorized accordingly to the use case & annotations being 
 Here are the instructions to follow to run or deploy the project using one of the different container :
 
 * [Modular - OSGI Platform](#modular---osgi-platform)
-* [Java SE]()
+* [Java SE](#java-se)
 * [Web Container (Tomcat, Jetty)](#web-container)
 * [Java EE (Wildfly)](#java-ee-wildfly)
 
