@@ -6,9 +6,9 @@
 
     <display-name>Simple Context Name</display-name>
 
-    <listener>
+<!--    <listener>
         <listener-class>org.jboss.weld.environment.servlet.BeanManagerResourceBindingListener</listener-class>
-    </listener>
+    </listener>-->
     <listener>
         <listener-class>org.jboss.weld.environment.servlet.Listener</listener-class>
     </listener>
