@@ -210,17 +210,17 @@
                 </dependency>
 
                 <!-- Weld2 -->
-                <dependency>
+ <!--               <dependency>
                     <groupId>org.jboss.weld.se</groupId>
                     <artifactId>weld-se-core</artifactId>
                     <scope>runtime</scope>
-                </dependency>
+                </dependency>-->
                 <dependency>
                     <groupId>org.jboss.weld.servlet</groupId>
                     <artifactId>weld-servlet</artifactId>
                     <scope>runtime</scope>
                 </dependency>
-                <dependency>
+  <!--              <dependency>
                     <groupId>org.jboss.weld</groupId>
                     <artifactId>weld-core-impl</artifactId>
                     <scope>runtime</scope>
@@ -230,7 +230,7 @@
                     <artifactId>weld-servlet</artifactId>
                     <scope>runtime</scope>
                 </dependency>
-
+-->
                 <!-- Jetty -->
                 <dependency>
                     <groupId>org.eclipse.jetty</groupId>
@@ -253,11 +253,11 @@
                         <groupId>org.eclipse.jetty</groupId>
                         <artifactId>jetty-maven-plugin</artifactId>
                         <version>${maven-jetty-plugin.version}</version>
-                        <configuration>
+                        <!--<configuration>
                             <webApp>
                                 <jettyEnvXml>src/main/webapp/WEB-INF/jetty-env.xml</jettyEnvXml>
                             </webApp>
-                        </configuration>
+                        </configuration>-->
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
