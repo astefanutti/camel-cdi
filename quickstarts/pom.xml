@@ -359,6 +359,9 @@
                                     <filtering>false</filtering>
                                 </resource>
                             </webResources>
+                            <packagingExcludes>
+                                WEB-INF/lib/jboss-el-api*.jar
+                            </packagingExcludes>
                         </configuration>
                     </plugin>
                 </plugins>
