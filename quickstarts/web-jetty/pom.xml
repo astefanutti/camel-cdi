@@ -13,4 +13,17 @@
     <name>Camel CDI :: Quickstarts :: Web Resources for Jetty.</name>
     <packaging>war</packaging>
 
+    <dependencies>
+        <!-- Camel -->
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.astefanutti.camel.cdi</groupId>
+            <artifactId>camel-cdi</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
 </project>
