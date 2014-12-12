@@ -46,6 +46,12 @@ mvn clean compile camel:run
 mvn war:inplace -Pjetty jetty:run
 ```
 
+* Command to be used to run locally Tomcat with Weld2
+
+```
+mvn war:inplace -Ptomcat tomcat7:run
+```
+
 ## Java EE Wildfly
 
 * Command to be used to run locally Wildfly with Weld2

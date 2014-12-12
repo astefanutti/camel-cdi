@@ -264,12 +264,95 @@
                         <artifactId>maven-war-plugin</artifactId>
                         <configuration>
                             <overlays>
-                            <overlay>
-                                <groupId>io.astefanutti.camel.cdi</groupId>
-                                <artifactId>web-jetty</artifactId>
-                            </overlay>
+                                <overlay>
+                                    <groupId>io.astefanutti.camel.cdi</groupId>
+                                    <artifactId>web-jetty</artifactId>
+                                </overlay>
                             </overlays>
+                            <webResources>
+                                <resource>
+                                    <directory>src/main/webapp</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </webResources>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>tomcat</id>
+            <properties>
+                <packaging.type>war</packaging.type>
+            </properties>
+            <dependencies>
+                <!-- Java EE Api -->
+                <dependency>
+                    <groupId>javax</groupId>
+                    <artifactId>javaee-api</artifactId>
+                    <scope>runtime</scope>
+                </dependency>
 
+                <!-- Weld2 -->
+                <dependency>
+                    <groupId>org.jboss.weld.se</groupId>
+                    <artifactId>weld-se-core</artifactId>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.jboss.weld.servlet</groupId>
+                    <artifactId>weld-servlet</artifactId>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.jboss.weld</groupId>
+                    <artifactId>weld-core-impl</artifactId>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.jboss.weld.servlet</groupId>
+                    <artifactId>weld-servlet</artifactId>
+                    <scope>runtime</scope>
+                </dependency>
+
+                <!-- Tomcat -->
+
+                <!-- Jetty Web Resources -->
+                <dependency>
+                    <groupId>io.astefanutti.camel.cdi</groupId>
+                    <artifactId>web-tomcat</artifactId>
+                    <version>1.1-SNAPSHOT</version>
+                    <type>war</type>
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <!-- Web Container : Tomcat Plugin -->
+                    <plugin>
+                        <groupId>org.apache.tomcat.maven</groupId>
+                        <artifactId>tomcat7-maven-plugin</artifactId>
+                        <version>2.1</version>
+                        <configuration>
+                            <path>/</path>
+                        </configuration>
+                        <dependencies>
+                            <dependency>
+                                <groupId>commons-io</groupId>
+                                <artifactId>commons-io</artifactId>
+                                <version>2.4</version>
+                            </dependency>
+                        </dependencies>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-war-plugin</artifactId>
+                        <configuration>
+                            <overlays>
+                                <overlay>
+                                    <groupId>io.astefanutti.camel.cdi</groupId>
+                                    <artifactId>web-tomcat</artifactId>
+                                </overlay>
+                            </overlays>
                             <webResources>
                                 <resource>
                                     <directory>src/main/webapp</directory>
@@ -286,7 +369,8 @@
     <modules>
         <module>simplecontextname</module>
         <module>defaultcamelcontext</module>
-        <module>jetty-web</module>
+        <module>web-jetty</module>
+        <module>web-tomcat</module>
     </modules>
 
 </project>
