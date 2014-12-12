@@ -11,7 +11,7 @@ The quickstarts are categorized accordingly to the use case & annotations being 
 Here are the instructions to follow to run or deploy the project using one of the different container :
 
 * [Modular - OSGI Platform](#modular---osgi-platform)
-* Java SE
+* [Java SE]()
 * [Web Container (Tomcat, Jetty)](#web-container)
 * [Java EE (Wildfly)](#java-ee-wildfly)
 
@@ -22,6 +22,15 @@ blabla blabla
 ## Default CamelContext
 
 blabla blabla
+
+## Java SE
+
+The different examples can be launched using the Main BootStrap class part of each example directly or with the maven exec:java plugin
+
+```
+mvn clean compile exec:java
+```
+
 
 ## Web Container
 
