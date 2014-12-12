@@ -237,6 +237,14 @@
                     <artifactId>jetty-servlet</artifactId>
                     <version>${maven-jetty-plugin.version}</version>
                 </dependency>
+
+                <!-- Jetty Web Resources -->
+                <dependency>
+                    <groupId>io.astefanutti.camel.cdi</groupId>
+                    <artifactId>web-jetty</artifactId>
+                    <version>1.1-SNAPSHOT</version>
+                    <type>war</type>
+                </dependency>
             </dependencies>
             <build>
                 <plugins>
@@ -247,7 +255,7 @@
                         <version>${maven-jetty-plugin.version}</version>
                         <configuration>
                             <webApp>
-                                <jettyEnvXml>src/main/webapp-jetty/WEB-INF/jetty-env.xml</jettyEnvXml>
+                                <jettyEnvXml>src/main/webapp/WEB-INF/jetty-env.xml</jettyEnvXml>
                             </webApp>
                         </configuration>
                     </plugin>
@@ -255,9 +263,16 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-war-plugin</artifactId>
                         <configuration>
+                            <overlays>
+                            <overlay>
+                                <groupId>io.astefanutti.camel.cdi</groupId>
+                                <artifactId>web-jetty</artifactId>
+                            </overlay>
+                            </overlays>
+
                             <webResources>
                                 <resource>
-                                    <directory>src/main/webapp-jetty</directory>
+                                    <directory>src/main/webapp</directory>
                                     <filtering>false</filtering>
                                 </resource>
                             </webResources>
@@ -271,6 +286,7 @@
     <modules>
         <module>simplecontextname</module>
         <module>defaultcamelcontext</module>
+        <module>jetty-web</module>
     </modules>
 
 </project>

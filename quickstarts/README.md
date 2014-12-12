@@ -12,8 +12,8 @@ Here are the instructions to follow to run or deploy the project using one of th
 
 * [Modular - OSGI Platform](#modular---osgi-platform)
 * Java SE
-* Web Container (Tomcat, Jetty)
-* Java EE (Wildfly)
+* [Web Container (Tomcat, Jetty)](#web-container)
+* [Java EE (Wildfly)](#java-ee-wildfly)
 
 ## ContextName annotation
 
@@ -22,6 +22,22 @@ blabla blabla
 ## Default CamelContext
 
 blabla blabla
+
+## Web Container
+
+* Command to be used to run locally Jetty with Weld2
+
+```
+mvn war:inplace -Pjetty jetty:run
+```
+
+## Java EE Wildfly
+
+* Command to be used to run locally Wildfly with Weld2
+
+```
+mvn -Pwar wildfly:run
+```
 
 ## Modular - OSGI Platform
 
