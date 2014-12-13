@@ -141,19 +141,7 @@
                     <groupId>org.jboss.weld.se</groupId>
                     <artifactId>weld-se-core</artifactId>
                 </dependency>
-<!--                <dependency>
-                    <groupId>org.jboss.weld.se</groupId>
-                    <artifactId>weld-se-core</artifactId>
-                </dependency>-->
-<!--                <dependency>
-                    <groupId>org.jboss.weld</groupId>
-                    <artifactId>weld-spi</artifactId>
-                </dependency>
 
-                <dependency>
-                    <groupId>org.jboss.weld</groupId>
-                    <artifactId>weld-core-impl</artifactId>
-                </dependency>-->
 
                 <!-- Logging -->
                 <dependency>
@@ -275,16 +263,6 @@
                     <artifactId>weld-servlet</artifactId>
                     <scope>runtime</scope>
                 </dependency>
-                <!--<dependency>
-                    <groupId>org.jboss.weld.se</groupId>
-                    <artifactId>weld-se-core</artifactId>
-                    <scope>runtime</scope>
-                </dependency>
-                <dependency>
-                    <groupId>org.jboss.weld</groupId>
-                    <artifactId>weld-core-impl</artifactId>
-                    <scope>runtime</scope>
-                </dependency>-->
 
                 <!-- Jetty -->
                 <dependency>
