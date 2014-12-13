@@ -195,6 +195,13 @@
     <dependencyManagement>
         <dependencies>
 
+            <!-- Project -->
+            <dependency>
+                <groupId>io.astefanutti.camel.cdi</groupId>
+                <artifactId>camel-cdi</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
             <!-- compile dependencies -->
 
             <dependency>

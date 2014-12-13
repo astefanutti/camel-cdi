@@ -28,7 +28,7 @@ blabla blabla
 The different examples can be launched using the Main BootStrap class part of each example directly or with the maven exec:java plugin
 
 ```
-mvn clean compile exec:java
+mvn clean compile -Pstandalone exec:java
 ```
 
 Alternatively, you can also use the Camel Maven plugin able to start a Weld2 container with the DeltaSpike BootStrap Manager
