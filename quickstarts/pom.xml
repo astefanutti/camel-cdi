@@ -109,7 +109,7 @@
         <profile>
             <id>standalone</id>
             <properties>
-                <packaging.type>jar</packaging.type>
+                <packaging.type>bundle</packaging.type>
             </properties>
             <dependencies>
                 <!-- Camel -->
@@ -153,6 +153,34 @@
                     <artifactId>log4j</artifactId>
                 </dependency>
             </dependencies>
+            <build>
+                <plugins>
+                    <!-- Felix Maven Plugin -->
+                    <plugin>
+                        <groupId>org.apache.felix</groupId>
+                        <artifactId>maven-bundle-plugin</artifactId>
+                        <version>${maven-bundle-plugin.version}</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <instructions>
+                                <Bundle-Name>${camel.osgi.bundle.name}</Bundle-Name>
+                                <Bundle-SymbolicName>${camel.osgi.symbolic.name}</Bundle-SymbolicName>
+                                <Export-Package>${camel.osgi.export.pkg}</Export-Package>
+                                <Import-Package>${camel.osgi.import.pkg}</Import-Package>
+                                <Require-Capability>
+                                    osgi.extender; filter:="(osgi.extender=pax.cdi)",
+                                    org.ops4j.pax.cdi.extension; filter:="(extension=camel-cdi)"
+                                </Require-Capability>
+                                <DynamicImport-Package>${camel.osgi.dynamic}</DynamicImport-Package>
+                                <Private-Package>${camel.osgi.private.pkg}</Private-Package>
+                                <Implementation-Title>Apache Camel CDI :: Karaf Example</Implementation-Title>
+                                <Implementation-Version>${project.version}</Implementation-Version>
+                                <Karaf-Info>Camel;${project.artifactId}=${project.version}</Karaf-Info>
+                            </instructions>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
         <profile>
             <id>bundle</id>
@@ -296,11 +324,11 @@
                         <groupId>org.eclipse.jetty</groupId>
                         <artifactId>jetty-maven-plugin</artifactId>
                         <version>${maven-jetty-plugin.version}</version>
-  <!--                      <configuration>
-                            <webApp>
-                                <jettyEnvXml>src/main/webapp/WEB-INF/jetty-env.xml</jettyEnvXml>
-                            </webApp>
-                        </configuration>-->
+                        <!--                      <configuration>
+                                                  <webApp>
+                                                      <jettyEnvXml>src/main/webapp/WEB-INF/jetty-env.xml</jettyEnvXml>
+                                                  </webApp>
+                                              </configuration>-->
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
