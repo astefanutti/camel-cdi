@@ -17,18 +17,23 @@
         <packaging.type>${packaging.type}</packaging.type>
     </properties>
 
-    <dependencies>
-        <!-- Java EE & Weld -->
+<!--    <dependencies>
+        &lt;!&ndash; Java EE & Weld &ndash;&gt;
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-api</artifactId>
         </dependency>
 
-        <!-- Weld2 -->
+        &lt;!&ndash; Weld2 &ndash;&gt;
         <dependency>
             <groupId>org.jboss.weld.se</groupId>
             <artifactId>weld-se-core</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.weld.se</groupId>
+            <artifactId>weld-se-shaded</artifactId>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.jboss.weld.servlet</groupId>
@@ -41,7 +46,7 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- DeltaSpike -->
+        &lt;!&ndash; DeltaSpike &ndash;&gt;
         <dependency>
             <groupId>org.apache.deltaspike.cdictrl</groupId>
             <artifactId>deltaspike-cdictrl-api</artifactId>
@@ -55,7 +60,7 @@
             <scope>provided</scope>
         </dependency>
 
-    </dependencies>
+    </dependencies>-->
 
     <build>
         <plugins>
@@ -134,14 +139,9 @@
 
                 <!-- Weld2 -->
                 <dependency>
-                    <groupId>org.jboss.weld.servlet</groupId>
-                    <artifactId>weld-servlet</artifactId>
-                </dependency>
-                <dependency>
                     <groupId>org.jboss.weld.se</groupId>
-                    <artifactId>weld-se-core</artifactId>
+                    <artifactId>weld-se</artifactId>
                 </dependency>
-
 
                 <!-- Logging -->
                 <dependency>
@@ -151,6 +151,18 @@
                 <dependency>
                     <groupId>log4j</groupId>
                     <artifactId>log4j</artifactId>
+                </dependency>
+
+                <!-- DeltaSpike -->
+                <dependency>
+                    <groupId>org.apache.deltaspike.cdictrl</groupId>
+                    <artifactId>deltaspike-cdictrl-api</artifactId>
+                    <version>${deltaspike.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.deltaspike.cdictrl</groupId>
+                    <artifactId>deltaspike-cdictrl-weld</artifactId>
+                    <version>${deltaspike.version}</version>
                 </dependency>
             </dependencies>
             <build>
@@ -278,35 +290,6 @@
                 <packaging.type>war</packaging.type>
             </properties>
             <dependencies>
-                <!-- Java EE Api -->
-                <dependency>
-                    <groupId>javax</groupId>
-                    <artifactId>javaee-api</artifactId>
-                    <scope>runtime</scope>
-                </dependency>
-
-                <!-- Weld2 -->
-                <dependency>
-                    <groupId>org.jboss.weld.servlet</groupId>
-                    <artifactId>weld-servlet</artifactId>
-                    <scope>runtime</scope>
-                </dependency>
-
-                <!-- Jetty -->
-                <dependency>
-                    <groupId>org.eclipse.jetty</groupId>
-                    <artifactId>jetty-servlet</artifactId>
-                    <version>${maven-jetty-plugin.version}</version>
-                </dependency>
-
-                <!-- Jetty Web Resources -->
-                <dependency>
-                    <groupId>io.astefanutti.camel.cdi</groupId>
-                    <artifactId>web-jetty</artifactId>
-                    <version>1.1-SNAPSHOT</version>
-                    <type>war</type>
-                </dependency>
-
                 <!-- Camel -->
                 <dependency>
                     <groupId>org.apache.camel</groupId>
@@ -316,6 +299,32 @@
                     <groupId>io.astefanutti.camel.cdi</groupId>
                     <artifactId>camel-cdi</artifactId>
                 </dependency>
+
+                <!-- Java EE Api -->
+                <dependency>
+                    <groupId>javax</groupId>
+                    <artifactId>javaee-api</artifactId>
+                </dependency>
+
+                <!-- Weld2 -->
+                <dependency>
+                    <groupId>org.jboss.weld.servlet</groupId>
+                    <artifactId>weld-servlet</artifactId>
+                </dependency>
+
+                <!-- Jetty -->
+                <dependency>
+                    <groupId>org.eclipse.jetty</groupId>
+                    <artifactId>jetty-servlet</artifactId>
+                    <version>${maven-jetty-plugin.version}</version>
+                </dependency>
+                <!-- Jetty Web Resources -->
+                <dependency>
+                    <groupId>io.astefanutti.camel.cdi</groupId>
+                    <artifactId>web-jetty</artifactId>
+                    <version>1.1-SNAPSHOT</version>
+                    <type>war</type>
+                </dependency>
             </dependencies>
             <build>
                 <plugins>
@@ -324,11 +333,6 @@
                         <groupId>org.eclipse.jetty</groupId>
                         <artifactId>jetty-maven-plugin</artifactId>
                         <version>${maven-jetty-plugin.version}</version>
-                        <!--                      <configuration>
-                                                  <webApp>
-                                                      <jettyEnvXml>src/main/webapp/WEB-INF/jetty-env.xml</jettyEnvXml>
-                                                  </webApp>
-                                              </configuration>-->
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
