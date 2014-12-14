@@ -42,6 +42,14 @@ mvn clean compile -Pstandalone camel:run
 
 * Command to be used to run locally Jetty with Weld2
 
+To compile the project, you should use this maven command :
+
+```
+mvn clean compile -Pstandalone
+```
+
+And to launch the jetty server using war:inplace this one
+
 ```
 mvn war:inplace -Pjetty jetty:run
 ```
