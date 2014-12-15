@@ -18,6 +18,15 @@
     </properties>
 
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <version>2.5</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <!-- Java SE - Standalone using Weld Main class of the JAR : Maven Exec Plugin -->
             <plugin>
@@ -271,11 +280,6 @@
                     </exclusions>
                 </dependency>
 
-                <!-- Java EE Api -->
-                <dependency>
-                    <groupId>javax</groupId>
-                    <artifactId>javaee-api</artifactId>
-                </dependency>
 
                 <!-- Weld2 -->
                 <dependency>
@@ -288,12 +292,6 @@
                     <groupId>org.eclipse.jetty</groupId>
                     <artifactId>jetty-servlet</artifactId>
                     <version>${maven-jetty-plugin.version}</version>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>*</groupId>
-                            <artifactId>*</artifactId>
-                        </exclusion>
-                    </exclusions>
                 </dependency>
 
                 <!-- Logging / scope runtime added otherwise
@@ -336,12 +334,6 @@
                                     <artifactId>web-jetty</artifactId>
                                 </overlay>
                             </overlays>
-                            <webResources>
-                                <resource>
-                                    <directory>src/main/webapp</directory>
-                                    <filtering>false</filtering>
-                                </resource>
-                            </webResources>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -353,27 +345,11 @@
                 <packaging.type>war</packaging.type>
             </properties>
             <dependencies>
-                <!-- Java EE Api -->
-                <dependency>
-                    <groupId>javax</groupId>
-                    <artifactId>javaee-api</artifactId>
-                    <scope>runtime</scope>
-                </dependency>
 
                 <!-- Weld2 -->
                 <dependency>
-                    <groupId>org.jboss.weld.se</groupId>
-                    <artifactId>weld-se-core</artifactId>
-                    <scope>runtime</scope>
-                </dependency>
-                <dependency>
                     <groupId>org.jboss.weld.servlet</groupId>
                     <artifactId>weld-servlet</artifactId>
-                    <scope>runtime</scope>
-                </dependency>
-                <dependency>
-                    <groupId>org.jboss.weld</groupId>
-                    <artifactId>weld-core-impl</artifactId>
                     <scope>runtime</scope>
                 </dependency>
 
@@ -415,12 +391,6 @@
                                     <artifactId>web-tomcat</artifactId>
                                 </overlay>
                             </overlays>
-                            <webResources>
-                                <resource>
-                                    <directory>src/main/webapp</directory>
-                                    <filtering>false</filtering>
-                                </resource>
-                            </webResources>
                             <packagingExcludes>
                                 WEB-INF/lib/jboss-el-api*.jar
                             </packagingExcludes>
