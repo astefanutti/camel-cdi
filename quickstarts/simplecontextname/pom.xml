@@ -35,54 +35,68 @@
         <!-- Main Class to Boot -->
         <example.main.class>org.apache.camel.cdi.example1.BootStrap</example.main.class>
     </properties>
-    
+
     <dependencies>
-            <!-- Camel -->
-            <dependency>
-                <groupId>org.apache.camel</groupId>
-                <artifactId>camel-core</artifactId>
-            </dependency>
-            <dependency>
-                <groupId>io.astefanutti.camel.cdi</groupId>
-                <artifactId>camel-cdi</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-    
-            <!-- Java EE API -->
-            <dependency>
-                <groupId>javax</groupId>
-                <artifactId>javaee-api</artifactId>
-            </dependency>
-    
-            <!-- Weld2 -->
-            <dependency>
-                <groupId>org.jboss.weld.se</groupId>
-                <artifactId>weld-se-core</artifactId>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.weld</groupId>
-                <artifactId>weld-spi</artifactId>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.weld.servlet</groupId>
-                <artifactId>weld-servlet</artifactId>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.weld</groupId>
-                <artifactId>weld-core-impl</artifactId>
-            </dependency>
-    
-            <!-- Logging -->
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-log4j12</artifactId>
-                <scope>runtime</scope>
-            </dependency>
-            <dependency>
-                <groupId>log4j</groupId>
-                <artifactId>log4j</artifactId>
-                <scope>runtime</scope>
-            </dependency>
-        </dependencies>
+        <!-- Camel -->
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.astefanutti.camel.cdi</groupId>
+            <artifactId>camel-cdi</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- DeltaSpike - Required to run camel:run -->
+        <dependency>
+            <groupId>org.apache.deltaspike.cdictrl</groupId>
+            <artifactId>deltaspike-cdictrl-api</artifactId>
+            <version>${deltaspike.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.deltaspike.cdictrl</groupId>
+            <artifactId>deltaspike-cdictrl-weld</artifactId>
+            <version>${deltaspike.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- Java EE API -->
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+        </dependency>
+
+        <!-- Weld2 -->
+        <dependency>
+            <groupId>org.jboss.weld.se</groupId>
+            <artifactId>weld-se-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.weld</groupId>
+            <artifactId>weld-spi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.weld.servlet</groupId>
+            <artifactId>weld-servlet</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.weld</groupId>
+            <artifactId>weld-core-impl</artifactId>
+        </dependency>
+
+        <!-- Logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+    </dependencies>
 
 </project>
