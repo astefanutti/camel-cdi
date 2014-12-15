@@ -40,6 +40,8 @@ mvn clean compile -Pstandalone camel:run
 
 ## Web Container
 
+### Eclipse Jetty
+
 * Command to be used to run locally Jetty with Weld2
 
 To compile the project, you should use this maven command :
@@ -58,21 +60,25 @@ The WAR can be generated and deployed in a Jetty server using these commands
 mvn war:inplace war:war -Pjetty
 
 * Download and unzip/untar the Jetty server : http://download.eclipse.org/jetty/9.2.6.v20141205/dist/jetty-distribution-9.2.6.v20141205.tar.gz
+* Open terminal and move to the directory where you have installed/decompressed jetty
 * Copy the WAR file to the webapp directory of jetty
 cp /Users/chmoulli/Repos/Github/new-camel-cdi/quickstarts/simplecontextname/target/simplecontextname-1.1-SNAPSHOT.war webapps/
-* start the server
+* Start the server using these options
 
 ```
 java -jar start.jar --module=deploy,jndi
 
 ```
+* Check the result into the log of the server
 
+### Apache Tomcat
 
 * Command to be used to run locally Tomcat with Weld2
 
 ```
 mvn war:inplace -Ptomcat tomcat7:run
 ```
+
 
 ## Java EE Wildfly
 
