@@ -36,41 +36,4 @@
         <example.main.class>org.apache.camel.cdi.example1.BootStrap</example.main.class>
     </properties>
 
-
-
-<!--    <dependencies>
-        &lt;!&ndash; Camel &ndash;&gt;
-        <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-core</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.astefanutti.camel.cdi</groupId>
-            <artifactId>camel-cdi</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        &lt;!&ndash; Weld2 &ndash;&gt;
-        <dependency>
-            <groupId>org.jboss.weld.se</groupId>
-            <artifactId>weld-se</artifactId>
-            &lt;!&ndash; This dependency is only used for compilation & not
-                 at all for running example using maven plugins &ndash;&gt;
-            <scope>provided</scope>
-        </dependency>
-
-        &lt;!&ndash; Logging &ndash;&gt;
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>-->
-
 </project>

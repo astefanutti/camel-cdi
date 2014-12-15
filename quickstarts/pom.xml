@@ -17,51 +17,6 @@
         <packaging.type>${packaging.type}</packaging.type>
     </properties>
 
-<!--    <dependencies>
-        &lt;!&ndash; Java EE & Weld &ndash;&gt;
-        <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-api</artifactId>
-        </dependency>
-
-        &lt;!&ndash; Weld2 &ndash;&gt;
-        <dependency>
-            <groupId>org.jboss.weld.se</groupId>
-            <artifactId>weld-se-core</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.weld.se</groupId>
-            <artifactId>weld-se-shaded</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.weld.servlet</groupId>
-            <artifactId>weld-servlet</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.weld</groupId>
-            <artifactId>weld-core-impl</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        &lt;!&ndash; DeltaSpike &ndash;&gt;
-        <dependency>
-            <groupId>org.apache.deltaspike.cdictrl</groupId>
-            <artifactId>deltaspike-cdictrl-api</artifactId>
-            <version>${deltaspike.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.deltaspike.cdictrl</groupId>
-            <artifactId>deltaspike-cdictrl-weld</artifactId>
-            <version>${deltaspike.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-    </dependencies>-->
-
     <build>
         <plugins>
             <!-- Java SE - Standalone using Weld Main class of the JAR : Maven Exec Plugin -->
@@ -300,6 +255,20 @@
                 <dependency>
                     <groupId>io.astefanutti.camel.cdi</groupId>
                     <artifactId>camel-cdi</artifactId>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>org.apache.deltaspike.core</groupId>
+                            <artifactId>deltaspike-core-api</artifactId>
+                        </exclusion>
+                        <exclusion>
+                            <groupId>org.apache.deltaspike.cdictrl</groupId>
+                            <artifactId>deltaspike-cdictrl-api</artifactId>
+                        </exclusion>
+                        <exclusion>
+                            <groupId>org.slf4j</groupId>
+                            <artifactId>slf4j-api</artifactId>
+                        </exclusion>
+                    </exclusions>
                 </dependency>
 
                 <!-- Java EE Api -->
@@ -320,6 +289,21 @@
                     <artifactId>jetty-servlet</artifactId>
                     <version>${maven-jetty-plugin.version}</version>
                 </dependency>
+
+                <!-- Logging / scope runtime added otherwise
+                it was not added to the WAR -->
+                <dependency>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                    <scope>runtime</scope>
+                </dependency>
+
+
                 <!-- Jetty Web Resources -->
                 <dependency>
                     <groupId>io.astefanutti.camel.cdi</groupId>

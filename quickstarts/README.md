@@ -47,12 +47,26 @@ To compile the project, you should use this maven command :
 ```
 mvn clean compile -Pstandalone
 ```
-
 And to launch the jetty server using war:inplace this one
 
 ```
 mvn war:inplace -Pjetty jetty:run
 ```
+
+The WAR can be generated and deployed in a Jetty server using these commands
+
+mvn war:inplace war:war -Pjetty
+
+* Download and unzip/untar the Jetty server : http://download.eclipse.org/jetty/9.2.6.v20141205/dist/jetty-distribution-9.2.6.v20141205.tar.gz
+* Copy the WAR file to the webapp directory of jetty
+cp /Users/chmoulli/Repos/Github/new-camel-cdi/quickstarts/simplecontextname/target/simplecontextname-1.1-SNAPSHOT.war webapps/
+* start the server
+
+```
+java -jar start.jar --module=deploy,jndi
+
+```
+
 
 * Command to be used to run locally Tomcat with Weld2
 
