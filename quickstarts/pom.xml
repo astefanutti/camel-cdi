@@ -280,7 +280,6 @@
                     </exclusions>
                 </dependency>
 
-
                 <!-- Weld2 -->
                 <dependency>
                     <groupId>org.jboss.weld.servlet</groupId>
@@ -306,7 +305,6 @@
                     <artifactId>log4j</artifactId>
                     <scope>runtime</scope>
                 </dependency>
-
 
                 <!-- Jetty Web Resources -->
                 <dependency>

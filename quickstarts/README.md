@@ -44,25 +44,22 @@ mvn clean compile -Pstandalone camel:run
 
 * Command to be used to run locally Jetty with Weld2
 
-To compile the project, you should use this maven command :
-
 ```
-mvn clean compile -Pstandalone
-```
-And to launch the jetty server using war:inplace this one
-
-```
-mvn war:inplace -Pjetty jetty:run
+mvn clean -Pjetty jetty:run -Dexample.groupId=io.astefanutti.camel.cdi -Dexample.artifactId=defaultcamelcontext
 ```
 
 The WAR can be generated and deployed in a Jetty server using these commands
 
-mvn war:inplace war:war -Pjetty
+```
+mvn clean -Pjetty war:war -Dexample.groupId=io.astefanutti.camel.cdi -Dexample.artifactId=defaultcamelcontext
+```
 
 * Download and unzip/untar the Jetty server : http://download.eclipse.org/jetty/9.2.6.v20141205/dist/jetty-distribution-9.2.6.v20141205.tar.gz
 * Open terminal and move to the directory where you have installed/decompressed jetty
 * Copy the WAR file to the webapp directory of jetty
-cp /Users/chmoulli/Repos/Github/new-camel-cdi/quickstarts/simplecontextname/target/simplecontextname-1.1-SNAPSHOT.war webapps/
+
+cp /Users/chmoulli/Repos/Github/new-camel-cdi/quickstarts/web-jetty/target/web-jetty-1.1-SNAPSHOT.war webapps/
+
 * Start the server using these options
 
 ```
