@@ -66,7 +66,7 @@ cp /Users/chmoulli/Repos/Github/new-camel-cdi/quickstarts/simplecontextname/targ
 * Start the server using these options
 
 ```
-java -jar start.jar --module=deploy,jndi
+java -jar start.jar --module=deploy,jndi,servlet
 
 ```
 * Check the result into the log of the server
