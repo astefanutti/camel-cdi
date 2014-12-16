@@ -43,24 +43,29 @@ mvn clean compile -Pstandalone camel:run
 ### Eclipse Jetty
 
 * Command to be used to run locally Jetty with Weld2
+* Open a terminal and move to the module web-jetty
+* Launch this maven command using the jetty:run plugin goal and pass as parameter the groupId & artifactId
+ of the quickstart that you would like to use
 
 ```
-mvn clean -Pjetty jetty:run -Dquickstart.groupId=io.astefanutti.camel.cdi -Dquickstart.artifactId=defaultcamelcontext
+mvn clean jetty:run -Dquickstart.groupId=io.astefanutti.camel.cdi -Dquickstart.artifactId=defaultcamelcontext
 ```
 
-The WAR can be generated and deployed in a Jetty server using these commands
+* The WAR can be generated and deployed in a Jetty server using this command
 
 ```
-mvn clean install -Pjetty -Dquickstart.groupId=io.astefanutti.camel.cdi -Dquickstart.artifactId=defaultcamelcontext
+mvn clean install -Dquickstart.groupId=io.astefanutti.camel.cdi -Dquickstart.artifactId=defaultcamelcontext
 ```
 
-* Download and unzip/untar the Jetty server : http://download.eclipse.org/jetty/9.2.6.v20141205/dist/jetty-distribution-9.2.6.v20141205.tar.gz
+* Download and unzip/untar the Jetty server (version recommended >= 9.x) - Example : [9.2](http://download.eclipse.org/jetty/9.2.6.v20141205/dist/jetty-distribution-9.2.6.v20141205.tar.gz)
 * Open terminal and move to the directory where you have installed/decompressed jetty
 * Copy the WAR file to the webapp directory of jetty
 
-cp /Users/chmoulli/Repos/Github/new-camel-cdi/quickstarts/web-jetty/target/web-jetty-1.1-SNAPSHOT.war webapps/
+```
+cp ${HOME_QUICKARSTART_CDI}/web-jetty/target/web-jetty-1.1-SNAPSHOT.war webapps/
+```
 
-* Start the server using these options
+* Start the Jetty server with the modules `deploy, jndi & servlet`
 
 ```
 java -jar start.jar --module=deploy,jndi,servlet

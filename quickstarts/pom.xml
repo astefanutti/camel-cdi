@@ -250,13 +250,13 @@
                 </plugins>
             </build>
         </profile>
-        <profile>
+<!--        <profile>
             <id>jetty</id>
             <properties>
                 <packaging.type>war</packaging.type>
             </properties>
             <dependencies>
-                <!-- Camel -->
+                &lt;!&ndash; Camel &ndash;&gt;
                 <dependency>
                     <groupId>org.apache.camel</groupId>
                     <artifactId>camel-core</artifactId>
@@ -280,21 +280,21 @@
                     </exclusions>
                 </dependency>
 
-                <!-- Weld2 -->
+                &lt;!&ndash; Weld2 &ndash;&gt;
                 <dependency>
                     <groupId>org.jboss.weld.servlet</groupId>
                     <artifactId>weld-servlet</artifactId>
                 </dependency>
 
-                <!-- Jetty -->
+                &lt;!&ndash; Jetty &ndash;&gt;
                 <dependency>
                     <groupId>org.eclipse.jetty</groupId>
                     <artifactId>jetty-servlet</artifactId>
                     <version>${maven-jetty-plugin.version}</version>
                 </dependency>
 
-                <!-- Logging / scope runtime added otherwise
-                it was not added to the WAR -->
+                &lt;!&ndash; Logging / scope runtime added otherwise
+                it was not added to the WAR &ndash;&gt;
                 <dependency>
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-log4j12</artifactId>
@@ -306,7 +306,7 @@
                     <scope>runtime</scope>
                 </dependency>
 
-                <!-- Jetty Web Resources -->
+                &lt;!&ndash; Jetty Web Resources &ndash;&gt;
                 <dependency>
                     <groupId>io.astefanutti.camel.cdi</groupId>
                     <artifactId>web-jetty</artifactId>
@@ -316,7 +316,7 @@
             </dependencies>
             <build>
                 <plugins>
-                    <!-- Web Container : Jetty Plugin -->
+                    &lt;!&ndash; Web Container : Jetty Plugin &ndash;&gt;
                     <plugin>
                         <groupId>org.eclipse.jetty</groupId>
                         <artifactId>jetty-maven-plugin</artifactId>
@@ -336,7 +336,7 @@
                     </plugin>
                 </plugins>
             </build>
-        </profile>
+        </profile>-->
         <profile>
             <id>tomcat</id>
             <properties>
