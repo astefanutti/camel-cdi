@@ -51,7 +51,7 @@ TODO : Explain what is required/needed to use/play with Weld CDI & Jetty
 1. Run a quickstart locally
 
 * Open a terminal and move to the maven module `web-jetty`
-* Launch this maven command using the jetty:run plugin goal and pass as parameter the groupId & artifactId
+* Launch this maven command using the `jetty:run` plugin goal and pass as parameter the groupId & artifactId
   of the quickstart that you would like to use
 
 ```
@@ -60,13 +60,13 @@ mvn clean jetty:run -Dquickstart.groupId=io.astefanutti.camel.cdi -Dquickstart.a
 
 2. Deploy a WAR into the Web Container
 
+* Prerequisite : Download and unzip/untar the Jetty server (version recommended >= 9.x) - [9.2](http://download.eclipse.org/jetty/9.2.6.v20141205/dist/jetty-distribution-9.2.6.v20141205.tar.gz)
+
 * The WAR can be generated and deployed in a Jetty server using this command
 
 ```
 mvn clean install -Dquickstart.groupId=io.astefanutti.camel.cdi -Dquickstart.artifactId=defaultcamelcontext
 ```
-
-* Download and unzip/untar the Jetty server (version recommended >= 9.x) - Example : [9.2](http://download.eclipse.org/jetty/9.2.6.v20141205/dist/jetty-distribution-9.2.6.v20141205.tar.gz)
 * Open terminal and move to the directory where you have installed/decompressed jetty
 * Copy the WAR file to the webapp directory of jetty
 
