@@ -80,8 +80,9 @@ cp ${HOME_QUICKARSTART_CDI}/web-jetty/target/web-jetty-1.1-SNAPSHOT.war webapps/
 java -jar start.jar --module=deploy,jndi,servlet
 
 ```
-* Check the result into the log of the server. This snapshot is an example generated with the quickstart +defaultcamelcontext+
+* Check the result into the log of the server. This snapshot is an example generated with the quickstart **defaultcamelcontext**
 
+```text
     2014-12-16 07:13:40.075:INFO:oejs.Server:main: jetty-9.3.0.M1
     2014-12-16 07:13:41,726 [main] INFO org.jboss.weld.environment.servletWeldServlet: WELD-ENV-001008: Initialize Weld using ServletContainerInitializer
     2014-12-16 07:13:41,734 [main] INFO org.jboss.weld.Version: WELD-000900: 2.2.6 (Final)
@@ -128,7 +129,7 @@ java -jar start.jar --module=deploy,jndi,servlet
     2014-12-16 07:13:50,352 [Camel (camel-cdi) thread #0 - timer://start] INFO timerToDirect: Message received : Camel CDI Example 2 for the Context : simple
     2014-12-16 07:13:50,353 [Camel (camel-cdi) thread #0 - timer://start] INFO timerToDirect: Message received : Camel CDI Example 2 for the header : message from file
     2014-12-16 07:13:50,353 [Camel (camel-cdi) thread #0 - timer://start] INFO directToBean: >> Response : Hello CDI user for example 2.
-
+```
 
 ### Apache Tomcat
 
