@@ -60,11 +60,11 @@ mvn clean jetty:run -Dquickstart.groupId=io.astefanutti.camel.cdi -Dquickstart.a
 
 2. Deploy a WAR into the Web Container
 
-* Prerequisite : Download and unzip/untar the Jetty server (version recommended >= 9.x) - [9.2](http://download.eclipse.org/jetty/9.2.6.v20141205/dist/jetty-distribution-9.2.6.v20141205.tar.gz)
+* Prerequisite : Download and unzip/untar the Jetty server (version recommended >= 9.x) - [Jetty Server 9.2](http://download.eclipse.org/jetty/9.2.6.v20141205/dist/jetty-distribution-9.2.6.v20141205.tar.gz)
 
 * The WAR can be generated and deployed in a Jetty server using this command
 
-```
+```text
 mvn clean install -Dquickstart.groupId=io.astefanutti.camel.cdi -Dquickstart.artifactId=defaultcamelcontext
 ```
 * Open terminal and move to the directory where you have installed/decompressed jetty
