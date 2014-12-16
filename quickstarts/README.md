@@ -45,13 +45,13 @@ mvn clean compile -Pstandalone camel:run
 * Command to be used to run locally Jetty with Weld2
 
 ```
-mvn clean -Pjetty jetty:run -Dexample.groupId=io.astefanutti.camel.cdi -Dexample.artifactId=defaultcamelcontext
+mvn clean -Pjetty jetty:run -Dquickstart.groupId=io.astefanutti.camel.cdi -Dquickstart.artifactId=defaultcamelcontext
 ```
 
 The WAR can be generated and deployed in a Jetty server using these commands
 
 ```
-mvn clean -Pjetty war:war -Dexample.groupId=io.astefanutti.camel.cdi -Dexample.artifactId=defaultcamelcontext
+mvn clean install -Pjetty -Dquickstart.groupId=io.astefanutti.camel.cdi -Dquickstart.artifactId=defaultcamelcontext
 ```
 
 * Download and unzip/untar the Jetty server : http://download.eclipse.org/jetty/9.2.6.v20141205/dist/jetty-distribution-9.2.6.v20141205.tar.gz

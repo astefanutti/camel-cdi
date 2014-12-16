@@ -14,16 +14,16 @@
     <packaging>war</packaging>
 
     <properties>
-        <example.groupId>io.astefanutti.camel.cdi</example.groupId>
-        <example.artifactId>simplecontextname</example.artifactId>
-        <example.version>1.1-SNAPSHOT</example.version>
+        <quickstart.groupId>io.astefanutti.camel.cdi</quickstart.groupId>
+        <quickstart.artifactId>simplecontextname</quickstart.artifactId>
+        <quickstart.version>1.1-SNAPSHOT</quickstart.version>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>${example.groupId}</groupId>
-            <artifactId>${example.artifactId}</artifactId>
-            <version>${example.version}</version>
+            <groupId>${quickstart.groupId}</groupId>
+            <artifactId>${quickstart.artifactId}</artifactId>
+            <version>${quickstart.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
