@@ -48,7 +48,7 @@ WAR that next you will be able to deploy into the container.
 
 TODO : Explain what is required/needed to use/play with Weld CDI & Jetty
 
-A) Run a quickstart locally
+1. Run a quickstart locally
 
 * Open a terminal and move to the maven module `web-jetty`
 * Launch this maven command using the jetty:run plugin goal and pass as parameter the groupId & artifactId
@@ -58,7 +58,7 @@ A) Run a quickstart locally
 mvn clean jetty:run -Dquickstart.groupId=io.astefanutti.camel.cdi -Dquickstart.artifactId=defaultcamelcontext
 ```
 
-B) Deploy a WAR into the Web Container
+2. Deploy a WAR into the Web Container
 
 * The WAR can be generated and deployed in a Jetty server using this command
 
