@@ -42,9 +42,9 @@ mvn clean compile -Pstandalone camel:run
 
 ### Eclipse Jetty
 
-To play with the different camel CDI quickstarts and run or deploy them into a Jetty Web Container, we have designed the web-jetty module
-to add the required dependencies, web resources needed and include the maven plugins that you will use to run the container locally or generates the
-that next you will be able to deploy into the container.
+To play with the different camel CDI quickstarts and run or deploy them into a Jetty Web Container, we have designed the maven web-jetty module
+to include the required dependencies, web resources needed and configure the maven plugins that you will use to launch the container locally or generates the
+WAR that next you will be able to deploy into the container.
 
 TODO : Explain what is required/needed to use/play with Weld CDI & Jetty
 
