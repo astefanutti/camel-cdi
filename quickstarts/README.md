@@ -42,14 +42,23 @@ mvn clean compile -Pstandalone camel:run
 
 ### Eclipse Jetty
 
-* Command to be used to run locally Jetty with Weld2
-* Open a terminal and move to the module web-jetty
+To play with the different camel CDI quickstarts and run or deploy them into a Jetty Web Container, we have designed the web-jetty module
+to add the required dependencies, web resources needed and include the maven plugins that you will use to run the container locally or generates the
+that next you will be able to deploy into the container.
+
+TODO : Explain what is required/needed to use/play with Weld CDI & Jetty
+
+A) Run a quickstart locally
+
+* Open a terminal and move to the maven module `web-jetty`
 * Launch this maven command using the jetty:run plugin goal and pass as parameter the groupId & artifactId
- of the quickstart that you would like to use
+  of the quickstart that you would like to use
 
 ```
 mvn clean jetty:run -Dquickstart.groupId=io.astefanutti.camel.cdi -Dquickstart.artifactId=defaultcamelcontext
 ```
+
+B) Deploy a WAR into the Web Container
 
 * The WAR can be generated and deployed in a Jetty server using this command
 
