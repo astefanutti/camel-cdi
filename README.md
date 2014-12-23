@@ -4,11 +4,11 @@
 
 [Travis badge]: https://travis-ci.org/astefanutti/camel-cdi.svg
 [Travis build]: https://travis-ci.org/astefanutti/camel-cdi
-[Coveralls badge]: https://img.shields.io/coveralls/astefanutti/camel-cdi.svg
+[Coveralls badge]: https://img.shields.io/coveralls/astefanutti/camel-cdi.svg?style=flat
 [Coveralls build]: https://coveralls.io/r/astefanutti/camel-cdi
-[VersionEye badge]: https://www.versioneye.com/user/projects/53fca400e09da310ea0006c4/badge.svg
+[VersionEye badge]: https://www.versioneye.com/user/projects/53fca400e09da310ea0006c4/badge.svg?style=flat
 [VersionEye build]: https://www.versioneye.com/user/projects/53fca400e09da310ea0006c4
-[Maven Central badge]: http://img.shields.io/maven-central/v/io.astefanutti.camel.cdi/camel-cdi.svg
+[Maven Central badge]: http://img.shields.io/maven-central/v/io.astefanutti.camel.cdi/camel-cdi.svg?style=flat
 [Maven Central build]: http://repo1.maven.org/maven2/io/astefanutti/camel/cdi/camel-cdi/1.0.0/
 
 [CDI][] portable extension for Apache [Camel][] compliant with [JSR 346: Contexts and Dependency Injection for Java<sup>TM</sup> EE 1.2][JSR 346 1.2].
