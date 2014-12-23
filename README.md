@@ -78,8 +78,8 @@ This version of Camel CDI is currently successfully tested with the following co
 
 | Container        | Version       | Specification          | Arquillian Container Adapter           |
 | ---------------- | ------------- | ---------------------- | -------------------------------------- |
-| [Weld SE][]      | `2.2.5.Final` | [CDI 1.2][JSR 346 1.2] | `arquillian-weld-se-embedded-1.1`      |
-| [Weld EE][]      | `2.2.5.Final` | [CDI 1.2][JSR 346 1.2] | `arquillian-weld-ee-embedded-1.1`      |
+| [Weld SE][]      | `2.2.8.Final` | [CDI 1.2][JSR 346 1.2] | `arquillian-weld-se-embedded-1.1`      |
+| [Weld EE][]      | `2.2.8.Final` | [CDI 1.2][JSR 346 1.2] | `arquillian-weld-ee-embedded-1.1`      |
 | [OpenWebBeans][] | `1.5.0`       | [CDI 1.2][JSR 346 1.2] | `owb-arquillian-standalone`            |
 | [WildFly][]      | `8.1.0.Final` | [Java EE 7][]          | `wildfly-arquillian-container-managed` |
 
