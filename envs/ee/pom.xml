@@ -48,11 +48,6 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
 
-            <!-- FIXME: remove when ARQ-579 is fixed -->
-            <properties>
-                <arquillian.protocol>Local</arquillian.protocol>
-            </properties>
-
             <build>
                 <plugins>
                     <plugin>
@@ -91,11 +86,6 @@
 
         <profile>
             <id>wildfly</id>
-
-            <!-- FIXME: remove when ARQ-579 is fixed -->
-            <properties>
-                <arquillian.protocol>Servlet 3.0</arquillian.protocol>
-            </properties>
 
             <build>
                 <plugins>
@@ -146,12 +136,6 @@
                 <dependency>
                     <groupId>org.wildfly</groupId>
                     <artifactId>wildfly-arquillian-container-managed</artifactId>
-                </dependency>
-
-                <dependency>
-                    <groupId>org.jboss.arquillian.protocol</groupId>
-                    <artifactId>arquillian-protocol-servlet</artifactId>
-                    <scope>test</scope>
                 </dependency>
 
             </dependencies>
