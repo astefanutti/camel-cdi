@@ -30,31 +30,38 @@
     </properties>
 
     <dependencies>
+
         <!-- compile dependencies -->
+
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-core</artifactId>
         </dependency>
 
-        <!-- provided dependencies -->
-        <dependency>
-            <groupId>javax.enterprise</groupId>
-            <artifactId>cdi-api</artifactId>
-        </dependency>
-
-        <!-- DeltaSpike -->
+        <!-- DeltaSpike is only used to provide Main support thus optional -->
         <dependency>
             <groupId>org.apache.deltaspike.core</groupId>
             <artifactId>deltaspike-core-api</artifactId>
             <version>${deltaspike.version}</version>
             <scope>compile</scope>
+            <optional>true</optional>
         </dependency>
+
         <dependency>
             <groupId>org.apache.deltaspike.cdictrl</groupId>
             <artifactId>deltaspike-cdictrl-api</artifactId>
             <version>${deltaspike.version}</version>
             <scope>compile</scope>
+            <optional>true</optional>
         </dependency>
+
+        <!-- provided dependencies -->
+
+        <dependency>
+            <groupId>javax.enterprise</groupId>
+            <artifactId>cdi-api</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>
