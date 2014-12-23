@@ -73,7 +73,7 @@
         <cdi.version>1.2</cdi.version>
         <deltaspike.version>1.1.0</deltaspike.version>
         <javaee.version>7.0</javaee.version>
-        <slf4j.version>1.7.7</slf4j.version>
+        <slf4j.version>1.7.9</slf4j.version>
         <weld.version>2.2.8.Final</weld.version>
         <owb.version>1.5.0-SNAPSHOT</owb.version>
         <wildfly.version>8.2.0.Final</wildfly.version>
@@ -272,7 +272,7 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>jul-to-slf4j</artifactId>
-                <version>1.7.7</version>
+                <version>${slf4j.version}</version>
                 <scope>test</scope>
             </dependency>
 
