@@ -32,13 +32,13 @@ import java.util.Set;
  * CdiBeanRegistry used by Camel to perform lookup into the CDI {@link javax.enterprise.inject.spi.BeanManager}.
  */
 @Vetoed
-final class CdiBeanRegistry implements Registry {
+final class CdiCamelRegistry implements Registry {
 
-    private final Logger logger = LoggerFactory.getLogger(CdiBeanRegistry.class);
+    private final Logger logger = LoggerFactory.getLogger(CdiCamelRegistry.class);
 
     private final BeanManager manager;
 
-    CdiBeanRegistry(BeanManager manager) {
+    CdiCamelRegistry(BeanManager manager) {
         this.manager = manager;
     }
 

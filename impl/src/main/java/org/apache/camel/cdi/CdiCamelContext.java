@@ -40,7 +40,7 @@ public class CdiCamelContext extends DefaultCamelContext {
             setName(name != null ? name.value() : "camel-cdi");
 
         // Add bean registry and Camel injector
-        setRegistry(new CdiBeanRegistry(manager));
-        setInjector(new CdiInjector(getInjector(), manager));
+        setRegistry(new CdiCamelRegistry(manager));
+        setInjector(new CdiCamelInjector(getInjector(), manager));
     }
 }

@@ -19,7 +19,9 @@ package org.apache.camel.cdi;
 import javax.enterprise.inject.Default;
 import javax.enterprise.util.AnnotationLiteral;
 
-final class DefaultLiteral extends AnnotationLiteral<Default> implements Default {
+final class
+
+    DefaultLiteral extends AnnotationLiteral<Default> implements Default {
 
     private static final long serialVersionUID = 1L;
 
