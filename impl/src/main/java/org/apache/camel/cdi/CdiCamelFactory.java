@@ -33,59 +33,53 @@ final class CdiCamelFactory {
 
     @Produces
     private static TypeConverter typeConverter(InjectionPoint ip, @Any Instance<CamelContext> instance) {
-        ContextName name = CdiSpiHelper.getQualifierByType(ip, ContextName.class);
-        CamelContext context = instance.select(name != null ? name : DefaultLiteral.INSTANCE).get();
-        return context.getTypeConverter();
+        return selectContext(ip, instance).getTypeConverter();
     }
 
     @Produces
     @Typed(MockEndpoint.class)
     private static MockEndpoint mockEndpointFromMember(InjectionPoint ip, @Any Instance<CamelContext> instance) {
-        ContextName name = CdiSpiHelper.getQualifierByType(ip, ContextName.class);
-        CamelContext context = instance.select(name != null ? name : DefaultLiteral.INSTANCE).get();
         String uri = "mock:" + ip.getMember().getName();
-        return CamelContextHelper.getMandatoryEndpoint(context, uri, MockEndpoint.class);
+        return CamelContextHelper.getMandatoryEndpoint(selectContext(ip, instance), uri, MockEndpoint.class);
     }
 
     @Uri("")
     @Produces
     @Typed(MockEndpoint.class)
     private static MockEndpoint mockEndpointFromUri(InjectionPoint ip, @Any Instance<CamelContext> instance) {
-        ContextName name = CdiSpiHelper.getQualifierByType(ip, ContextName.class);
-        CamelContext context = instance.select(name != null ? name : DefaultLiteral.INSTANCE).get();
         String uri = CdiSpiHelper.getQualifierByType(ip, Uri.class).value();
-        return CamelContextHelper.getMandatoryEndpoint(context, uri, MockEndpoint.class);
+        return CamelContextHelper.getMandatoryEndpoint(selectContext(ip, instance), uri, MockEndpoint.class);
     }
 
-    // TODO: confirm whether it can be removed
+    // TODO: confirm whether it can be removed as this is redundant with @Uri, see https://issues.apache.org/jira/browse/CAMEL-5553?focusedCommentId=13445936&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-13445936
     @Mock("")
     @Produces
     @Typed(MockEndpoint.class)
     private static MockEndpoint createMockEndpoint(InjectionPoint ip, @Any Instance<CamelContext> instance) {
-        ContextName name = CdiSpiHelper.getQualifierByType(ip, ContextName.class);
-        CamelContext context = instance.select(name != null ? name : DefaultLiteral.INSTANCE).get();
         String uri = CdiSpiHelper.getQualifierByType(ip, Mock.class).value();
-        return CamelContextHelper.getMandatoryEndpoint(context, uri, MockEndpoint.class);
+        return CamelContextHelper.getMandatoryEndpoint(selectContext(ip, instance), uri, MockEndpoint.class);
     }
 
     @Uri("")
     @Produces
     private static Endpoint endpoint(InjectionPoint ip, @Any Instance<CamelContext> instance) {
-        ContextName name = CdiSpiHelper.getQualifierByType(ip, ContextName.class);
-        CamelContext context = instance.select(name != null ? name : DefaultLiteral.INSTANCE).get();
         String uri = CdiSpiHelper.getQualifierByType(ip, Uri.class).value();
-        return CamelContextHelper.getMandatoryEndpoint(context, uri);
+        return CamelContextHelper.getMandatoryEndpoint(selectContext(ip, instance), uri);
     }
 
     @Uri("")
     @Produces
     private static ProducerTemplate producerTemplate(InjectionPoint ip, @Any Instance<CamelContext> instance) {
-        ContextName name = CdiSpiHelper.getQualifierByType(ip, ContextName.class);
-        CamelContext context = instance.select(name != null ? name : DefaultLiteral.INSTANCE).get();
+        CamelContext context = selectContext(ip, instance);
         ProducerTemplate producerTemplate = context.createProducerTemplate();
         String uri = CdiSpiHelper.getQualifierByType(ip, Uri.class).value();
         Endpoint endpoint = CamelContextHelper.getMandatoryEndpoint(context, uri);
         producerTemplate.setDefaultEndpoint(endpoint);
         return producerTemplate;
+    }
+
+    private static CamelContext selectContext(InjectionPoint ip, Instance<CamelContext> instance) {
+        ContextName name = CdiSpiHelper.getQualifierByType(ip, ContextName.class);
+        return instance.select(name != null ? name : DefaultLiteral.INSTANCE).get();
     }
 }
