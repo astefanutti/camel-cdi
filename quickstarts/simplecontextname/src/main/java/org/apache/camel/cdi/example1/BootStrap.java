@@ -44,7 +44,7 @@ public class BootStrap {
         WeldContainer container = new StartMain(args).go();
         // Get a reference to the Camel context named "simple"
         CamelContext context = container.instance().select(CamelContext.class, new ContextName.Literal("simple")).get();
-        System.out.println("Camel CDI ::" + context + " started!");
+        System.out.println("Camel CDI :: " + context + " started!");
         // And wait until the JVM exits
         new CountDownLatch(1).await();
     }
