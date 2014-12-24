@@ -82,7 +82,7 @@ final class CdiCamelBeanPostProcessor extends DefaultCamelBeanPostProcessor {
     }
 
     public CamelContext getOrLookupCamelContext(String context) {
-        return BeanManagerHelper.getReferenceByType(manager, CamelContext.class, context.isEmpty() ? DefaultLiteral.INSTANCE : new ContextNameLiteral(context));
+        return BeanManagerHelper.getReferenceByType(manager, CamelContext.class, context.isEmpty() ? DefaultLiteral.INSTANCE : new ContextName.Literal(context));
     }
 
     public CamelContext getOrLookupCamelContext() {

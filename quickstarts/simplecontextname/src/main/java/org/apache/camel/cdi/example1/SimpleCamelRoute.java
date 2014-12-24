@@ -42,16 +42,18 @@ public class SimpleCamelRoute extends RouteBuilder {
     public void configure() {
         from(timerEP).routeId("timerToDirect")
             .setHeader("context")
-              .constant("simple")
-            .setBody().constant("Camel CDI Example 1")
-              .log("Message received : ${body} for the Context : ${header.context}")
+                .constant("simple")
+            .setBody()
+                .constant("Camel CDI Example 1")
+            .log("Message received : ${body} for the Context : ${header.context}")
             .setHeader("header.message")
-              .simple("properties:header.message")
-              .log("Message received : ${body} for the header : ${header.header.message}")
+                .simple("properties:header.message")
+            .log("Message received : ${body} for the header : ${header.header.message}")
             .to(directEP);
 
         from(directEP).routeId("directToBean")
-            .setBody().constant("CDI")
+            .setBody()
+                .constant("CDI")
             .bean(helloBean, "sayHello")
             .log(">> Response : ${body}");
     }

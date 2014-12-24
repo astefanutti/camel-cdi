@@ -16,6 +16,7 @@
  */
 package org.apache.camel.cdi;
 
+import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Qualifier;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -32,4 +33,20 @@ public @interface ContextName {
      * If no value is specified then the default CamelContext is used.
      */
     String value() default "";
+
+    public final class Literal extends AnnotationLiteral<ContextName> implements ContextName {
+
+        private static final long serialVersionUID = 1L;
+
+        private final String name;
+
+        public Literal(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String value() {
+            return name;
+        }
+    }
 }
