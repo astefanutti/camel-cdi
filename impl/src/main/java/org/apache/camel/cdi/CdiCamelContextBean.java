@@ -33,6 +33,8 @@ import java.util.Set;
 
 final class CdiCamelContextBean implements Bean<CdiCamelContext>, PassivationCapable {
 
+    private final Set<Annotation> qualifiers;
+
     private final Set<Type> types;
 
     private final String name;
@@ -40,6 +42,7 @@ final class CdiCamelContextBean implements Bean<CdiCamelContext>, PassivationCap
     private final InjectionTarget<CdiCamelContext> target;
 
     CdiCamelContextBean(BeanManager manager, String name) {
+        this.qualifiers = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(AnyLiteral.INSTANCE, DefaultLiteral.INSTANCE)));
         AnnotatedType<CdiCamelContext> annotatedType = manager.createAnnotatedType(CdiCamelContext.class);
         this.types = Collections.unmodifiableSet(annotatedType.getTypeClosure());
         this.target = manager.createInjectionTarget(annotatedType);
@@ -53,7 +56,7 @@ final class CdiCamelContextBean implements Bean<CdiCamelContext>, PassivationCap
 
     @Override
     public Set<Annotation> getQualifiers() {
-        return Collections.unmodifiableSet(new HashSet<>(Arrays.asList(DefaultLiteral.INSTANCE, AnyLiteral.INSTANCE)));
+        return qualifiers;
     }
 
     @Override
