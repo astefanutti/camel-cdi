@@ -33,8 +33,8 @@ public class CdiCamelContext extends DefaultCamelContext {
 
     @PostConstruct
     void postConstruct() {
-        AnnotatedType<?> at = manager.createAnnotatedType(getClass());
-        ContextName name = at.getAnnotation(ContextName.class);
+        AnnotatedType<?> type = manager.createAnnotatedType(getClass());
+        ContextName name = type.getAnnotation(ContextName.class);
         // Do not override the name if it's been already set (in the bean constructor for example)
         if (getNameStrategy() instanceof DefaultCamelContextNameStrategy)
             setName(name != null ? name.value() : "camel-cdi");
@@ -42,8 +42,5 @@ public class CdiCamelContext extends DefaultCamelContext {
         // Add bean registry and Camel injector
         setRegistry(new CdiBeanRegistry(manager));
         setInjector(new CdiInjector(getInjector(), manager));
-
-        // Explicitly load the properties component as NPE can be thrown when the Camel context is interacted with but not started yet
-        lookupPropertiesComponent();
     }
 }
