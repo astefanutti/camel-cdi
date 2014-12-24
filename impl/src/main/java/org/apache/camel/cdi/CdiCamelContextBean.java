@@ -37,16 +37,13 @@ final class CdiCamelContextBean implements Bean<CdiCamelContext>, PassivationCap
 
     private final Set<Type> types;
 
-    private final String name;
-
     private final InjectionTarget<CdiCamelContext> target;
 
-    CdiCamelContextBean(BeanManager manager, String name) {
+    CdiCamelContextBean(BeanManager manager) {
         this.qualifiers = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(AnyLiteral.INSTANCE, DefaultLiteral.INSTANCE)));
         AnnotatedType<CdiCamelContext> annotatedType = manager.createAnnotatedType(CdiCamelContext.class);
         this.types = Collections.unmodifiableSet(annotatedType.getTypeClosure());
         this.target = manager.createInjectionTarget(annotatedType);
-        this.name = name;
     }
 
     @Override
@@ -87,12 +84,13 @@ final class CdiCamelContextBean implements Bean<CdiCamelContext>, PassivationCap
 
     @Override
     public String getName() {
-        return name;
+        // Not called as this is not a named bean
+        return null;
     }
 
     @Override
     public String toString() {
-        return "Default CamelContext Bean";
+        return "Default CdiCamelContext Bean";
     }
 
     @Override
