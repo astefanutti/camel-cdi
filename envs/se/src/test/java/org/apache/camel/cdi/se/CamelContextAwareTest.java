@@ -54,8 +54,7 @@ public class CamelContextAwareTest {
     @Test
     public void camelContextAware() {
         assertThat(bean.getCamelContext(), is(notNullValue()));
-        // FIXME: find a way to avoid Camel context naming strategy incremented
-        // when proxies are created
+        // FIXME: find a way to avoid Camel context naming strategy incremented when proxies are created
         assertThat(bean.getCamelContext().getName(), is(equalTo("camel-cdi")));
     }
 }

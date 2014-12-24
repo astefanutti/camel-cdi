@@ -27,8 +27,6 @@ import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.PropertyInject;
 import org.apache.camel.RoutesBuilder;
-import org.apache.camel.impl.DefaultCamelContextNameStrategy;
-import org.apache.camel.impl.ExplicitCamelContextNameStrategy;
 
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
@@ -100,34 +98,24 @@ public class CdiCamelExtension implements Extension {
 
     private void configureCamelContexts(@Observes AfterDeploymentValidation adv, BeanManager manager) {
         String defaultContextName = "camel-cdi";
-
         // Instantiate the Camel contexts
         Map<String, CamelContext> camelContexts = new HashMap<>();
         for (Bean<?> bean : manager.getBeans(CdiCamelContext.class, AnyLiteral.INSTANCE)) {
             ContextName name = CdiSpiHelper.getQualifierByType(bean, ContextName.class);
-            CdiCamelContext context;
-            if (name != null) {
-                context = BeanManagerHelper.getReferenceByType(manager, CdiCamelContext.class, name);
-                // Enforce context name based on the @ContextName qualifier
-                context.setNameStrategy(new ExplicitCamelContextNameStrategy(name.value()));
-            } else {
-                context = BeanManagerHelper.getReferenceByType(manager, CdiCamelContext.class, DefaultLiteral.INSTANCE);
-                // Do not override custom name for the @Default context
-                if (context.getNameStrategy() instanceof DefaultCamelContextNameStrategy)
-                    context.setNameStrategy(new ExplicitCamelContextNameStrategy(defaultContextName));
-                else
-                    defaultContextName = context.getName();
-            }
+            CdiCamelContext context = BeanManagerHelper.getReferenceByType(manager, CdiCamelContext.class, name != null ? name : DefaultLiteral.INSTANCE);
+            if (name == null)
+                defaultContextName = context.getName();
             camelContexts.put(context.getName(), context);
         }
 
-        // Add type converter beans to the Camel contexts
+        // Add type converters to the Camel contexts
         CdiTypeConverterLoader loader = new CdiTypeConverterLoader();
         for (Class<?> typeConverter : typeConverters)
             for (CamelContext context : camelContexts.values())
                 loader.loadConverterMethods(context.getTypeConverterRegistry(), typeConverter);
 
         // Instantiate route builders and add them to the corresponding Camel contexts
+        // This should ideally be done in the @PostConstruct callback of the CdiCamelContext class as this would enable custom Camel contexts that inherit from CdiCamelContext and start the context in their own @PostConstruct callback with their routes already added. However, that leads to circular dependencies between the RouteBuilder beans and the CdiCamelContext bean itself.
         for (Bean<?> bean : manager.getBeans(RoutesBuilder.class, AnyLiteral.INSTANCE)) {
             ContextName name = CdiSpiHelper.getQualifierByType(bean, ContextName.class);
             CamelContext context = camelContexts.get(name != null ? name.value() : defaultContextName);
