@@ -92,7 +92,8 @@ final class CdiBeanRegistry implements Registry {
     }
 
     @Override
+
     public String toString() {
-        return "Cdi Bean Registry [" + System.identityHashCode(this) + "]";
+        return "CDI Bean Registry [" + System.identityHashCode(this) + "]";
     }
 }
