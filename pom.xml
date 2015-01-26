@@ -74,11 +74,11 @@
         <cdi.version>1.2</cdi.version>
         <deltaspike.version>1.1.0</deltaspike.version>
         <javaee.version>7.0</javaee.version>
-        <slf4j.version>1.7.9</slf4j.version>
-        <weld.version>2.2.8.Final</weld.version>
+        <slf4j.version>1.7.10</slf4j.version>
+        <weld.version>2.2.9.Final</weld.version>
         <owb.version>1.5.0-SNAPSHOT</owb.version>
         <wildfly.version>8.2.0.Final</wildfly.version>
-        <arquillian.version>1.1.5.Final</arquillian.version>
+        <arquillian.version>1.1.6.Final</arquillian.version>
         <arquillian-osgi.version>2.1.0.CR18</arquillian-osgi.version>
         <arquillian.weld.version>1.0.0.CR8</arquillian.weld.version>
         <shrinkwrap.resolver.version>2.1.1</shrinkwrap.resolver.version>
@@ -288,7 +288,7 @@
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>4.11</version>
+                <version>4.12</version>
                 <scope>test</scope>
             </dependency>
 
