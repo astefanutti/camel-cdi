@@ -27,6 +27,7 @@ import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.PropertyInject;
 import org.apache.camel.RoutesBuilder;
+import org.apache.camel.management.event.AbstractExchangeEvent;
 
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
@@ -39,9 +40,13 @@ import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.enterprise.inject.spi.ProcessBeanAttributes;
 import javax.enterprise.inject.spi.ProcessInjectionTarget;
+import javax.enterprise.inject.spi.ProcessObserverMethod;
 import javax.enterprise.inject.spi.WithAnnotations;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.Collections;
+import java.util.EnumSet;
+import java.util.EventObject;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -49,16 +54,22 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class CdiCamelExtension implements Extension {
 
-    private final Set<Class<?>> typeConverters = Collections.newSetFromMap(new ConcurrentHashMap<Class<?>, Boolean>());
+    private final Set<Class<?>> converters = Collections.newSetFromMap(new ConcurrentHashMap<Class<?>, Boolean>());
 
     private final Set<AnnotatedType<?>> camelBeans = Collections.newSetFromMap(new ConcurrentHashMap<AnnotatedType<?>, Boolean>());
 
     private final Set<AnnotatedType<?>> eagerBeans = Collections.newSetFromMap(new ConcurrentHashMap<AnnotatedType<?>, Boolean>());
 
-    private final Set<Annotation> contextNames = Collections.newSetFromMap(new ConcurrentHashMap<Annotation, Boolean>());
+    private final Map<ContextName, EnumSet<ContextInfo>> namedContexts = new ConcurrentHashMap<>();
+
+    private final EnumSet<ContextInfo> defaultContext = EnumSet.noneOf(ContextInfo.class);
+
+    EnumSet<ContextInfo> getContextInfo(ContextName name) {
+        return name != null ? namedContexts.get(name) : defaultContext;
+    }
 
     private void typeConverters(@Observes @WithAnnotations(Converter.class) ProcessAnnotatedType<?> pat) {
-        typeConverters.add(pat.getAnnotatedType().getJavaClass());
+        converters.add(pat.getAnnotatedType().getJavaClass());
     }
 
     private void camelContextAware(@Observes ProcessAnnotatedType<? extends CamelContextAware> pat) {
@@ -75,7 +86,7 @@ public class CdiCamelExtension implements Extension {
 
     private void camelContextNames(@Observes ProcessAnnotatedType<? extends CamelContext> pat) {
         if (pat.getAnnotatedType().isAnnotationPresent(ContextName.class))
-            contextNames.add(pat.getAnnotatedType().getAnnotation(ContextName.class));
+            namedContexts.put(pat.getAnnotatedType().getAnnotation(ContextName.class), EnumSet.noneOf(ContextInfo.class));
     }
 
     private <T> void camelBeansPostProcessor(@Observes ProcessInjectionTarget<T> pit, BeanManager manager) {
@@ -84,16 +95,33 @@ public class CdiCamelExtension implements Extension {
     }
 
     private <T extends Endpoint> void producerEndpoints(@Observes ProcessBeanAttributes<T> pba) {
-        pba.setBeanAttributes(new BeanAttributesDecorator<>(pba.getBeanAttributes(), contextNames));
+        pba.setBeanAttributes(new BeanAttributesDecorator<>(pba.getBeanAttributes(), namedContexts.keySet()));
     }
 
     private void producerTemplates(@Observes ProcessBeanAttributes<ProducerTemplate> pba) {
-        pba.setBeanAttributes(new BeanAttributesDecorator<>(pba.getBeanAttributes(), contextNames));
+        pba.setBeanAttributes(new BeanAttributesDecorator<>(pba.getBeanAttributes(), namedContexts.keySet()));
     }
 
     private void addDefaultCamelContext(@Observes AfterBeanDiscovery abd, BeanManager manager) {
         if (manager.getBeans(CamelContext.class, AnyLiteral.INSTANCE).isEmpty())
             abd.addBean(new CdiCamelContextBean(manager));
+    }
+
+    private void camelEventNotifiers(@Observes ProcessObserverMethod<? extends EventObject, ?> pom) {
+        Type type = pom.getObserverMethod().getObservedType();
+        // Camel events are raw types
+        if (type instanceof Class && Class.class.cast(type).getPackage().equals(AbstractExchangeEvent.class.getPackage())) {
+            Set<Annotation> qualifiers = pom.getObserverMethod().getObservedQualifiers();
+            if (qualifiers.isEmpty()) {
+                defaultContext.add(ContextInfo.EventNotifierSupport);
+                for (EnumSet<ContextInfo> info : namedContexts.values())
+                    info.add(ContextInfo.EventNotifierSupport);
+            } else {
+                for (Annotation qualifier : qualifiers)
+                    if (qualifier instanceof ContextName)
+                        namedContexts.get(qualifier).add(ContextInfo.EventNotifierSupport);
+            }
+        }
     }
 
     private void configureCamelContexts(@Observes AfterDeploymentValidation adv, BeanManager manager) {
@@ -110,9 +138,9 @@ public class CdiCamelExtension implements Extension {
 
         // Add type converters to the Camel contexts
         CdiTypeConverterLoader loader = new CdiTypeConverterLoader();
-        for (Class<?> typeConverter : typeConverters)
+        for (Class<?> converter : converters)
             for (CamelContext context : camelContexts.values())
-                loader.loadConverterMethods(context.getTypeConverterRegistry(), typeConverter);
+                loader.loadConverterMethods(context.getTypeConverterRegistry(), converter);
 
         // Instantiate route builders and add them to the corresponding Camel contexts
         // This should ideally be done in the @PostConstruct callback of the CdiCamelContext class as this would enable custom Camel contexts that inherit from CdiCamelContext and start the context in their own @PostConstruct callback with their routes already added. However, that leads to circular dependencies between the RouteBuilder beans and the CdiCamelContext bean itself.

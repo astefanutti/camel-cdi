@@ -31,6 +31,9 @@ public class CdiCamelContext extends DefaultCamelContext {
     @Inject
     private BeanManager manager;
 
+    @Inject
+    private CdiCamelExtension extension;
+
     @PostConstruct
     void postConstruct() {
         AnnotatedType<?> type = manager.createAnnotatedType(getClass());
@@ -42,5 +45,9 @@ public class CdiCamelContext extends DefaultCamelContext {
         // Add bean registry and Camel injector
         setRegistry(new CdiCamelRegistry(manager));
         setInjector(new CdiCamelInjector(getInjector(), manager));
+
+        // Add event notifier if at least one observer is present
+        if (extension.getContextInfo(name).contains(ContextInfo.EventNotifierSupport))
+            getManagementStrategy().addEventNotifier(new CdiEventNotifier(manager, name));
     }
 }

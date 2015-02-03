@@ -30,7 +30,7 @@ final class BeanAttributesDecorator<T> implements BeanAttributes<T> {
 
     private final Set<Annotation> qualifiers;
 
-    BeanAttributesDecorator(BeanAttributes<T> attributes, Set<Annotation> qualifiers) {
+    BeanAttributesDecorator(BeanAttributes<T> attributes, Set<? extends Annotation> qualifiers) {
         this.attributes = attributes;
         Set<Annotation> annotations = new HashSet<>(attributes.getQualifiers());
         annotations.addAll(qualifiers);
