@@ -161,6 +161,42 @@ class CustomCamelContext extends CdiCamelContext {
 
 ### New Features
 
+##### Camel Events to CDI Events
+
+Camel provides a series of [management events][] that can be subscribed to for listening to Camel context, service, route and exchange events. This version of Camel CDI seamlessly translates these Camel events into CDI events that can be observed using CDI [observer methods][], e.g.:
+
+```java
+void onContextStarting(@Observes CamelContextStartingEvent event) {
+    // Called before the default Camel context is about to start
+}
+
+```
+
+When multiple Camel contexts exist in the CDI container, the `@ContextName` qualifier can be used to refine the observer method resolution to a particular Camel context as specified in [observer resolution][], e.g.:
+
+```java
+void onRouteStarted(@Observes @ContextName("first") RouteStartedEvent event) {
+    // Called after the route (event.getRoute()) for the Camel context ("first") has started
+}
+
+```
+
+Similarly, the `@Default` qualifier can be used to observe Camel events for the default Camel context if multiples contexts exist, e.g.:
+
+```java
+void onExchangeCompleted(@Observes @Default ExchangeCompletedEvent event) {
+    // Called after the exchange (event.getExchange()) processing has completed
+}
+
+```
+In that example, if no qualifier is specified, the `@Any` qualifier is implicitly assumed, so that corresponding events for all the Camel contexts deployed get received.
+
+Note that the support for Camel events translation into CDI events is only activated if observer methods listening for Camel events are detected in the deployment, and that per Camel context.
+
+[management events]: http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/management/event/package-summary.html
+[observer methods]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#observer_methods
+[observer resolution]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#observer_resolution
+
 ##### Type Converter Beans
 
 CDI beans annotated with the `@Converter` annotation are automatically registered in the corresponding Camel context, e.g.:
