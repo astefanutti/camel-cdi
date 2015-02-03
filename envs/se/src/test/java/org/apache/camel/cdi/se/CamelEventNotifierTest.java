@@ -25,6 +25,8 @@ import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.management.event.AbstractExchangeEvent;
 import org.apache.camel.management.event.CamelContextStartedEvent;
 import org.apache.camel.management.event.CamelContextStartingEvent;
+import org.apache.camel.management.event.CamelContextStoppedEvent;
+import org.apache.camel.management.event.CamelContextStoppingEvent;
 import org.apache.camel.management.event.ExchangeCompletedEvent;
 import org.apache.camel.management.event.ExchangeCreatedEvent;
 import org.apache.camel.management.event.ExchangeSendingEvent;
@@ -89,6 +91,14 @@ public class CamelEventNotifierTest {
         events.add(event.getClass());
     }
 
+    private void onCamelContextStoppingEvent(@Observes CamelContextStoppingEvent event, List<Class> events) {
+        events.add(CamelContextStoppingEvent.class);
+    }
+
+    private void onCamelContextStoppedEvent(@Observes CamelContextStoppedEvent event, List<Class> events) {
+        events.add(CamelContextStoppedEvent.class);
+    }
+
     @Test
     @InSequence(1)
     public void startCamelContext(CamelContext context, List<Class> events) throws Exception {
@@ -111,7 +121,9 @@ public class CamelEventNotifierTest {
 
     @Test
     @InSequence(3)
-    public void stopCamelContext(CamelContext context) throws Exception {
+    public void stopCamelContext(CamelContext context, List<Class> events) throws Exception {
         context.stop();
+
+        assertThat("Events fired are incorrect", events, Matchers.<Class>contains(CamelContextStartingEvent.class, CamelContextStartedEvent.class, ExchangeSendingEvent.class, ExchangeCreatedEvent.class, ExchangeSendingEvent.class, ExchangeSentEvent.class, ExchangeCompletedEvent.class, ExchangeSentEvent.class, CamelContextStoppingEvent.class, CamelContextStoppedEvent.class));
     }
 }
