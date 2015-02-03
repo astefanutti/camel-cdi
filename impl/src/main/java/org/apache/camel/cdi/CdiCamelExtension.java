@@ -30,6 +30,7 @@ import org.apache.camel.RoutesBuilder;
 import org.apache.camel.management.event.AbstractExchangeEvent;
 
 import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Default;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.AfterDeploymentValidation;
 import javax.enterprise.inject.spi.AnnotatedType;
@@ -120,6 +121,8 @@ public class CdiCamelExtension implements Extension {
                 for (Annotation qualifier : qualifiers)
                     if (qualifier instanceof ContextName)
                         namedContexts.get(qualifier).add(ContextInfo.EventNotifierSupport);
+                    else if (qualifier instanceof Default)
+                        defaultContext.add(ContextInfo.EventNotifierSupport);
             }
         }
     }
