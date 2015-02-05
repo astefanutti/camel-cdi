@@ -38,7 +38,7 @@ The objective of this project is to alleviate all these concerns, provide additi
 <dependency>
     <groupId>io.astefanutti.camel.cdi</groupId>
     <artifactId>camel-cdi</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
 </dependency>
 ```
 
@@ -181,7 +181,7 @@ void onRouteStarted(@Observes @ContextName("first") RouteStartedEvent event) {
 
 ```
 
-Similarly, the `@Default` qualifier can be used to observe Camel events for the default Camel context if multiples contexts exist, e.g.:
+Similarly, the `@Default` qualifier can be used to observe Camel events for the _default_ Camel context if multiples contexts exist, e.g.:
 
 ```java
 void onExchangeCompleted(@Observes @Default ExchangeCompletedEvent event) {
