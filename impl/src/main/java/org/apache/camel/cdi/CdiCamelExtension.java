@@ -106,6 +106,12 @@ public class CdiCamelExtension implements Extension {
     private void addDefaultCamelContext(@Observes AfterBeanDiscovery abd, BeanManager manager) {
         if (manager.getBeans(CamelContext.class, AnyLiteral.INSTANCE).isEmpty())
             abd.addBean(new CdiCamelContextBean(manager));
+
+        CdiEventComponent eventComponent = new CdiEventComponent(manager);
+        // Camel sends and receives events through this component, looked up by name
+        abd.addBean(eventComponent);
+        // CDI sends events to observer methods
+        abd.addObserverMethod(eventComponent);
     }
 
     private void camelEventNotifiers(@Observes ProcessObserverMethod<? extends EventObject, ?> pom) {
