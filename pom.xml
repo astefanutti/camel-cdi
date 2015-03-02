@@ -55,6 +55,9 @@
         <repository>
             <id>apache-snapshots</id>
             <url>http://repository.apache.org/snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
         <repository>
             <id>jboss-releases</id>
@@ -77,11 +80,11 @@
         <weld.version>2.2.9.Final</weld.version>
         <owb.version>1.5.0-SNAPSHOT</owb.version>
         <wildfly.version>8.2.0.Final</wildfly.version>
-        <arquillian.version>1.1.6.Final</arquillian.version>
+        <arquillian.version>1.1.7.Final</arquillian.version>
         <arquillian-osgi.version>2.1.0.CR18</arquillian-osgi.version>
         <arquillian.weld.version>1.0.0.CR8</arquillian.weld.version>
         <shrinkwrap.resolver.version>2.1.1</shrinkwrap.resolver.version>
-        <shrinkwrap.descriptors.version>2.0.0-alpha-6</shrinkwrap.descriptors.version>
+        <shrinkwrap.descriptors.version>2.0.0-alpha-7</shrinkwrap.descriptors.version>
         <!-- Maven plugins -->
         <maven-exec-plugin-version>1.3.2</maven-exec-plugin-version>
         <maven-bundle-plugin.version>2.3.7</maven-bundle-plugin.version>
@@ -181,14 +184,6 @@
 
     <dependencyManagement>
         <dependencies>
-
-            <!-- project dependencies -->
-
-            <dependency>
-                <groupId>io.astefanutti.camel.cdi</groupId>
-                <artifactId>camel-cdi</artifactId>
-                <version>${project.version}</version>
-            </dependency>
 
             <!-- compile dependencies -->
 
@@ -320,17 +315,6 @@
                 <artifactId>shrinkwrap-descriptors-bom</artifactId>
                 <version>${shrinkwrap.descriptors.version}</version>
                 <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-
-            <!-- TODO: should be removed when the depchain is included in the BOM
-            see https://github.com/shrinkwrap/descriptors/pull/94
-            and https://issues.jboss.org/browse/SHRINKDESC-154 -->
-            <dependency>
-                <groupId>org.jboss.shrinkwrap.descriptors</groupId>
-                <artifactId>shrinkwrap-descriptors-depchain</artifactId>
-                <version>${shrinkwrap.descriptors.version}</version>
-                <scope>test</scope>
                 <type>pom</type>
             </dependency>
 
