@@ -103,17 +103,6 @@ public class CdiCamelExtension implements Extension {
         pba.setBeanAttributes(new BeanAttributesDecorator<>(pba.getBeanAttributes(), namedContexts.keySet()));
     }
 
-    private void addDefaultCamelContext(@Observes AfterBeanDiscovery abd, BeanManager manager) {
-        if (manager.getBeans(CamelContext.class, AnyLiteral.INSTANCE).isEmpty())
-            abd.addBean(new CdiCamelContextBean(manager));
-
-        CdiEventComponent eventComponent = new CdiEventComponent(manager);
-        // Camel sends and receives events through this component, looked up by name
-        abd.addBean(eventComponent);
-        // CDI sends events to observer methods
-        abd.addObserverMethod(eventComponent);
-    }
-
     private void camelEventNotifiers(@Observes ProcessObserverMethod<? extends EventObject, ?> pom) {
         Type type = pom.getObserverMethod().getObservedType();
         // Camel events are raw types
@@ -133,6 +122,11 @@ public class CdiCamelExtension implements Extension {
         }
     }
 
+    private void addDefaultCamelContext(@Observes AfterBeanDiscovery abd, BeanManager manager) {
+        if (manager.getBeans(CamelContext.class, AnyLiteral.INSTANCE).isEmpty())
+            abd.addBean(new CdiCamelContextBean(manager));
+    }
+
     private void configureCamelContexts(@Observes AfterDeploymentValidation adv, BeanManager manager) {
         String defaultContextName = "camel-cdi";
         // Instantiate the Camel contexts
@@ -143,6 +137,7 @@ public class CdiCamelExtension implements Extension {
             if (name == null)
                 defaultContextName = context.getName();
             camelContexts.put(context.getName(), context);
+            // TODO: register the Camel context into the registry for the context component (see http://camel.apache.org/context.html)
         }
 
         // Add type converters to the Camel contexts

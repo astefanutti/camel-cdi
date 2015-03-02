@@ -36,7 +36,6 @@ import org.junit.runner.RunWith;
 
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
@@ -76,13 +75,13 @@ public class EventComponentTest {
 
     @Test
     @InSequence(1)
-    public void startCamelContext(CamelContext context, List<Class> events) throws Exception {
+    public void startCamelContext(CamelContext context) throws Exception {
         context.start();
     }
 
     @Test
     @InSequence(2)
-    public void sendMessageToInbound(List<Class> events) throws InterruptedException {
+    public void sendMessageToInbound() throws InterruptedException {
         outboundAll.expectedMessageCount(4);
         outboundAll.expectedBodiesReceived(1234, new SampleBean("foo"), new SampleBean("bar"), "test");
 
@@ -104,7 +103,7 @@ public class EventComponentTest {
 
     @Test
     @InSequence(3)
-    public void stopCamelContext(CamelContext context, List<Class> events) throws Exception {
+    public void stopCamelContext(CamelContext context) throws Exception {
         context.stop();
     }
 }

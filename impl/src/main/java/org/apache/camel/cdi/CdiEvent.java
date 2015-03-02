@@ -38,8 +38,6 @@ package org.apache.camel.cdi;
  * <p>
  *     TODO: Support <code>@Inject @Uri(CDI_EVENT_URI) @SomeQualifier Endpoint|ProducerTemplate</code>
  * </p>
- *
- * @author Christian Bauer
  */
 public final class CdiEvent {
 
@@ -54,5 +52,4 @@ public final class CdiEvent {
     public static String endpoint(Class<?> clazz) {
         return CDI_EVENT + "://" + (clazz != null ? clazz.getName() : "") + "/";
     }
-
 }

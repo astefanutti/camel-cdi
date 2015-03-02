@@ -51,6 +51,5 @@ public class EventConsumingRoute extends RouteBuilder {
 
         from(CdiEvent.endpoint(String.class))
             .to(resultStringEndpoint);
-
     }
 }
