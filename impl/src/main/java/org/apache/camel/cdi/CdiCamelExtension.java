@@ -38,17 +38,22 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.DeploymentException;
 import javax.enterprise.inject.spi.Extension;
+import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.enterprise.inject.spi.ProcessBeanAttributes;
+import javax.enterprise.inject.spi.ProcessInjectionPoint;
 import javax.enterprise.inject.spi.ProcessInjectionTarget;
 import javax.enterprise.inject.spi.ProcessObserverMethod;
 import javax.enterprise.inject.spi.WithAnnotations;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.EventObject;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -63,10 +68,16 @@ public class CdiCamelExtension implements Extension {
 
     private final Map<ContextName, EnumSet<ContextInfo>> namedContexts = new ConcurrentHashMap<>();
 
+    private final Map<InjectionPoint, ForwardingObserverMethod<?>> cdiEventEndpoints = new ConcurrentHashMap<>();
+
     private final EnumSet<ContextInfo> defaultContext = EnumSet.noneOf(ContextInfo.class);
 
     EnumSet<ContextInfo> getContextInfo(ContextName name) {
         return name != null ? namedContexts.get(name) : defaultContext;
+    }
+
+    ForwardingObserverMethod<?> getObserverMethod(InjectionPoint ip) {
+        return cdiEventEndpoints.get(ip);
     }
 
     private void typeConverters(@Observes @WithAnnotations(Converter.class) ProcessAnnotatedType<?> pat) {
@@ -95,8 +106,21 @@ public class CdiCamelExtension implements Extension {
             pit.setInjectionTarget(new CdiCamelInjectionTarget<>(pit.getInjectionTarget(), manager));
     }
 
-    private <T extends Endpoint> void producerEndpoints(@Observes ProcessBeanAttributes<T> pba) {
-        pba.setBeanAttributes(new BeanAttributesDecorator<>(pba.getBeanAttributes(), namedContexts.keySet()));
+    private <T> void cdiEventEndpoints(@Observes ProcessInjectionPoint<?, CdiEventEndpoint<T>> pip) {
+        InjectionPoint ip = pip.getInjectionPoint();
+        // TODO: refine the key to the type and qualifiers instead of the whole injection point as it leads to registering redundant observers
+        cdiEventEndpoints.put(ip, new ForwardingObserverMethod<T>(((ParameterizedType) ip.getType()).getActualTypeArguments()[0], ip.getQualifiers()));
+    }
+
+    private <T extends Endpoint> void endpointProducers(@Observes ProcessBeanAttributes<T> pba) {
+        if (CdiEventEndpoint.class.equals(CdiSpiHelper.getRawType(pba.getAnnotated().getBaseType()))) {
+            Set<Annotation> qualifiers = new HashSet<>();
+            for (InjectionPoint ip : cdiEventEndpoints.keySet())
+                qualifiers.addAll(ip.getQualifiers());
+            pba.setBeanAttributes(new BeanAttributesDecorator<>(pba.getBeanAttributes(), qualifiers));
+        } else {
+            pba.setBeanAttributes(new BeanAttributesDecorator<>(pba.getBeanAttributes(), namedContexts.keySet()));
+        }
     }
 
     private void producerTemplates(@Observes ProcessBeanAttributes<ProducerTemplate> pba) {
@@ -125,6 +149,11 @@ public class CdiCamelExtension implements Extension {
     private void addDefaultCamelContext(@Observes AfterBeanDiscovery abd, BeanManager manager) {
         if (manager.getBeans(CamelContext.class, AnyLiteral.INSTANCE).isEmpty())
             abd.addBean(new CdiCamelContextBean(manager));
+    }
+
+    private void addCdiEventObserverMethods(@Observes AfterBeanDiscovery abd) {
+        for (ObserverMethod method : cdiEventEndpoints.values())
+            abd.addObserverMethod(method);
     }
 
     private void configureCamelContexts(@Observes AfterDeploymentValidation adv, BeanManager manager) {

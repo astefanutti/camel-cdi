@@ -22,6 +22,12 @@ import javax.enterprise.inject.Vetoed;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Array;
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
 import java.util.Collection;
 
 @Vetoed
@@ -41,5 +47,33 @@ final class CdiSpiHelper {
                 return ObjectHelper.cast(type, item);
 
         return null;
+    }
+
+    static Class<?> getRawType(Type type) {
+        if (type instanceof Class<?>) {
+            return Class.class.cast(type);
+        }
+        else if (type instanceof ParameterizedType) {
+            return getRawType(ParameterizedType.class.cast(type).getRawType());
+        }
+        else if (type instanceof TypeVariable<?>) {
+            return getBound(TypeVariable.class.cast(type).getBounds());
+        }
+        else if (type instanceof WildcardType) {
+            return getBound(WildcardType.class.cast(type).getUpperBounds());
+        }
+        else if (type instanceof GenericArrayType) {
+            Class<?> rawType = getRawType(GenericArrayType.class.cast(type).getGenericComponentType());
+            if (rawType != null)
+                return Array.newInstance(rawType, 0).getClass();
+        }
+        return null;
+    }
+
+    private static Class<?> getBound(Type[] bounds) {
+        if (bounds.length == 0)
+            return Object.class;
+        else
+            return getRawType(bounds[0]);
     }
 }

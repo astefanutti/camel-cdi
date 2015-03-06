@@ -19,10 +19,10 @@ package org.apache.camel.cdi.se;
 import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.cdi.CdiCamelExtension;
-import org.apache.camel.cdi.CdiEvent;
 import org.apache.camel.cdi.Uri;
 import org.apache.camel.cdi.se.bean.EventConsumingRoute;
-import org.apache.camel.cdi.se.bean.SampleBean;
+import org.apache.camel.cdi.se.bean.EventProducingRoute;
+import org.apache.camel.cdi.se.bean.EventPayload;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -31,14 +31,22 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
+import javax.enterprise.util.TypeLiteral;
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
+import static org.hamcrest.Matchers.contains;
+import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
 public class EventComponentTest {
@@ -48,30 +56,56 @@ public class EventComponentTest {
         return ShrinkWrap.create(JavaArchive.class)
             // Camel CDI
             .addPackage(CdiCamelExtension.class.getPackage())
-            // Test class
+            // Test classes
             .addClass(EventConsumingRoute.class)
+            .addClass(EventProducingRoute.class)
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Inject
-    @Uri(CdiEvent.CDI_EVENT_URI)
-    private ProducerTemplate inbound;
+    @Uri("mock:consumeObject")
+    private MockEndpoint consumeObject;
 
     @Inject
-    Event<SampleBean> sampleBeanEvent;
+    @Uri("mock:consumeString")
+    private MockEndpoint consumeString;
 
     @Inject
-    @Uri("mock:resultAll")
-    private MockEndpoint outboundAll;
+    @Uri("mock:consumeStringPayload")
+    private MockEndpoint consumeStringPayload;
 
     @Inject
-    @Uri("mock:resultBean")
-    private MockEndpoint outboundBean;
+    @Uri("mock:consumeIntegerPayload")
+    private MockEndpoint consumeIntegerPayload;
 
     @Inject
-    @Uri("mock:resultString")
-    private MockEndpoint outboundString;
+    @Uri("direct:produceObject")
+    private ProducerTemplate produceObject;
+
+    @Inject
+    @Uri("direct:produceString")
+    private ProducerTemplate produceString;
+
+    @Inject
+    @Uri("direct:produceStringPayload")
+    private ProducerTemplate produceStringPayload;
+
+    @Inject
+    @Uri("direct:produceIntegerPayload")
+    private ProducerTemplate produceIntegerPayload;
+
+    @Inject
+    Event<Object> objectEvent;
+
+    @Inject
+    Event<EventPayload<String>> stringPayloadEvent;
+
+    @Inject
+    Event<EventPayload<Integer>> integerPayloadEvent;
+
+    @Inject
+    private EventObserver observer;
 
     @Test
     @InSequence(1)
@@ -81,29 +115,108 @@ public class EventComponentTest {
 
     @Test
     @InSequence(2)
-    public void sendMessageToInbound() throws InterruptedException {
-        outboundAll.expectedMessageCount(4);
-        outboundAll.expectedBodiesReceived(1234, new SampleBean("foo"), new SampleBean("bar"), "test");
+    public void sendEventsToConsumers() throws InterruptedException {
+        consumeObject.expectedMessageCount(4);
+        consumeObject.expectedBodiesReceived(1234, new EventPayload<>("foo"), new EventPayload<>("bar"), "test", new EventPayload<>(1), new EventPayload<>(2));
 
-        outboundBean.expectedMessageCount(2);
-        outboundBean.expectedBodiesReceived(new SampleBean("foo"), new SampleBean("bar"));
+        consumeString.expectedMessageCount(1);
+        consumeString.expectedBodiesReceived("test");
 
-        outboundString.expectedMessageCount(1);
-        outboundString.expectedBodiesReceived("test");
+        consumeStringPayload.expectedMessageCount(2);
+        consumeStringPayload.expectedBodiesReceived(new EventPayload<>("foo"), new EventPayload<>("bar"));
 
-        inbound.sendBody(1234);
-        inbound.sendBody(new SampleBean("foo"));
-        sampleBeanEvent.fire(new SampleBean("bar"));
-        inbound.sendBody("test");
+        consumeIntegerPayload.expectedMessageCount(2);
+        consumeIntegerPayload.expectedBodiesReceived(new EventPayload<>(1), new EventPayload<>(2));
 
-        assertIsSatisfied(2L, TimeUnit.SECONDS, outboundAll);
-        assertIsSatisfied(2L, TimeUnit.SECONDS, outboundBean);
-        assertIsSatisfied(2L, TimeUnit.SECONDS, outboundString);
+        objectEvent.select(Integer.class).fire(1234);
+        objectEvent.select(new TypeLiteral<EventPayload<String>>() {}).fire(new EventPayload<>("foo"));
+        stringPayloadEvent.fire(new EventPayload<>("bar"));
+        objectEvent.select(String.class).fire("test");
+        integerPayloadEvent.fire(new EventPayload<>(1));
+        integerPayloadEvent.fire(new EventPayload<>(2));
+
+        assertIsSatisfied(2L, TimeUnit.SECONDS, consumeObject);
+        assertIsSatisfied(2L, TimeUnit.SECONDS, consumeString);
+        assertIsSatisfied(2L, TimeUnit.SECONDS, consumeStringPayload);
+        assertIsSatisfied(2L, TimeUnit.SECONDS, consumeIntegerPayload);
     }
 
     @Test
     @InSequence(3)
+    public void sendMessagesToProducers() {
+        produceObject.sendBody("string");
+        EventPayload bar = new EventPayload<>("bar");
+        produceStringPayload.sendBody(bar);
+        produceObject.sendBody(1234);
+        produceString.sendBody("test");
+        produceIntegerPayload.sendBody(2);
+
+        assertThat(observer.getObjectEvents(), contains("string", bar, 1234, "test", 2));
+        assertThat(observer.getStringEvents(), contains("string", "test"));
+        assertThat(observer.getStringPayloadEvents(), contains(bar));
+        // FIXME
+        //assertThat(observer.getIntegerPayloadEvents(), contains(2));
+    }
+
+    @Test
+    @InSequence(4)
     public void stopCamelContext(CamelContext context) throws Exception {
         context.stop();
+    }
+
+    @Before
+    public void resetCollectedEvents() {
+        observer.reset();
+    }
+
+    @ApplicationScoped
+    static class EventObserver {
+
+        private final List<Object> objectEvents = new ArrayList<>();
+
+        private final List<String> stringEvents = new ArrayList<>();
+
+        private final List<EventPayload<String>> stringPayloadEvents = new ArrayList<>();
+
+        private final List<EventPayload<Integer>> integerPayloadEvents = new ArrayList<>();
+
+        void collectObjectEvents(@Observes Object event) {
+            objectEvents.add(event);
+        }
+
+        void collectStringEvents(@Observes String event) {
+            stringEvents.add(event);
+        }
+
+        void collectStringPayloadEvents(@Observes EventPayload<String> event) {
+            stringPayloadEvents.add(event);
+        }
+
+        void collectIntegerPayloadEvents(@Observes EventPayload<Integer> event) {
+            integerPayloadEvents.add(event);
+        }
+
+        List<Object> getObjectEvents() {
+            return objectEvents;
+        }
+
+        List<String> getStringEvents() {
+            return stringEvents;
+        }
+
+        List<EventPayload<String>> getStringPayloadEvents() {
+            return stringPayloadEvents;
+        }
+
+        List<EventPayload<Integer>> getIntegerPayloadEvents() {
+            return integerPayloadEvents;
+        }
+
+        void reset() {
+            objectEvents.clear();
+            stringEvents.clear();
+            stringPayloadEvents.clear();
+            integerPayloadEvents.clear();
+        }
     }
 }

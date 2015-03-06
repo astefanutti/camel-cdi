@@ -23,29 +23,28 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 @ApplicationScoped
-public class EventConsumingRoute extends RouteBuilder {
+public class EventProducingRoute extends RouteBuilder {
 
     @Inject
     private CdiEventEndpoint<Object> objectCdiEventEndpoint;
 
     @Inject
     private CdiEventEndpoint<String> stringCdiEventEndpoint;
-
+    
     @Inject
     private CdiEventEndpoint<EventPayload<String>> stringPayloadCdiEventEndpoint;
 
     @Inject
     private CdiEventEndpoint<EventPayload<Integer>> integerPayloadCdiEventEndpoint;
 
-
     @Override
     public void configure() {
-        from(objectCdiEventEndpoint).to("mock:consumeObject");
+        from("direct:produceObject").to(objectCdiEventEndpoint);
 
-        from(stringCdiEventEndpoint).to("mock:consumeString");
+        from("direct:produceString").to(stringCdiEventEndpoint);
 
-        from(stringPayloadCdiEventEndpoint).to("mock:consumeStringPayload");
+        from("direct:produceStringPayload").to(stringPayloadCdiEventEndpoint);
 
-        from(integerPayloadCdiEventEndpoint).to("mock:consumeIntegerPayload");
+        from("direct:produceIntegerPayload").to(integerPayloadCdiEventEndpoint);
     }
 }

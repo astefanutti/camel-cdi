@@ -16,60 +16,43 @@
  */
 package org.apache.camel.cdi;
 
-import org.apache.camel.Component;
+import org.apache.camel.CamelContext;
 import org.apache.camel.Consumer;
 import org.apache.camel.Processor;
 import org.apache.camel.Producer;
 import org.apache.camel.impl.DefaultEndpoint;
 
+import javax.enterprise.event.Event;
+import javax.enterprise.inject.spi.BeanManager;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
-/* package-private */ final class CdiEventEndpoint<T> extends DefaultEndpoint {
-    
-    private final Class<T> type;
-    
+public final class CdiEventEndpoint<T> extends DefaultEndpoint {
+
     private final List<CdiEventConsumer<T>> consumers = new ArrayList<>();
+    
+    private final Event<T> event;
 
-    CdiEventEndpoint(Class<T> type, String endpointUri, Component component) {
-        super(endpointUri, component);
-        this.type = type;
+    CdiEventEndpoint(Event<T> event, String endpointUri, CamelContext context, ForwardingObserverMethod<T> observer) {
+        super(endpointUri, context);
+        this.event = event;
+        observer.setObserver(this);
     }
 
-    Class<?> getType() {
-        return type;
-    }
-
-    @Override
     public Consumer createConsumer(Processor processor) {
         return new CdiEventConsumer<>(this, processor);
     }
 
     @Override
     public Producer createProducer() {
-        return new CdiEventProducer<>(this);
+        return new CdiEventProducer<>(this, event);
     }
 
     @Override
     public boolean isSingleton() {
         return true;
-    }
-
-    @Override
-    protected void doStart() throws Exception {
-        super.doStart();
-        getComponent().registerEndpoint(this);
-    }
-
-    @Override
-    protected void doStop() throws Exception {
-        getComponent().unregisterEndpoint(this);
-        super.doStop();
-    }
-
-    @Override
-    public CdiEventComponent getComponent() {
-        return (CdiEventComponent) super.getComponent();
     }
 
     void registerConsumer(CdiEventConsumer<T> consumer) {
@@ -86,9 +69,8 @@ import java.util.List;
 
     void notify(T t) {
         synchronized (consumers) {
-            for (CdiEventConsumer<T> consumer : consumers) {
+            for (CdiEventConsumer<T> consumer : consumers)
                 consumer.notify(t);
-            }
         }
     }
 }

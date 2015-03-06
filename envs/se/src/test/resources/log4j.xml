@@ -24,6 +24,10 @@
         <level value="INFO" />
     </logger>
 
+    <logger name="org.apache.camel.cdi">
+        <level value="DEBUG" />
+    </logger>
+
     <root>
         <level value="INFO" />
         <appender-ref ref="console" />

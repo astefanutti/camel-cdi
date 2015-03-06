@@ -22,30 +22,24 @@ import org.apache.camel.impl.DefaultProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.enterprise.event.Event;
 import javax.enterprise.inject.spi.BeanManager;
 import java.lang.annotation.Annotation;
-import java.util.Arrays;
 
 /* package-private */ final class CdiEventProducer<T> extends DefaultProducer {
 
     private final Logger logger = LoggerFactory.getLogger(CdiEventComponent.class);
-    
-    private final CdiEventEndpoint<T> endpoint;
-    
-     CdiEventProducer(CdiEventEndpoint<T> endpoint) {
+
+    private final Event<T> event;
+
+    CdiEventProducer(CdiEventEndpoint<T> endpoint, Event<T> event) {
          super(endpoint);
-         this.endpoint = endpoint;
+         this.event = event;
     }
 
     @Override
     public void process(Exchange exchange) throws CamelExchangeException {
-        Object event = exchange.getIn().getBody();
-        if (!endpoint.getType().isAssignableFrom(event.getClass()))
-            throw new CamelExchangeException("Exchange body of type '" + event.getClass().getName() + "' is not of destination endpoint event type: " + endpoint.getType(), exchange);
-
-        Annotation[] qualifiers = exchange.getIn().getHeader(CdiEvent.CDI_EVENT_QUALIFIERS, Annotation[].class);
-        logger.debug("Firing CDI event of type '{}' with qualifiers: {}", event.getClass().getName(), Arrays.toString(qualifiers));
-        BeanManager beanManager = endpoint.getComponent().getBeanManager();
-        beanManager.fireEvent(event, qualifiers != null ? qualifiers : new Annotation[0]);
+        logger.debug("Firing CDI event of type '{}'", event);
+        event.fire((T) exchange.getIn().getBody());
     }
 }
