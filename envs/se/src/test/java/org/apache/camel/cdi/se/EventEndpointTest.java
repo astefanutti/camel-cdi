@@ -21,8 +21,8 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.camel.cdi.CdiCamelExtension;
 import org.apache.camel.cdi.Uri;
 import org.apache.camel.cdi.se.bean.EventConsumingRoute;
-import org.apache.camel.cdi.se.bean.EventProducingRoute;
 import org.apache.camel.cdi.se.bean.EventPayload;
+import org.apache.camel.cdi.se.bean.EventProducingRoute;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -49,7 +49,7 @@ import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
-public class EventComponentTest {
+public class EventEndpointTest {
 
     @Deployment
     public static Archive<?> deployment() {
@@ -145,17 +145,19 @@ public class EventComponentTest {
     @InSequence(3)
     public void sendMessagesToProducers() {
         produceObject.sendBody("string");
-        EventPayload bar = new EventPayload<>("bar");
-        produceStringPayload.sendBody(bar);
+        EventPayload foo = new EventPayload<>("foo");
+        produceStringPayload.sendBody(foo);
         produceObject.sendBody(1234);
         produceString.sendBody("test");
-        produceIntegerPayload.sendBody(2);
+        EventPayload<Integer> bar = new EventPayload<>(2);
+        produceIntegerPayload.sendBody(bar);
+        EventPayload<Integer> baz = new EventPayload<>(12);
+        produceIntegerPayload.sendBody(baz);
 
-        assertThat(observer.getObjectEvents(), contains("string", bar, 1234, "test", 2));
+        assertThat(observer.getObjectEvents(), contains("string", foo, 1234, "test", bar, baz));
         assertThat(observer.getStringEvents(), contains("string", "test"));
-        assertThat(observer.getStringPayloadEvents(), contains(bar));
-        // FIXME
-        //assertThat(observer.getIntegerPayloadEvents(), contains(2));
+        assertThat(observer.getStringPayloadEvents(), contains(foo));
+        assertThat(observer.getIntegerPayloadEvents(), contains(bar, baz));
     }
 
     @Test

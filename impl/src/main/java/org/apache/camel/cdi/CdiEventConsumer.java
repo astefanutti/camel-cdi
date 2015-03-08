@@ -48,7 +48,7 @@ import org.apache.camel.impl.DefaultConsumer;
         try {
             getProcessor().process(exchange);
         } catch (Exception cause) {
-            throw new RuntimeExchangeException("Error sending CDI event to Camel consumer", exchange, cause);
+            throw new RuntimeExchangeException("Error while processing CDI event", exchange, cause);
         }
     }
 }

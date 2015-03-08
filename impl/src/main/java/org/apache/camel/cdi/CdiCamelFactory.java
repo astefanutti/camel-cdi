@@ -28,7 +28,6 @@ import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Typed;
-import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.util.TypeLiteral;
 import java.lang.annotation.Annotation;
@@ -89,16 +88,20 @@ final class CdiCamelFactory {
 
     @Produces
     @SuppressWarnings("unchecked")
-    private static <T> CdiEventEndpoint<T> cdiEventEndpoint(InjectionPoint ip, @Any Instance<CamelContext> instance, CdiCamelExtension extension, Event<Object> event) throws Exception {
+    private static <T> CdiEventEndpoint<T> cdiEventEndpoint(InjectionPoint ip, @Any Instance<CamelContext> instance, CdiCamelExtension extension, @Any Event<Object> event) throws Exception {
         CamelContext context = selectContext(ip, instance);
         Type type = ((ParameterizedType) ip.getType()).getActualTypeArguments()[0];
         String uri = endpointUri(type, ip.getQualifiers());
         if (context.hasEndpoint(uri) == null) {
-            // TODO: create an enhancement request so that it is possible to pass Type parameter to the Event.select(...) method
+            // FIXME: to be replaced once event firing with dynamic parameterized type is properly supported (see https://issues.jboss.org/browse/CDI-516)
             TypeLiteral<T> literal = new TypeLiteral<T>() {};
-            Field field = TypeLiteral.class.getDeclaredField("actualType");
-            field.setAccessible(true);
-            field.set(literal, type);
+            for (Field field : TypeLiteral.class.getDeclaredFields()) {
+                if (field.getType().equals(Type.class)) {
+                    field.setAccessible(true);
+                    field.set(literal, type);
+                    break;
+                }
+            }
             context.addEndpoint(uri, new CdiEventEndpoint<>(event.select(literal, ip.getQualifiers().toArray(new Annotation[ip.getQualifiers().size()])), uri, context, (ForwardingObserverMethod<T>) extension.getObserverMethod(ip)));
         }
         return CamelContextHelper.getMandatoryEndpoint(context, uri, CdiEventEndpoint.class);
