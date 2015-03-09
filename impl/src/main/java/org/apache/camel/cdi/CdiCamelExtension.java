@@ -33,8 +33,10 @@ import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Default;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.AfterDeploymentValidation;
+import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanAttributes;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.DeploymentException;
 import javax.enterprise.inject.spi.Extension;
@@ -45,6 +47,7 @@ import javax.enterprise.inject.spi.ProcessBeanAttributes;
 import javax.enterprise.inject.spi.ProcessInjectionPoint;
 import javax.enterprise.inject.spi.ProcessInjectionTarget;
 import javax.enterprise.inject.spi.ProcessObserverMethod;
+import javax.enterprise.inject.spi.ProcessProducerMethod;
 import javax.enterprise.inject.spi.WithAnnotations;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
@@ -66,9 +69,9 @@ public class CdiCamelExtension implements Extension {
 
     private final Set<AnnotatedType<?>> eagerBeans = Collections.newSetFromMap(new ConcurrentHashMap<AnnotatedType<?>, Boolean>());
 
-    private final Map<ContextName, EnumSet<ContextInfo>> namedContexts = new ConcurrentHashMap<>();
-
     private final Map<InjectionPoint, ForwardingObserverMethod<?>> cdiEventEndpoints = new ConcurrentHashMap<>();
+
+    private final Map<ContextName, EnumSet<ContextInfo>> namedContexts = new ConcurrentHashMap<>();
 
     private final EnumSet<ContextInfo> defaultContext = EnumSet.noneOf(ContextInfo.class);
 
@@ -152,6 +155,7 @@ public class CdiCamelExtension implements Extension {
     }
 
     private void addCdiEventObserverMethods(@Observes AfterBeanDiscovery abd) {
+        // TODO: it happens that, while the observer method is declared @Default, it's treated as if it is declared @Any. Check Weld and OWB implementations.
         for (ObserverMethod method : cdiEventEndpoints.values())
             abd.addObserverMethod(method);
     }

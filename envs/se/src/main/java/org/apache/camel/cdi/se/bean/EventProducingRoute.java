@@ -18,8 +18,12 @@ package org.apache.camel.cdi.se.bean;
 
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.cdi.CdiEventEndpoint;
+import org.apache.camel.cdi.se.pojo.EventPayload;
+import org.apache.camel.cdi.se.qualifier.BarQualifier;
+import org.apache.camel.cdi.se.qualifier.FooQualifier;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Any;
 import javax.inject.Inject;
 
 @ApplicationScoped
@@ -30,12 +34,20 @@ public class EventProducingRoute extends RouteBuilder {
 
     @Inject
     private CdiEventEndpoint<String> stringCdiEventEndpoint;
-    
+
     @Inject
     private CdiEventEndpoint<EventPayload<String>> stringPayloadCdiEventEndpoint;
 
     @Inject
     private CdiEventEndpoint<EventPayload<Integer>> integerPayloadCdiEventEndpoint;
+
+    @Inject
+    @FooQualifier
+    private CdiEventEndpoint<Long> fooQualifierCdiEventEndpoint;
+
+    @Inject
+    @BarQualifier
+    private CdiEventEndpoint<Long> barQualifierCdiEventEndpoint;
 
     @Override
     public void configure() {
@@ -46,5 +58,9 @@ public class EventProducingRoute extends RouteBuilder {
         from("direct:produceStringPayload").to(stringPayloadCdiEventEndpoint);
 
         from("direct:produceIntegerPayload").to(integerPayloadCdiEventEndpoint);
+
+        from("direct:produceFooQualifier").to(fooQualifierCdiEventEndpoint);
+
+        from("direct:produceBarQualifier").to(barQualifierCdiEventEndpoint);
     }
 }

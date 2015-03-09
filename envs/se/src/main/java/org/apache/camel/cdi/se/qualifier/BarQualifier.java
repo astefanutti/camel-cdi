@@ -14,39 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.camel.cdi;
+package org.apache.camel.cdi.se.qualifier;
 
 import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Qualifier;
-import java.lang.annotation.ElementType;
+import java.lang.annotation.Annotation;
+import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
 @Qualifier
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER})
-public @interface ContextName {
+@Documented
+@Retention(RUNTIME)
+@Target({ TYPE, METHOD, PARAMETER, FIELD })
+public @interface BarQualifier {
 
-    /**
-     * Returns the name of the CamelContext to add the routes to.
-     * If no value is specified then the default CamelContext is used.
-     */
-    String value() default "";
-
-    final class Literal extends AnnotationLiteral<ContextName> implements ContextName {
-
-        private static final long serialVersionUID = 1L;
-
-        private final String name;
-
-        public Literal(String name) {
-            this.name = name;
-        }
-
-        @Override
-        public String value() {
-            return name;
-        }
-    }
+    final class Literal extends AnnotationLiteral<BarQualifier> implements BarQualifier {}
 }

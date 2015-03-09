@@ -44,39 +44,9 @@ final class CdiCamelFactory {
         return selectContext(ip, instance).getTypeConverter();
     }
 
-    @Produces
-    @Typed(MockEndpoint.class)
-    private static MockEndpoint mockEndpointFromMember(InjectionPoint ip, @Any Instance<CamelContext> instance) {
-        String uri = "mock:" + ip.getMember().getName();
-        return CamelContextHelper.getMandatoryEndpoint(selectContext(ip, instance), uri, MockEndpoint.class);
-    }
-
     @Uri("")
     @Produces
-    @Typed(MockEndpoint.class)
-    private static MockEndpoint mockEndpointFromUri(InjectionPoint ip, @Any Instance<CamelContext> instance) {
-        String uri = CdiSpiHelper.getQualifierByType(ip, Uri.class).value();
-        return CamelContextHelper.getMandatoryEndpoint(selectContext(ip, instance), uri, MockEndpoint.class);
-    }
-
-    // Maintained for backward compatibility reason though this is redundant with @Uri, see https://issues.apache.org/jira/browse/CAMEL-5553?focusedCommentId=13445936&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-13445936
-    @Mock("")
-    @Produces
-    @Typed(MockEndpoint.class)
-    private static MockEndpoint createMockEndpoint(InjectionPoint ip, @Any Instance<CamelContext> instance) {
-        String uri = CdiSpiHelper.getQualifierByType(ip, Mock.class).value();
-        return CamelContextHelper.getMandatoryEndpoint(selectContext(ip, instance), uri, MockEndpoint.class);
-    }
-
-    @Uri("")
-    @Produces
-    private static Endpoint endpoint(InjectionPoint ip, @Any Instance<CamelContext> instance) {
-        String uri = CdiSpiHelper.getQualifierByType(ip, Uri.class).value();
-        return CamelContextHelper.getMandatoryEndpoint(selectContext(ip, instance), uri);
-    }
-
-    @Uri("")
-    @Produces
+    // Qualifiers are dynamically added in CdiCamelExtension.producerTemplates()
     private static ProducerTemplate producerTemplate(InjectionPoint ip, @Any Instance<CamelContext> instance) {
         CamelContext context = selectContext(ip, instance);
         ProducerTemplate producerTemplate = context.createProducerTemplate();
@@ -87,7 +57,43 @@ final class CdiCamelFactory {
     }
 
     @Produces
+    @Typed(MockEndpoint.class)
+    // Qualifiers are dynamically added in CdiCamelExtension.endpointProducers()
+    private static MockEndpoint mockEndpointFromMember(InjectionPoint ip, @Any Instance<CamelContext> instance) {
+        String uri = "mock:" + ip.getMember().getName();
+        return CamelContextHelper.getMandatoryEndpoint(selectContext(ip, instance), uri, MockEndpoint.class);
+    }
+
+    @Uri("")
+    @Produces
+    @Typed(MockEndpoint.class)
+    // Qualifiers are dynamically added in CdiCamelExtension.endpointProducers()
+    private static MockEndpoint mockEndpointFromUri(InjectionPoint ip, @Any Instance<CamelContext> instance) {
+        String uri = CdiSpiHelper.getQualifierByType(ip, Uri.class).value();
+        return CamelContextHelper.getMandatoryEndpoint(selectContext(ip, instance), uri, MockEndpoint.class);
+    }
+
+    // Maintained for backward compatibility reason though this is redundant with @Uri, see https://issues.apache.org/jira/browse/CAMEL-5553?focusedCommentId=13445936&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-13445936
+    @Mock("")
+    @Produces
+    @Typed(MockEndpoint.class)
+    // Qualifiers are dynamically added in CdiCamelExtension.endpointProducers()
+    private static MockEndpoint createMockEndpoint(InjectionPoint ip, @Any Instance<CamelContext> instance) {
+        String uri = CdiSpiHelper.getQualifierByType(ip, Mock.class).value();
+        return CamelContextHelper.getMandatoryEndpoint(selectContext(ip, instance), uri, MockEndpoint.class);
+    }
+
+    @Uri("")
+    @Produces
+    // Qualifiers are dynamically added in CdiCamelExtension.endpointProducers()
+    private static Endpoint endpoint(InjectionPoint ip, @Any Instance<CamelContext> instance) {
+        String uri = CdiSpiHelper.getQualifierByType(ip, Uri.class).value();
+        return CamelContextHelper.getMandatoryEndpoint(selectContext(ip, instance), uri);
+    }
+
+    @Produces
     @SuppressWarnings("unchecked")
+    // Qualifiers are dynamically added in CdiCamelExtension.endpointProducers()
     private static <T> CdiEventEndpoint<T> cdiEventEndpoint(InjectionPoint ip, @Any Instance<CamelContext> instance, CdiCamelExtension extension, @Any Event<Object> event) throws Exception {
         CamelContext context = selectContext(ip, instance);
         Type type = ((ParameterizedType) ip.getType()).getActualTypeArguments()[0];
@@ -130,7 +136,7 @@ final class CdiCamelFactory {
 
         if (parameters.length() > 0)
             uri += "?qualifiers=" + parameters.toString();
-        
+
         return uri;
     }
 }

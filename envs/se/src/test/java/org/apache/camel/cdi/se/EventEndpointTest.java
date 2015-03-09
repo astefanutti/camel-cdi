@@ -21,8 +21,10 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.camel.cdi.CdiCamelExtension;
 import org.apache.camel.cdi.Uri;
 import org.apache.camel.cdi.se.bean.EventConsumingRoute;
-import org.apache.camel.cdi.se.bean.EventPayload;
+import org.apache.camel.cdi.se.pojo.EventPayload;
 import org.apache.camel.cdi.se.bean.EventProducingRoute;
+import org.apache.camel.cdi.se.qualifier.BarQualifier;
+import org.apache.camel.cdi.se.qualifier.FooQualifier;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -38,6 +40,7 @@ import org.junit.runner.RunWith;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Default;
 import javax.enterprise.util.TypeLiteral;
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -80,6 +83,14 @@ public class EventEndpointTest {
     private MockEndpoint consumeIntegerPayload;
 
     @Inject
+    @Uri("mock:consumeFooQualifier")
+    private MockEndpoint consumeFooQualifier;
+
+    @Inject
+    @Uri("mock:consumeBarQualifier")
+    private MockEndpoint consumeBarQualifier;
+
+    @Inject
     @Uri("direct:produceObject")
     private ProducerTemplate produceObject;
 
@@ -94,6 +105,14 @@ public class EventEndpointTest {
     @Inject
     @Uri("direct:produceIntegerPayload")
     private ProducerTemplate produceIntegerPayload;
+
+    @Inject
+    @Uri("direct:produceFooQualifier")
+    private ProducerTemplate produceFooQualifier;
+
+    @Inject
+    @Uri("direct:produceBarQualifier")
+    private ProducerTemplate produceBarQualifier;
 
     @Inject
     Event<Object> objectEvent;
@@ -116,8 +135,8 @@ public class EventEndpointTest {
     @Test
     @InSequence(2)
     public void sendEventsToConsumers() throws InterruptedException {
-        consumeObject.expectedMessageCount(4);
-        consumeObject.expectedBodiesReceived(1234, new EventPayload<>("foo"), new EventPayload<>("bar"), "test", new EventPayload<>(1), new EventPayload<>(2));
+        consumeObject.expectedMessageCount(8);
+        consumeObject.expectedBodiesReceived(1234, new EventPayload<>("foo"), new EventPayload<>("bar"), "test", new EventPayload<>(1), new EventPayload<>(2), 123L, 987L);
 
         consumeString.expectedMessageCount(1);
         consumeString.expectedBodiesReceived("test");
@@ -128,17 +147,23 @@ public class EventEndpointTest {
         consumeIntegerPayload.expectedMessageCount(2);
         consumeIntegerPayload.expectedBodiesReceived(new EventPayload<>(1), new EventPayload<>(2));
 
+        consumeFooQualifier.expectedMessageCount(1);
+        consumeFooQualifier.expectedBodiesReceived(123L);
+
+        consumeBarQualifier.expectedMessageCount(1);
+        consumeBarQualifier.expectedBodiesReceived(987L);
+
         objectEvent.select(Integer.class).fire(1234);
         objectEvent.select(new TypeLiteral<EventPayload<String>>() {}).fire(new EventPayload<>("foo"));
-        stringPayloadEvent.fire(new EventPayload<>("bar"));
+        // FIXME: the qualified event should theoretically not be consumed as the observer method is declared with the @Default qualifier
+        stringPayloadEvent.select(new BarQualifier.Literal()).fire(new EventPayload<>("bar"));
         objectEvent.select(String.class).fire("test");
         integerPayloadEvent.fire(new EventPayload<>(1));
         integerPayloadEvent.fire(new EventPayload<>(2));
+        objectEvent.select(Long.class, new FooQualifier.Literal()).fire(123L);
+        objectEvent.select(Long.class, new BarQualifier.Literal()).fire(987L);
 
-        assertIsSatisfied(2L, TimeUnit.SECONDS, consumeObject);
-        assertIsSatisfied(2L, TimeUnit.SECONDS, consumeString);
-        assertIsSatisfied(2L, TimeUnit.SECONDS, consumeStringPayload);
-        assertIsSatisfied(2L, TimeUnit.SECONDS, consumeIntegerPayload);
+        assertIsSatisfied(2L, TimeUnit.SECONDS, consumeObject, consumeString, consumeStringPayload, consumeIntegerPayload, consumeFooQualifier, consumeBarQualifier);
     }
 
     @Test
@@ -153,11 +178,17 @@ public class EventEndpointTest {
         produceIntegerPayload.sendBody(bar);
         EventPayload<Integer> baz = new EventPayload<>(12);
         produceIntegerPayload.sendBody(baz);
+        produceFooQualifier.sendBody(456L);
+        produceBarQualifier.sendBody(495L);
+        produceObject.sendBody(777L);
 
-        assertThat(observer.getObjectEvents(), contains("string", foo, 1234, "test", bar, baz));
+        assertThat(observer.getObjectEvents(), contains("string", foo, 1234, "test", bar, baz, 456L, 495L, 777L));
         assertThat(observer.getStringEvents(), contains("string", "test"));
         assertThat(observer.getStringPayloadEvents(), contains(foo));
         assertThat(observer.getIntegerPayloadEvents(), contains(bar, baz));
+        assertThat(observer.getDefaultQualifierEvents(), contains("string", foo, 1234, "test", bar, baz, 777L));
+        assertThat(observer.getFooQualifierEvents(), contains(456L));
+        assertThat(observer.getBarQualifierEvents(), contains(495L));
     }
 
     @Test
@@ -176,11 +207,17 @@ public class EventEndpointTest {
 
         private final List<Object> objectEvents = new ArrayList<>();
 
+        private final List<Object> defaultQualifierEvents = new ArrayList<>();
+
         private final List<String> stringEvents = new ArrayList<>();
 
         private final List<EventPayload<String>> stringPayloadEvents = new ArrayList<>();
 
         private final List<EventPayload<Integer>> integerPayloadEvents = new ArrayList<>();
+
+        private final List<Long> fooQualifierEvents = new ArrayList<>();
+
+        private final List<Long> barQualifierEvents = new ArrayList<>();
 
         void collectObjectEvents(@Observes Object event) {
             objectEvents.add(event);
@@ -196,6 +233,18 @@ public class EventEndpointTest {
 
         void collectIntegerPayloadEvents(@Observes EventPayload<Integer> event) {
             integerPayloadEvents.add(event);
+        }
+
+        void collectDefaultQualifierEvents(@Observes @Default Object event) {
+            defaultQualifierEvents.add(event);
+        }
+
+        void collectFooQualifierEvents(@Observes @FooQualifier Long event) {
+            fooQualifierEvents.add(event);
+        }
+
+        void collectBarQualifierEvents(@Observes @BarQualifier Long event) {
+            barQualifierEvents.add(event);
         }
 
         List<Object> getObjectEvents() {
@@ -214,11 +263,26 @@ public class EventEndpointTest {
             return integerPayloadEvents;
         }
 
+        List<Object> getDefaultQualifierEvents() {
+            return defaultQualifierEvents;
+        }
+
+        List<Long> getFooQualifierEvents() {
+            return fooQualifierEvents;
+        }
+
+        List<Long> getBarQualifierEvents() {
+            return barQualifierEvents;
+        }
+
         void reset() {
             objectEvents.clear();
             stringEvents.clear();
             stringPayloadEvents.clear();
             integerPayloadEvents.clear();
+            defaultQualifierEvents.clear();
+            fooQualifierEvents.clear();
+            barQualifierEvents.clear();
         }
     }
 }

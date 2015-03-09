@@ -28,7 +28,7 @@ import java.lang.annotation.Annotation;
 
 /* package-private */ final class CdiEventProducer<T> extends DefaultProducer {
 
-    private final Logger logger = LoggerFactory.getLogger(CdiEventComponent.class);
+    private final Logger logger = LoggerFactory.getLogger(CdiEventProducer.class);
 
     private final Event<T> event;
 
@@ -39,7 +39,7 @@ import java.lang.annotation.Annotation;
 
     @Override
     public void process(Exchange exchange) throws CamelExchangeException {
-        logger.debug("Firing CDI event of type '{}'", event);
+        logger.debug("Firing CDI event of type: {}", event);
         event.fire((T) exchange.getIn().getBody());
     }
 }
