@@ -22,6 +22,7 @@ import org.apache.camel.main.MainSupport;
 import org.apache.camel.view.ModelFileGenerator;
 import org.apache.deltaspike.core.api.provider.BeanProvider;
 
+import javax.enterprise.inject.Vetoed;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.util.*;
@@ -29,26 +30,27 @@ import java.util.*;
 import static org.apache.deltaspike.core.api.provider.BeanProvider.*;
 
 /**
- * Allows Camel and CDI applications to be booted up on the command line as a Java Application
+ * Camel CDI boot integration. Allows Camel and CDI to be booted up on the command line as a JVM process.
+ * See http://camel.apache.org/camel-boot.html.
  */
-public abstract class Main extends MainSupport { // abstract to prevent cdi management
+@Vetoed
+public class Main extends MainSupport {
+
     private static Main instance;
+
     private JAXBContext jaxbContext;
+
     private Object cdiContainer; // we don't want to use cdictrl API in OSGi
 
-    public Main() {
-        // add options...
-    }
-
     public static void main(String... args) throws Exception {
-        Main main = new Main() { };
+        Main main = new Main();
         instance = main;
         main.enableHangupSupport();
         main.run(args);
     }
 
     /**
-     * Returns the currently executing main
+     * Returns the currently executing instance.
      *
      * @return the current running instance
      */
@@ -63,8 +65,7 @@ public abstract class Main extends MainSupport { // abstract to prevent cdi mana
             return answer;
         }
         if (getCamelContexts().isEmpty()) {
-            throw new IllegalArgumentException(
-                    "No CamelContexts are available so cannot create a ProducerTemplate!");
+            throw new IllegalArgumentException("No CamelContexts are available so cannot create a ProducerTemplate!");
         }
         return getCamelContexts().get(0).createProducerTemplate();
     }
@@ -72,7 +73,7 @@ public abstract class Main extends MainSupport { // abstract to prevent cdi mana
     @Override
     protected Map<String, CamelContext> getCamelContextMap() {
         List<CamelContext> contexts = getContextualReferences(CamelContext.class, true);
-        Map<String, CamelContext> answer = new HashMap<String, CamelContext>();
+        Map<String, CamelContext> answer = new HashMap<>();
         for (CamelContext context : contexts) {
             String name = context.getName();
             answer.put(name, context);
@@ -104,7 +105,7 @@ public abstract class Main extends MainSupport { // abstract to prevent cdi mana
     }
 
     protected Set<Class<?>> getJaxbPackages() {
-        Set<Class<?>> classes = new HashSet<Class<?>>();
+        Set<Class<?>> classes = new HashSet<>();
         classes.add(org.apache.camel.ExchangePattern.class);
         classes.add(org.apache.camel.model.RouteDefinition.class);
         classes.add(org.apache.camel.model.config.StreamResequencerConfig.class);
