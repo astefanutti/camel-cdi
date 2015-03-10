@@ -137,6 +137,8 @@ PropertiesComponent propertiesComponent() {
 
 ##### Camel Context Customization
 
+The `CdiCamelContext` class can be extended to declare a custom Camel context bean that uses the `@PostConstruct` and `@PreDestroy` lifecycle callbacks, e.g.:
+
 ```java
 @ApplicationScoped
 class CustomCamelContext extends CdiCamelContext {
@@ -160,6 +162,107 @@ class CustomCamelContext extends CdiCamelContext {
 ```
 
 ### New Features
+
+##### CDI Event Camel Endpoint
+
+The CDI event endpoint bridges the [CDI events][] facility with the Camel routes so that CDI events can be seamlessly observed / consumed (respectively produced / fired) from Camel consumers (respectively by Camel producers).
+
+The `CdiEventEndpoint<T>` bean can be used to observe / consume CDI events whose _event type_ is `T`, for example:
+
+```java
+@Inject
+CdiEventEndpoint<String> cdiEventEndpoint;
+
+from(cdiEventEndpoint).log("CDI event received: ${body}");
+```
+
+This is equivalent to writing:
+
+```java
+@Inject
+@Uri("direct:event")
+ProducerTemplate producer;
+
+void observeCdiEvents(@Observes String event) {
+    producer.sendBody(event);
+}
+
+from("direct:event").log("CDI event received: ${body}");
+```
+
+Conversely, the `CdiEventEndpoint<T>` bean can be used to produce / fire CDI events whose _event type_ is `T`, for example:
+
+```java
+@Inject
+CdiEventEndpoint<String> cdiEventEndpoint;
+
+from("direct:event").to(cdiEventEndpoint).log("CDI event sent: ${body}");
+```
+
+This is equivalent to writing:
+
+```java
+@Inject
+Event<String> event;
+
+from("direct:event").process(new Processor() {
+    @Override
+    public void process(Exchange exchange) {
+        event.fire(exchange.getBody(String.class));
+    }
+}).log("CDI event sent: ${body}");
+```
+
+Or using a Java 8 lambda expression:
+```java
+@Inject
+Event<String> event;
+
+from("direct:event")
+    .process(exchange -> event.fire(exchange.getIn().getBody(String.class)))
+    .log("CDI event sent: ${body}");
+```
+
+The type variable `T`, respectively the qualifiers, of a particular `CdiEventEndpoint<T>` injection point are automatically translated into the parameterized _event type_, respectively into the _event qualifiers_, e.g.:
+
+```java
+@Inject
+@FooQualifier
+CdiEventEndpoint<List<String>> cdiEventEndpoint;
+
+from("direct:event").to(cdiEventEndpoint);
+
+void observeCdiEvents(@Observes @FooQualifier List<String> event) {
+    logger.info("CDI event: {}", event);
+}
+```
+
+When multiple Camel contexts exist in the CDI container, the `@ContextName` qualifier can be used to qualify the `CdiEventEndpoint<T>` injection points, e.g.:
+
+
+```java
+@Inject
+@ContextName("foo")
+CdiEventEndpoint<List<String>> cdiEventEndpoint;
+// Only observe / consume events having the @ContextName("foo") qualifier
+from(cdiEventEndpoint).log("Camel context 'foo'> CDI event received: ${body}");
+// Produce / fire events with the @ContextName("foo") qualifier
+from("...").to(cdiEventEndpoint);
+
+void observeCdiEvents(@Observes @ContextName("foo") List<String> event) {
+    logger.info("Camel context 'foo' > CDI event: {}", event);
+}
+```
+
+Note that the CDI event Camel endpoint dynamically adds an [observer method][] for each unique combination of _event type_ and _event qualifiers_ and solely relies on the container typesafe [observer resolution][], which leads to an implementation as efficient as possible.
+
+Besides, as the impedance between the _typesafe_ nature of CDI and the _dynamic_ nature of the [Camel component] model is quite high, it is not possible to create an instance of the CDI event Camel endpoint via [URIs].
+
+[CDI events]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#events
+[observer method]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#observer_methods
+[observer resolution]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#observer_resolution
+[Camel component]: http://camel.apache.org/component.html
+[URIs]: http://camel.apache.org/uris.html
 
 ##### Camel Events to CDI Events
 
@@ -195,7 +298,6 @@ Note that the support for Camel events translation into CDI events is only activ
 
 [management events]: http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/management/event/package-summary.html
 [observer methods]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#observer_methods
-[observer resolution]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#observer_resolution
 
 ##### Type Converter Beans
 
