@@ -17,8 +17,10 @@
 package org.apache.camel.cdi;
 
 import javax.enterprise.inject.Any;
+import javax.enterprise.inject.Vetoed;
 import javax.enterprise.util.AnnotationLiteral;
 
+@Vetoed
 final class AnyLiteral extends AnnotationLiteral<Any> implements Any {
 
     private static final long serialVersionUID = 1L;
