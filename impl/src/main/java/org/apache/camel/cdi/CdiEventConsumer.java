@@ -24,7 +24,7 @@ import org.apache.camel.impl.DefaultConsumer;
 /* package-private */ final class CdiEventConsumer<T> extends DefaultConsumer {
 
     private final CdiEventEndpoint<T> endpoint;
-    
+
     CdiEventConsumer(CdiEventEndpoint<T> endpoint, Processor processor) {
         super(endpoint, processor);
         this.endpoint = endpoint;
@@ -43,6 +43,7 @@ import org.apache.camel.impl.DefaultConsumer;
     }
 
     void notify(T event) {
+        // TODO: add debug logging
         Exchange exchange = getEndpoint().createExchange();
         exchange.getIn().setBody(event);
         try {

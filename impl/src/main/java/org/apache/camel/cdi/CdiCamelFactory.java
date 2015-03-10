@@ -50,6 +50,7 @@ final class CdiCamelFactory {
     private static ProducerTemplate producerTemplate(InjectionPoint ip, @Any Instance<CamelContext> instance) {
         CamelContext context = selectContext(ip, instance);
         ProducerTemplate producerTemplate = context.createProducerTemplate();
+        // FIXME: avoid NPE caused by missing @Uri qualifier when injection point is @ContextName qualified
         String uri = CdiSpiHelper.getQualifierByType(ip, Uri.class).value();
         Endpoint endpoint = CamelContextHelper.getMandatoryEndpoint(context, uri);
         producerTemplate.setDefaultEndpoint(endpoint);

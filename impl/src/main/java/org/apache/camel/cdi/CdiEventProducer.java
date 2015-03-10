@@ -16,15 +16,12 @@
  */
 package org.apache.camel.cdi;
 
-import org.apache.camel.CamelExchangeException;
 import org.apache.camel.Exchange;
 import org.apache.camel.impl.DefaultProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.event.Event;
-import javax.enterprise.inject.spi.BeanManager;
-import java.lang.annotation.Annotation;
 
 /* package-private */ final class CdiEventProducer<T> extends DefaultProducer {
 
@@ -38,8 +35,9 @@ import java.lang.annotation.Annotation;
     }
 
     @Override
-    public void process(Exchange exchange) throws CamelExchangeException {
+    public void process(Exchange exchange) {
         logger.debug("Firing CDI event of type: {}", event);
+        // TODO: leverage Camel type converter mechanism based on the endpoint type
         event.fire((T) exchange.getIn().getBody());
     }
 }
