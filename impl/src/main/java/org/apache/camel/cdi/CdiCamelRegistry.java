@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * CdiBeanRegistry used by Camel to perform lookup into the CDI {@link javax.enterprise.inject.spi.BeanManager}.
+ * The {@link Registry} used by Camel to perform lookup into the CDI {@link javax.enterprise.inject.spi.BeanManager}.
  */
 @Vetoed
 final class CdiCamelRegistry implements Registry {

@@ -23,16 +23,55 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * CDI qualifier to be used for multi Camel contexts CDI deployment.
+ * {@code CamelContext} beans can be annotated with the {@code @ContextName} qualifier
+ * so that the Camel context is named accordingly, e.g.:
+ *
+ * <pre><code>
+ *     {@literal@}ApplicationScoped
+ *     {@literal@}ContextName("foo")
+ *     public class FooCamelContext extends CdiCamelContext {
+ *     }
+ * </code></pre>
+ *
+ * Camel resources like route builders, endpoints and producer templates can be annotated with
+ * the {@code @ContextName} qualifier as well so that they are associated with the
+ * corresponding Camel context, e.g.:
+ *
+ * <pre><code>
+ *     {@literal@}ContextName("foo")
+ *     public class FooRouteBuilder extends RouteBuilder {
+ *         {@literal@}Override
+ *         public void configure() {
+ *             from("direct:bar").to("mock:bar");
+ *         }
+ *     }
+ *
+ *     {@literal@}Inject
+ *     {@literal@}ContextName("foo")
+ *     {@literal@}Uri("direct:bar")
+ *     ProducerTemplate barProducer;
+ *
+ *     {@literal@}Inject
+ *     {@literal@}ContextName("foo")
+ *     {@literal@}Uri("mock:bar")
+ *     MockEndpoint barMockEndpoint;
+ * </code></pre>
+ *
+ * @see org.apache.camel.cdi.CdiCamelContext
+ * @see org.apache.camel.CamelContext
+ *
+ */
 @Qualifier
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER})
 public @interface ContextName {
 
     /**
-     * Returns the name of the CamelContext to add the routes to.
-     * If no value is specified then the default CamelContext is used.
+     * Returns the name of the Camel context.
      */
-    String value() default "";
+    String value();
 
     final class Literal extends AnnotationLiteral<ContextName> implements ContextName {
 
