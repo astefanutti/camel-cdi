@@ -39,18 +39,17 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
+import static org.hamcrest.Matchers.contains;
+import static org.junit.Assert.assertThat;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
-import static org.hamcrest.Matchers.contains;
-import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
 public class MultiContextEventEndpointTest {
@@ -147,13 +146,13 @@ public class MultiContextEventEndpointTest {
     @ApplicationScoped
     static class EventObserver {
 
-        private final List<Object> objectEvents = new ArrayList<>();
+        private final List<Object> objectEvents = new ArrayList<Object>();
 
-        private final List<String> stringEvents = new ArrayList<>();
+        private final List<String> stringEvents = new ArrayList<String>();
 
-        private final List<String> firstStringEvents = new ArrayList<>();
+        private final List<String> firstStringEvents = new ArrayList<String>();
 
-        private final List<String> secondStringEvents = new ArrayList<>();
+        private final List<String> secondStringEvents = new ArrayList<String>();
 
         void collectObjectEvents(@Observes Object event) {
             objectEvents.add(event);

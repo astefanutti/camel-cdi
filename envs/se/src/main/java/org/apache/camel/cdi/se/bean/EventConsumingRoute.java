@@ -18,13 +18,12 @@ package org.apache.camel.cdi.se.bean;
 
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.cdi.CdiEventEndpoint;
-import org.apache.camel.cdi.se.pojo.EventPayload;
+import org.apache.camel.cdi.se.pojo.EventPayloadInteger;
+import org.apache.camel.cdi.se.pojo.EventPayloadString;
 import org.apache.camel.cdi.se.qualifier.BarQualifier;
 import org.apache.camel.cdi.se.qualifier.FooQualifier;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Any;
-import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 
 @ApplicationScoped
@@ -37,10 +36,10 @@ public class EventConsumingRoute extends RouteBuilder {
     private CdiEventEndpoint<String> stringCdiEventEndpoint;
 
     @Inject
-    private CdiEventEndpoint<EventPayload<String>> stringPayloadCdiEventEndpoint;
+    private CdiEventEndpoint<EventPayloadString> stringPayloadCdiEventEndpoint;
 
     @Inject
-    private CdiEventEndpoint<EventPayload<Integer>> integerPayloadCdiEventEndpoint;
+    private CdiEventEndpoint<EventPayloadInteger> integerPayloadCdiEventEndpoint;
 
     @Inject
     @FooQualifier
@@ -64,4 +63,5 @@ public class EventConsumingRoute extends RouteBuilder {
 
         from(barQualifierCdiEventEndpoint).to("mock:consumeBarQualifier");
     }
+
 }

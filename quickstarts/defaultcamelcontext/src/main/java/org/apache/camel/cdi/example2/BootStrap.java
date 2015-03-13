@@ -19,24 +19,20 @@ package org.apache.camel.cdi.example2;
 import org.apache.camel.CamelContext;
 import org.jboss.weld.environment.se.StartMain;
 import org.jboss.weld.environment.se.WeldContainer;
+import org.jboss.weld.environment.se.bindings.Parameters;
+import org.jboss.weld.environment.se.events.ContainerInitialized;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.Destroyed;
-import javax.enterprise.context.Initialized;
-import javax.enterprise.event.Observes;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import javax.enterprise.event.Observes;
 
 public class BootStrap {
 
-    void start(@Observes @Initialized(ApplicationScoped.class) Object event, CamelContext context) throws Exception {
+    void start(@Observes ContainerInitialized event, @Parameters List<String> parameters, CamelContext context) throws Exception {
         System.out.println("Camel CDI :: Example 2 will be started");
         context.start();
     }
-
-    void shutdown(@Observes @Destroyed(ApplicationScoped.class) Object event, CamelContext context) throws Exception {
-        System.out.println("Camel CDI :: Example 2 will be stopped");
-        context.stop();
-    }
+    
 
     public static void main(String[] args) throws Exception {
         WeldContainer container = new StartMain(args).go();

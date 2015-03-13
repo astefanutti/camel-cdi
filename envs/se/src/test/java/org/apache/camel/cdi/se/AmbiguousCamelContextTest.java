@@ -29,13 +29,11 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.enterprise.inject.spi.DeploymentException;
-
 @RunWith(Arquillian.class)
 public class AmbiguousCamelContextTest {
 
     @Deployment
-    @ShouldThrowException(DeploymentException.class)
+    @ShouldThrowException(RuntimeException.class)
     public static Archive<?> deployment() {
         return ShrinkWrap.create(JavaArchive.class)
             // Camel CDI

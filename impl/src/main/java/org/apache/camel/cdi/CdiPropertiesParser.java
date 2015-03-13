@@ -16,13 +16,11 @@
  */
 package org.apache.camel.cdi;
 
-import java.util.Properties;
-
-import javax.enterprise.inject.Vetoed;
-
 import org.apache.camel.component.properties.DefaultPropertiesParser;
 
-@Vetoed
+import java.util.Properties;
+
+@ToVeto
 final class CdiPropertiesParser extends DefaultPropertiesParser {
 
     private final Properties properties;

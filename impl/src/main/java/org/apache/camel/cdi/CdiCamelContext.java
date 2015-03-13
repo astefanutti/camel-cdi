@@ -20,12 +20,11 @@ import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.DefaultCamelContextNameStrategy;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.inject.Vetoed;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 
-@Vetoed
+@ToVeto
 public class CdiCamelContext extends DefaultCamelContext {
 
     @Inject

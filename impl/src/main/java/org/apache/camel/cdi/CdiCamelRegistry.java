@@ -21,17 +21,16 @@ import org.apache.camel.util.ObjectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.enterprise.inject.Vetoed;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
 
 /**
  * The {@link Registry} used by Camel to perform lookup into the CDI {@link javax.enterprise.inject.spi.BeanManager}.
  */
-@Vetoed
+@ToVeto
 final class CdiCamelRegistry implements Registry {
 
     private final Logger logger = LoggerFactory.getLogger(CdiCamelRegistry.class);
@@ -61,7 +60,7 @@ final class CdiCamelRegistry implements Registry {
     public <T> Map<String, T> findByTypeWithName(Class<T> type) {
         ObjectHelper.notNull(type, "type");
         logger.trace("Looking up named beans of type {}", type);
-        Map<String, T> references = new HashMap<>();
+        Map<String, T> references = new HashMap<String, T>();
         for (Bean<?> bean : manager.getBeans(type, AnyLiteral.INSTANCE))
             if (bean.getName() != null)
                 references.put(bean.getName(), BeanManagerHelper.<T>getReference(manager, type, bean));

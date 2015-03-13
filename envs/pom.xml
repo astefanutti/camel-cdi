@@ -6,6 +6,7 @@
         <groupId>io.astefanutti.camel.cdi</groupId>
         <artifactId>camel-cdi-parent</artifactId>
         <version>1.2-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>camel-cdi-envs</artifactId>
@@ -46,7 +47,7 @@
         <profile>
             <id>jdk8</id>
             <activation>
-                <jdk>[1.8,)</jdk>
+                <!--<jdk>[1.8,)</jdk>-->
             </activation>
             <build>
                 <plugins>
