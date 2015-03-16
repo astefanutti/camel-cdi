@@ -12,18 +12,18 @@ import javax.enterprise.inject.spi.AnnotatedType;
 /**
  *
  */
-public class ReannotedAnnotatedType<T> extends ReannotedAnnotated implements AnnotatedType<T> {
+public class OverrideAnnotatedType<T> extends OverrideAnnotated implements AnnotatedType<T> {
 
     private final AnnotatedMember<T> target;
     private final Set<Annotation> targetAnnotations;
     
-    public ReannotedAnnotatedType(AnnotatedType<T> delegate, Set<Annotation> toChange) {
+    public OverrideAnnotatedType(AnnotatedType<T> delegate, Set<Annotation> toChange) {
         super(delegate, toChange);
         target = null;
         targetAnnotations = null;
     }
 
-    public ReannotedAnnotatedType(AnnotatedType<T> delegate, AnnotatedMember<T> target, Set<Annotation> toChange) {
+    public OverrideAnnotatedType(AnnotatedType<T> delegate, AnnotatedMember<T> target, Set<Annotation> toChange) {
         super(delegate);
         this.target = target;
         annotations = new HashSet<Annotation>(delegate.getAnnotations());
@@ -44,7 +44,7 @@ public class ReannotedAnnotatedType<T> extends ReannotedAnnotated implements Ann
         if (getDelegate().getFields().contains(target)) {
             Set<AnnotatedField<? super T>> res = new HashSet<AnnotatedField<? super T>>(getDelegate().getFields());
             res.remove(target);
-            res.add(new ReannotedAnnotatedField<T>((AnnotatedField<T>) target, targetAnnotations));
+            res.add(new OverrideAnnotatedField<T>((AnnotatedField<T>) target, targetAnnotations));
             return res;
         }
         return getDelegate().getFields();
@@ -60,7 +60,7 @@ public class ReannotedAnnotatedType<T> extends ReannotedAnnotated implements Ann
         if (getDelegate().getMethods().contains(target)) {
             Set<AnnotatedMethod<? super T>> res = new HashSet<AnnotatedMethod<? super T>>(getDelegate().getMethods());
             res.remove(target);
-            res.add(new ReannotedAnnotatedMethod<T>((AnnotatedMethod<T>) target, targetAnnotations));
+            res.add(new OverrideAnnotatedMethod<T>((AnnotatedMethod<T>) target, targetAnnotations));
             return res;
         }
         return getDelegate().getMethods();

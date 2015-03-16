@@ -8,9 +8,9 @@ import javax.enterprise.inject.spi.AnnotatedField;
 /**
  *
  */
-public class ReannotedAnnotatedField<T> extends ReannotedAnnotatedMember<T> implements AnnotatedField<T> {
+public class OverrideAnnotatedField<T> extends OverrideAnnotatedMember<T> implements AnnotatedField<T> {
 
-    public ReannotedAnnotatedField(AnnotatedField<T> delegate, Set<Annotation> enrichment) {
+    public OverrideAnnotatedField(AnnotatedField<T> delegate, Set<Annotation> enrichment) {
         super(delegate, enrichment);
     }
 

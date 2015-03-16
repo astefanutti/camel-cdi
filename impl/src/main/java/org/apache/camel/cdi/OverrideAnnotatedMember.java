@@ -9,11 +9,11 @@ import javax.enterprise.inject.spi.AnnotatedType;
 /**
  *
  */
-public class ReannotedAnnotatedMember<T> extends ReannotedAnnotated implements AnnotatedMember<T> {
+public class OverrideAnnotatedMember<T> extends OverrideAnnotated implements AnnotatedMember<T> {
     
 
 
-    public ReannotedAnnotatedMember(AnnotatedMember<T> delegate, Set<Annotation> enrichment) {
+    public OverrideAnnotatedMember(AnnotatedMember<T> delegate, Set<Annotation> enrichment) {
         super(delegate,enrichment);
     }
 

@@ -149,7 +149,7 @@ public class CdiCamelExtension implements Extension {
         if (at.getTypeClosure().contains(clazz)) {
             annotations = removeQualifiersFromAnnotated(at);
             annotations.add(HiddenLiteral.INSTANCE);
-            pat.setAnnotatedType(new ReannotedAnnotatedType(at, annotations));
+            pat.setAnnotatedType(new OverrideAnnotatedType(at, annotations));
         } else {
             Set<AnnotatedMember<? super T>> def = CdiSpiHelper.getProducerMemberForType(at, clazz);
             if (!def.isEmpty()) {
@@ -157,7 +157,7 @@ public class CdiCamelExtension implements Extension {
                      memberToQualifiers.put(member.getJavaMember(), getAnnotationsWithMeta(member, Qualifier.class));
                     annotations = removeQualifiersFromAnnotated(member);
                     annotations.add(HiddenLiteral.INSTANCE);
-                    at = (new ReannotedAnnotatedType(at, member, annotations));
+                    at = (new OverrideAnnotatedType(at, member, annotations));
                 }
                 pat.setAnnotatedType(at);
             }

@@ -9,18 +9,18 @@ import javax.enterprise.inject.spi.Annotated;
 /**
  *
  */
-public class ReannotedAnnotated implements Annotated {
+public class OverrideAnnotated implements Annotated {
 
     protected final Annotated delegate;
     protected Set<Annotation> annotations;
     
 
-    public ReannotedAnnotated(Annotated delegate, Set<Annotation> toChange) {
+    public OverrideAnnotated(Annotated delegate, Set<Annotation> toChange) {
         this.delegate = delegate;
         annotations = new HashSet<Annotation>(toChange);
     }
 
-    ReannotedAnnotated(Annotated delegate) {
+    OverrideAnnotated(Annotated delegate) {
         this.delegate = delegate;
     }
 

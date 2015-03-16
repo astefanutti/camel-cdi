@@ -10,11 +10,11 @@ import javax.enterprise.inject.spi.AnnotatedParameter;
 /**
  *
  */
-public class ReannotedAnnotatedMethod<T> extends ReannotedAnnotatedMember<T> implements
+public class OverrideAnnotatedMethod<T> extends OverrideAnnotatedMember<T> implements
         AnnotatedMethod<T> {
 
 
-    public ReannotedAnnotatedMethod(AnnotatedMethod<T> delegate, Set<Annotation> enrichment) {
+    public OverrideAnnotatedMethod(AnnotatedMethod<T> delegate, Set<Annotation> enrichment) {
         super(delegate, enrichment);
     }
 
