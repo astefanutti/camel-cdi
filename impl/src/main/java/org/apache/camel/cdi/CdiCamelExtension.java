@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,8 +28,10 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.camel.PropertyInject;
 import org.apache.camel.RoutesBuilder;
 import org.apache.camel.management.event.AbstractExchangeEvent;
+
 import static org.apache.camel.cdi.CdiSpiHelper.getAnnotationsWithMeta;
 import static org.apache.camel.cdi.CdiSpiHelper.hasAnnotation;
+import static org.apache.camel.cdi.CdiSpiHelper.hasAnnotations;
 import static org.apache.camel.cdi.CdiSpiHelper.removeQualifiersFromAnnotated;
 
 import java.lang.annotation.Annotation;
@@ -49,7 +51,7 @@ import javax.enterprise.inject.Default;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.AfterDeploymentValidation;
 import javax.enterprise.inject.spi.Annotated;
-import javax.enterprise.inject.spi.AnnotatedMember;
+import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
@@ -60,7 +62,6 @@ import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.enterprise.inject.spi.ProcessBean;
 import javax.enterprise.inject.spi.ProcessInjectionTarget;
 import javax.enterprise.inject.spi.ProcessObserverMethod;
-import javax.enterprise.inject.spi.ProcessProducerField;
 import javax.enterprise.inject.spi.ProcessProducerMethod;
 import javax.inject.Qualifier;
 
@@ -77,16 +78,16 @@ public class CdiCamelExtension implements Extension {
     private final Map<ContextName, EnumSet<ContextInfo>> namedContexts = new ConcurrentHashMap<ContextName, EnumSet<ContextInfo>>();
 
     private final EnumSet<ContextInfo> defaultContext = EnumSet.noneOf(ContextInfo.class);
-    
-    boolean customCamelContextPresent = false;
-    
-    private Map<Annotated, Bean<? extends Endpoint>> endPointsBeans = new ConcurrentHashMap<Annotated, Bean<? extends Endpoint>>();
-    
-    private Set<Bean<ProducerTemplate>> producerTemplateBeans = new HashSet<Bean<ProducerTemplate>>();
-    
-    private final Map<Member,Set<Annotation>> memberToQualifiers = new ConcurrentHashMap<Member, Set<Annotation>>();
-    
+
+    private final Map<Annotated, Bean<Endpoint>> endpointsBeans = new ConcurrentHashMap<Annotated, Bean<Endpoint>>();
+
+    private final Set<Bean<ProducerTemplate>> producerTemplateBeans = new HashSet<Bean<ProducerTemplate>>();
+
+    private final Map<Member, Set<Annotation>> memberToQualifiers = new ConcurrentHashMap<Member, Set<Annotation>>();
+
     private final Map<Bean<?>, Member> beanToMember = new ConcurrentHashMap<Bean<?>, Member>();
+
+    boolean customCamelContextPresent = false;
 
     EnumSet<ContextInfo> getContextInfo(ContextName name) {
         return name != null ? namedContexts.get(name) : defaultContext;
@@ -96,33 +97,22 @@ public class CdiCamelExtension implements Extension {
         return cdiEventEndpoints.get(ip);
     }
 
-    
     private void typeConverters(@Observes ProcessAnnotatedType<?> pat) {
-        AnnotatedType<?> at = pat.getAnnotatedType();
-        if (hasAnnotation(at, Converter.class))
-            converters.add(at.getJavaClass());
+        if (hasAnnotation(pat.getAnnotatedType(), Converter.class))
+            converters.add(pat.getAnnotatedType().getJavaClass());
     }
 
-
-    private void veto(@Observes ProcessAnnotatedType<?> pat) {
+    private void vetoAnnotatedTypes(@Observes ProcessAnnotatedType<?> pat) {
         if (pat.getAnnotatedType().isAnnotationPresent(ToVeto.class))
             pat.veto();
     }
 
-    private void checkCustomCamelContext(@Observes ProcessAnnotatedType<CamelContext> pat) {
-        AnnotatedType<CamelContext> at = pat.getAnnotatedType();
-        customCamelContextPresent = !at.isAnnotationPresent(ToVeto.class);
-    }
-    
     private void camelContextAware(@Observes ProcessAnnotatedType<? extends CamelContextAware> pat) {
         camelBeans.add(pat.getAnnotatedType());
     }
 
     private void camelAnnotations(@Observes ProcessAnnotatedType<?> pat) {
-        AnnotatedType<?> at = pat.getAnnotatedType();
-        if (hasAnnotation(at, BeanInject.class) || hasAnnotation(at, Consume.class) ||
-                hasAnnotation(at, EndpointInject.class) || hasAnnotation(at, Produce.class) || hasAnnotation(at,
-                PropertyInject.class))
+        if (hasAnnotations(pat.getAnnotatedType(), BeanInject.class, Consume.class, EndpointInject.class, Produce.class, PropertyInject.class))
             camelBeans.add(pat.getAnnotatedType());
     }
 
@@ -131,108 +121,79 @@ public class CdiCamelExtension implements Extension {
             eagerBeans.add(pat.getAnnotatedType());
     }
 
-    private void camelContextNames(@Observes ProcessAnnotatedType<? extends CamelContext> pat) {
+    private void camelContexts(@Observes ProcessAnnotatedType<? extends CamelContext> pat) {
+        if (pat.getAnnotatedType().isAnnotationPresent(ToVeto.class))
+            return;
+        customCamelContextPresent = true;
+
         if (pat.getAnnotatedType().isAnnotationPresent(ContextName.class))
-            namedContexts.put(pat.getAnnotatedType().getAnnotation(ContextName.class), EnumSet.noneOf(ContextInfo.class));
+            // Do not override because of the work-around for OWB lifecycle events in CDI 1.0
+            if (!namedContexts.containsKey(pat.getAnnotatedType().getAnnotation(ContextName.class)))
+                namedContexts.put(pat.getAnnotatedType().getAnnotation(ContextName.class), EnumSet.noneOf(ContextInfo.class));
     }
 
     private <T> void camelBeansPostProcessor(@Observes ProcessInjectionTarget<T> pit, BeanManager manager) {
         if (camelBeans.contains(pit.getAnnotatedType()))
             pit.setInjectionTarget(new CdiCamelInjectionTarget<T>(pit.getInjectionTarget(), manager));
     }
-    
 
-    private <T> void enrichAnnotatedTypeForClass(ProcessAnnotatedType<T> pat, Class<?> clazz) {
+    private <T> void cdiEventEndpoints(@Observes ProcessBean<?> pb) {
+        for (InjectionPoint ip : pb.getBean().getInjectionPoints())
+            if (CdiEventEndpoint.class.equals(CdiSpiHelper.getRawType(ip.getType())))
+                cdiEventEndpoints.put(ip, new ForwardingObserverMethod<T>(((ParameterizedType) ip.getType()).getActualTypeArguments()[0], ip.getQualifiers()));
+    }
+
+    private void annotatedMethodForBeans(@Observes ProcessProducerMethod<?, CdiCamelFactory> ppm) {
+        if (memberToQualifiers.keySet().contains(ppm.getAnnotatedProducerMethod().getJavaMember()))
+            beanToMember.put(ppm.getBean(), ppm.getAnnotatedProducerMethod().getJavaMember());
+    }
+
+    private void endpointsBeans(@Observes ProcessProducerMethod<Endpoint, ?> ppm) {
+        endpointsBeans.put(ppm.getAnnotated(), (Bean<Endpoint>) ppm.getBean());
+    }
+
+    private void producerTemplateBeans(@Observes ProcessProducerMethod<ProducerTemplate, ?> ppm) {
+        producerTemplateBeans.add((Bean<ProducerTemplate>) ppm.getBean());
+    }
+
+    private void processCamelFactoryProducers(@Observes ProcessAnnotatedType<CdiCamelFactory> pat) {
+        updateProducerMethods(pat, Endpoint.class);
+        updateProducerMethods(pat, ProducerTemplate.class);
+    }
+
+    private <T> void updateProducerMethods(ProcessAnnotatedType<T> pat, Class<?> clazz) {
         AnnotatedType<T> at = pat.getAnnotatedType();
         Set<Annotation> annotations;
-       
-        if (at.getTypeClosure().contains(clazz)) {
-            annotations = removeQualifiersFromAnnotated(at);
+        Set<AnnotatedMethod<? super T>> methods = CdiSpiHelper.getProducerMethodsForType(at, clazz);
+        if (methods.isEmpty())
+            return;
+
+        for (AnnotatedMethod<? super T> method : methods) {
+            memberToQualifiers.put(method.getJavaMember(), getAnnotationsWithMeta(method, Qualifier.class));
+            annotations = removeQualifiersFromAnnotated(method);
             annotations.add(HiddenLiteral.INSTANCE);
-            pat.setAnnotatedType(new OverrideAnnotatedType(at, annotations));
-        } else {
-            Set<AnnotatedMember<? super T>> def = CdiSpiHelper.getProducerMemberForType(at, clazz);
-            if (!def.isEmpty()) {
-                for (AnnotatedMember<? super T> member : def) {
-                     memberToQualifiers.put(member.getJavaMember(), getAnnotationsWithMeta(member, Qualifier.class));
-                    annotations = removeQualifiersFromAnnotated(member);
-                    annotations.add(HiddenLiteral.INSTANCE);
-                    at = (new OverrideAnnotatedType(at, member, annotations));
-                }
-                pat.setAnnotatedType(at);
-            }
+            at = new OverrideAnnotatedType<T>(at, method, annotations);
         }
-    }
-    
-  
-    private <T> void collectCdiEventEndpointInjectionPoint(@Observes ProcessBean<?> pb) {
-        Set<InjectionPoint> ipSet= pb.getBean().getInjectionPoints();
-        for (InjectionPoint ip : ipSet) {
-            if(CdiSpiHelper.getRawType(ip.getType()).equals(CdiEventEndpoint.class)) {
-                cdiEventEndpoints.put(ip, new ForwardingObserverMethod<T>(((ParameterizedType) ip.getType()).getActualTypeArguments()[0], ip.getQualifiers()));
-            }
-        }
-        
+        pat.setAnnotatedType(at);
     }
 
-    
-    private void collectAnnotatedMethodForBeans(@Observes ProcessProducerMethod<?, ?> pb) {
-        collectAnnotatedFromProcessBean(pb.getBean(),pb.getAnnotatedProducerMethod().getJavaMember());
-    }
-
-    private void collectAnnotatedFieldForBeans(@Observes ProcessProducerField<?, ?> pb) {
-        collectAnnotatedFromProcessBean(pb.getBean(),pb.getAnnotatedProducerField().getJavaMember());
-    }
-
-    private <T> void collectAnnotatedFromProcessBean(Bean<T> bean, Member member) {
-        if (memberToQualifiers.keySet().contains(member))
-            beanToMember.put(bean, member);
-    }
-
-
-    private void endpointObserver(@Observes ProcessProducerMethod<Endpoint, ?> pb) {
-        endPointsBeans.put(pb.getAnnotated(), (Bean<? extends Endpoint>) pb.getBean());
-    }
-    
-    private void processEndPointsProducer(@Observes ProcessAnnotatedType<?> pat) {
-        enrichAnnotatedTypeForClass(pat, Endpoint.class);
-    }
-
-    private void processProducerTemplateProducer(@Observes ProcessAnnotatedType<?> pat) {
-        enrichAnnotatedTypeForClass(pat, ProducerTemplate.class);
-
-    }
-    
-    
-    private void captureProducerTemplateBeans(@Observes ProcessProducerMethod<ProducerTemplate,?> pb) {
-        if(pb.getAnnotated().isAnnotationPresent(Hidden.class))
-            producerTemplateBeans.add((Bean<ProducerTemplate>) pb.getBean());
-    }
-
-    private void registerEndpoints(@Observes AfterBeanDiscovery abd, BeanManager bm) {
-        for (Annotated annotated : endPointsBeans.keySet()) {
-
-            final Bean<Endpoint> bean = (Bean<Endpoint>) endPointsBeans.get(annotated);
+    private void registerEndpoints(@Observes AfterBeanDiscovery abd) {
+        for (Map.Entry<Annotated, Bean<Endpoint>> endpoint : endpointsBeans.entrySet()) {
+            Bean<Endpoint> bean = endpoint.getValue();
             Set<Annotation> qualifiers = new HashSet<Annotation>(bean.getQualifiers());
             qualifiers.addAll(memberToQualifiers.get(beanToMember.get(bean)));
             qualifiers.remove(HiddenLiteral.INSTANCE);
-            if (CdiEventEndpoint.class.equals(CdiSpiHelper.getRawType(annotated.getBaseType()))) {
-                for (InjectionPoint ip : cdiEventEndpoints.keySet()) {
+            if (CdiEventEndpoint.class.equals(CdiSpiHelper.getRawType(endpoint.getKey().getBaseType()))) {
+                for (InjectionPoint ip : cdiEventEndpoints.keySet())
                     qualifiers.addAll(ip.getQualifiers());
-                }
-                /*if (!cdiEventEndpoints.isEmpty()) {
-                    qualifiers.remove(DefaultLiteral.INSTANCE);
-                }*/
-            } else {
-                if (!namedContexts.isEmpty()) {
-                   /* qualifiers.remove(DefaultLiteral.INSTANCE);*/
-                    qualifiers.addAll(namedContexts.keySet());
-                }
+            } else if (!namedContexts.isEmpty()) {
+                qualifiers.addAll(namedContexts.keySet());
             }
-            if(qualifiers.size() == 1 && qualifiers.contains(AnyLiteral.INSTANCE))
+            if (qualifiers.size() == 1 && qualifiers.contains(AnyLiteral.INSTANCE))
                 qualifiers.add(DefaultLiteral.INSTANCE);
             abd.addBean(new RequalifiedBean<Endpoint>(bean, qualifiers));
         }
+
         for (Bean<ProducerTemplate> bean : producerTemplateBeans) {
             Set<Annotation> qualifiers = new HashSet<Annotation>(bean.getQualifiers());
             qualifiers.addAll(memberToQualifiers.get(beanToMember.get(bean)));
@@ -240,13 +201,11 @@ public class CdiCamelExtension implements Extension {
             qualifiers.addAll(namedContexts.keySet());
             abd.addBean(new RequalifiedBean<ProducerTemplate>(bean, qualifiers));
         }
-
     }
-    
+
     private void addDefaultCamelContext(@Observes AfterBeanDiscovery abd, BeanManager manager) {
         if (!customCamelContextPresent)
             abd.addBean(new CdiCamelContextBean(manager));
-
     }
 
     private void camelEventNotifiers(@Observes ProcessObserverMethod<? extends EventObject, ?> pom) {
@@ -260,14 +219,17 @@ public class CdiCamelExtension implements Extension {
                     info.add(ContextInfo.EventNotifierSupport);
             } else {
                 for (Annotation qualifier : qualifiers)
-                    if (qualifier instanceof ContextName)
+                    if (qualifier instanceof ContextName) {
+                        if (!namedContexts.containsKey(qualifier))
+                            // Work-around for OWB lifecycle events in CDI 1.0
+                            namedContexts.put((ContextName) qualifier, EnumSet.noneOf(ContextInfo.class));
                         namedContexts.get(qualifier).add(ContextInfo.EventNotifierSupport);
-                    else if (qualifier instanceof Default)
+                    } else if (qualifier instanceof Default) {
                         defaultContext.add(ContextInfo.EventNotifierSupport);
+                    }
             }
         }
     }
-    
 
     private void addCdiEventObserverMethods(@Observes AfterBeanDiscovery abd) {
         // TODO: it happens that, while the observer method is declared @Default, it's treated as if it is declared @Any. Check Weld and OWB implementations.
@@ -302,8 +264,7 @@ public class CdiCamelExtension implements Extension {
             if (context != null)
                 addRouteToContext(bean, context, manager, adv);
             else
-                adv.addDeploymentProblem(new IllegalStateException("No corresponding Camel context found for RouteBuilder bean "
-                        + "[" + bean + "]"));
+                adv.addDeploymentProblem(new IllegalStateException("No corresponding Camel context found for RouteBuilder bean " + "[" + bean + "]"));
         }
 
         // Trigger eager beans instantiation

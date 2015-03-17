@@ -7,30 +7,22 @@ import java.util.Set;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 
-/**
- *
- */
-public class OverrideAnnotatedMethod<T> extends OverrideAnnotatedMember<T> implements
-        AnnotatedMethod<T> {
-
-
-    public OverrideAnnotatedMethod(AnnotatedMethod<T> delegate, Set<Annotation> enrichment) {
-        super(delegate, enrichment);
-    }
-
-    private AnnotatedMethod<T> getDelegate() {
-        return (AnnotatedMethod<T>) delegate;
+final class OverrideAnnotatedMethod<T> extends OverrideAnnotatedMember<T> implements AnnotatedMethod<T> {
+    
+    private final AnnotatedMethod<T> delegate;
+    
+    OverrideAnnotatedMethod(AnnotatedMethod<T> delegate, Set<Annotation> annotations) {
+        super(delegate, annotations);
+        this.delegate = delegate;
     }
 
     @Override
     public List<AnnotatedParameter<T>> getParameters() {
-        return getDelegate().getParameters();
+        return delegate.getParameters();
     }
 
     @Override
     public Method getJavaMember() {
-        return getDelegate().getJavaMember();
+        return delegate.getJavaMember();
     }
-
-
 }

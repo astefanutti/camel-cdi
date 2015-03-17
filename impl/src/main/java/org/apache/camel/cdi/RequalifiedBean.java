@@ -31,9 +31,9 @@ final class RequalifiedBean<T> implements Bean<T> {
 
     private final Set<Annotation> qualifiers;
 
-    RequalifiedBean(Bean<T> delegate, Set<? extends Annotation> toChange) {
+    RequalifiedBean(Bean<T> delegate, Set<? extends Annotation> qualifiers) {
         this.delegate = delegate;
-        qualifiers = Collections.unmodifiableSet(toChange);
+        this.qualifiers = Collections.unmodifiableSet(qualifiers);
     }
 
     @Override
@@ -63,7 +63,7 @@ final class RequalifiedBean<T> implements Bean<T> {
 
     @Override
     public boolean isAlternative() {
-        return false;
+        return delegate.isAlternative();
     }
 
     @Override

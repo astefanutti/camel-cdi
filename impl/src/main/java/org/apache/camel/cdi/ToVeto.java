@@ -8,11 +8,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * Annnotation to veto an AnnotatedType for CDI 1.1+ backward compatibility
+ * Annotation to veto an {@code AnnotatedType} for CDI 1.1+ backward compatibility
  */
-
 @Target(value = { TYPE })
 @Retention(value = RUNTIME)
 @Documented
-public @interface ToVeto {
+@interface ToVeto {
 }

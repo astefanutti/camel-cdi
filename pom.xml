@@ -1,64 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>org.sonatype.oss</groupId>
-		<artifactId>oss-parent</artifactId>
-		<version>9</version>
-	</parent>
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>9</version>
+    </parent>
 
-	<groupId>io.astefanutti.camel.cdi</groupId>
-	<artifactId>camel-cdi-parent</artifactId>
-	<version>1.2-SNAPSHOT</version>
-	<packaging>pom</packaging>
+    <groupId>io.astefanutti.camel.cdi</groupId>
+    <artifactId>camel-cdi-parent</artifactId>
+    <version>1.2-SNAPSHOT</version>
+    <packaging>pom</packaging>
 
-	<name>Camel CDI</name>
-	<inceptionYear>2014</inceptionYear>
-	<description>Camel CDI Extension</description>
-	<url>https://github.com/astefanutti/camel-cdi</url>
+    <name>Camel CDI</name>
+    <inceptionYear>2014</inceptionYear>
+    <description>Camel CDI Extension</description>
+    <url>https://github.com/astefanutti/camel-cdi</url>
 
-	<developers>
-		<developer>
-			<name>Antonin Stefanutti</name>
-			<email>antonin.stefanutti@gmail.com</email>
-			<timezone>+1</timezone>
-		</developer>
-		<developer>
-			<name>Charles Moulliard</name>
-			<email>ch007m@gmail.com</email>
-			<timezone>+1</timezone>
-		</developer>
-	</developers>
+    <developers>
+        <developer>
+            <name>Antonin Stefanutti</name>
+            <email>antonin.stefanutti@gmail.com</email>
+            <timezone>+1</timezone>
+        </developer>
+        <developer>
+            <name>Charles Moulliard</name>
+            <email>ch007m@gmail.com</email>
+            <timezone>+1</timezone>
+        </developer>
+        <developer>
+            <name>Antoine Sabot-Durand</name>
+            <timezone>+1</timezone>
+        </developer>
+    </developers>
 
-	<licenses>
-		<license>
-			<name>Apache License 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
-		</license>
-	</licenses>
+    <licenses>
+        <license>
+            <name>Apache License 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+        </license>
+    </licenses>
 
-	<issueManagement>
-		<system>github</system>
-		<url>https://github.com/astefanutti/camel-cdi/issues</url>
-	</issueManagement>
+    <issueManagement>
+        <system>github</system>
+        <url>https://github.com/astefanutti/camel-cdi/issues</url>
+    </issueManagement>
 
-	<scm>
-		<connection>scm:git:git@github.com:astefanutti/camel-cdi.git</connection>
-		<developerConnection>scm:git:git@github.com:astefanutti/camel-cdi.git</developerConnection>
-		<url>scm:git:git@github.com:astefanutti/camel-cdi.git</url>
-		<tag>HEAD</tag>
-	</scm>
+    <scm>
+        <connection>scm:git:git@github.com:astefanutti/camel-cdi.git</connection>
+        <developerConnection>scm:git:git@github.com:astefanutti/camel-cdi.git</developerConnection>
+        <url>scm:git:git@github.com:astefanutti/camel-cdi.git</url>
+        <tag>HEAD</tag>
+    </scm>
 
     <repositories>
-        <!-- TODO: remove when OWB 1.5.0 is released -->
-        <repository>
-            <id>apache-snapshots</id>
-            <url>http://repository.apache.org/snapshots/</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
         <repository>
             <id>jboss-releases</id>
             <url>http://repository.jboss.org/nexus/content/repositories/releases</url>
@@ -69,232 +66,235 @@
         </repository>
     </repositories>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<!-- Maven dependencies -->
-		<camel.version>2.14.1</camel.version>
-		<cdi.version>1.0-SP4</cdi.version>
-		<deltaspike.version>1.1.0</deltaspike.version>
-		<javaee.version>6.0</javaee.version>
-		<slf4j.version>1.7.10</slf4j.version>
-		<weld.version>1.1.28.Final</weld.version>
-		<owb.version>1.5.0-SNAPSHOT</owb.version>
-		<wildfly.version>8.2.0.Final</wildfly.version>
-		<arquillian.version>1.1.7.Final</arquillian.version>
-		<arquillian-osgi.version>2.1.0.CR18</arquillian-osgi.version>
-		<arquillian.weld.version>1.0.0.CR8</arquillian.weld.version>
-		<shrinkwrap.resolver.version>2.1.1</shrinkwrap.resolver.version>
-		<shrinkwrap.descriptors.version>2.0.0-alpha-7</shrinkwrap.descriptors.version>
-		<jboss-javaee-6.0.version>3.0.2.Final</jboss-javaee-6.0.version>
-		<!-- Maven plugins -->
-		<maven-exec-plugin-version>1.3.2</maven-exec-plugin-version>
-		<maven-bundle-plugin.version>2.3.7</maven-bundle-plugin.version>
-		<maven-wildfly-plugin.version>1.0.2.Final</maven-wildfly-plugin.version>
-		<maven-jetty-plugin.version>9.3.0.M1</maven-jetty-plugin.version>
-	</properties>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- Maven dependencies -->
+        <camel.version>2.14.1</camel.version>
+        <cdi.version>1.0-SP4</cdi.version>
+        <deltaspike.version>1.1.0</deltaspike.version>
+        <javaee.version>6.0</javaee.version>
+        <slf4j.version>1.7.10</slf4j.version>
+        <weld.version>1.1.28.Final</weld.version>
+        <owb.version>1.2.7</owb.version>
+        <wildfly.version>8.2.0.Final</wildfly.version>
+        <arquillian.version>1.1.7.Final</arquillian.version>
+        <arquillian-osgi.version>2.1.0.CR18</arquillian-osgi.version>
+        <arquillian.weld.version>1.0.0.CR8</arquillian.weld.version>
+        <shrinkwrap.resolver.version>2.1.1</shrinkwrap.resolver.version>
+        <shrinkwrap.descriptors.version>2.0.0-alpha-7</shrinkwrap.descriptors.version>
+        <jboss-javaee-6.0.version>3.0.2.Final</jboss-javaee-6.0.version>
+        <!-- Maven plugins -->
+        <maven-exec-plugin-version>1.3.2</maven-exec-plugin-version>
+        <maven-bundle-plugin.version>2.3.7</maven-bundle-plugin.version>
+        <maven-wildfly-plugin.version>1.0.2.Final</maven-wildfly-plugin.version>
+        <maven-jetty-plugin.version>9.3.0.M1</maven-jetty-plugin.version>
+    </properties>
 
-	<modules>
-		<module>impl</module>
-		<module>envs</module>
-		<module>camel-maven-plugin</module>
-		<module>quickstarts</module>
-	</modules>
+    <modules>
+        <module>impl</module>
+        <module>envs</module>
+        <module>camel-maven-plugin</module>
+        <module>quickstarts</module>
+    </modules>
 
-	<build>
-		<defaultGoal>clean package</defaultGoal>
+    <build>
+        <defaultGoal>clean package</defaultGoal>
 
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>exec-maven-plugin</artifactId>
-					<version>${maven-exec-plugin-version}</version>
-				</plugin>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>${maven-exec-plugin-version}</version>
+                </plugin>
 
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>build-helper-maven-plugin</artifactId>
-					<version>1.9</version>
-				</plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>1.9</version>
+                </plugin>
 
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.2</version>
-				</plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.2</version>
+                </plugin>
 
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-surefire-plugin</artifactId>
-					<version>2.18</version>
-				</plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.18</version>
+                </plugin>
 
-				<plugin>
-					<groupId>org.jacoco</groupId>
-					<artifactId>jacoco-maven-plugin</artifactId>
-					<version>0.7.2.201409121644</version>
-				</plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>0.7.2.201409121644</version>
+                </plugin>
 
-				<plugin>
-					<groupId>org.eluder.coveralls</groupId>
-					<artifactId>coveralls-maven-plugin</artifactId>
-					<version>3.0.1</version>
-					<configuration>
-						<jacocoReports>
-							<jacocoReport>${project.basedir}/impl/target/site/jacoco/jacoco.xml</jacocoReport>
-						</jacocoReports>
-						<coverallsFile>${project.basedir}/impl/target/coveralls.json</coverallsFile>
-						<sourceDirectories>
-							<sourceDirectory>${project.basedir}/impl/src/main/java</sourceDirectory>
-						</sourceDirectories>
-					</configuration>
-				</plugin>
+                <plugin>
+                    <groupId>org.eluder.coveralls</groupId>
+                    <artifactId>coveralls-maven-plugin</artifactId>
+                    <version>3.0.1</version>
+                    <configuration>
+                        <jacocoReports>
+                            <jacocoReport>${project.basedir}/impl/target/site/jacoco/jacoco.xml</jacocoReport>
+                        </jacocoReports>
+                        <coverallsFile>${project.basedir}/impl/target/coveralls.json</coverallsFile>
+                        <sourceDirectories>
+                            <sourceDirectory>${project.basedir}/impl/src/main/java</sourceDirectory>
+                        </sourceDirectories>
+                    </configuration>
+                </plugin>
 
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-gpg-plugin</artifactId>
-					<version>1.5</version>
-				</plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-gpg-plugin</artifactId>
+                    <version>1.5</version>
+                </plugin>
 
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-release-plugin</artifactId>
-					<version>2.5</version>
-					<configuration>
-						<autoVersionSubmodules>true</autoVersionSubmodules>
-						<mavenExecutorId>forked-path</mavenExecutorId>
-						<useReleaseProfile>false</useReleaseProfile>
-						<arguments>${arguments} -Psonatype-oss-release</arguments>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-release-plugin</artifactId>
+                    <version>2.5</version>
+                    <configuration>
+                        <autoVersionSubmodules>true</autoVersionSubmodules>
+                        <mavenExecutorId>forked-path</mavenExecutorId>
+                        <useReleaseProfile>false</useReleaseProfile>
+                        <arguments>${arguments} -Psonatype-oss-release</arguments>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
 
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<inherited>true</inherited>
-				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <inherited>true</inherited>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
-	<dependencyManagement>
-		<dependencies>
+    <dependencyManagement>
+        <dependencies>
 
             <!-- compile dependencies -->
 
-			<dependency>
-				<groupId>org.apache.camel</groupId>
-				<artifactId>camel-core</artifactId>
-				<version>${camel.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>com.sun.xml.bind</groupId>
-						<artifactId>jaxb-impl</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
+            <dependency>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-core</artifactId>
+                <version>${camel.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.sun.xml.bind</groupId>
+                        <artifactId>jaxb-impl</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
 
-			<dependency>
-				<groupId>org.jboss.spec</groupId>
-				<artifactId>jboss-javaee-6.0</artifactId>
-				<version>${jboss-javaee-6.0.version}</version>
-				<type>pom</type>
-			</dependency>
+            <!-- for the Camel Maven plugin -->
+            <dependency>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>${maven-exec-plugin-version}</version>
+            </dependency>
 
-			<!-- provided dependencies -->
+            <!-- provided dependencies -->
 
-			<dependency>
-				<groupId>javax.enterprise</groupId>
-				<artifactId>cdi-api</artifactId>
-				<version>${cdi.version}</version>
-			</dependency>
+            <dependency>
+                <groupId>javax.enterprise</groupId>
+                <artifactId>cdi-api</artifactId>
+                <version>${cdi.version}</version>
+                <scope>provided</scope>
+            </dependency>
 
-			<dependency>
-				<groupId>org.jboss.weld</groupId>
-				<artifactId>weld-core</artifactId>
-				<scope>test</scope>
-				<version>${weld.version}</version>
-			</dependency>
+            <dependency>
+                <groupId>org.jboss.spec</groupId>
+                <artifactId>jboss-javaee-6.0</artifactId>
+                <version>${jboss-javaee-6.0.version}</version>
+                <type>pom</type>
+                <scope>provided</scope>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-jcdi_1.0_spec</artifactId>
+                <version>1.0</version>
+                <scope>provided</scope>
+            </dependency>
 
-			<dependency>
-				<groupId>org.jboss.weld.se</groupId>
-				<artifactId>weld-se</artifactId>
-				<version>${weld.version}</version>
-			</dependency>
+            <dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-atinject_1.0_spec</artifactId>
+                <version>1.0</version>
+                <scope>provided</scope>
+            </dependency>
 
-			<dependency>
-				<groupId>org.jboss.weld.servlet</groupId>
-				<artifactId>weld-servlet</artifactId>
-				<version>${weld.version}</version>
-			</dependency>
+            <dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-interceptor_1.1_spec</artifactId>
+                <version>1.0</version>
+            </dependency>
 
+            <!-- test dependencies -->
 
-			<dependency>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-				<version>${maven-exec-plugin-version}</version>
-			</dependency>
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>1.2.17</version>
+                <scope>test</scope>
+            </dependency>
 
-			<!-- test dependencies -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jul-to-slf4j</artifactId>
+                <version>${slf4j.version}</version>
+                <scope>test</scope>
+            </dependency>
 
-			<dependency>
-				<groupId>log4j</groupId>
-				<artifactId>log4j</artifactId>
-				<version>1.2.17</version>
-				<scope>test</scope>
-			</dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-log4j12</artifactId>
+                <version>${slf4j.version}</version>
+                <scope>test</scope>
+            </dependency>
 
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>jul-to-slf4j</artifactId>
-				<version>${slf4j.version}</version>
-				<scope>test</scope>
-			</dependency>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.12</version>
+                <scope>test</scope>
+            </dependency>
 
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-log4j12</artifactId>
-				<version>${slf4j.version}</version>
-				<scope>test</scope>
-			</dependency>
+            <dependency>
+                <groupId>org.hamcrest</groupId>
+                <artifactId>hamcrest-library</artifactId>
+                <version>1.3</version>
+                <scope>test</scope>
+            </dependency>
 
-			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<version>4.12</version>
-				<scope>test</scope>
-			</dependency>
+            <dependency>
+                <groupId>org.easytesting</groupId>
+                <artifactId>fest-reflect</artifactId>
+                <version>1.4.1</version>
+                <scope>test</scope>
+            </dependency>
 
-			<dependency>
-				<groupId>org.hamcrest</groupId>
-				<artifactId>hamcrest-library</artifactId>
-				<version>1.3</version>
-				<scope>test</scope>
-			</dependency>
+            <!-- ShrinkWrap -->
 
-			<dependency>
-				<groupId>org.easytesting</groupId>
-				<artifactId>fest-reflect</artifactId>
-				<version>1.4.1</version>
-				<scope>test</scope>
-			</dependency>
+            <dependency>
+                <groupId>org.jboss.shrinkwrap.resolver</groupId>
+                <artifactId>shrinkwrap-resolver-bom</artifactId>
+                <version>${shrinkwrap.resolver.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
 
-			<!-- ShrinkWrap -->
-
-			<dependency>
-				<groupId>org.jboss.shrinkwrap.resolver</groupId>
-				<artifactId>shrinkwrap-resolver-bom</artifactId>
-				<version>${shrinkwrap.resolver.version}</version>
-				<scope>import</scope>
-				<type>pom</type>
-			</dependency>
-			
             <dependency>
                 <groupId>org.jboss.shrinkwrap.descriptors</groupId>
                 <artifactId>shrinkwrap-descriptors-bom</artifactId>
@@ -305,60 +305,83 @@
 
             <!-- Arquillian -->
 
-			<dependency>
-				<groupId>org.jboss.arquillian</groupId>
-				<artifactId>arquillian-bom</artifactId>
-				<version>${arquillian.version}</version>
-				<scope>import</scope>
-				<type>pom</type>
-			</dependency>
+            <dependency>
+                <groupId>org.jboss.arquillian</groupId>
+                <artifactId>arquillian-bom</artifactId>
+                <version>${arquillian.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
 
-			<dependency>
-				<groupId>org.jboss.arquillian.container</groupId>
-				<artifactId>arquillian-weld-se-embedded-1.1</artifactId>
-				<version>${arquillian.weld.version}</version>
-				<scope>test</scope>
-			</dependency>
+            <dependency>
+                <groupId>org.jboss.arquillian.container</groupId>
+                <artifactId>arquillian-weld-se-embedded-1.1</artifactId>
+                <version>${arquillian.weld.version}</version>
+                <scope>test</scope>
+            </dependency>
 
-			<dependency>
-				<groupId>org.jboss.arquillian.container</groupId>
-				<artifactId>arquillian-weld-ee-embedded-1.1</artifactId>
-				<version>${arquillian.weld.version}</version>
-				<scope>test</scope>
-			</dependency>
+            <dependency>
+                <groupId>org.jboss.arquillian.container</groupId>
+                <artifactId>arquillian-weld-ee-embedded-1.1</artifactId>
+                <version>${arquillian.weld.version}</version>
+                <scope>test</scope>
+            </dependency>
 
-			<!-- OpenWebBeans -->
+            <!-- Weld -->
 
-			<dependency>
-				<groupId>org.apache.openwebbeans</groupId>
-				<artifactId>openwebbeans-impl</artifactId>
-				<version>${owb.version}</version>
-				<scope>test</scope>
-			</dependency>
+            <dependency>
+                <groupId>org.jboss.weld</groupId>
+                <artifactId>weld-core</artifactId>
+                <version>${weld.version}</version>
+                <scope>test</scope>
+            </dependency>
 
-			<dependency>
-				<groupId>org.apache.openwebbeans.arquillian</groupId>
-				<artifactId>owb-arquillian-standalone</artifactId>
-				<version>${owb.version}</version>
-				<scope>test</scope>
-			</dependency>
+            <dependency>
+                <groupId>org.jboss.weld.se</groupId>
+                <artifactId>weld-se</artifactId>
+                <version>${weld.version}</version>
+                <scope>test</scope>
+            </dependency>
 
-			<!-- WildFly -->
+            <dependency>
+                <groupId>org.jboss.weld.servlet</groupId>
+                <artifactId>weld-servlet</artifactId>
+                <version>${weld.version}</version>
+                <scope>test</scope>
+            </dependency>
 
-			<dependency>
-				<groupId>org.wildfly</groupId>
-				<artifactId>wildfly-arquillian-container-managed</artifactId>
-				<version>${wildfly.version}</version>
-				<scope>test</scope>
-				<exclusions>
-					<exclusion>
-						<groupId>org.jboss.logmanager</groupId>
-						<artifactId>log4j-jboss-logmanager</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
+            <!-- OpenWebBeans -->
 
-		</dependencies>
-	</dependencyManagement>
+            <dependency>
+                <groupId>org.apache.openwebbeans</groupId>
+                <artifactId>openwebbeans-impl</artifactId>
+                <version>${owb.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.openwebbeans.arquillian</groupId>
+                <artifactId>owb-arquillian-standalone</artifactId>
+                <version>${owb.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- WildFly -->
+
+            <dependency>
+                <groupId>org.wildfly</groupId>
+                <artifactId>wildfly-arquillian-container-managed</artifactId>
+                <version>${wildfly.version}</version>
+                <scope>test</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.jboss.logmanager</groupId>
+                        <artifactId>log4j-jboss-logmanager</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
 
 </project>

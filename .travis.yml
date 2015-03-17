@@ -8,15 +8,14 @@ cache:
 
 branches:
   only:
-    - master
+    - cdi-1.0
 
 install:
   - mvn clean install -Dmaven.test.skip.exec
 
 script:
   - mvn test -Pjacoco -Pweld
-# Disabled until OWB-1040 (lifecycle events sequence) is worked out
-#  - mvn test -Pjacoco -Powb -pl envs/se
+  - mvn test -Pjacoco -Powb -pl envs/se
   - mvn test -Pjacoco -Pwildfly -pl envs/ee
 
 jdk:

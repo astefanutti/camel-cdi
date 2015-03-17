@@ -11,10 +11,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import javax.inject.Qualifier;
 
-/**
- *
- */
-
 @Target(value = { TYPE, METHOD, PARAMETER, FIELD })
 @Retention(value = RUNTIME)
 @Documented

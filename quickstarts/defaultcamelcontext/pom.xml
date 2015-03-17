@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>quickstarts</artifactId>
         <groupId>io.astefanutti.camel.cdi</groupId>
@@ -13,7 +14,7 @@
 
     <properties>
         <!-- OSGI Properties -->
-        <camel.osgi.dynamic />
+        <camel.osgi.dynamic/>
         <camel.osgi.export.pkg>
             org.apache.camel.cdi.example2.*
         </camel.osgi.export.pkg>
@@ -60,19 +61,20 @@
             <scope>runtime</scope>
         </dependency>
 
-		<!-- Java EE API -->
-		<dependency>
-			<groupId>org.jboss.spec</groupId>
-			<artifactId>jboss-javaee-6.0</artifactId>
-			<type>pom</type>
-		</dependency>
+        <!-- Java EE API -->
+        <dependency>
+            <groupId>org.jboss.spec</groupId>
+            <artifactId>jboss-javaee-6.0</artifactId>
+            <type>pom</type>
+        </dependency>
 
-        <!-- Weld2 -->
+        <!-- Weld -->
         <dependency>
             <groupId>org.jboss.weld.se</groupId>
             <artifactId>weld-se</artifactId>
+            <scope>compile</scope>
         </dependency>
-        
+
 
         <!-- Logging -->
         <dependency>

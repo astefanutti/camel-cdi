@@ -5,65 +5,44 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedField;
-import javax.enterprise.inject.spi.AnnotatedMember;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 
-/**
- *
- */
-public class OverrideAnnotatedType<T> extends OverrideAnnotated implements AnnotatedType<T> {
+final class OverrideAnnotatedType<T> extends OverrideAnnotated implements AnnotatedType<T> {
 
-    private final AnnotatedMember<T> target;
-    private final Set<Annotation> targetAnnotations;
-    
-    public OverrideAnnotatedType(AnnotatedType<T> delegate, Set<Annotation> toChange) {
-        super(delegate, toChange);
-        target = null;
-        targetAnnotations = null;
-    }
+    private final AnnotatedMethod<? super T> target;
 
-    public OverrideAnnotatedType(AnnotatedType<T> delegate, AnnotatedMember<T> target, Set<Annotation> toChange) {
+    private final Set<Annotation> annotations;
+
+    private final AnnotatedType<T> delegate;
+
+    OverrideAnnotatedType(AnnotatedType<T> delegate, AnnotatedMethod<? super T> target, Set<Annotation> annotations) {
         super(delegate);
+        this.delegate = delegate;
         this.target = target;
-        annotations = new HashSet<Annotation>(delegate.getAnnotations());
-        targetAnnotations = new HashSet<Annotation>(toChange);
-    }
-
-    private AnnotatedType<T> getDelegate() {
-        return (AnnotatedType<T>) delegate;
+        this.annotations = new HashSet<Annotation>(annotations);
     }
 
     @Override
     public Set<AnnotatedConstructor<T>> getConstructors() {
-        return getDelegate().getConstructors();
+        return delegate.getConstructors();
     }
 
     @Override
     public Set<AnnotatedField<? super T>> getFields() {
-        if (getDelegate().getFields().contains(target)) {
-            Set<AnnotatedField<? super T>> res = new HashSet<AnnotatedField<? super T>>(getDelegate().getFields());
-            res.remove(target);
-            res.add(new OverrideAnnotatedField<T>((AnnotatedField<T>) target, targetAnnotations));
-            return res;
-        }
-        return getDelegate().getFields();
+        return delegate.getFields();
     }
 
     @Override
     public Class<T> getJavaClass() {
-        return getDelegate().getJavaClass();
+        return delegate.getJavaClass();
     }
 
     @Override
     public Set<AnnotatedMethod<? super T>> getMethods() {
-        if (getDelegate().getMethods().contains(target)) {
-            Set<AnnotatedMethod<? super T>> res = new HashSet<AnnotatedMethod<? super T>>(getDelegate().getMethods());
-            res.remove(target);
-            res.add(new OverrideAnnotatedMethod<T>((AnnotatedMethod<T>) target, targetAnnotations));
-            return res;
-        }
-        return getDelegate().getMethods();
+        Set<AnnotatedMethod<? super T>> methods = new HashSet<AnnotatedMethod<? super T>>(delegate.getMethods());
+        methods.remove(target);
+        methods.add(new OverrideAnnotatedMethod(target, annotations));
+        return methods;
     }
-    
 }

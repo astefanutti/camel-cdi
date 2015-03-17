@@ -99,7 +99,7 @@
                     <artifactId>jboss-el-api_3.0_spec</artifactId>
                 </dependency>
 
-                <!-- Weld2 -->
+                <!-- Weld -->
                 <dependency>
                     <groupId>org.jboss.weld.se</groupId>
                     <artifactId>weld-se</artifactId>

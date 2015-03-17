@@ -2,34 +2,33 @@ package org.apache.camel.cdi;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import javax.enterprise.inject.spi.Annotated;
 
-/**
- *
- */
-public class OverrideAnnotated implements Annotated {
+class OverrideAnnotated implements Annotated {
 
-    protected final Annotated delegate;
-    protected Set<Annotation> annotations;
-    
+    private final Annotated delegate;
 
-    public OverrideAnnotated(Annotated delegate, Set<Annotation> toChange) {
+    private final Set<Annotation> annotations;
+
+    OverrideAnnotated(Annotated delegate, Set<Annotation> annotations) {
         this.delegate = delegate;
-        annotations = new HashSet<Annotation>(toChange);
+        this.annotations = new HashSet<Annotation>(annotations);
     }
 
     OverrideAnnotated(Annotated delegate) {
         this.delegate = delegate;
+        annotations = Collections.emptySet();
     }
 
     @Override
     public <T extends Annotation> T getAnnotation(Class<T> annotationType) {
-        for (Annotation a : annotations) {
-            if (a.getClass().equals(annotationType))
+        for (Annotation a : annotations) 
+            if (a.annotationType().equals(annotationType))
                 return (T) a;
-        }
+
         return null;
     }
 
@@ -51,5 +50,20 @@ public class OverrideAnnotated implements Annotated {
     @Override
     public boolean isAnnotationPresent(Class<? extends Annotation> annotationType) {
         return getAnnotation(annotationType) != null;
+    }
+
+    @Override
+    public String toString() {
+        return delegate.toString();
+    }
+    
+    @Override
+    public int hashCode() {
+        return delegate.hashCode();
+    }
+    
+    @Override
+    public boolean equals(Object object) {
+        return delegate.equals(object);
     }
 }

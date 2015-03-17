@@ -6,34 +6,27 @@ import java.util.Set;
 import javax.enterprise.inject.spi.AnnotatedMember;
 import javax.enterprise.inject.spi.AnnotatedType;
 
-/**
- *
- */
-public class OverrideAnnotatedMember<T> extends OverrideAnnotated implements AnnotatedMember<T> {
+class OverrideAnnotatedMember<T> extends OverrideAnnotated implements AnnotatedMember<T> {
+
+    private final AnnotatedMember<T> delegate;
     
-
-
-    public OverrideAnnotatedMember(AnnotatedMember<T> delegate, Set<Annotation> enrichment) {
-        super(delegate,enrichment);
+    OverrideAnnotatedMember(AnnotatedMember<T> delegate, Set<Annotation> annotations) {
+        super(delegate, annotations);
+        this.delegate = delegate;
     }
-
-    private AnnotatedMember<T> getDelegate() {
-        return (AnnotatedMember<T>) delegate;
-    }
-        
 
     @Override
     public AnnotatedType<T> getDeclaringType() {
-        return getDelegate().getDeclaringType();
+        return delegate.getDeclaringType();
     }
 
     @Override
     public Member getJavaMember() {
-        return getDelegate().getJavaMember();
+        return delegate.getJavaMember();
     }
 
     @Override
     public boolean isStatic() {
-        return getDelegate().isStatic();
+        return delegate.isStatic();
     }
 }

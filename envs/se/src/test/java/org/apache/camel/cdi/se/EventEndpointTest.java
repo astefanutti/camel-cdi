@@ -57,15 +57,15 @@ public class EventEndpointTest {
     @Deployment
     public static Archive<?> deployment() {
         return ShrinkWrap.create(JavaArchive.class)
-                // Camel CDI
-                .addPackage(CdiCamelExtension.class.getPackage())
-                        // Test classes
-                .addClass(EventConsumingRoute.class)
-                .addClass(EventProducingRoute.class)
-                .addClass(EventPayloadString.class)
-                .addClass(EventPayloadInteger.class)
-                        // Bean archive deployment descriptor
-                .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+            // Camel CDI
+            .addPackage(CdiCamelExtension.class.getPackage())
+            // Test classes
+            .addClass(EventConsumingRoute.class)
+            .addClass(EventProducingRoute.class)
+            .addClass(EventPayloadString.class)
+            .addClass(EventPayloadInteger.class)
+            // Bean archive deployment descriptor
+            .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Inject
