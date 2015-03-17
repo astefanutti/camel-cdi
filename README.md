@@ -2,10 +2,10 @@
 
 [![Build Status][Travis badge]][Travis build] [![Coverage Status][Coveralls badge]][Coveralls build] [![Dependency Status][VersionEye badge]][VersionEye build] [![Maven Central][Maven Central badge]][Maven Central build]
 
-[Travis badge]: https://travis-ci.org/astefanutti/camel-cdi.svg
+[Travis badge]: https://travis-ci.org/astefanutti/camel-cdi.svg?branch=master
 [Travis build]: https://travis-ci.org/astefanutti/camel-cdi
-[Coveralls badge]: https://img.shields.io/coveralls/astefanutti/camel-cdi.svg?style=flat
-[Coveralls build]: https://coveralls.io/r/astefanutti/camel-cdi
+[Coveralls badge]: https://coveralls.io/repos/astefanutti/camel-cdi/badge.svg?branch=master
+[Coveralls build]: https://coveralls.io/r/astefanutti/camel-cdi?branch=master
 [VersionEye badge]: https://www.versioneye.com/user/projects/53fca400e09da310ea0006c4/badge.svg?style=flat
 [VersionEye build]: https://www.versioneye.com/user/projects/53fca400e09da310ea0006c4
 [Maven Central badge]: http://img.shields.io/maven-central/v/io.astefanutti.camel.cdi/camel-cdi.svg?style=flat
@@ -216,7 +216,8 @@ When multiple Camel contexts exist in the CDI container, the `@ContextName` qual
 
 ```java
 void onRouteStarted(@Observes @ContextName("first") RouteStartedEvent event) {
-    // Called after the route (event.getRoute()) for the Camel context ("first") has started
+    // Called after the route (event.getRoute()) for the
+    // Camel context ("first") has started
 }
 
 ```
