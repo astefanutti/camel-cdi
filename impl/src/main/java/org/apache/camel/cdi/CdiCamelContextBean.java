@@ -16,6 +16,12 @@
  */
 package org.apache.camel.cdi;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
@@ -24,12 +30,6 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.PassivationCapable;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 final class CdiCamelContextBean implements Bean<CdiCamelContext>, PassivationCapable {
 
@@ -40,7 +40,7 @@ final class CdiCamelContextBean implements Bean<CdiCamelContext>, PassivationCap
     private final InjectionTarget<CdiCamelContext> target;
 
     CdiCamelContextBean(BeanManager manager) {
-        this.qualifiers = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(AnyLiteral.INSTANCE, DefaultLiteral.INSTANCE)));
+        this.qualifiers = Collections.unmodifiableSet(new HashSet<Annotation>(Arrays.asList(AnyLiteral.INSTANCE, DefaultLiteral.INSTANCE)));
         AnnotatedType<CdiCamelContext> annotatedType = manager.createAnnotatedType(CdiCamelContext.class);
         this.types = Collections.unmodifiableSet(annotatedType.getTypeClosure());
         this.target = manager.createInjectionTarget(annotatedType);

@@ -23,12 +23,9 @@ import org.apache.camel.Processor;
 import org.apache.camel.Producer;
 import org.apache.camel.impl.DefaultEndpoint;
 
-import javax.enterprise.event.Event;
-import javax.enterprise.inject.spi.BeanManager;
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+import javax.enterprise.event.Event;
 
 /**
  * A Camel {@link Endpoint} that bridges the CDI events facility with Camel routes so that CDI events
@@ -82,7 +79,7 @@ import java.util.Set;
  */
 public final class CdiEventEndpoint<T> extends DefaultEndpoint {
 
-    private final List<CdiEventConsumer<T>> consumers = new ArrayList<>();
+    private final List<CdiEventConsumer<T>> consumers = new ArrayList<CdiEventConsumer<T>>();
 
     private final Event<T> event;
 
@@ -93,12 +90,12 @@ public final class CdiEventEndpoint<T> extends DefaultEndpoint {
     }
 
     public Consumer createConsumer(Processor processor) {
-        return new CdiEventConsumer<>(this, processor);
+        return new CdiEventConsumer<T>(this, processor);
     }
 
     @Override
     public Producer createProducer() {
-        return new CdiEventProducer<>(this, event);
+        return new CdiEventProducer<T>(this, event);
     }
 
     @Override

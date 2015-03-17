@@ -45,7 +45,15 @@ import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import static org.apache.camel.cdi.se.expression.ExchangeExpression.fromCamelContext;
+import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
+import static org.hamcrest.Matchers.everyItem;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.assertThat;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Any;
@@ -53,15 +61,6 @@ import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import static org.apache.camel.cdi.se.expression.ExchangeExpression.fromCamelContext;
-import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
-import static org.hamcrest.Matchers.everyItem;
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
 public class MultiContextEventNotifierTest {
@@ -92,7 +91,7 @@ public class MultiContextEventNotifierTest {
     private MockEndpoint defaultOutbound;
 
     @Produces @ApplicationScoped
-    private List<Class> defaultFiredEvents = new ArrayList<>();
+    private List<Class> defaultFiredEvents = new ArrayList<Class>();
 
 
     @Inject @ContextName("first")
@@ -105,7 +104,7 @@ public class MultiContextEventNotifierTest {
     private MockEndpoint firstOutbound;
 
     @Produces @ApplicationScoped @ContextName("first")
-    private List<Class> firstFiredEvents = new ArrayList<>();
+    private List<Class> firstFiredEvents = new ArrayList<Class>();
 
 
     @Inject @ContextName("second")
@@ -118,11 +117,11 @@ public class MultiContextEventNotifierTest {
     private MockEndpoint secondOutbound;
 
     @Produces @ApplicationScoped @ContextName("second")
-    private List<Class> secondFiredEvents = new ArrayList<>();
+    private List<Class> secondFiredEvents = new ArrayList<Class>();
 
 
     @Produces @ApplicationScoped @Any @Named("anyContext")
-    private List<Class> anyFiredEvents = new ArrayList<>();
+    private List<Class> anyFiredEvents = new ArrayList<Class>();
 
 
     private void onAnyContextStartingEvent(@Observes CamelContextStartingEvent event, @Named("anyContext") List<Class> events) {

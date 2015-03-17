@@ -18,10 +18,9 @@ package org.apache.camel.cdi;
 
 import org.apache.camel.component.properties.PropertiesComponent;
 
-import javax.enterprise.inject.Vetoed;
 import java.util.Properties;
 
-@Vetoed
+@ToVeto
 public final class CdiPropertiesComponent extends PropertiesComponent {
 
     public CdiPropertiesComponent(Properties properties) {

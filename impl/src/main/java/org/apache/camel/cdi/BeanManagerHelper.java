@@ -16,16 +16,15 @@
  */
 package org.apache.camel.cdi;
 
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.Vetoed;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
 
-@Vetoed
+@ToVeto
 final class BeanManagerHelper {
 
     static <T> Set<T> getReferencesByType(BeanManager manager, Class<T> type, Annotation... qualifiers) {
@@ -33,7 +32,7 @@ final class BeanManagerHelper {
     }
 
     static <T> Set<T> getReferencesByType(BeanManager manager, Type type, Annotation... qualifiers) {
-        Set<T> references = new HashSet<>();
+        Set<T> references = new HashSet<T>();
         for (Bean<?> bean : manager.getBeans(type, qualifiers))
             references.add(BeanManagerHelper.<T>getReference(manager, type, bean));
 

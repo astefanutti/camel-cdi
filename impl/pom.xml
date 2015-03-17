@@ -6,6 +6,7 @@
         <groupId>io.astefanutti.camel.cdi</groupId>
         <artifactId>camel-cdi-parent</artifactId>
         <version>1.2-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>camel-cdi</artifactId>

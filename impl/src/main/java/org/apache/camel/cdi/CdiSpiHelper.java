@@ -18,9 +18,6 @@ package org.apache.camel.cdi;
 
 import org.apache.camel.util.ObjectHelper;
 
-import javax.enterprise.inject.Vetoed;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.InjectionPoint;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;
@@ -29,8 +26,23 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.context.NormalScope;
+import javax.enterprise.inject.Produces;
+import javax.enterprise.inject.spi.Annotated;
+import javax.enterprise.inject.spi.AnnotatedConstructor;
+import javax.enterprise.inject.spi.AnnotatedField;
+import javax.enterprise.inject.spi.AnnotatedMember;
+import javax.enterprise.inject.spi.AnnotatedMethod;
+import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.InjectionPoint;
+import javax.inject.Qualifier;
+import javax.inject.Scope;
 
-@Vetoed
+@ToVeto
 final class CdiSpiHelper {
 
     static <T extends Annotation> T getQualifierByType(Bean<?> bean, Class<T> type) {
@@ -75,5 +87,72 @@ final class CdiSpiHelper {
             return Object.class;
         else
             return getRawType(bounds[0]);
+    }
+
+    public static boolean hasAnnotation(AnnotatedType<?> at, Class<? extends Annotation> annotation) {
+
+        if (at.isAnnotationPresent(annotation))
+            return true;
+
+        for (AnnotatedMethod<?> method : at.getMethods()) {
+            if (method.isAnnotationPresent(annotation))
+                return true;
+        }
+        for (AnnotatedConstructor<?> constructor : at.getConstructors()) {
+            if (constructor.isAnnotationPresent(annotation))
+                return true;
+        }
+        for (AnnotatedField<?> field : at.getFields()) {
+            if (field.isAnnotationPresent(annotation))
+                return true;
+        }
+        return false;
+
+    }
+
+    public static <T> Set<AnnotatedMember<? super T>> getProducerMemberForType(AnnotatedType<T> at, Class<?> lookedType) {
+        Set<AnnotatedMember<? super T>> res = new HashSet<AnnotatedMember<? super T>>();
+        for (AnnotatedMethod<? super T> method : at.getMethods()) {
+            if (method.isAnnotationPresent(Produces.class) && method.getTypeClosure().contains(lookedType))
+                res.add(method);
+        }
+
+        for (AnnotatedField<? super T> field : at.getFields()) {
+            if (field.isAnnotationPresent(Produces.class) && field.getTypeClosure().contains(lookedType))
+                res.add(field);
+        }
+        return res;
+    }
+
+    public static Set<Annotation> getAnnotationsWithMeta(Annotated element, final Class<? extends Annotation>
+            metaAnnotationType) {
+        return getAnnotationsWithMeta(element.getAnnotations(), metaAnnotationType);
+    }
+
+    public static Set<Annotation> getAnnotationsWithMeta(Set<Annotation> qualifiers, final Class<? extends Annotation>
+            metaAnnotationType) {
+        Set<Annotation> annotations = new HashSet<Annotation>();
+        for (Annotation annotation : qualifiers) {
+            if (annotation.annotationType().isAnnotationPresent(metaAnnotationType)) {
+                annotations.add(annotation);
+            }
+        }
+        return annotations;
+    }
+
+    public static Class<? extends Annotation> getScopeClass(Annotated element) {
+        Set<Annotation> res = getAnnotationsWithMeta(element, NormalScope.class);
+        if (!res.isEmpty())
+            return getFirstElementOfType(res, Annotation.class).getClass();
+        res = getAnnotationsWithMeta(element, Scope.class);
+        if (!res.isEmpty())
+            return getFirstElementOfType(res, Annotation.class).getClass();
+        return Dependent.class;
+    }
+    
+    public static Set<Annotation> removeQualifiersFromAnnotated(Annotated at) {
+        Set<Annotation> res = new HashSet<Annotation>(at.getAnnotations());
+        res.removeAll(CdiSpiHelper.getAnnotationsWithMeta(res, Qualifier.class));
+        return res;
     }
 }

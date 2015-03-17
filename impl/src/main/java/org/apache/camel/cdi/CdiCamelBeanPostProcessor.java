@@ -25,18 +25,17 @@ import org.apache.camel.impl.CamelPostProcessorHelper;
 import org.apache.camel.impl.DefaultCamelBeanPostProcessor;
 import org.apache.camel.util.ReflectionHelper;
 
-import javax.enterprise.inject.Vetoed;
-import javax.enterprise.inject.spi.BeanManager;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
+import javax.enterprise.inject.spi.BeanManager;
 
-@Vetoed
+@ToVeto
 final class CdiCamelBeanPostProcessor extends DefaultCamelBeanPostProcessor {
 
     private final BeanManager manager;
 
-    private final Map<String, CamelPostProcessorHelper> postProcessorHelpers = new HashMap<>();
+    private final Map<String, CamelPostProcessorHelper> postProcessorHelpers = new HashMap<String, CamelPostProcessorHelper>();
 
     CdiCamelBeanPostProcessor(BeanManager manager) {
         this.manager = manager;

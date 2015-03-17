@@ -19,14 +19,13 @@ package org.apache.camel.cdi;
 
 import org.apache.camel.util.ObjectHelper;
 
+import java.util.Set;
 import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.Vetoed;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
-import java.util.Set;
 
-@Vetoed
+@ToVeto
 final class CdiCamelInjectionTarget<T> implements InjectionTarget<T> {
 
     private final InjectionTarget<T> delegate;

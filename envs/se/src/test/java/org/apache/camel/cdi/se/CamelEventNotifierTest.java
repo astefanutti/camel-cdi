@@ -41,17 +41,16 @@ import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
+import static org.junit.Assert.assertThat;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
-import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
 public class CamelEventNotifierTest {
@@ -77,7 +76,7 @@ public class CamelEventNotifierTest {
 
     @Produces
     @ApplicationScoped
-    private List<Class> firedEvents = new ArrayList<>();
+    private List<Class> firedEvents = new ArrayList<Class>();
 
     private void onCamelContextStartingEvent(@Observes CamelContextStartingEvent event, List<Class> events) {
         events.add(CamelContextStartingEvent.class);

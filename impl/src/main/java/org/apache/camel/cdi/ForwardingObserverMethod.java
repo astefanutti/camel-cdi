@@ -18,18 +18,18 @@ package org.apache.camel.cdi;
 
 import org.apache.camel.CamelContext;
 
-import javax.enterprise.event.Reception;
-import javax.enterprise.event.TransactionPhase;
-import javax.enterprise.inject.spi.ObserverMethod;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
+import javax.enterprise.event.Reception;
+import javax.enterprise.event.TransactionPhase;
+import javax.enterprise.inject.spi.ObserverMethod;
 
 /* package-private */ final class ForwardingObserverMethod<T> implements ObserverMethod<T> {
 
     // Should be replaced with the Java 8 functional interface Consumer<T>
-    private final AtomicReference<CdiEventEndpoint<T>> observer = new AtomicReference<>();
+    private final AtomicReference<CdiEventEndpoint<T>> observer = new AtomicReference<CdiEventEndpoint<T>>();
 
     private final Type type;
 

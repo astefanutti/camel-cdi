@@ -20,20 +20,22 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.main.MainSupport;
 import org.apache.camel.view.ModelFileGenerator;
-import org.apache.deltaspike.core.api.provider.BeanProvider;
+import static org.apache.deltaspike.core.api.provider.BeanProvider.getContextualReference;
+import static org.apache.deltaspike.core.api.provider.BeanProvider.getContextualReferences;
 
-import javax.enterprise.inject.Vetoed;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import java.util.*;
-
-import static org.apache.deltaspike.core.api.provider.BeanProvider.*;
 
 /**
  * Camel CDI boot integration. Allows Camel and CDI to be booted up on the command line as a JVM process.
  * See http://camel.apache.org/camel-boot.html.
  */
-@Vetoed
+@ToVeto
 public class Main extends MainSupport {
 
     private static Main instance;
@@ -73,7 +75,7 @@ public class Main extends MainSupport {
     @Override
     protected Map<String, CamelContext> getCamelContextMap() {
         List<CamelContext> contexts = getContextualReferences(CamelContext.class, true);
-        Map<String, CamelContext> answer = new HashMap<>();
+        Map<String, CamelContext> answer = new HashMap<String, CamelContext>();
         for (CamelContext context : contexts) {
             String name = context.getName();
             answer.put(name, context);
@@ -105,7 +107,7 @@ public class Main extends MainSupport {
     }
 
     protected Set<Class<?>> getJaxbPackages() {
-        Set<Class<?>> classes = new HashSet<>();
+        Set<Class<?>> classes = new HashSet<Class<?>>();
         classes.add(org.apache.camel.ExchangePattern.class);
         classes.add(org.apache.camel.model.RouteDefinition.class);
         classes.add(org.apache.camel.model.config.StreamResequencerConfig.class);
