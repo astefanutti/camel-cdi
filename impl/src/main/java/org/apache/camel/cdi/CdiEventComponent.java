@@ -29,6 +29,7 @@ import java.util.Map;
 
     @Override
     protected Endpoint createEndpoint(String uri, String remaining, Map<String, Object> parameters) {
+        // TODO
         throw new UnsupportedOperationException("Creating CDI event endpoint isn't supported. Use @Inject " + CdiEventEndpoint.class.getSimpleName() + " instead");
     }
 }
