@@ -32,8 +32,10 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.util.TypeLiteral;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -98,7 +100,7 @@ final class CdiCamelFactory {
     private static <T> CdiEventEndpoint<T> cdiEventEndpoint(InjectionPoint ip, @Any Instance<CamelContext> instance, CdiCamelExtension extension, @Any Event<Object> event) throws Exception {
         CamelContext context = selectContext(ip, instance);
         Type type = ((ParameterizedType) ip.getType()).getActualTypeArguments()[0];
-        String uri = endpointUri(type, ip.getQualifiers());
+        String uri = eventEndpointUri(type, ip.getQualifiers());
         if (context.hasEndpoint(uri) == null) {
             // FIXME: to be replaced once event firing with dynamic parameterized type is properly supported (see https://issues.jboss.org/browse/CDI-516)
             TypeLiteral<T> literal = new TypeLiteral<T>() {};
@@ -119,13 +121,10 @@ final class CdiCamelFactory {
         return instance.select(name != null ? name : DefaultLiteral.INSTANCE).get();
     }
 
-    private static String endpointUri(Type type, Set<Annotation> qualifiers) {
-        // FIXME: use the type proper canonical name
-        String uri = "cdi-event://" + type;
-        Iterator<Annotation> it = qualifiers.iterator();
-
+    private static String eventEndpointUri(Type type, Set<Annotation> qualifiers) {
+        String uri = "cdi-event://" + authorityFromType(type);
         StringBuilder parameters = new StringBuilder();
-
+        Iterator<Annotation> it = qualifiers.iterator();
         while (it.hasNext()) {
             Annotation qualifier = it.next();
             // Skip the ContextName qualifier as the endpoint already belongs to its Camel context
@@ -139,5 +138,29 @@ final class CdiCamelFactory {
             uri += "?qualifiers=" + parameters.toString();
 
         return uri;
+    }
+
+    private static String authorityFromType(Type type) {
+        if (type instanceof Class) {
+            return Class.class.cast(type).getName();
+        }
+        if (type instanceof ParameterizedType) {
+            ParameterizedType pt = (ParameterizedType) type;
+            StringBuilder builder = new StringBuilder(authorityFromType(pt.getRawType()));
+            Iterator<Type> it = Arrays.asList(pt.getActualTypeArguments()).iterator();
+            builder.append("%3C");
+            while (it.hasNext()) {
+                builder.append(authorityFromType(it.next()));
+                if (it.hasNext())
+                    builder.append("%2C");
+            }
+            builder.append("%3E");
+            return builder.toString();
+        }
+        if (type instanceof GenericArrayType) {
+            GenericArrayType arrayType = (GenericArrayType) type;
+            return authorityFromType(arrayType.getGenericComponentType()) + "%5B%5D";
+        }
+        throw new IllegalArgumentException("Cannot create URI authority for event type [" + type + "]");
     }
 }
