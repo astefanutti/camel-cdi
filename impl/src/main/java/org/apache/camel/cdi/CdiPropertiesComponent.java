@@ -24,7 +24,7 @@ import java.util.Properties;
 public final class CdiPropertiesComponent extends PropertiesComponent {
 
     public CdiPropertiesComponent(Properties properties) {
-        setPropertiesParser(new CdiPropertiesParser(properties));
+        setPropertiesParser(new CdiPropertiesParser(this, properties));
     }
 
     public CdiPropertiesComponent(String location) {
@@ -33,5 +33,11 @@ public final class CdiPropertiesComponent extends PropertiesComponent {
 
     public CdiPropertiesComponent(String...locations) {
         setLocations(locations);
+    }
+
+    @Override
+    // Overridden to fix exception messages thrown when an undefined property is looked up as the default implementation solely relies on the nullity of the locations member
+    public boolean isDefaultCreated() {
+        return false;
     }
 }

@@ -25,7 +25,8 @@ final class CdiPropertiesParser extends DefaultPropertiesParser {
 
     private final Properties properties;
 
-    CdiPropertiesParser(Properties properties) {
+    CdiPropertiesParser(CdiPropertiesComponent component, Properties properties) {
+        super(component);
         this.properties = properties;
     }
 
