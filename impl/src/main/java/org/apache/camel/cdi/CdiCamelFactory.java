@@ -131,7 +131,7 @@ final class CdiCamelFactory {
             if (!qualifier.annotationType().equals(ContextName.class))
                 parameters.append(qualifier.annotationType().getCanonicalName());
             if (it.hasNext())
-                parameters.append(',');
+                parameters.append("%2C");
         }
 
         if (parameters.length() > 0)
