@@ -32,11 +32,11 @@ import org.junit.runner.RunWith;
 
 @RunWith(Arquillian.class)
 @Category(Integration.class)
-public class CamelEE7Test {
+public class CamelEETest {
 
     @Deployment
     public static Archive<?> deployment() {
-        return ShrinkWrap.create(EnterpriseArchive.class, "camel-ee7.ear")
+        return ShrinkWrap.create(EnterpriseArchive.class, "camel-ee.ear")
             .addAsLibraries(
                 Maven.configureResolver()
                     .workOffline()
@@ -49,7 +49,7 @@ public class CamelEE7Test {
                     .addClass(Bootstrap.class)
                     .addClass(HelloCamel.class)
                     // FIXME: Test class must be added until ARQ-659 is fixed
-                    .addClass(CamelEE7Test.class)
+                    .addClass(CamelEETest.class)
                     .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml"));
     }
 

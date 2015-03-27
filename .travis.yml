@@ -16,12 +16,11 @@ install:
 script:
   - mvn test -Pjacoco -Pweld
   - mvn test -Pjacoco -Powb -pl envs/se
-  - mvn test -Pjacoco -Pwildfly -pl envs/ee
+  - mvn test -Pjacoco -Pjboss-as -pl envs/ee
 
 jdk:
   - oraclejdk7
   - openjdk7
-  - oraclejdk8
 
 notifications:
   email:

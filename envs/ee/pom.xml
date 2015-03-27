@@ -81,7 +81,7 @@
         </profile>
 
         <profile>
-            <id>wildfly</id>
+            <id>jboss-as</id>
 
             <build>
                 <plugins>
@@ -89,7 +89,7 @@
                         <artifactId>maven-dependency-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>unpack-wildfly</id>
+                                <id>unpack-jboss-as</id>
                                 <phase>generate-test-resources</phase>
                                 <goals>
                                     <goal>unpack</goal>
@@ -97,9 +97,9 @@
                                 <configuration>
                                     <artifactItems>
                                         <artifactItem>
-                                            <groupId>org.wildfly</groupId>
-                                            <artifactId>wildfly-dist</artifactId>
-                                            <version>${wildfly.version}</version>
+                                            <groupId>org.jboss.as</groupId>
+                                            <artifactId>jboss-as-dist</artifactId>
+                                            <version>${jboss-as.version}</version>
                                             <type>zip</type>
                                             <overWrite>false</overWrite>
                                             <outputDirectory>${project.build.directory}</outputDirectory>
@@ -115,7 +115,7 @@
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
                             <systemProperties>
-                                <arquillian.launch>wildfly-managed</arquillian.launch>
+                                <arquillian.launch>jbossas-managed</arquillian.launch>
                                 <jacoco.agent>${argLine}</jacoco.agent>
                             </systemProperties>
                         </configuration>
@@ -130,8 +130,8 @@
                 <!-- test dependencies -->
 
                 <dependency>
-                    <groupId>org.wildfly</groupId>
-                    <artifactId>wildfly-arquillian-container-managed</artifactId>
+                    <groupId>org.jboss.as</groupId>
+                    <artifactId>jboss-as-arquillian-container-managed</artifactId>
                 </dependency>
 
             </dependencies>
