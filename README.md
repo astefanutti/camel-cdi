@@ -1,24 +1,22 @@
 # CDI extension for Camel
 
-[![Build Status][Travis badge]][Travis build] [![Coverage Status][Coveralls badge]][Coveralls build] [![Dependency Status][VersionEye badge]][VersionEye build] [![Maven Central][Maven Central badge]][Maven Central build]
+[![Build Status][Travis badge]][Travis build] [![Coverage Status][Coveralls badge]][Coveralls build]
 
 [Travis badge]: https://travis-ci.org/astefanutti/camel-cdi.svg?branch=cdi-1.0
 [Travis build]: https://travis-ci.org/astefanutti/camel-cdi
 [Coveralls badge]: https://coveralls.io/repos/astefanutti/camel-cdi/badge.svg?branch=cdi-1.0
 [Coveralls build]: https://coveralls.io/r/astefanutti/camel-cdi?branch=cdi-1.0
-[VersionEye badge]: https://www.versioneye.com/user/projects/53fca400e09da310ea0006c4/badge.svg?style=flat
-[VersionEye build]: https://www.versioneye.com/user/projects/53fca400e09da310ea0006c4
-[Maven Central badge]: http://img.shields.io/maven-central/v/io.astefanutti.camel.cdi/camel-cdi.svg?style=flat
-[Maven Central build]: http://repo1.maven.org/maven2/io/astefanutti/camel/cdi/camel-cdi/1.1.0/
 
-[CDI][] portable extension for Apache [Camel][] compliant with [JSR 346: Contexts and Dependency Injection for Java<sup>TM</sup> EE 1.2][JSR 346 1.2].
+[CDI][] portable extension for Apache [Camel][] compliant with [JSR 299: Contexts and Dependency Injection for Java<sup>TM</sup> EE][JSR 299 1.0].
 
 [CDI]: http://www.cdi-spec.org/
 [Camel]: http://camel.apache.org/
 [JSR 299]: https://jcp.org/en/jsr/detail?id=299
 [JSR 346]: https://jcp.org/en/jsr/detail?id=346
+[JSR 299 1.0]: https://jcp.org/en/jsr/detail?id=299
 [JSR 346 1.1]: https://jcp.org/aboutJava/communityprocess/final/jsr346/index.html
 [JSR 346 1.2]: https://jcp.org/aboutJava/communityprocess/mrel/jsr346/index.html
+[CDI 1.0]: http://docs.jboss.org/cdi/spec/1.0/html_single/
 [CDI 1.1]: http://docs.jboss.org/cdi/spec/1.1/cdi-spec.html
 [CDI 1.2]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html
 
@@ -83,21 +81,17 @@ Besides bug fixes, this project completes the following improvements and feature
 
 This version of Camel CDI is currently successfully tested with the following containers:
 
-| Container        | Version       | Specification          | Arquillian Container Adapter           |
-| ---------------- | ------------- | ---------------------- | -------------------------------------- |
-| [Weld SE][]      | `2.2.9.Final` | [CDI 1.2][JSR 346 1.2] | `arquillian-weld-se-embedded-1.1`      |
-| [Weld EE][]      | `2.2.9.Final` | [CDI 1.2][JSR 346 1.2] | `arquillian-weld-ee-embedded-1.1`      |
-| [OpenWebBeans][] | `1.5.0`       | [CDI 1.2][JSR 346 1.2] | `owb-arquillian-standalone`            |
-| [WildFly][]      | `8.2.0.Final` | [Java EE 7][]          | `wildfly-arquillian-container-managed` |
-
-WildFly 8.1 requires to be patched with Weld 2.2+ as documented in [Weld 2.2 on WildFly][].
+| Container        | Version        | Specification          | Arquillian Container Adapter            |
+| ---------------- | -------------- | ---------------------- | --------------------------------------- |
+| [Weld SE][]      | `1.1.28.Final` | [CDI 1.0][JSR 299 1.0] | `arquillian-weld-se-embedded-1.1`       |
+| [Weld EE][]      | `1.1.28.Final` | [CDI 1.0][JSR 299 1.0] | `arquillian-weld-ee-embedded-1.1`       |
+| [OpenWebBeans][] | `1.2.7`        | [CDI 1.0][JSR 299 1.0] | `owb-arquillian-standalone`             |
+| [JBoss AS][]     | `7.1.1.Final`  | [Java EE 6][]          | `jboss-as-arquillian-container-managed` |
 
 [Weld SE]: http://weld.cdi-spec.org/
 [Weld EE]: http://weld.cdi-spec.org/
-[WildFly]: http://www.wildfly.org/
 [OpenWebBeans]: http://openwebbeans.apache.org/
-[Java EE 7]: https://jcp.org/en/jsr/detail?id=342
-[Weld 2.2 on WildFly]: http://weld.cdi-spec.org/news/2014/04/15/weld-220-final/
+[Java EE 6]: https://jcp.org/en/jsr/detail?id=316
 
 ### New Features
 
