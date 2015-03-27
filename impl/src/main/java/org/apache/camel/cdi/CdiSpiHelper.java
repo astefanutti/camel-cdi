@@ -137,21 +137,9 @@ final class CdiSpiHelper {
         return annotations;
     }
 
-    static Class<? extends Annotation> getScopeClass(Annotated element) {
-        Set<Annotation> res = getAnnotationsWithMeta(element, NormalScope.class);
-        if (!res.isEmpty())
-            return getFirstElementOfType(res, Annotation.class).getClass();
-
-        res = getAnnotationsWithMeta(element, Scope.class);
-        if (!res.isEmpty())
-            return getFirstElementOfType(res, Annotation.class).getClass();
-
-        return Dependent.class;
-    }
-
-    static Set<Annotation> removeQualifiersFromAnnotated(Annotated at) {
-        Set<Annotation> res = new HashSet<Annotation>(at.getAnnotations());
-        res.removeAll(CdiSpiHelper.getAnnotationsWithMeta(res, Qualifier.class));
-        return res;
+    static Set<Annotation> removeQualifiersFromAnnotated(Annotated annotated) {
+        Set<Annotation> annotations = new HashSet<Annotation>(annotated.getAnnotations());
+        annotations.removeAll(CdiSpiHelper.getAnnotationsWithMeta(annotations, Qualifier.class));
+        return annotations;
     }
 }
