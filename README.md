@@ -193,7 +193,18 @@ void observeCdiEvents(@Observes @ContextName("foo") List<String> event) {
 
 Note that the CDI event Camel endpoint dynamically adds an [observer method][] for each unique combination of _event type_ and _event qualifiers_ and solely relies on the container typesafe [observer resolution][], which leads to an implementation as efficient as possible.
 
-Besides, as the impedance between the _typesafe_ nature of CDI and the _dynamic_ nature of the [Camel component] model is quite high, it is not possible to create an instance of the CDI event Camel endpoint via [URIs].
+Besides, as the impedance between the _typesafe_ nature of CDI and the _dynamic_ nature of the [Camel component] model is quite high, it is not possible to create an instance of the CDI event Camel endpoint via [URIs]. Indeed, the URI format for the CDI event component is:
+
+```
+cdi-event://PayloadType<T1,...,Tn>[?qualifiers=QualifierType1[,...[,QualifierTypeN]...]]
+```
+
+With the authority `PayloadType` (respectively the `QualifierType`) being the URI escaped fully qualified name of the payload (respectively qualifier) raw type followed by the type parameters section delimited by angle brackets for payload parameterized type. Which leads to _unfriendly_ URI, e.g.:
+
+cdi-event://org.apache.camel.cdi.se.pojo.EventPayload%3Cjava.lang.Integer%3E?qualifiers=org.apache.camel.cdi.se.qualifier.FooQualifier%2Corg.apache.camel.cdi.se.qualifier.BarQualifier
+```
+
+But more fundamentally, that would prevent efficient binding between the endpoint instances and the observer methods as the CDI container doesn't have any ways of discovering the Camel context model during the deployment phase.
 
 [CDI events]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#events
 [observer method]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#observer_methods
