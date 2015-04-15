@@ -193,7 +193,7 @@ public class CdiCamelExtension implements Extension {
         // Trigger eager beans instantiation
         for (AnnotatedType<?> type : eagerBeans)
             // Calling toString is necessary to force the initialization of normal-scoped beans
-            BeanManagerHelper.getReferencesByType(manager, type.getBaseType(), AnyLiteral.INSTANCE).toString();
+            BeanManagerHelper.getReferencesByType(manager, type.getJavaClass(), AnyLiteral.INSTANCE).toString();
     }
 
     private void addRouteToContext(Bean<?> route, CamelContext context, BeanManager manager, AfterDeploymentValidation adv) {

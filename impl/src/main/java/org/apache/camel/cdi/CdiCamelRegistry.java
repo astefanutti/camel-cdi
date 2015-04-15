@@ -64,7 +64,7 @@ final class CdiCamelRegistry implements Registry {
         Map<String, T> references = new HashMap<>();
         for (Bean<?> bean : manager.getBeans(type, AnyLiteral.INSTANCE))
             if (bean.getName() != null)
-                references.put(bean.getName(), BeanManagerHelper.<T>getReference(manager, type, bean));
+                references.put(bean.getName(), BeanManagerHelper.getReferenceByType(manager, type, bean));
 
         return references;
     }
