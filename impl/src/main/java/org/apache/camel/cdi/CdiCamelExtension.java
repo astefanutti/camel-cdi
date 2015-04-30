@@ -31,12 +31,12 @@ import org.apache.camel.management.event.AbstractExchangeEvent;
 
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Default;
+import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.AfterDeploymentValidation;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanAttributes;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.DeploymentException;
 import javax.enterprise.inject.spi.Extension;
@@ -47,7 +47,6 @@ import javax.enterprise.inject.spi.ProcessBeanAttributes;
 import javax.enterprise.inject.spi.ProcessInjectionPoint;
 import javax.enterprise.inject.spi.ProcessInjectionTarget;
 import javax.enterprise.inject.spi.ProcessObserverMethod;
-import javax.enterprise.inject.spi.ProcessProducerMethod;
 import javax.enterprise.inject.spi.WithAnnotations;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
@@ -116,14 +115,11 @@ public class CdiCamelExtension implements Extension {
     }
 
     private <T extends Endpoint> void endpointProducers(@Observes ProcessBeanAttributes<T> pba) {
-        if (CdiEventEndpoint.class.equals(CdiSpiHelper.getRawType(pba.getAnnotated().getBaseType()))) {
-            Set<Annotation> qualifiers = new HashSet<>();
-            for (InjectionPoint ip : cdiEventEndpoints.keySet())
-                qualifiers.addAll(ip.getQualifiers());
-            pba.setBeanAttributes(new BeanAttributesDecorator<>(pba.getBeanAttributes(), qualifiers));
-        } else {
+        if (CdiEventEndpoint.class.equals(CdiSpiHelper.getRawType(pba.getAnnotated().getBaseType())))
+            // Veto the bean as we first need to collect the injection points metadata during the bean discovery phase in the cdiEventEndpoints() method. The bean attributes decoration is done after the bean discovery in the cdiEventEndpointProducers() method.  
+            pba.veto();
+        else
             pba.setBeanAttributes(new BeanAttributesDecorator<>(pba.getBeanAttributes(), namedContexts.keySet()));
-        }
     }
 
     private void producerTemplates(@Observes ProcessBeanAttributes<ProducerTemplate> pba) {
@@ -145,6 +141,17 @@ public class CdiCamelExtension implements Extension {
                         namedContexts.get(qualifier).add(ContextInfo.EventNotifierSupport);
                     else if (qualifier instanceof Default)
                         defaultContext.add(ContextInfo.EventNotifierSupport);
+            }
+        }
+    }
+
+    private void cdiEventEndpointProducers(@Observes AfterBeanDiscovery abd, BeanManager manager) {
+        for (AnnotatedMethod<? super CdiCamelFactory> am : abd.getAnnotatedType(CdiCamelFactory.class, null).getMethods()) {
+            if (am.isAnnotationPresent(Produces.class) && CdiEventEndpoint.class.equals(CdiSpiHelper.getRawType(am.getBaseType()))) {
+                Set<Annotation> qualifiers = new HashSet<>();
+                for (InjectionPoint ip : cdiEventEndpoints.keySet())
+                    qualifiers.addAll(ip.getQualifiers());
+                abd.addBean(manager.createBean(new BeanAttributesDecorator<>(manager.createBeanAttributes(am), qualifiers), CdiCamelFactory.class, manager.getProducerFactory(am, (Bean<CdiCamelFactory>) manager.resolve(manager.getBeans(CdiCamelFactory.class)))));
             }
         }
     }

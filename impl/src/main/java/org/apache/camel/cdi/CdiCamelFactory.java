@@ -95,7 +95,7 @@ final class CdiCamelFactory {
 
     @Produces
     @SuppressWarnings("unchecked")
-    // Qualifiers are dynamically added in CdiCamelExtension.endpointProducers()
+    // Qualifiers are dynamically added in CdiCamelExtension.cdiEventEndpointProducers()
     private static <T> CdiEventEndpoint<T> cdiEventEndpoint(InjectionPoint ip, @Any Instance<CamelContext> instance, CdiCamelExtension extension, @Any Event<Object> event) throws Exception {
         CamelContext context = selectContext(ip, instance);
         Type type = ((ParameterizedType) ip.getType()).getActualTypeArguments()[0];
