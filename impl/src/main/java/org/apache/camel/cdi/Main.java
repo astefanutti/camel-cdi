@@ -25,9 +25,11 @@ import org.apache.deltaspike.core.api.provider.BeanProvider;
 import javax.enterprise.inject.Vetoed;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import java.util.*;
-
-import static org.apache.deltaspike.core.api.provider.BeanProvider.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Camel CDI boot integration. Allows Camel and CDI to be booted up on the command line as a JVM process.
@@ -60,7 +62,7 @@ public class Main extends MainSupport {
 
     @Override
     protected ProducerTemplate findOrCreateCamelTemplate() {
-        ProducerTemplate answer = getContextualReference(ProducerTemplate.class, true);
+        ProducerTemplate answer = BeanProvider.getContextualReference(ProducerTemplate.class, true);
         if (answer != null) {
             return answer;
         }
@@ -72,7 +74,7 @@ public class Main extends MainSupport {
 
     @Override
     protected Map<String, CamelContext> getCamelContextMap() {
-        List<CamelContext> contexts = getContextualReferences(CamelContext.class, true);
+        List<CamelContext> contexts = BeanProvider.getContextualReferences(CamelContext.class, true);
         Map<String, CamelContext> answer = new HashMap<>();
         for (CamelContext context : contexts) {
             String name = context.getName();
@@ -96,9 +98,8 @@ public class Main extends MainSupport {
     protected JAXBContext createJaxbContext() throws JAXBException {
         StringBuilder packages = new StringBuilder();
         for (Class<?> cl : getJaxbPackages()) {
-            if (packages.length() > 0) {
+            if (packages.length() > 0)
                 packages.append(":");
-            }
             packages.append(cl.getPackage().getName());
         }
         return JAXBContext.newInstance(packages.toString(), getClass().getClassLoader());
@@ -117,6 +118,7 @@ public class Main extends MainSupport {
 
     @Override
     protected void doStart() throws Exception {
+        // Use standard CDI Java SE support when CDI 2.0 becomes a prerequisite
         org.apache.deltaspike.cdise.api.CdiContainer container = org.apache.deltaspike.cdise.api.CdiContainerLoader.getCdiContainer();
         container.boot();
         container.getContextControl().startContexts();
@@ -127,8 +129,7 @@ public class Main extends MainSupport {
     @Override
     protected void doStop() throws Exception {
         super.doStop();
-        if (cdiContainer != null) {
+        if (cdiContainer != null)
             ((org.apache.deltaspike.cdise.api.CdiContainer) cdiContainer).shutdown();
-        }
     }
 }
