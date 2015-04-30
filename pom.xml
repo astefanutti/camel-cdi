@@ -93,7 +93,7 @@
     <modules>
         <module>impl</module>
         <module>envs</module>
-        <module>camel-maven-plugin</module>
+        <module>maven</module>
         <module>quickstarts</module>
     </modules>
 
