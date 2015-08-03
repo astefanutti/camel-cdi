@@ -19,7 +19,6 @@ package org.apache.camel.cdi;
 import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.main.MainSupport;
-import org.apache.camel.view.ModelFileGenerator;
 import org.apache.deltaspike.core.api.provider.BeanProvider;
 
 import javax.enterprise.inject.Vetoed;
@@ -81,11 +80,6 @@ public class Main extends MainSupport {
             answer.put(name, context);
         }
         return answer;
-    }
-
-    @Override
-    protected ModelFileGenerator createModelFileGenerator() throws JAXBException {
-        return new ModelFileGenerator(getJaxbContext());
     }
 
     public JAXBContext getJaxbContext() throws JAXBException {
