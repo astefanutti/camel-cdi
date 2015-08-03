@@ -79,9 +79,9 @@
         <deltaspike.version>1.1.0</deltaspike.version>
         <javaee.version>7.0</javaee.version>
         <slf4j.version>1.7.12</slf4j.version>
-        <weld.version>2.2.11.Final</weld.version>
-        <owb.version>1.5.0</owb.version>
-        <wildfly.version>8.2.0.Final</wildfly.version>
+        <weld.version>2.2.15.Final</weld.version>
+        <owb.version>1.6.1</owb.version>
+        <wildfly.version>8.2.1.Final</wildfly.version>
         <arquillian.version>1.1.8.Final</arquillian.version>
         <arquillian-osgi.version>2.1.0.CR18</arquillian-osgi.version>
         <arquillian.weld.version>1.0.0.CR8</arquillian.weld.version>
@@ -133,7 +133,7 @@
                 <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.7.4.201502262128</version>
+                    <version>0.7.5.201505241946</version>
                 </plugin>
 
                 <plugin>
