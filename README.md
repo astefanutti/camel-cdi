@@ -292,7 +292,7 @@ CamelContext firstCamelContext;
 
 ##### Configuration Properties
 
-Instead of enforcing a specific configuration solution to setup the Camel [Properties component][], this version of Camel CDI relies on standard Camel and CDI mechanisms so that the configuration sourcing concern is seperated and can be delegated to the application, e.g.:
+Instead of enforcing a specific configuration solution to setup the Camel [Properties component][], this version of Camel CDI relies on standard Camel and CDI mechanisms so that the configuration sourcing concern is separated and can be delegated to the application, e.g.:
 
 ```java
 @Produces
@@ -301,7 +301,7 @@ Instead of enforcing a specific configuration solution to setup the Camel [Prope
 PropertiesComponent propertiesComponent() {
     Properties configuration = new Properties();
     configuration.put("property", "value");
-    PropertiesComponent component = CdiPropertiesComponent(configuration);
+    PropertiesComponent component = new CdiPropertiesComponent(configuration);
     component.setLocation("classpath:placeholder.properties");
     return component;
 }
@@ -336,7 +336,7 @@ class CustomCamelContext extends CdiCamelContext {
 
 ##### `@Uri` and `@Mock` Endpoint Qualifiers Unification
 
-As commented by @jstrachan in [CAMEL-5553](https://issues.apache.org/jira/browse/CAMEL-5553?focusedCommentId=13445936&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-13445936), the `@Mock` qualifier has been introduced to work around _ambiguous resolution_ with the producer method for other kinds of endpoints. Yet it is redundant with the semantic provided by the `@Uri` qualifier.
+As commented by [@jstrachan](https://github.com/jstrachan) in [CAMEL-5553](https://issues.apache.org/jira/browse/CAMEL-5553?focusedCommentId=13445936&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-13445936), the `@Mock` qualifier has been introduced to work around _ambiguous resolution_ with the producer method for other kinds of endpoints. Yet it is redundant with the semantic provided by the `@Uri` qualifier.
 
 The use of the [`@Typed`][] annotation to restrict the _bean types_ of the `MockEndpoint` bean alleviates that _ambiguous resolution_ so that it is possible to rely solely on the `@Uri` qualifier, e.g.:
 

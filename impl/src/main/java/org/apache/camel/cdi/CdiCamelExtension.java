@@ -138,6 +138,7 @@ public class CdiCamelExtension implements Extension {
             } else {
                 for (Annotation qualifier : qualifiers)
                     if (qualifier instanceof ContextName)
+                        // TODO: fix NPE in case corresponding Camel context does not exist and throw DeploymentException
                         namedContexts.get(qualifier).add(ContextInfo.EventNotifierSupport);
                     else if (qualifier instanceof Default)
                         defaultContext.add(ContextInfo.EventNotifierSupport);
