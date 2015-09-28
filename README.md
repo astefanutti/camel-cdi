@@ -29,7 +29,7 @@ Since version `2.10` of Camel, the [Camel CDI][] component supports the integrat
 + It relies on Apache [DeltaSpike][] and its `BeanManagerProvider` class to retrieve the `BeanManager` instance during the CDI container initialisation. That may not be suitable in complex container configurations, for example, in multiple CDI containers per JVM context, as reported in [CAMEL-6338][] and that causes [CAMEL-6095][] and [CAMEL-6937][].
 + It relies on _DeltaSpike_ and its [configuration mechanism][DeltaSpike Configuration Mechanism] to source configuration locations for the [Properties component][]. While this is suitable for most use cases, it relies on the `ServiceLoader` mechanism to support custom [configuration sources][ConfigSource] that may not be suitable in more complex container configurations and relates to [CAMEL-5986].
 + Besides, while _DeltaSpike_ is a valuable addition to the CDI ecosystem, Camel CDI having a direct dependency on it is questionable from a design standpoint as opposed to relying on standard Camel mechanism for producing the Camel Properties component and delegating, as a plugable strategy, the configuration sourcing concern and implementation choice to the application itself or eventually using the [Java EE Configuration JSR] when available.
-+ It declares a `CamelContext` CDI bean that's automatically instantiated and started with a `@PostConstruct` lifecycle callback called before the CDI container is completely initialized. That prevents, among other side effects, proper advising of Camel routes as documented in [Camel AdviceWith][].
++ It declares a `CamelContext` CDI bean that's automatically instantiated and started with a `@PostConstruct` lifecycle callback called before the CDI container is completely initialized. That prevents, among other side effects, proper configuration of the Camel context as reported in [CAMEL-8325] and advising of Camel routes as documented in [Camel AdviceWith][].
 + It uses the `@ContextName` annotation to bind routes to the `CamelContext` instance specified by name as an attempt to provide support for multiple Camel contexts per application. However, that is an incomplete feature from the CDI programming model standpoint as discussed in [CAMEL-5566][] and that causes [CAMEL-5742][].
 
 The objective of this project is to alleviate all these concerns, provide additional features, and have that improved version of the Camel CDI component contributed back into the official codeline. In the meantime, you can get it from Maven Central with the following coordinates:
@@ -56,6 +56,7 @@ The objective of this project is to alleviate all these concerns, provide additi
 [CAMEL-6338]: https://issues.apache.org/jira/browse/CAMEL-6338
 [CAMEL-6937]: https://issues.apache.org/jira/browse/CAMEL-6937
 [CAMEL-7760]: https://issues.apache.org/jira/browse/CAMEL-7760
+[CAMEL-8325]: https://issues.apache.org/jira/browse/CAMEL-8325
 [container lifecycle events]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#init_events
 [Assignability of type variables, raw and parameterized types]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#observers_assignability
 [Java EE Configuration JSR]: http://javaeeconfig.blogspot.ch/
@@ -75,6 +76,7 @@ This project fixes the following issues currently opened in the Camel CDI backlo
 Besides bug fixes, this project completes the following improvements and features:
 - [CAMEL-5408]: Extend CDI component with support for events
 - [CAMEL-5553]: Support injection of endpoint and `@Produce` `@Consume` annotations
+- [CAMEL-8325]: CDI integration don't detect duplicate routes, should support earlier context configuration
 
 [CAMEL-5408]: https://issues.apache.org/jira/browse/CAMEL-5408
 [CAMEL-5553]: https://issues.apache.org/jira/browse/CAMEL-5553
