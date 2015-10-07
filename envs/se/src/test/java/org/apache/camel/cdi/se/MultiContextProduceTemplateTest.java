@@ -96,21 +96,21 @@ public class MultiContextProduceTemplateTest {
     public void configureAndStartCamelContexts() throws Exception {
         defaultCamelContext.addRoutes(new RouteBuilder() {
             @Override
-            public void configure() throws Exception {
+            public void configure() {
                 from("direct:inbound").bean(ProduceTemplateBean.class);
             }
         });
 
         firstCamelContext.addRoutes(new RouteBuilder() {
             @Override
-            public void configure() throws Exception {
+            public void configure() {
                 from("direct:inbound").bean(FirstCamelContextProduceTemplateBean.class);
             }
         });
 
         secondCamelContext.addRoutes(new RouteBuilder() {
             @Override
-            public void configure() throws Exception {
+            public void configure() {
                 from("direct:inbound").bean(SecondCamelContextProduceTemplateBean.class);
             }
         });

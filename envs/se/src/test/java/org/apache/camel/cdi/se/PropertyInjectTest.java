@@ -74,7 +74,7 @@ public class PropertyInjectTest {
     public void configureAndStartCamelContext(CamelContext context) throws Exception {
         context.addRoutes(new RouteBuilder() {
             @Override
-            public void configure() throws Exception {
+            public void configure() {
                 from("direct:in").bean(PropertyInjectBean.class).to("mock:out");
             }
         });

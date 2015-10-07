@@ -34,8 +34,8 @@ import java.util.Map;
         cdi-event://PayloadType<T1,...,Tn>[?qualifiers=QualifierType1[,...[,QualifierTypeN]...]]
 
         with the authority PayloadType (respectively the QualifierType) being the URI escaped fully qualified name of the payload (respectively qualifier) raw type followed by the type parameters section delimited by angle brackets for payload parameterized type.
-        
-        Which leads to_unfriendly URIs, e.g.:
+
+        Which leads to unfriendly URIs, e.g.:
 
         cdi-event://org.apache.camel.cdi.se.pojo.EventPayload%3Cjava.lang.Integer%3E?qualifiers=org.apache.camel.cdi.se.qualifier.FooQualifier%2Corg.apache.camel.cdi.se.qualifier.BarQualifier
 

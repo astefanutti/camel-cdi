@@ -56,7 +56,7 @@ public class NamedCamelBeanTest {
     public void configureAndStartCamelContext(CamelContext context) throws Exception {
         context.addRoutes(new RouteBuilder() {
             @Override
-            public void configure() throws Exception {
+            public void configure() {
                 from("direct:inbound").beanRef("beanName").to("mock:outbound");
             }
         });

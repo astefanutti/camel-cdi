@@ -155,7 +155,6 @@ public class EventEndpointTest {
 
         objectEvent.select(Integer.class).fire(1234);
         objectEvent.select(new TypeLiteral<EventPayload<String>>() {}).fire(new EventPayload<>("foo"));
-        // FIXME: the qualified event should theoretically not be consumed as the observer method is declared with the @Default qualifier
         stringPayloadEvent.select(new BarQualifier.Literal()).fire(new EventPayload<>("bar"));
         objectEvent.select(String.class).fire("test");
         integerPayloadEvent.fire(new EventPayload<>(1));

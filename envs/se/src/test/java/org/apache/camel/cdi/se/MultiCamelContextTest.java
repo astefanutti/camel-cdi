@@ -110,7 +110,7 @@ public class MultiCamelContextTest {
     public void configureAndStartCamelContexts() throws Exception {
         secondCamelContext.addRoutes(new RouteBuilder() {
             @Override
-            public void configure() throws Exception {
+            public void configure() {
                 from("direct:inbound").setHeader("context").constant("second").to("mock:outbound");
             }
         });

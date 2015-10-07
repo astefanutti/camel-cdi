@@ -18,17 +18,15 @@
             <artifactId>exec-maven-plugin</artifactId>
         </dependency>
 
-        <!-- Camel -->
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-core</artifactId>
         </dependency>
 
-        <!-- New Camel Maven Plugin -->
         <dependency>
             <groupId>io.astefanutti.camel.cdi</groupId>
             <artifactId>camel-cdi</artifactId>
-            <version>1.2-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

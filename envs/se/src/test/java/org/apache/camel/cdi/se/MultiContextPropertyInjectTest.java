@@ -122,21 +122,21 @@ public class MultiContextPropertyInjectTest {
     public void configureAndStartCamelContexts() throws Exception {
         defaultCamelContext.addRoutes(new RouteBuilder() {
             @Override
-            public void configure() throws Exception {
+            public void configure() {
                 from("direct:in").bean(PropertyInjectBean.class).to("mock:out");
             }
         });
 
         firstCamelContext.addRoutes(new RouteBuilder() {
             @Override
-            public void configure() throws Exception {
+            public void configure() {
                 from("direct:in").bean(FirstCamelContextPropertyInjectBean.class).to("mock:out");
             }
         });
 
         secondCamelContext.addRoutes(new RouteBuilder() {
             @Override
-            public void configure() throws Exception {
+            public void configure() {
                 from("direct:in").bean(SecondCamelContextPropertyInjectBean.class).to("mock:out");
             }
         });

@@ -182,7 +182,7 @@ public class MultiContextEventNotifierTest {
     public void configureAndStartCamelContexts(List<Class> defaultEvents, @ContextName("first") List<Class> firstEvents, @ContextName("second") List<Class> secondEvents, @Named("anyContext") List<Class> anyEvents) throws Exception {
         secondCamelContext.addRoutes(new RouteBuilder() {
             @Override
-            public void configure() throws Exception {
+            public void configure() {
                 from("direct:inbound").setHeader("context").constant("second").to("mock:outbound");
             }
         });

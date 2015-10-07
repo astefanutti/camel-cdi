@@ -163,7 +163,6 @@ public class CdiCamelExtension implements Extension {
     }
 
     private void addCdiEventObserverMethods(@Observes AfterBeanDiscovery abd) {
-        // TODO: it happens that, while the observer method is declared @Default, it's treated as if it is declared @Any. Check Weld and OWB implementations.
         for (ObserverMethod method : cdiEventEndpoints.values())
             abd.addObserverMethod(method);
     }
