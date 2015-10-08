@@ -85,12 +85,13 @@ Besides bug fixes, this project completes the following improvements and feature
 
 This version of Camel CDI is currently successfully tested with the following containers:
 
-| Container        | Version        | Specification          | Arquillian Container Adapter           |
-| ---------------- | -------------- | ---------------------- | -------------------------------------- |
-| [Weld SE][]      | `2.2.15.Final` | [CDI 1.2][JSR 346 1.2] | `arquillian-weld-se-embedded-1.1`      |
-| [Weld EE][]      | `2.2.15.Final` | [CDI 1.2][JSR 346 1.2] | `arquillian-weld-ee-embedded-1.1`      |
-| [OpenWebBeans][] | `1.6.1`        | [CDI 1.2][JSR 346 1.2] | `owb-arquillian-standalone`            |
-| [WildFly][]      | `8.2.1.Final`  | [Java EE 7][]          | `wildfly-arquillian-container-managed` |
+| Container        | Version       | Specification          | Arquillian Container Adapter           |
+| ---------------- | ------------- | ---------------------- | -------------------------------------- |
+| [Weld SE][]      | `2.3.0.Final` | [CDI 1.2][JSR 346 1.2] | `arquillian-weld-se-embedded-1.1`      |
+| [Weld EE][]      | `2.3.0.Final` | [CDI 1.2][JSR 346 1.2] | `arquillian-weld-ee-embedded-1.1`      |
+| [OpenWebBeans][] | `1.6.2`       | [CDI 1.2][JSR 346 1.2] | `owb-arquillian-standalone`            |
+| [WildFly][]      | `8.2.1.Final` | [Java EE 7][]          | `wildfly-arquillian-container-managed` |
+| [WildFly][]      | `9.0.1.Final` | [Java EE 7][]          | `wildfly-arquillian-container-managed` |
 
 WildFly 8.1 requires to be patched with Weld 2.2+ as documented in [Weld 2.2 on WildFly][].
 

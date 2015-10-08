@@ -58,7 +58,7 @@
                 <artifactId>wildfly-maven-plugin</artifactId>
                 <version>${maven-wildfly-plugin.version}</version>
                 <configuration>
-                    <version>${wildfly.version}</version>
+                    <version>${wildfly-8.version}</version>
                     <execute-commands>
                         <commands>
                             <command>/subsystem=logging/logger=org.jboss.weld:add(level=DEBUG,handlers=[debug])
