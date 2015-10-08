@@ -11,6 +11,15 @@
     <artifactId>camel-cdi-se</artifactId>
     <name>Camel CDI Java SE Environment</name>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-context</artifactId>
+            <version>${camel.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
     <profiles>
 
         <profile>

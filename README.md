@@ -419,6 +419,59 @@ void consume(@Body String body) {
 [Camel annotations]: http://camel.apache.org/bean-integration.html#BeanIntegration-Annotations
 [bean integration]: http://camel.apache.org/bean-integration.html
 
+##### Black Box Camel Contexts
+
+The [context component] enables the creation of Camel components out of Camel contexts and the mapping of local endpoints within these components from other Camel contexts based on the identifiers used to register these  _black box_ Camel contexts in the Camel registry.
+
+For example, given the two Camel contexts declared as CDI beans:
+
+```java
+@ApplicationScoped
+@Named("blackbox")
+@ContextName("foo")
+class FooCamelContext extends CdiCamelContext {
+
+}
+```
+
+```java
+@ApplicationScoped
+@ContextName("bar")
+class BarCamelContext extends CdiCamelContext {
+
+}
+```
+
+With the `foo` Camel context being registered into the Camel registry as `blackbox` by annotating it with the `@Named("blackbox")` qualifier, and the following route being added to it:
+
+```java
+@ContextName("foo")
+FooRouteBuilder extends RouteBuilder {
+
+    @Override
+    public void configure() {
+        from("direct:in")/*...*/.to("direct:out");
+    }
+}
+```
+
+It is possible to refer to the local endpoints of `foo` from the `bar` Camel context route:
+
+```java
+@ContextName("bar")
+BarRouteBuilder extends RouteBuilder {
+
+    @Override
+    public void configure() {
+        from("...").to("blackbox:in");
+        //...
+        from("blackbox:out").to("...");
+    }
+}
+```
+
+[context component]: http://camel.apache.org/context.html
+
 ### Futures Ideas
 
 ##### Camel Beans Integration with Multiple Camel Contexts
