@@ -75,12 +75,6 @@
                     <artifactId>arquillian-weld-ee-embedded-1.1</artifactId>
                 </dependency>
 
-                <dependency>
-                    <groupId>org.glassfish</groupId>
-                    <artifactId>javax.el</artifactId>
-                    <scope>test</scope>
-                </dependency>
-
             </dependencies>
         </profile>
 
@@ -190,7 +184,7 @@
                 <!-- test dependencies -->
 
                 <dependency>
-                    <groupId>org.wildfly</groupId>
+                    <groupId>org.wildfly.arquillian</groupId>
                     <artifactId>wildfly-arquillian-container-managed</artifactId>
                 </dependency>
 
