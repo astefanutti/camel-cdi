@@ -21,7 +21,8 @@ script:
 
 jdk:
   - oraclejdk7
-  - openjdk7
+# WildFly Arquillian plugin is crashing OpenJDK 7
+#  - openjdk7
   - oraclejdk8
 
 notifications:
