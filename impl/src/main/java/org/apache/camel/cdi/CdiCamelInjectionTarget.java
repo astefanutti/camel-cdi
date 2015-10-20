@@ -17,9 +17,8 @@
 package org.apache.camel.cdi;
 
 
-import org.apache.camel.util.ObjectHelper;
-
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.InjectionException;
 import javax.enterprise.inject.Vetoed;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
@@ -43,10 +42,10 @@ final class CdiCamelInjectionTarget<T> implements InjectionTarget<T> {
         delegate.inject(instance, ctx);
         try {
             // TODO: see how to retrieve the bean name
-            processor.postProcessAfterInitialization(instance, instance.getClass().getName());
             processor.postProcessBeforeInitialization(instance, instance.getClass().getName());
+            processor.postProcessAfterInitialization(instance, instance.getClass().getName());
         } catch (Exception cause) {
-            throw ObjectHelper.wrapRuntimeCamelException(cause);
+            throw new InjectionException("Camel annotations post processing of [" + delegate + "] failed!", cause);
         }
     }
 
