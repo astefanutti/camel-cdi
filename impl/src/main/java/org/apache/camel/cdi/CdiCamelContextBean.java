@@ -79,7 +79,7 @@ final class CdiCamelContextBean implements Bean<CdiCamelContext>, PassivationCap
 
     @Override
     public Set<InjectionPoint> getInjectionPoints() {
-        return Collections.emptySet();
+        return target.getInjectionPoints();
     }
 
     @Override
