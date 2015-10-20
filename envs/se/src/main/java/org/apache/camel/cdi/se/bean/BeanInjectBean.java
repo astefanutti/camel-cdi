@@ -25,6 +25,9 @@ public class BeanInjectBean {
     
     private PropertyInjectBean injectBeanMethod;
 
+    @BeanInject("beanName")
+    private NamedCamelBean injectBeanNamed;
+
     public PropertyInjectBean getInjectBeanField() {
         return injectBeanField;
     }
@@ -36,5 +39,9 @@ public class BeanInjectBean {
 
     public PropertyInjectBean getInjectBeanMethod() {
         return injectBeanMethod;
+    }
+
+    public NamedCamelBean getInjectBeanNamed() {
+        return injectBeanNamed;
     }
 }

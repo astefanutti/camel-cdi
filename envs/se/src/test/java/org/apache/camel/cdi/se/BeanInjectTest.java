@@ -19,6 +19,7 @@ package org.apache.camel.cdi.se;
 import org.apache.camel.cdi.CdiCamelExtension;
 import org.apache.camel.cdi.CdiPropertiesComponent;
 import org.apache.camel.cdi.se.bean.BeanInjectBean;
+import org.apache.camel.cdi.se.bean.NamedCamelBean;
 import org.apache.camel.cdi.se.bean.PropertyInjectBean;
 import org.apache.camel.component.properties.PropertiesComponent;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -50,8 +51,9 @@ public class BeanInjectTest {
             // Camel CDI
             .addPackage(CdiCamelExtension.class.getPackage())
             // Test classes
-            .addClass(BeanInjectBean.class)
-            .addClass(PropertyInjectBean.class)
+            .addClasses(BeanInjectBean.class,
+                PropertyInjectBean.class,
+                NamedCamelBean.class)
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
@@ -69,14 +71,19 @@ public class BeanInjectTest {
     private BeanInjectBean bean;
 
     @Test
-    public void propertyInjectField() {
+    public void beanInjectField() {
         assertThat(bean.getInjectBeanField(), is(notNullValue()));
         assertThat(bean.getInjectBeanField().getProperty(), is(equalTo("value")));
     }
 
     @Test
-    public void propertyInjectMethod() {
+    public void beanInjectMethod() {
         assertThat(bean.getInjectBeanMethod(), is(notNullValue()));
         assertThat(bean.getInjectBeanMethod().getProperty(), is(equalTo("value")));
+    }
+
+    @Test
+    public void beanInjectNamed() {
+        assertThat(bean.getInjectBeanNamed(), is(notNullValue()));
     }
 }
