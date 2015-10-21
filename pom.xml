@@ -83,6 +83,7 @@
         <owb.version>1.6.2</owb.version>
         <wildfly-8.version>8.2.1.Final</wildfly-8.version>
         <wildfly-9.version>9.0.1.Final</wildfly-9.version>
+        <wildfly-camel.version>3.1.0</wildfly-camel.version>
         <arquillian.version>1.1.10.Final</arquillian.version>
         <arquillian-osgi.version>2.1.0.CR18</arquillian-osgi.version>
         <arquillian.weld.version>1.0.0.CR9</arquillian.weld.version>
@@ -400,6 +401,24 @@
                 <version>1.1.0.Alpha1</version>
                 <scope>test</scope>
             </dependency>
+
+            <!-- WildFly Camel -->
+
+            <dependency>
+                <groupId>org.wildfly.camel</groupId>
+                <artifactId>wildfly-camel-subsystem</artifactId>
+                <version>${wildfly-camel.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wildfly.camel</groupId>
+                <artifactId>wildfly-camel-patch</artifactId>
+                <version>${wildfly-camel.version}</version>
+                <type>tar.gz</type>
+                <scope>test</scope>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
