@@ -22,6 +22,8 @@ import org.apache.camel.main.MainSupport;
 import org.apache.deltaspike.core.api.provider.BeanProvider;
 
 import javax.enterprise.inject.Vetoed;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.util.HashMap;
@@ -59,14 +61,13 @@ public class Main extends MainSupport {
 
     @Override
     protected ProducerTemplate findOrCreateCamelTemplate() {
-        ProducerTemplate answer = BeanProvider.getContextualReference(ProducerTemplate.class, true);
-        if (answer != null) {
-            return answer;
-        }
-        if (getCamelContexts().isEmpty()) {
-            throw new IllegalArgumentException("No CamelContexts are available so cannot create a ProducerTemplate!");
-        }
-        return getCamelContexts().get(0).createProducerTemplate();
+        BeanManager manager = ((org.apache.deltaspike.cdise.api.CdiContainer) cdiContainer).getBeanManager();
+        Bean<?> bean = manager.resolve(manager.getBeans(CamelContext.class));
+        if (bean == null)
+            throw new IllegalStateException("No default Camel context is deployed so cannot create a ProducerTemplate!");
+
+        CamelContext context = (CamelContext) manager.getReference(bean, CamelContext.class, manager.createCreationalContext(bean));
+        return context.createProducerTemplate();
     }
 
     @Override
