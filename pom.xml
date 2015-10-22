@@ -76,7 +76,7 @@
         <!-- Maven dependencies -->
         <camel.version>2.16.0</camel.version>
         <cdi.version>1.2</cdi.version>
-        <deltaspike.version>1.1.0</deltaspike.version>
+        <deltaspike.version>1.5.0</deltaspike.version>
         <javaee.version>7.0</javaee.version>
         <slf4j.version>1.7.12</slf4j.version>
         <weld.version>2.3.0.Final</weld.version>

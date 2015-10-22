@@ -23,7 +23,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Named;
 
-public class PropertiesUtil {
+public class PropertiesBean {
 
     @Produces
     @ApplicationScoped
