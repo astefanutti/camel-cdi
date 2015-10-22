@@ -112,16 +112,22 @@ public class Main extends MainSupport {
 
     @Override
     protected void doStart() throws Exception {
-        // Use standard CDI Java SE support when CDI 2.0 becomes a prerequisite
+        // TODO: Use standard CDI Java SE support when CDI 2.0 becomes a prerequisite
         org.apache.deltaspike.cdise.api.CdiContainer container = org.apache.deltaspike.cdise.api.CdiContainerLoader.getCdiContainer();
         container.boot();
         container.getContextControl().startContexts();
         cdiContainer = container;
         super.doStart();
+        postProcessContext();
+        for (CamelContext context : getCamelContexts())
+            context.start();
     }
 
     @Override
     protected void doStop() throws Exception {
+        // FIXME: since version 2.3.0.Final and WELD-1915, Weld always register a shutdown hook that conflicts with Camel main support. See WELD-2051.
+        for (CamelContext context : getCamelContexts())
+            context.stop();
         super.doStop();
         if (cdiContainer != null)
             ((org.apache.deltaspike.cdise.api.CdiContainer) cdiContainer).shutdown();
