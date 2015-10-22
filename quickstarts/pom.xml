@@ -12,7 +12,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <packaging.type>${packaging.type}</packaging.type>
+        <packaging.type>jar</packaging.type>
     </properties>
 
     <build>
