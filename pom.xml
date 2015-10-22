@@ -409,6 +409,12 @@
                 <artifactId>wildfly-camel-subsystem</artifactId>
                 <version>${wildfly-camel.version}</version>
                 <scope>test</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
 
             <dependency>
