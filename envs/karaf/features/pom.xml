@@ -8,7 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>features</artifactId>
-    <name>Camel CDI Karaf :: Features</name>
+    <name>Camel CDI :: Environments :: Karaf Features</name>
     <packaging>pom</packaging>
 
     <properties>

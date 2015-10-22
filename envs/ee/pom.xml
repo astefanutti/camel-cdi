@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>camel-cdi-ee</artifactId>
-    <name>Camel CDI Java EE Environment</name>
+    <name>Camel CDI :: Environments :: Java EE</name>
 
     <build>
         <testResources>

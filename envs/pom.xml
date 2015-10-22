@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>camel-cdi-envs</artifactId>
-    <name>Camel CDI Environments</name>
+    <name>Camel CDI :: Environments</name>
     <packaging>pom</packaging>
 
     <modules>

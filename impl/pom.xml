@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>camel-cdi</artifactId>
-    <name>Camel CDI Component</name>
+    <name>Camel CDI :: Component</name>
     <packaging>bundle</packaging>
 
     <properties>

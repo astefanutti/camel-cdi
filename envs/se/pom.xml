@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>camel-cdi-se</artifactId>
-    <name>Camel CDI Java SE Environment</name>
+    <name>Camel CDI :: Environments :: Java SE</name>
 
     <dependencies>
         <dependency>
