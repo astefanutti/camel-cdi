@@ -295,10 +295,6 @@
                     <artifactId>camel-cdi</artifactId>
                     <exclusions>
                         <exclusion>
-                            <groupId>org.apache.deltaspike.core</groupId>
-                            <artifactId>deltaspike-core-api</artifactId>
-                        </exclusion>
-                        <exclusion>
                             <groupId>org.apache.deltaspike.cdictrl</groupId>
                             <artifactId>deltaspike-cdictrl-api</artifactId>
                         </exclusion>

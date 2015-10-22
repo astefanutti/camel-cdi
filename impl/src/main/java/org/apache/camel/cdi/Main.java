@@ -19,18 +19,12 @@ package org.apache.camel.cdi;
 import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.main.MainSupport;
-import org.apache.deltaspike.core.api.provider.BeanProvider;
 
 import javax.enterprise.inject.Vetoed;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Camel CDI boot integration. Allows Camel and CDI to be booted up on the command line as a JVM process.
@@ -72,11 +66,11 @@ public class Main extends MainSupport {
 
     @Override
     protected Map<String, CamelContext> getCamelContextMap() {
-        List<CamelContext> contexts = BeanProvider.getContextualReferences(CamelContext.class, true);
+        BeanManager manager = ((org.apache.deltaspike.cdise.api.CdiContainer) cdiContainer).getBeanManager();
         Map<String, CamelContext> answer = new HashMap<>();
-        for (CamelContext context : contexts) {
-            String name = context.getName();
-            answer.put(name, context);
+        for (Bean<?> bean : manager.getBeans(CamelContext.class, AnyLiteral.INSTANCE)) {
+            CamelContext context = (CamelContext) manager.getReference(bean, CamelContext.class, manager.createCreationalContext(bean));
+            answer.put(context.getName(), context);
         }
         return answer;
     }
