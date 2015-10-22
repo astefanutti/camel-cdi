@@ -20,6 +20,7 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.main.MainSupport;
 
+import javax.enterprise.inject.UnsatisfiedResolutionException;
 import javax.enterprise.inject.Vetoed;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
@@ -58,7 +59,7 @@ public class Main extends MainSupport {
         BeanManager manager = ((org.apache.deltaspike.cdise.api.CdiContainer) cdiContainer).getBeanManager();
         Bean<?> bean = manager.resolve(manager.getBeans(CamelContext.class));
         if (bean == null)
-            throw new IllegalStateException("No default Camel context is deployed so cannot create a ProducerTemplate!");
+            throw new UnsatisfiedResolutionException("No default Camel context is deployed, cannot create default ProducerTemplate!");
 
         CamelContext context = (CamelContext) manager.getReference(bean, CamelContext.class, manager.createCreationalContext(bean));
         return context.createProducerTemplate();
