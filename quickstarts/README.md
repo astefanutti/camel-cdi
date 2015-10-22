@@ -15,13 +15,6 @@ Here are the instructions to follow to run or deploy the project using one of th
 * [Web Container (Tomcat, Jetty)](#web-container)
 * [Java EE (Wildfly)](#java-ee-wildfly)
 
-## ContextName annotation
-
-blabla blabla
-
-## Default CamelContext
-
-blabla blabla
 
 ## Java SE
 
