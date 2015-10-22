@@ -17,35 +17,24 @@
 package org.apache.camel.cdi.example1;
 
 
-import org.apache.camel.CamelContext;
-import org.apache.camel.cdi.ContextName;
-import org.jboss.weld.environment.se.StartMain;
-import org.jboss.weld.environment.se.WeldContainer;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.Destroyed;
-import javax.enterprise.context.Initialized;
-import javax.enterprise.event.Observes;
-import java.util.concurrent.CountDownLatch;
+import org.apache.deltaspike.cdise.api.CdiContainer;
 
 public class BootStrap {
 
-    void start(@Observes @Initialized(ApplicationScoped.class) Object event) {
-        System.out.println("Camel CDI :: Example 1 has started");
-        // The context is started in the @PostConstruct lifecycle callback (see class SimpleCamelContext)
-    }
-
-    void shutdown(@Observes @Destroyed(ApplicationScoped.class) Object event) {
-        System.out.println("Camel CDI :: Example 1 will be stopped");
-        // The context is stopped in the @PreDestroy lifecycle callback (see class SimpleCamelContext)
-    }
-
     public static void main(String[] args) throws Exception {
-        WeldContainer container = new StartMain(args).go();
-        // Get a reference to the Camel context named "simple"
-        CamelContext context = container.instance().select(CamelContext.class, new ContextName.Literal("simple")).get();
-        System.out.println("Camel CDI :: " + context + " started!");
-        // And wait until the JVM exits
-        new CountDownLatch(1).await();
+        final CdiContainer container = org.apache.deltaspike.cdise.api.CdiContainerLoader.getCdiContainer();
+        container.boot();
+
+        // FIXME: since version 2.3.0.Final and WELD-1915, Weld always register a shutdown hook that conflicts with Camel main support. See WELD-2051.
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                try {
+                    container.shutdown();
+                } catch (Exception cause) {
+                    cause.printStackTrace();
+                }
+            }
+        });
     }
 }

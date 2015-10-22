@@ -25,18 +25,29 @@ blabla blabla
 
 ## Java SE
 
-The different examples can be launched using the Main BootStrap class part of each example directly or with the maven exec:java plugin
+The different examples can be launched using the main `BootStrap` class that is part of each example directly or using the Maven Exec plugin:
 
 ```
-mvn clean compile -Pstandalone exec:java
+mvn clean compile -Pstandalone,weld exec:java
 ```
 
-Alternatively, you can also use the Camel Maven plugin able to start a Weld2 container with the DeltaSpike BootStrap Manager
+Or to use OpenWebBeans as CDI implementation:
 
 ```
-mvn clean compile -Pstandalone camel:run
+mvn clean compile -Pstandalone,owb exec:java
 ```
 
+Alternatively, you can also use the Camel Maven plugin that is able to start a CDI container with DeltaSpike container control:
+
+```
+mvn clean compile -Pstandalone,weld camel:run
+```
+
+Or to use OpenWebBeans as CDI implementation:
+
+```
+mvn clean compile -Pstandalone,owb camel:run
+```
 
 ## Web Container
 

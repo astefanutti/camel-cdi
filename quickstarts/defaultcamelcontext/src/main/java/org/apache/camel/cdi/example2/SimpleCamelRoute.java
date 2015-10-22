@@ -25,7 +25,7 @@ import javax.inject.Inject;
 
 public class SimpleCamelRoute extends RouteBuilder {
 
-    @EndpointInject(uri="timer://start")
+    @EndpointInject(uri = "timer://start")
     private Endpoint timerEP;
 
     @Inject
@@ -38,19 +38,15 @@ public class SimpleCamelRoute extends RouteBuilder {
     @Override
     public void configure() {
         from(timerEP).routeId("timerToDirect")
-            .setHeader("context")
-                .constant("simple")
-            .setBody()
-                .constant("Camel CDI Example 2")
+            .setHeader("context").constant("simple")
+            .setBody().constant("Camel CDI Example 2")
             .log("Message received : ${body} for the Context : ${header.context}")
-            .setHeader("header.message")
-                .simple("properties:header.message")
+            .setHeader("header.message").simple("properties:header.message")
             .log("Message received : ${body} for the header : ${header.header.message}")
             .to(directEP);
 
         from(directEP).routeId("directToBean")
-            .setBody()
-                .constant("CDI")
+            .setBody().constant("CDI")
             .bean(helloBean, "sayHello")
             .log(">> Response : ${body}");
     }

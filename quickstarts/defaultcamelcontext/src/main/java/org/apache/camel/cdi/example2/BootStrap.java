@@ -17,33 +17,32 @@ package org.apache.camel.cdi.example2;
 
 
 import org.apache.camel.CamelContext;
-import org.jboss.weld.environment.se.StartMain;
-import org.jboss.weld.environment.se.WeldContainer;
+import org.apache.deltaspike.cdise.api.CdiContainer;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.Destroyed;
-import javax.enterprise.context.Initialized;
-import javax.enterprise.event.Observes;
-import java.util.concurrent.CountDownLatch;
+import javax.enterprise.inject.spi.BeanManager;
 
 public class BootStrap {
 
-    void start(@Observes @Initialized(ApplicationScoped.class) Object event, CamelContext context) throws Exception {
-        System.out.println("Camel CDI :: Example 2 will be started");
-        context.start();
-    }
-
-    void shutdown(@Observes @Destroyed(ApplicationScoped.class) Object event, CamelContext context) throws Exception {
-        System.out.println("Camel CDI :: Example 2 will be stopped");
-        context.stop();
-    }
-
     public static void main(String[] args) throws Exception {
-        WeldContainer container = new StartMain(args).go();
-        // Fet a reference to the default Camel context
-        CamelContext context = container.instance().select(CamelContext.class).get();
-        System.out.println("Camel CDI :: " + context + " started!");
-        // And wait until the JVM exits
-        new CountDownLatch(1).await();
+        final CdiContainer container = org.apache.deltaspike.cdise.api.CdiContainerLoader.getCdiContainer();
+        container.boot();
+
+        BeanManager manager = container.getBeanManager();
+        final CamelContext context = (CamelContext) manager.getReference(manager.resolve(manager.getBeans(CamelContext.class)), CamelContext.class, manager.createCreationalContext(null));
+
+        // FIXME: since version 2.3.0.Final and WELD-1915, Weld always register a shutdown hook that conflicts with Camel main support. See WELD-2051.
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                try {
+                    context.stop();
+                    container.shutdown();
+                } catch (Exception cause) {
+                    cause.printStackTrace();
+                }
+            }
+        });
+
+        context.start();
     }
 }

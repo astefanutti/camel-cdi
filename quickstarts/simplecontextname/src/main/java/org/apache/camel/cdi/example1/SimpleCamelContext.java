@@ -19,7 +19,6 @@ package org.apache.camel.cdi.example1;
 import org.apache.camel.cdi.CdiCamelContext;
 import org.apache.camel.cdi.ContextName;
 import org.apache.camel.component.properties.PropertiesComponent;
-import org.apache.camel.util.ObjectHelper;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -31,16 +30,14 @@ public class SimpleCamelContext extends CdiCamelContext {
 
     @PostConstruct
     void postConstruct() {
-        // Enable Tracing
         super.setTracing(false);
 
-        // Define PropertyPlaceHolder
         getComponent("properties", PropertiesComponent.class).setLocation("classpath:placeholder.properties");
 
         try {
             super.start();
         } catch (Exception cause) {
-            throw ObjectHelper.wrapRuntimeCamelException(cause);
+            cause.printStackTrace();
         }
     }
 
@@ -49,7 +46,7 @@ public class SimpleCamelContext extends CdiCamelContext {
         try {
             super.stop();
         } catch (Exception cause) {
-            throw ObjectHelper.wrapRuntimeCamelException(cause);
+            cause.printStackTrace();
         }
     }
 }
