@@ -39,8 +39,6 @@ public class Main extends MainSupport {
 
     private static Main instance;
 
-    private JAXBContext jaxbContext;
-
     private Object cdiContainer; // we don't want to use cdictrl API in OSGi
 
     public static void main(String... args) throws Exception {
@@ -80,34 +78,6 @@ public class Main extends MainSupport {
             answer.put(name, context);
         }
         return answer;
-    }
-
-    public JAXBContext getJaxbContext() throws JAXBException {
-        if (jaxbContext == null) {
-            jaxbContext = createJaxbContext();
-        }
-        return jaxbContext;
-    }
-
-    protected JAXBContext createJaxbContext() throws JAXBException {
-        StringBuilder packages = new StringBuilder();
-        for (Class<?> cl : getJaxbPackages()) {
-            if (packages.length() > 0)
-                packages.append(":");
-            packages.append(cl.getPackage().getName());
-        }
-        return JAXBContext.newInstance(packages.toString(), getClass().getClassLoader());
-    }
-
-    protected Set<Class<?>> getJaxbPackages() {
-        Set<Class<?>> classes = new HashSet<>();
-        classes.add(org.apache.camel.ExchangePattern.class);
-        classes.add(org.apache.camel.model.RouteDefinition.class);
-        classes.add(org.apache.camel.model.config.StreamResequencerConfig.class);
-        classes.add(org.apache.camel.model.dataformat.DataFormatsDefinition.class);
-        classes.add(org.apache.camel.model.language.ExpressionDefinition.class);
-        classes.add(org.apache.camel.model.loadbalancer.RoundRobinLoadBalancerDefinition.class);
-        return classes;
     }
 
     @Override
