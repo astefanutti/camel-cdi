@@ -21,6 +21,7 @@ import org.apache.camel.cdi.CdiCamelExtension;
 import org.apache.camel.cdi.CdiPropertiesComponent;
 import org.apache.camel.component.properties.PropertiesComponent;
 import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -40,14 +41,48 @@ import static org.junit.Assert.assertThat;
 @RunWith(Arquillian.class)
 public class PropertiesLocationTest {
 
-    @Deployment
+    @Deployment(name = "single-location")
     public static Archive<?> deployment() {
         return ShrinkWrap.create(JavaArchive.class)
             // Camel CDI
             .addPackage(CdiCamelExtension.class.getPackage())
+            // Test classes
+            .addClass(SingleLocation.class)
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
+
+    // TODO: reactivate when ARQ-1255 is fixed
+    /*
+    @Deployment(name = "multiple-locations")
+    public static Archive<?> multipleLocationsDeployment() {
+        return ShrinkWrap.create(JavaArchive.class)
+            // Camel CDI
+            .addPackage(CdiCamelExtension.class.getPackage())
+            // Test classes
+            .addClass(MultipleLocations.class)
+            // Bean archive deployment descriptor
+            .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+    }
+    */
+
+    @Test
+    @OperateOnDeployment("single-location")
+    public void resolvePropertyFromLocation(CamelContext context) throws Exception {
+        assertThat("Property from classpath location does not resolve!", context.resolvePropertyPlaceholders("{{header.message}}"), is(equalTo("message from file")));
+    }
+
+    /*
+    @Test
+    @OperateOnDeployment("multiple-locations")
+    public void resolvePropertyFromLocations(CamelContext context) throws Exception {
+        assertThat("Property from classpath locations does not resolve!", context.resolvePropertyPlaceholders("{{foo.property}}"), is(equalTo("foo.value")));
+        assertThat("Property from classpath locations does not resolve!", context.resolvePropertyPlaceholders("{{bar.property}}"), is(equalTo("bar.value")));
+    }
+    */
+}
+
+class SingleLocation {
 
     @Produces
     @ApplicationScoped
@@ -55,9 +90,13 @@ public class PropertiesLocationTest {
     private static PropertiesComponent configuration() {
         return new CdiPropertiesComponent("classpath:placeholder.properties");
     }
+}
+class MultipleLocations {
 
-    @Test
-    public void resolvePropertyFromLocation(CamelContext context) throws Exception {
-        assertThat("Property from classpath location does not resolve!", context.resolvePropertyPlaceholders("{{header.message}}"), is(equalTo("message from file")));
+    @Produces
+    @ApplicationScoped
+    @Named("properties")
+    private static PropertiesComponent configuration() {
+        return new CdiPropertiesComponent("classpath:foo.properties", "classpath:bar.properties");
     }
 }
