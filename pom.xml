@@ -79,7 +79,7 @@
         <deltaspike.version>1.5.0</deltaspike.version>
         <javaee.version>7.0</javaee.version>
         <slf4j.version>1.7.12</slf4j.version>
-        <weld.version>2.3.0.Final</weld.version>
+        <weld.version>2.3.1.Final</weld.version>
         <owb.version>1.6.2</owb.version>
         <wildfly-8.version>8.2.1.Final</wildfly-8.version>
         <wildfly-9.version>9.0.1.Final</wildfly-9.version>
