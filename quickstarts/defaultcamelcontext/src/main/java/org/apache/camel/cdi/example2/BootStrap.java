@@ -20,6 +20,7 @@ import org.apache.camel.CamelContext;
 import org.apache.deltaspike.cdise.api.CdiContainer;
 import org.apache.deltaspike.cdise.api.CdiContainerLoader;
 
+import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import java.util.concurrent.CountDownLatch;
 
@@ -33,7 +34,8 @@ public class BootStrap {
         container.boot();
 
         BeanManager manager = container.getBeanManager();
-        final CamelContext context = (CamelContext) manager.getReference(manager.resolve(manager.getBeans(CamelContext.class)), CamelContext.class, manager.createCreationalContext(null));
+        Bean<?> bean = manager.resolve(manager.getBeans(CamelContext.class));
+        final CamelContext context = (CamelContext) manager.getReference(bean, CamelContext.class, manager.createCreationalContext(bean));
 
         final CountDownLatch latch = new CountDownLatch(1);
         Runtime.getRuntime().addShutdownHook(new Thread() {
