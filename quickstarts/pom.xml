@@ -43,7 +43,7 @@
                 </configuration>
             </plugin>
 
-            <!--  Java SE - Standalone using DeltaSpike to launch Weld2 container : Camel Maven Plugin -->
+            <!-- Java SE - Standalone using DeltaSpike to launch Weld2 container : Camel Maven Plugin -->
             <plugin>
                 <groupId>io.astefanutti.camel.cdi</groupId>
                 <artifactId>camel-maven-plugin</artifactId>
@@ -90,13 +90,14 @@
 
                 <!-- Logging -->
                 <dependency>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-log4j12</artifactId>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-slf4j-impl</artifactId>
                     <scope>runtime</scope>
                 </dependency>
+
                 <dependency>
-                    <groupId>log4j</groupId>
-                    <artifactId>log4j</artifactId>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-core</artifactId>
                     <scope>runtime</scope>
                 </dependency>
 

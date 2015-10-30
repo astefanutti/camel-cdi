@@ -79,6 +79,7 @@
         <deltaspike.version>1.5.0</deltaspike.version>
         <javaee.version>7.0</javaee.version>
         <slf4j.version>1.7.12</slf4j.version>
+        <log4j.version>2.4.1</log4j.version>
         <weld.version>2.3.1.Final</weld.version>
         <owb.version>1.6.2</owb.version>
         <wildfly-8.version>8.2.1.Final</wildfly-8.version>
@@ -274,9 +275,9 @@
             <!-- test dependencies -->
 
             <dependency>
-                <groupId>log4j</groupId>
-                <artifactId>log4j</artifactId>
-                <version>1.2.17</version>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-slf4j-impl</artifactId>
+                <version>${log4j.version}</version>
                 <scope>test</scope>
             </dependency>
 
@@ -288,9 +289,9 @@
             </dependency>
 
             <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-log4j12</artifactId>
-                <version>${slf4j.version}</version>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>${log4j.version}</version>
                 <scope>test</scope>
             </dependency>
 
