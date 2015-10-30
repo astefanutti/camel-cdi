@@ -18,6 +18,7 @@ package org.apache.camel.maven;
 
 import org.apache.camel.util.CastUtils;
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.metadata.ArtifactMetadataSource;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -25,6 +26,7 @@ import org.apache.maven.artifact.resolver.ArtifactResolutionResult;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 import org.apache.maven.artifact.resolver.filter.ExcludesArtifactFilter;
+import org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
 import org.apache.maven.artifact.versioning.InvalidVersionSpecificationException;
 import org.apache.maven.artifact.versioning.VersionRange;
 import org.apache.maven.model.Dependency;
@@ -985,7 +987,7 @@ public class RunMojo extends AbstractExecMojo {
                                                                                    Collections.emptyMap(),
                                                                                    this.localRepository,
                                                                                    this.remoteRepositories,
-                                                                                   metadataSource, null,
+                                                                                   metadataSource, new ScopeArtifactFilter(DefaultArtifact.SCOPE_RUNTIME),
                                                                                    Collections.emptyList());
             executableDependencies = CastUtils.cast(result.getArtifacts());
 
