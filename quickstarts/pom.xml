@@ -134,6 +134,31 @@
             <properties>
                 <packaging.type>jar</packaging.type>
             </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>java</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <mainClass>${example.main.class}</mainClass>
+                            <systemProperties>
+                                <!-- Since version 2.3.0.Final and WELD-1915, Weld SE registers a shutdown hook. See WELD-2051. The system property above is available starting Weld 2.3.1.Final to deactivate the registration of the shutdown hook so that the examples behave consistently between Weld and OpenWebBeans. -->
+                                <systemProperty>
+                                    <key>org.jboss.weld.se.shutdownHook</key>
+                                    <value>false</value>
+                                </systemProperty>
+                            </systemProperties>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
             <dependencies>
                 <dependency>
                     <groupId>org.apache.deltaspike.cdictrl</groupId>

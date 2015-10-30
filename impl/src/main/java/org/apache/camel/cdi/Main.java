@@ -34,6 +34,11 @@ import java.util.Map;
 @Vetoed
 public class Main extends MainSupport {
 
+    static {
+        // Since version 2.3.0.Final and WELD-1915, Weld SE registers a shutdown hook that conflicts with Camel main support. See WELD-2051. The system property above is available starting Weld 2.3.1.Final to deactivate the registration of the shutdown hook.
+        System.setProperty("org.jboss.weld.se.shutdownHook", String.valueOf(Boolean.FALSE));
+    }
+
     private static Main instance;
 
     private Object cdiContainer; // we don't want to use cdictrl API in OSGi
@@ -91,7 +96,6 @@ public class Main extends MainSupport {
 
     @Override
     protected void doStop() throws Exception {
-        // FIXME: since version 2.3.0.Final and WELD-1915, Weld always register a shutdown hook that conflicts with Camel main support. See WELD-2051.
         for (CamelContext context : getCamelContexts())
             context.stop();
         super.doStop();

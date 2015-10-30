@@ -25,7 +25,6 @@ public class BootStrap {
         final CdiContainer container = org.apache.deltaspike.cdise.api.CdiContainerLoader.getCdiContainer();
         container.boot();
 
-        // FIXME: since version 2.3.0.Final and WELD-1915, Weld always register a shutdown hook that conflicts with Camel main support. See WELD-2051.
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {

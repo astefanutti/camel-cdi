@@ -30,7 +30,6 @@ public class BootStrap {
         BeanManager manager = container.getBeanManager();
         final CamelContext context = (CamelContext) manager.getReference(manager.resolve(manager.getBeans(CamelContext.class)), CamelContext.class, manager.createCreationalContext(null));
 
-        // FIXME: since version 2.3.0.Final and WELD-1915, Weld always register a shutdown hook that conflicts with Camel main support. See WELD-2051.
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
