@@ -18,22 +18,34 @@ package org.apache.camel.cdi.example1;
 
 
 import org.apache.deltaspike.cdise.api.CdiContainer;
+import org.apache.deltaspike.cdise.api.CdiContainerLoader;
+
+import java.util.concurrent.CountDownLatch;
 
 public class BootStrap {
 
     public static void main(String[] args) throws Exception {
-        final CdiContainer container = org.apache.deltaspike.cdise.api.CdiContainerLoader.getCdiContainer();
+        // Since version 2.3.0.Final and WELD-1915, Weld SE registers a shutdown hook. See WELD-2051. The system property above is available starting Weld 2.3.1.Final to deactivate the registration of the shutdown hook so that the example behave consistently between Weld and OpenWebBeans.
+        System.setProperty("org.jboss.weld.se.shutdownHook", "false");
+
+        final CdiContainer container = CdiContainerLoader.getCdiContainer();
         container.boot();
 
+        final CountDownLatch latch = new CountDownLatch(1);
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
                 try {
+                    // Camel context is stopped in the @PreDestroy lifecycle callback
                     container.shutdown();
                 } catch (Exception cause) {
                     cause.printStackTrace();
+                } finally {
+                    latch.countDown();
                 }
             }
         });
+        // Camel context is started in the @PostConstruct lifecycle callback
+        latch.await();
     }
 }
