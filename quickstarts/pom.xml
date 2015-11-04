@@ -30,20 +30,13 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>java</goal>
-                        </goals>
-                    </execution>
-                </executions>
                 <configuration>
                     <mainClass>${example.main.class}</mainClass>
                     <cleanupDaemonThreads>false</cleanupDaemonThreads>
                 </configuration>
             </plugin>
 
-            <!-- Java SE - Standalone using DeltaSpike to launch Weld2 container : Camel Maven Plugin -->
+            <!-- Java SE - Standalone using DeltaSpike to launch CDI container : Camel Maven Plugin -->
             <plugin>
                 <groupId>io.astefanutti.camel.cdi</groupId>
                 <artifactId>camel-maven-plugin</artifactId>
@@ -53,7 +46,7 @@
                 </configuration>
             </plugin>
 
-            <!-- JEE Container embedding Weld2 container : Wildfly Maven Plugin -->
+            <!-- Java EE Container embedding Weld container : WildFly Maven Plugin -->
             <plugin>
                 <groupId>org.wildfly.plugins</groupId>
                 <artifactId>wildfly-maven-plugin</artifactId>
@@ -76,9 +69,6 @@
     <profiles>
         <profile>
             <id>standalone</id>
-            <properties>
-                <packaging.type>bundle</packaging.type>
-            </properties>
             <dependencies>
 
                 <!-- Java EE API -->
@@ -104,38 +94,18 @@
             </dependencies>
             <build>
                 <plugins>
-                    <!-- Felix Maven Plugin -->
+                    <!-- FIXME: this is required for the Camel Maven plugin that resolve the Camel CDI POM as artifact of type bundle though that should not be mandate for plain Java SE usage of Camel CDI -->
                     <plugin>
                         <groupId>org.apache.felix</groupId>
                         <artifactId>maven-bundle-plugin</artifactId>
                         <version>${maven-bundle-plugin.version}</version>
                         <extensions>true</extensions>
-                        <configuration>
-                            <instructions>
-                                <Bundle-Name>${camel.osgi.bundle.name}</Bundle-Name>
-                                <Bundle-SymbolicName>${camel.osgi.symbolic.name}</Bundle-SymbolicName>
-                                <Export-Package>${camel.osgi.export.pkg}</Export-Package>
-                                <Import-Package>${camel.osgi.import.pkg}</Import-Package>
-                                <Require-Capability>
-                                    osgi.extender; filter:="(osgi.extender=pax.cdi)",
-                                    org.ops4j.pax.cdi.extension; filter:="(extension=camel-cdi)"
-                                </Require-Capability>
-                                <DynamicImport-Package>${camel.osgi.dynamic}</DynamicImport-Package>
-                                <Private-Package>${camel.osgi.private.pkg}</Private-Package>
-                                <Implementation-Title>Apache Camel CDI :: Karaf Example</Implementation-Title>
-                                <Implementation-Version>${project.version}</Implementation-Version>
-                                <Karaf-Info>Camel;${project.artifactId}=${project.version}</Karaf-Info>
-                            </instructions>
-                        </configuration>
                     </plugin>
                 </plugins>
             </build>
         </profile>
         <profile>
             <id>weld</id>
-            <properties>
-                <packaging.type>jar</packaging.type>
-            </properties>
             <dependencies>
                 <dependency>
                     <groupId>org.apache.deltaspike.cdictrl</groupId>
