@@ -21,25 +21,25 @@ Here are the instructions to follow to run or deploy the project using one of th
 The different examples can be launched using the main `BootStrap` class that is part of each example directly or using the Maven Exec plugin:
 
 ```
-mvn clean compile -Pstandalone,weld exec:java
+mvn clean compile exec:exec -Pstandalone,weld
 ```
 
 Or to use OpenWebBeans as CDI implementation:
 
 ```
-mvn clean compile -Pstandalone,owb exec:java
+mvn clean compile exec:exec -Pstandalone,owb
 ```
 
 Alternatively, you can also use the Camel Maven plugin that is able to start a CDI container with DeltaSpike container control:
 
 ```
-mvn clean compile -Pstandalone,weld camel:run
+mvn clean compile camel:run -Pstandalone,weld
 ```
 
 Or to use OpenWebBeans as CDI implementation:
 
 ```
-mvn clean compile -Pstandalone,owb camel:run
+mvn clean compile camel:run -Pstandalone,owb
 ```
 
 ## Web Container

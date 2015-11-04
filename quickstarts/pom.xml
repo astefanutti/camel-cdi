@@ -26,17 +26,24 @@
             </plugins>
         </pluginManagement>
         <plugins>
-            <!-- Java SE - Standalone using Weld Main class of the JAR : Maven Exec Plugin -->
+            <!-- Java SE - Maven Exec Plugin - Standalone using main class of the JAR -->
+            <!-- TODO: the Exec Maven plugin exec goal parent process does not wait for the child process to exit when the JVM terminates in response to a user interrupt, such as typing ^C. That leads to the child process logs not being streamed back to the parent process stream handler. See https://github.com/mojohaus/exec-maven-plugin/issues/9 -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>${example.main.class}</mainClass>
-                    <cleanupDaemonThreads>false</cleanupDaemonThreads>
+                    <executable>java</executable>
+                    <arguments>
+                        <!-- Required to configured JUL used by OWB -->
+                        <argument>-Djava.util.logging.config.file=${project.basedir}/src/main/resources/logging.properties</argument>
+                        <argument>-classpath</argument>
+                        <classpath/>
+                        <argument>${example.main.class}</argument>
+                    </arguments>
                 </configuration>
             </plugin>
 
-            <!-- Java SE - Standalone using DeltaSpike to launch CDI container : Camel Maven Plugin -->
+            <!-- Java SE - Camel Maven Plugin - Standalone using DeltaSpike container control -->
             <plugin>
                 <groupId>io.astefanutti.camel.cdi</groupId>
                 <artifactId>camel-maven-plugin</artifactId>
@@ -46,7 +53,7 @@
                 </configuration>
             </plugin>
 
-            <!-- Java EE Container embedding Weld container : WildFly Maven Plugin -->
+            <!-- Java EE - WildFly Maven Plugin - Embedding Weld container -->
             <plugin>
                 <groupId>org.wildfly.plugins</groupId>
                 <artifactId>wildfly-maven-plugin</artifactId>
@@ -155,6 +162,11 @@
                 <dependency>
                     <groupId>org.apache.openwebbeans</groupId>
                     <artifactId>openwebbeans-impl</artifactId>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>jul-to-slf4j</artifactId>
                     <scope>runtime</scope>
                 </dependency>
             </dependencies>
