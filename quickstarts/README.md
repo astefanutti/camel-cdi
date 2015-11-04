@@ -21,6 +21,12 @@ Here are the instructions to follow to run or deploy the project using one of th
 The different examples can be launched using the main `BootStrap` class that is part of each example directly or using the Maven Exec plugin:
 
 ```
+mvn clean compile exec:exec
+```
+
+Or to explicitly use Weld SE as CDI implementation (the default):
+
+```
 mvn clean compile exec:exec -Pstandalone,weld
 ```
 
@@ -31,6 +37,12 @@ mvn clean compile exec:exec -Pstandalone,owb
 ```
 
 Alternatively, you can also use the Camel Maven plugin that is able to start a CDI container with DeltaSpike container control:
+
+```
+mvn clean compile camel:run
+```
+
+Or to explicitly use Weld SE as CDI implementation (the default):
 
 ```
 mvn clean compile camel:run -Pstandalone,weld

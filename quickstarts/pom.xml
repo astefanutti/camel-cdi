@@ -76,6 +76,9 @@
     <profiles>
         <profile>
             <id>standalone</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <dependencies>
 
                 <!-- Java EE API -->
@@ -113,6 +116,9 @@
         </profile>
         <profile>
             <id>weld</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <dependencies>
                 <dependency>
                     <groupId>org.apache.deltaspike.cdictrl</groupId>
@@ -173,9 +179,6 @@
         </profile>
         <profile>
             <id>bundle</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
             <properties>
                 <packaging.type>bundle</packaging.type>
             </properties>
