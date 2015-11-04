@@ -49,10 +49,9 @@ public class MockEndpointTest {
         return ShrinkWrap.create(JavaArchive.class)
             // Camel CDI
             .addPackage(CdiCamelExtension.class.getPackage())
-            // Register a defaultContext
-            .addClass(DefaultCamelContextBean.class)
-            // Camel Route class
-            .addClass(MockAnnotationRoute.class)
+            // Test classes
+            .addClasses(DefaultCamelContextBean.class,
+                MockAnnotationRoute.class)
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
@@ -70,7 +69,7 @@ public class MockEndpointTest {
 
     @Test
     @InSequence(1)
-    public void verifyCamelContexts() {
+    public void verifyCamelContext() {
         assertThat(defaultCamelContext.getName(), is(equalTo("camel-cdi")));
         assertThat(defaultOutbound.getCamelContext().getName(), is(equalTo(defaultCamelContext.getName())));
     }
@@ -96,7 +95,7 @@ public class MockEndpointTest {
 
     @Test
     @InSequence(4)
-    public void stopCamelContexts() throws Exception {
+    public void stopCamelContext() throws Exception {
         defaultCamelContext.stop();
     }
 }

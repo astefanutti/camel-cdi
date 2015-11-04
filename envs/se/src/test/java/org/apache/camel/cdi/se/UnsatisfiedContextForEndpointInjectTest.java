@@ -40,7 +40,7 @@ public class UnsatisfiedContextForEndpointInjectTest {
         return ShrinkWrap.create(JavaArchive.class)
             // Camel CDI
             .addPackage(CdiCamelExtension.class.getPackage())
-            // Test classes
+            // Test class
             .addClass(EndpointInjectWrongContextRoute.class)
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");

@@ -54,12 +54,12 @@ public class MultiContextProduceTemplateTest {
             // Camel CDI
             .addPackage(CdiCamelExtension.class.getPackage())
             // Test classes
-            .addClass(DefaultCamelContextBean.class)
-            .addClass(ProduceTemplateBean.class)
-            .addClass(FirstCamelContextBean.class)
-            .addClass(FirstCamelContextProduceTemplateBean.class)
-            .addClass(SecondCamelContextBean.class)
-            .addClass(SecondCamelContextProduceTemplateBean.class)
+            .addClasses(DefaultCamelContextBean.class,
+                ProduceTemplateBean.class,
+                FirstCamelContextBean.class,
+                FirstCamelContextProduceTemplateBean.class,
+                SecondCamelContextBean.class,
+                SecondCamelContextProduceTemplateBean.class)
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }

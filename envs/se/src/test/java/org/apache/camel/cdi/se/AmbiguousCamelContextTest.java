@@ -41,8 +41,8 @@ public class AmbiguousCamelContextTest {
             // Camel CDI
             .addPackage(CdiCamelExtension.class.getPackage())
             // Test classes
-            .addClass(CustomLifecycleCamelContext.class)
-            .addClass(CustomPropertiesCamelContext.class)
+            .addClasses(CustomLifecycleCamelContext.class,
+                CustomPropertiesCamelContext.class)
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }

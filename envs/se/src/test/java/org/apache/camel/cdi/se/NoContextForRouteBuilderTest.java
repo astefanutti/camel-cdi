@@ -41,8 +41,8 @@ public class NoContextForRouteBuilderTest {
             // Camel CDI
             .addPackage(CdiCamelExtension.class.getPackage())
             // Test classes
-            .addClass(FirstCamelContextBean.class)
-            .addClass(UriEndpointRoute.class)
+            .addClasses(FirstCamelContextBean.class,
+                UriEndpointRoute.class)
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }

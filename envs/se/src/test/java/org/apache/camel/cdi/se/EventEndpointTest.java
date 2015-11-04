@@ -60,8 +60,8 @@ public class EventEndpointTest {
             // Camel CDI
             .addPackage(CdiCamelExtension.class.getPackage())
             // Test classes
-            .addClass(EventConsumingRoute.class)
-            .addClass(EventProducingRoute.class)
+            .addClasses(EventConsumingRoute.class,
+                EventProducingRoute.class)
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }

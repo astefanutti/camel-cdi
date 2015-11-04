@@ -62,12 +62,12 @@ public class MultiContextPropertyInjectTest {
             // Camel CDI
             .addPackage(CdiCamelExtension.class.getPackage())
             // Test classes
-            .addClass(DefaultCamelContextBean.class)
-            .addClass(PropertyInjectBean.class)
-            .addClass(FirstCamelContextBean.class)
-            .addClass(FirstCamelContextPropertyInjectBean.class)
-            .addClass(SecondCamelContextBean.class)
-            .addClass(SecondCamelContextPropertyInjectBean.class)
+            .addClasses(DefaultCamelContextBean.class,
+                PropertyInjectBean.class,
+                FirstCamelContextBean.class,
+                FirstCamelContextPropertyInjectBean.class,
+                SecondCamelContextBean.class,
+                SecondCamelContextPropertyInjectBean.class)
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }

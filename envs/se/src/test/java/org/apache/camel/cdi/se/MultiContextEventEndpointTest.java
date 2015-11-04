@@ -61,12 +61,12 @@ public class MultiContextEventEndpointTest {
             // Camel CDI
             .addPackage(CdiCamelExtension.class.getPackage())
             // Test classes
-            .addClass(FirstCamelContextBean.class)
-            .addClass(FirstCamelContextEventConsumingRoute.class)
-            .addClass(FirstCamelContextEventProducingRoute.class)
-            .addClass(SecondCamelContextBean.class)
-            .addClass(SecondCamelContextEventConsumingRoute.class)
-            .addClass(SecondCamelContextEventProducingRoute.class)
+            .addClasses(FirstCamelContextBean.class,
+                FirstCamelContextEventConsumingRoute.class,
+                FirstCamelContextEventProducingRoute.class,
+                SecondCamelContextBean.class,
+                SecondCamelContextEventConsumingRoute.class,
+                SecondCamelContextEventProducingRoute.class)
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }

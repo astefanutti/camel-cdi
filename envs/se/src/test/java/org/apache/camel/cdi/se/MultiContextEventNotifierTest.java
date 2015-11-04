@@ -71,12 +71,12 @@ public class MultiContextEventNotifierTest {
         return ShrinkWrap.create(JavaArchive.class)
             // Camel CDI
             .addPackage(CdiCamelExtension.class.getPackage())
-            // Test class
-            .addClass(DefaultCamelContextBean.class)
-            .addClass(UriEndpointRoute.class)
-            .addClass(FirstCamelContextBean.class)
-            .addClass(FirstCamelContextRoute.class)
-            .addClass(SecondCamelContextBean.class)
+            // Test classes
+            .addClasses(DefaultCamelContextBean.class,
+                UriEndpointRoute.class,
+                FirstCamelContextBean.class,
+                FirstCamelContextRoute.class,
+                SecondCamelContextBean.class)
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
