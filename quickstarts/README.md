@@ -18,7 +18,7 @@ Here are the instructions to follow to run or deploy the project using one of th
 
 ## Java SE
 
-The different examples can be launched using the main `BootStrap` class that is part of each example directly or using the Maven Exec plugin:
+The examples can be individually launched using the `Main` class that is part of each example (directly from the IDE or the `java` command) or using the Exec Maven plugin:
 
 ```
 mvn clean compile exec:exec
