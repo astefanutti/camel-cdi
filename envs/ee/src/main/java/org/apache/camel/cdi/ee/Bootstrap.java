@@ -42,7 +42,7 @@ public class Bootstrap {
 
     @PostConstruct
     public void init() {
-        logger.info(">> Create CamelContext and register Camel Route.");
+        logger.info(">> Create Camel context and register Camel route.");
 
         try {
             context.addRoutes(new RouteBuilder() {
@@ -50,30 +50,29 @@ public class Bootstrap {
                 public void configure() {
 
                     from("timer://timer1?period=1000")
-                            .setBody()
-                            .simple("Camel")
-                            .beanRef("helloCamel", "sayHello")
-                            .log(">> Response : ${body}");
-
+                        .setBody()
+                        .simple("Camel")
+                        .bean("helloCamel", "sayHello")
+                        .log(">> Response : ${body}");
                 }
             });
-        // Start Camel Context
+        // Start Camel context
         context.start();
 
-        logger.info(">> CamelContext created and camel route started.");
-        } catch (Exception ex) {
-            java.util.logging.Logger.getLogger(Bootstrap.class.getName()).log(Level.SEVERE, null, ex);
+        logger.info(">> Camel context created and Camel route started.");
+        } catch (Exception cause) {
+            java.util.logging.Logger.getLogger(Bootstrap.class.getName()).log(Level.SEVERE, null, cause);
         }
     }
 
     @PreDestroy
     public void shutdown() {
-        // Graceful Shutdown Camel Context
+        // Graceful shutdown Camel context
         try {
-        context.stop();
-        logger.info(">> CamelContext stopped .");
-        } catch (Exception ex) {
-            java.util.logging.Logger.getLogger(Bootstrap.class.getName()).log(Level.SEVERE, null, ex);
+            context.stop();
+            logger.info(">> Camel context stopped.");
+        } catch (Exception cause) {
+            java.util.logging.Logger.getLogger(Bootstrap.class.getName()).log(Level.SEVERE, null, cause);
         }
     }
 }
