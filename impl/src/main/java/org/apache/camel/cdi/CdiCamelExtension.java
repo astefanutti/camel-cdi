@@ -103,6 +103,10 @@ public class CdiCamelExtension implements Extension {
             namedContexts.put(pat.getAnnotatedType().getAnnotation(ContextName.class), EnumSet.noneOf(ContextInfo.class));
     }
 
+    private <T extends CamelContext> void camelContextBeans(@Observes ProcessInjectionTarget<T> pit, BeanManager manager) {
+        pit.setInjectionTarget(new CamelContextInjectionTarget<>(pit.getAnnotatedType(), pit.getInjectionTarget(), manager, this));
+    }
+
     private <T> void camelBeansPostProcessor(@Observes ProcessInjectionTarget<T> pit, BeanManager manager) {
         if (camelBeans.contains(pit.getAnnotatedType()))
             pit.setInjectionTarget(new CamelBeanInjectionTarget<>(pit.getInjectionTarget(), manager));
@@ -124,10 +128,6 @@ public class CdiCamelExtension implements Extension {
 
     private void producerTemplates(@Observes ProcessBeanAttributes<ProducerTemplate> pba) {
         pba.setBeanAttributes(new BeanAttributesDecorator<>(pba.getBeanAttributes(), namedContexts.keySet()));
-    }
-
-    private <T extends CamelContext> void camelContextBeans(@Observes ProcessInjectionTarget<T> pit, BeanManager manager) {
-        pit.setInjectionTarget(new CamelContextInjectionTarget<>(pit.getAnnotatedType(), pit.getInjectionTarget(), manager, this));
     }
 
     private void camelEventNotifiers(@Observes ProcessObserverMethod<? extends EventObject, ?> pom) {
