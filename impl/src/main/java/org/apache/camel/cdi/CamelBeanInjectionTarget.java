@@ -16,23 +16,19 @@
  */
 package org.apache.camel.cdi;
 
-
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.InjectionException;
-import javax.enterprise.inject.Vetoed;
 import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
-import java.util.Set;
 
-@Vetoed
-final class CdiCamelInjectionTarget<T> implements InjectionTarget<T> {
+final class CamelBeanInjectionTarget<T> extends DelegateInjectionTarget<T> implements InjectionTarget<T> {
 
     private final InjectionTarget<T> delegate;
 
     private final CdiCamelBeanPostProcessor processor;
 
-    CdiCamelInjectionTarget(InjectionTarget<T> delegate, BeanManager manager) {
+    CamelBeanInjectionTarget(InjectionTarget<T> delegate, BeanManager manager) {
+        super(delegate);
         this.delegate = delegate;
         this.processor = new CdiCamelBeanPostProcessor(manager);
     }
@@ -47,45 +43,5 @@ final class CdiCamelInjectionTarget<T> implements InjectionTarget<T> {
         } catch (Exception cause) {
             throw new InjectionException("Camel annotations post processing of [" + delegate + "] failed!", cause);
         }
-    }
-
-    @Override
-    public void postConstruct(T instance) {
-        delegate.postConstruct(instance);
-    }
-
-    @Override
-    public void preDestroy(T instance) {
-        delegate.preDestroy(instance);
-    }
-
-    @Override
-    public T produce(CreationalContext<T> ctx) {
-        return delegate.produce(ctx);
-    }
-
-    @Override
-    public void dispose(T instance) {
-        delegate.dispose(instance);
-    }
-
-    @Override
-    public Set<InjectionPoint> getInjectionPoints() {
-        return delegate.getInjectionPoints();
-    }
-
-    @Override
-    public String toString() {
-        return delegate.toString();
-    }
-
-    @Override
-    public int hashCode() {
-        return delegate.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        return delegate.equals(object);
     }
 }

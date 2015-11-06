@@ -17,11 +17,11 @@
 package org.apache.camel.cdi.se.bean;
 
 
-import org.apache.camel.cdi.CdiCamelContext;
+import org.apache.camel.impl.DefaultCamelContext;
 
 import javax.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-public class DefaultCamelContextBean extends CdiCamelContext {
+public class DefaultCamelContextBean extends DefaultCamelContext {
 
 }

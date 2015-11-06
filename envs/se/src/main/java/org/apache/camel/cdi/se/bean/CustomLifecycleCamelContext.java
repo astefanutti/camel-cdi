@@ -17,7 +17,7 @@
 package org.apache.camel.cdi.se.bean;
 
 
-import org.apache.camel.cdi.CdiCamelContext;
+import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.util.ObjectHelper;
 
 import javax.annotation.PostConstruct;
@@ -26,7 +26,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 @ApplicationScoped
-public class CustomLifecycleCamelContext extends CdiCamelContext {
+public class CustomLifecycleCamelContext extends DefaultCamelContext {
 
     @Inject
     CustomLifecycleCamelContext() {

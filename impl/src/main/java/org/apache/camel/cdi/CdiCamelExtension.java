@@ -105,7 +105,7 @@ public class CdiCamelExtension implements Extension {
 
     private <T> void camelBeansPostProcessor(@Observes ProcessInjectionTarget<T> pit, BeanManager manager) {
         if (camelBeans.contains(pit.getAnnotatedType()))
-            pit.setInjectionTarget(new CdiCamelInjectionTarget<>(pit.getInjectionTarget(), manager));
+            pit.setInjectionTarget(new CamelBeanInjectionTarget<>(pit.getInjectionTarget(), manager));
     }
 
     private <T> void cdiEventEndpoints(@Observes ProcessInjectionPoint<?, CdiEventEndpoint<T>> pip) {
@@ -124,6 +124,10 @@ public class CdiCamelExtension implements Extension {
 
     private void producerTemplates(@Observes ProcessBeanAttributes<ProducerTemplate> pba) {
         pba.setBeanAttributes(new BeanAttributesDecorator<>(pba.getBeanAttributes(), namedContexts.keySet()));
+    }
+
+    private <T extends CamelContext> void camelContextBeans(@Observes ProcessInjectionTarget<T> pit, BeanManager manager) {
+        pit.setInjectionTarget(new CamelContextInjectionTarget<>(pit.getAnnotatedType(), pit.getInjectionTarget(), manager, this));
     }
 
     private void camelEventNotifiers(@Observes ProcessObserverMethod<? extends EventObject, ?> pom) {
@@ -159,7 +163,7 @@ public class CdiCamelExtension implements Extension {
 
     private void addDefaultCamelContext(@Observes AfterBeanDiscovery abd, BeanManager manager) {
         if (manager.getBeans(CamelContext.class, AnyLiteral.INSTANCE).isEmpty())
-            abd.addBean(new CdiCamelContextBean(manager));
+            abd.addBean(new CdiCamelContextBean(manager, defaultContext));
     }
 
     private void addCdiEventObserverMethods(@Observes AfterBeanDiscovery abd) {
@@ -171,9 +175,9 @@ public class CdiCamelExtension implements Extension {
         String defaultContextName = "camel-cdi";
         // Instantiate the Camel contexts
         Map<String, CamelContext> camelContexts = new HashMap<>();
-        for (Bean<?> bean : manager.getBeans(CdiCamelContext.class, AnyLiteral.INSTANCE)) {
+        for (Bean<?> bean : manager.getBeans(CamelContext.class, AnyLiteral.INSTANCE)) {
             ContextName name = CdiSpiHelper.getQualifierByType(bean, ContextName.class);
-            CdiCamelContext context = BeanManagerHelper.getReferenceByType(manager, CdiCamelContext.class, name != null ? name : DefaultLiteral.INSTANCE);
+            CamelContext context = BeanManagerHelper.getReferenceByType(manager, CamelContext.class, name != null ? name : DefaultLiteral.INSTANCE);
             if (name == null)
                 defaultContextName = context.getName();
             camelContexts.put(context.getName(), context);

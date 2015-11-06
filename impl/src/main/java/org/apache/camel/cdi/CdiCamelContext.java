@@ -17,37 +17,24 @@
 package org.apache.camel.cdi;
 
 import org.apache.camel.impl.DefaultCamelContext;
-import org.apache.camel.impl.DefaultCamelContextNameStrategy;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Vetoed;
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.inject.Inject;
 
+/**
+ * CDI {@link org.apache.camel.CamelContext} class that can be extended to declare custom Camel context beans. As Camel CDI is capable of managing any Camel context bean whose parent class is {@code org.apache.camel.CamelContext}, directly extending {@link org.apache.camel.impl.DefaultCamelContext} is recommended to avoid having to depend on a Camel CDI specific API.
+ *
+ * @deprecated Use {@link org.apache.camel.impl.DefaultCamelContext} directly instead:
+ *
+ * <pre><code>
+ * {@literal@}ApplicationScoped
+ * {@literal@}ContextName("foo")
+ * public class FooCamelContext extends DefaultCamelContext {
+ * }
+ * </code></pre>
+ *
+ */
 @Vetoed
+@Deprecated
 public class CdiCamelContext extends DefaultCamelContext {
 
-    @Inject
-    private BeanManager manager;
-
-    @Inject
-    private CdiCamelExtension extension;
-
-    @PostConstruct
-    void postConstruct() {
-        AnnotatedType<?> type = manager.createAnnotatedType(getClass());
-        ContextName name = type.getAnnotation(ContextName.class);
-        // Do not override the name if it's been already set (in the bean constructor for example)
-        if (getNameStrategy() instanceof DefaultCamelContextNameStrategy)
-            setName(name != null ? name.value() : "camel-cdi");
-
-        // Add bean registry and Camel injector
-        setRegistry(new CdiCamelRegistry(manager));
-        setInjector(new CdiCamelInjector(getInjector(), manager));
-
-        // Add event notifier if at least one observer is present
-        if (extension.getContextInfo(name).contains(ContextInfo.EventNotifierSupport))
-            getManagementStrategy().addEventNotifier(new CdiEventNotifier(manager, name));
-    }
 }

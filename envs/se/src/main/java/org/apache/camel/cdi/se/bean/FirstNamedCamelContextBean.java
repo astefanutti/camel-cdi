@@ -16,8 +16,8 @@
  */
 package org.apache.camel.cdi.se.bean;
 
-import org.apache.camel.cdi.CdiCamelContext;
 import org.apache.camel.cdi.ContextName;
+import org.apache.camel.impl.DefaultCamelContext;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
@@ -25,5 +25,5 @@ import javax.inject.Named;
 @ApplicationScoped
 @Named("first")
 @ContextName("first")
-public class FirstNamedCamelContextBean extends CdiCamelContext {
+public class FirstNamedCamelContextBean extends DefaultCamelContext {
 }

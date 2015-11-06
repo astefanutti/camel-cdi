@@ -16,34 +16,41 @@
  */
 package org.apache.camel.cdi;
 
+import org.apache.camel.impl.DefaultCamelContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.PassivationCapable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 
-final class CdiCamelContextBean implements Bean<CdiCamelContext>, PassivationCapable {
+final class CdiCamelContextBean implements Bean<DefaultCamelContext>, PassivationCapable {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    private final BeanManager manager;
+
+    private final EnumSet<ContextInfo> info;
 
     private final Set<Annotation> qualifiers;
 
     private final Set<Type> types;
 
-    private final InjectionTarget<CdiCamelContext> target;
-
-    CdiCamelContextBean(BeanManager manager) {
+    CdiCamelContextBean(BeanManager manager, EnumSet<ContextInfo> info) {
+        this.manager = manager;
+        this.info = info;
         this.qualifiers = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(AnyLiteral.INSTANCE, DefaultLiteral.INSTANCE)));
-        AnnotatedType<CdiCamelContext> annotatedType = manager.createAnnotatedType(CdiCamelContext.class);
-        this.types = Collections.unmodifiableSet(annotatedType.getTypeClosure());
-        this.target = manager.createInjectionTarget(annotatedType);
+        this.types = Collections.unmodifiableSet(manager.createAnnotatedType(DefaultCamelContext.class).getTypeClosure());
     }
 
     @Override
@@ -57,29 +64,35 @@ final class CdiCamelContextBean implements Bean<CdiCamelContext>, PassivationCap
     }
 
     @Override
-    public CdiCamelContext create(CreationalContext<CdiCamelContext> creational) {
-        CdiCamelContext context = target.produce(creational);
-        target.inject(context, creational);
-        target.postConstruct(context);
-        creational.push(context);
+    public DefaultCamelContext create(CreationalContext<DefaultCamelContext> creational) {
+        DefaultCamelContext context = new DefaultCamelContext();
+        context.setName("camel-cdi");
+
+        // Add bean registry and Camel injector
+        context.setRegistry(new CdiCamelRegistry(manager));
+        context.setInjector(new CdiCamelInjector(context.getInjector(), manager));
+
+        // Add event notifier if at least one observer is present
+        if (info.contains(ContextInfo.EventNotifierSupport))
+            context.getManagementStrategy().addEventNotifier(new CdiEventNotifier(manager));
+
         return context;
     }
 
     @Override
-    public void destroy(CdiCamelContext instance, CreationalContext<CdiCamelContext> creational) {
-        target.preDestroy(instance);
-        target.dispose(instance);
-        creational.release();
+    public void destroy(DefaultCamelContext instance, CreationalContext<DefaultCamelContext> creational) {
+        if (!instance.getStatus().isStopped())
+            logger.warn("{} has not stopped!", instance);
     }
 
     @Override
-    public Class<CdiCamelContext> getBeanClass() {
-        return CdiCamelContext.class;
+    public Class<DefaultCamelContext> getBeanClass() {
+        return DefaultCamelContext.class;
     }
 
     @Override
     public Set<InjectionPoint> getInjectionPoints() {
-        return target.getInjectionPoints();
+        return Collections.emptySet();
     }
 
     @Override
@@ -90,7 +103,7 @@ final class CdiCamelContextBean implements Bean<CdiCamelContext>, PassivationCap
 
     @Override
     public String toString() {
-        return "Default CdiCamelContext Bean";
+        return "Default CDI CamelContext Bean";
     }
 
     @Override

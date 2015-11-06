@@ -16,8 +16,8 @@
  */
 package org.apache.camel.cdi.ee;
 
+import org.apache.camel.CamelContext;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.cdi.CdiCamelContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +36,7 @@ import java.util.logging.Level;
 public class Bootstrap {
 
     @Inject
-    CdiCamelContext context;
+    CamelContext context;
 
     Logger logger = LoggerFactory.getLogger(Bootstrap.class);
 

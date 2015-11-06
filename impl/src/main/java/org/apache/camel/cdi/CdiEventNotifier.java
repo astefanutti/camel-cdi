@@ -19,22 +19,28 @@ package org.apache.camel.cdi;
 import org.apache.camel.support.EventNotifierSupport;
 
 import javax.enterprise.inject.spi.BeanManager;
+import java.lang.annotation.Annotation;
 import java.util.EventObject;
 
 final class CdiEventNotifier extends EventNotifierSupport {
 
     private final BeanManager manager;
 
-    private final ContextName name;
+    private final Annotation qualifier;
+
+    CdiEventNotifier(BeanManager manager) {
+        this.manager = manager;
+        this.qualifier = DefaultLiteral.INSTANCE;
+    }
 
     CdiEventNotifier(BeanManager manager, ContextName name) {
         this.manager = manager;
-        this.name = name;
+        this.qualifier = name != null ? name : DefaultLiteral.INSTANCE;
     }
 
     @Override
     public void notify(EventObject event) {
-        manager.fireEvent(event, name != null ? name : DefaultLiteral.INSTANCE);
+        manager.fireEvent(event, qualifier);
     }
 
     @Override

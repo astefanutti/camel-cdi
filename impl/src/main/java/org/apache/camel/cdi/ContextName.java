@@ -31,7 +31,7 @@ import java.lang.annotation.Target;
  * <pre><code>
  *     {@literal@}ApplicationScoped
  *     {@literal@}ContextName("foo")
- *     public class FooCamelContext extends CdiCamelContext {
+ *     public class FooCamelContext extends DefaultCamelContext {
  *     }
  * </code></pre>
  *
@@ -59,7 +59,6 @@ import java.lang.annotation.Target;
  *     MockEndpoint barMockEndpoint;
  * </code></pre>
  *
- * @see org.apache.camel.cdi.CdiCamelContext
  * @see org.apache.camel.CamelContext
  *
  */

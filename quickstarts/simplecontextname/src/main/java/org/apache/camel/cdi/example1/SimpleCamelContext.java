@@ -16,9 +16,9 @@
  */
 package org.apache.camel.cdi.example1;
 
-import org.apache.camel.cdi.CdiCamelContext;
 import org.apache.camel.cdi.ContextName;
 import org.apache.camel.component.properties.PropertiesComponent;
+import org.apache.camel.impl.DefaultCamelContext;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -26,7 +26,7 @@ import javax.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 @ContextName("simple")
-public class SimpleCamelContext extends CdiCamelContext {
+public class SimpleCamelContext extends DefaultCamelContext {
 
     @PostConstruct
     void postConstruct() {

@@ -277,7 +277,7 @@ The official Camel CDI declares the `@ContextName` annotation that can be used t
 ```java
 @ApplicationScoped
 @ContextName("foo")
-class FooCamelContext extends CdiCamelContext {
+class FooCamelContext extends DefaultCamelContext {
 
 }
 ```
@@ -313,11 +313,11 @@ PropertiesComponent propertiesComponent() {
 
 ##### Camel Context Customization
 
-The `CdiCamelContext` class can be extended to declare a custom Camel context bean that uses the `@PostConstruct` and `@PreDestroy` lifecycle callbacks, e.g.:
+Any `CamelContext` class can be used to declare a custom Camel context bean that uses the `@PostConstruct` and `@PreDestroy` lifecycle callbacks, e.g.:
 
 ```java
 @ApplicationScoped
-class CustomCamelContext extends CdiCamelContext {
+class CustomCamelContext extends DefaultCamelContext {
 
     @PostConstruct
     void postConstruct() {
@@ -447,7 +447,7 @@ For example, given the two Camel contexts declared as CDI beans:
 @ApplicationScoped
 @Named("blackbox")
 @ContextName("foo")
-class FooCamelContext extends CdiCamelContext {
+class FooCamelContext extends DefaultCamelContext {
 
 }
 ```
@@ -455,7 +455,7 @@ class FooCamelContext extends CdiCamelContext {
 ```java
 @ApplicationScoped
 @ContextName("bar")
-class BarCamelContext extends CdiCamelContext {
+class BarCamelContext extends DefaultCamelContext {
 
 }
 ```

@@ -17,14 +17,14 @@
 package org.apache.camel.cdi.se.bean;
 
 
-import org.apache.camel.cdi.CdiCamelContext;
 import org.apache.camel.component.properties.PropertiesComponent;
+import org.apache.camel.impl.DefaultCamelContext;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-public class CustomPropertiesCamelContext extends CdiCamelContext {
+public class CustomPropertiesCamelContext extends DefaultCamelContext {
 
     @PostConstruct
     void addPropertiesLocation() {

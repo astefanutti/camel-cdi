@@ -19,7 +19,6 @@ package org.apache.camel.cdi.se;
 import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.cdi.CdiCamelContext;
 import org.apache.camel.cdi.CdiCamelExtension;
 import org.apache.camel.cdi.ContextName;
 import org.apache.camel.cdi.Uri;
@@ -39,7 +38,6 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.concurrent.TimeUnit;
 
