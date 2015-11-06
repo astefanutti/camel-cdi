@@ -20,7 +20,6 @@
         <camel.osgi.import.pkg>
             !${camel.osgi.export.pkg},
             javax.annotation;version="[1.1,2)",
-            org.jboss.weld.environment.se;resolution:=optional,
             org.apache.camel.*,
             org.apache.camel.cdi.*,
             org.apache.camel.support,
