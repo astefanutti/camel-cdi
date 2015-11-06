@@ -34,8 +34,7 @@
                 <configuration>
                     <executable>java</executable>
                     <arguments>
-                        <!-- Required to configured JUL used by OWB -->
-                        <argument>-Djava.util.logging.config.file=${project.basedir}/src/main/resources/logging.properties</argument>
+                        <argument>${arguments}</argument>
                         <argument>-classpath</argument>
                         <classpath/>
                         <argument>${example.main.class}</argument>
@@ -139,6 +138,10 @@
         </profile>
         <profile>
             <id>owb</id>
+            <properties>
+                <!-- Required to configured JUL used by OWB -->
+                <arguments>-Djava.util.logging.config.file=${project.basedir}/src/main/resources/logging.properties</arguments>
+            </properties>
             <dependencies>
                 <dependency>
                     <groupId>org.apache.deltaspike.cdictrl</groupId>
