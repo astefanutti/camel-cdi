@@ -19,7 +19,6 @@ package org.apache.camel.cdi.se;
 import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.cdi.CdiCamelExtension;
-import org.apache.camel.cdi.CdiPropertiesComponent;
 import org.apache.camel.cdi.Uri;
 import org.apache.camel.cdi.se.bean.CustomPropertiesCamelContext;
 import org.apache.camel.cdi.se.bean.PropertyEndpointRoute;
@@ -64,10 +63,12 @@ public class PropertyEndpointTest {
     @ApplicationScoped
     @Named("properties")
     private static PropertiesComponent configuration() {
-        Properties configuration = new Properties();
-        configuration.put("from", "inbound");
-        configuration.put("to", "mock:outbound");
-        return new CdiPropertiesComponent(configuration);
+        Properties properties = new Properties();
+        properties.put("from", "inbound");
+        properties.put("to", "mock:outbound");
+        PropertiesComponent component = new PropertiesComponent();
+        component.setInitialProperties(properties);
+        return component;
     }
 
     @Inject

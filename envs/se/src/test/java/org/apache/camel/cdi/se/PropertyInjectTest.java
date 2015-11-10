@@ -20,7 +20,6 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.cdi.CdiCamelExtension;
-import org.apache.camel.cdi.CdiPropertiesComponent;
 import org.apache.camel.cdi.Uri;
 import org.apache.camel.cdi.se.bean.PropertyInjectBean;
 import org.apache.camel.component.mock.MockEndpoint;
@@ -64,9 +63,11 @@ public class PropertyInjectTest {
     @ApplicationScoped
     @Named("properties")
     private static PropertiesComponent configuration() {
-        Properties configuration = new Properties();
-        configuration.put("property", "value");
-        return new CdiPropertiesComponent(configuration);
+        Properties properties = new Properties();
+        properties.put("property", "value");
+        PropertiesComponent component = new PropertiesComponent();
+        component.setInitialProperties(properties);
+        return component;
     }
 
     @Test

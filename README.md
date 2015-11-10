@@ -302,9 +302,10 @@ Instead of enforcing a specific configuration solution to setup the Camel [Prope
 @ApplicationScoped
 @Named("properties")
 PropertiesComponent propertiesComponent() {
-    Properties configuration = new Properties();
-    configuration.put("property", "value");
-    PropertiesComponent component = new CdiPropertiesComponent(configuration);
+    Properties properties = new Properties();
+    properties.put("property", "value");
+    PropertiesComponent component = new PropertiesComponent();
+    component.setInitialProperties(properties);
     component.setLocation("classpath:placeholder.properties");
     return component;
 }

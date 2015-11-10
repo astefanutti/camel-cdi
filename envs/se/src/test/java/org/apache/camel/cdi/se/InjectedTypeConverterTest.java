@@ -21,7 +21,6 @@ import org.apache.camel.NoTypeConversionAvailableException;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.TypeConverter;
 import org.apache.camel.cdi.CdiCamelExtension;
-import org.apache.camel.cdi.CdiPropertiesComponent;
 import org.apache.camel.cdi.Uri;
 import org.apache.camel.cdi.se.bean.InjectedTypeConverterRoute;
 import org.apache.camel.cdi.se.converter.InjectedTypeConverter;
@@ -72,10 +71,12 @@ public class InjectedTypeConverterTest {
     @ApplicationScoped
     @Named("properties")
     private static PropertiesComponent configuration() {
-        Properties configuration = new Properties();
-        configuration.put("property1", "value 1");
-        configuration.put("property2", "value 2");
-        return new CdiPropertiesComponent(configuration);
+        Properties properties = new Properties();
+        properties.put("property1", "value 1");
+        properties.put("property2", "value 2");
+        PropertiesComponent component = new PropertiesComponent();
+        component.setInitialProperties(properties);
+        return component;
     }
 
     @Test

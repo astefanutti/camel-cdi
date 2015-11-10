@@ -18,7 +18,6 @@ package org.apache.camel.cdi.se;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.cdi.CdiCamelExtension;
-import org.apache.camel.cdi.CdiPropertiesComponent;
 import org.apache.camel.component.properties.PropertiesComponent;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -26,6 +25,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -56,11 +56,13 @@ public class UndefinedPropertyTest {
     @ApplicationScoped
     @Named("properties")
     private static PropertiesComponent configuration() {
-        Properties configuration = new Properties();
-        configuration.put("from", "inbound");
+        Properties properties = new Properties();
+        properties.put("from", "inbound");
         // Do not add the looked up property for test purpose
-        //configuration.put("to", "mock:outbound");
-        return new CdiPropertiesComponent(configuration);
+        //properties.put("to", "mock:outbound");
+        PropertiesComponent component = new PropertiesComponent();
+        component.setInitialProperties(properties);
+        return component;
     }
 
     @Test
@@ -69,6 +71,8 @@ public class UndefinedPropertyTest {
     }
 
     @Test
+    // FIXME: reactivate when CAMEL-9305 is fixed
+    @Ignore("CAMEL-9305")
     public void lookupUndefinedProperty(CamelContext context) {
         try {
             context.resolvePropertyPlaceholders("{{to}}");

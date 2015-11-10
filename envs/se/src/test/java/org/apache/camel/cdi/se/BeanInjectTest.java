@@ -17,7 +17,6 @@
 package org.apache.camel.cdi.se;
 
 import org.apache.camel.cdi.CdiCamelExtension;
-import org.apache.camel.cdi.CdiPropertiesComponent;
 import org.apache.camel.cdi.se.bean.BeanInjectBean;
 import org.apache.camel.cdi.se.bean.NamedCamelBean;
 import org.apache.camel.cdi.se.bean.PropertyInjectBean;
@@ -62,9 +61,11 @@ public class BeanInjectTest {
     @ApplicationScoped
     @Named("properties")
     private static PropertiesComponent configuration() {
-        Properties configuration = new Properties();
-        configuration.put("property", "value");
-        return new CdiPropertiesComponent(configuration);
+        Properties properties = new Properties();
+        properties.put("property", "value");
+        PropertiesComponent component = new PropertiesComponent();
+        component.setInitialProperties(properties);
+        return component;
     }
 
     @Inject

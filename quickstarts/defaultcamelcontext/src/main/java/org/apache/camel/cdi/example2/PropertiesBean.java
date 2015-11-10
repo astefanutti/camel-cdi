@@ -16,7 +16,6 @@
  */
 package org.apache.camel.cdi.example2;
 
-import org.apache.camel.cdi.CdiPropertiesComponent;
 import org.apache.camel.component.properties.PropertiesComponent;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -30,7 +29,7 @@ public class PropertiesBean {
     @Named("properties")
     private static PropertiesComponent configuration() {
         String location = "classpath:placeholder.properties";
-        return new CdiPropertiesComponent(location);
+        return new PropertiesComponent(location);
     }
 
 }

@@ -18,7 +18,6 @@ package org.apache.camel.cdi.se;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.cdi.CdiCamelExtension;
-import org.apache.camel.cdi.CdiPropertiesComponent;
 import org.apache.camel.component.properties.PropertiesComponent;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
@@ -88,7 +87,7 @@ class SingleLocation {
     @ApplicationScoped
     @Named("properties")
     private static PropertiesComponent configuration() {
-        return new CdiPropertiesComponent("classpath:placeholder.properties");
+        return new PropertiesComponent("classpath:placeholder.properties");
     }
 }
 class MultipleLocations {
@@ -97,6 +96,6 @@ class MultipleLocations {
     @ApplicationScoped
     @Named("properties")
     private static PropertiesComponent configuration() {
-        return new CdiPropertiesComponent("classpath:foo.properties", "classpath:bar.properties");
+        return new PropertiesComponent("classpath:foo.properties", "classpath:bar.properties");
     }
 }
