@@ -42,13 +42,10 @@ class CamelContextProducer<T extends CamelContext> implements Producer<T> {
 
     private final BeanManager manager;
 
-    private final CdiCamelExtension extension;
-
-    CamelContextProducer(Producer<T> delegate, Annotated annotated, BeanManager manager, CdiCamelExtension extension) {
+    CamelContextProducer(Producer<T> delegate, Annotated annotated, BeanManager manager) {
         this.delegate = delegate;
         this.annotated = annotated;
         this.manager = manager;
-        this.extension = extension;
     }
 
     @Override
@@ -69,7 +66,7 @@ class CamelContextProducer<T extends CamelContext> implements Producer<T> {
         }
 
         // Add event notifier if at least one observer is present
-        if (extension.getContextInfo(name).contains(ContextInfo.EventNotifierSupport))
+        if (manager.getExtension(CdiCamelExtension.class).getContextInfo(name).contains(ContextInfo.EventNotifierSupport))
             instance.getManagementStrategy().addEventNotifier(new CdiEventNotifier(manager, name));
 
         return instance;

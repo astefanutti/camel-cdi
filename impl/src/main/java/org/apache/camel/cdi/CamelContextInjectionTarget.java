@@ -32,8 +32,8 @@ final class CamelContextInjectionTarget<T extends CamelContext> extends CamelCon
 
     private final InjectionTarget<T> delegate;
 
-    CamelContextInjectionTarget(InjectionTarget<T> delegate, Annotated type, BeanManager manager, CdiCamelExtension extension) {
-        super(delegate, type, manager, extension);
+    CamelContextInjectionTarget(InjectionTarget<T> delegate, Annotated type, BeanManager manager) {
+        super(delegate, type, manager);
         this.delegate = delegate;
     }
 

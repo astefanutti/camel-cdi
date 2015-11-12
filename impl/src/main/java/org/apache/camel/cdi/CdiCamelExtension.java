@@ -105,11 +105,11 @@ public class CdiCamelExtension implements Extension {
     }
 
     private <T extends CamelContext> void camelContextBeans(@Observes ProcessInjectionTarget<T> pit, BeanManager manager) {
-        pit.setInjectionTarget(new CamelContextInjectionTarget<>(pit.getInjectionTarget(), pit.getAnnotatedType(), manager, this));
+        pit.setInjectionTarget(new CamelContextInjectionTarget<>(pit.getInjectionTarget(), pit.getAnnotatedType(), manager));
     }
 
     private <T extends CamelContext> void camelContextProducers(@Observes ProcessProducer<?, T> pp, BeanManager manager) {
-        pp.setProducer(new CamelContextProducer<>(pp.getProducer(), pp.getAnnotatedMember(), manager, this));
+        pp.setProducer(new CamelContextProducer<>(pp.getProducer(), pp.getAnnotatedMember(), manager));
     }
 
     private <T> void camelBeansPostProcessor(@Observes ProcessInjectionTarget<T> pit, BeanManager manager) {
