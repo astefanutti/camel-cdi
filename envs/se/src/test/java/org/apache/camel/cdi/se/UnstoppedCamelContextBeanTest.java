@@ -44,7 +44,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
-public class UnstoppedCamelContextTest {
+public class UnstoppedCamelContextBeanTest {
 
     @Deployment
     public static Archive<?> deployment() {
