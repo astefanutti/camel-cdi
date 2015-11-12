@@ -79,7 +79,7 @@ public class UnstoppedCamelContextTest {
     }
 
     @ApplicationScoped
-    private static class UnstoppedCamelContext extends DefaultCamelContext {
+    static class UnstoppedCamelContext extends DefaultCamelContext {
 
         @PostConstruct
         void startContext() {
