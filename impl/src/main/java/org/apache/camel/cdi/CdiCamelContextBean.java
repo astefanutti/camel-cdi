@@ -17,6 +17,7 @@
 package org.apache.camel.cdi;
 
 import org.apache.camel.impl.DefaultCamelContext;
+import org.apache.camel.util.ObjectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,8 +82,14 @@ final class CdiCamelContextBean implements Bean<DefaultCamelContext>, Passivatio
 
     @Override
     public void destroy(DefaultCamelContext instance, CreationalContext<DefaultCamelContext> creational) {
-        if (!instance.getStatus().isStopped())
-            logger.warn("{} has not stopped!", instance);
+        if (!instance.getStatus().isStopped()) {
+            logger.info("Camel CDI is stopping {}", instance);
+            try {
+                instance.stop();
+            } catch (Exception cause) {
+                throw ObjectHelper.wrapRuntimeCamelException(cause);
+            }
+        }
     }
 
     @Override

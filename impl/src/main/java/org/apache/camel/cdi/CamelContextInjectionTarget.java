@@ -20,6 +20,7 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.DefaultCamelContextNameStrategy;
 import org.apache.camel.impl.ExplicitCamelContextNameStrategy;
+import org.apache.camel.util.ObjectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +75,13 @@ final class CamelContextInjectionTarget<T extends CamelContext> extends Delegate
     @Override
     public void preDestroy(T instance) {
         super.preDestroy(instance);
-        if (!instance.getStatus().isStopped())
-            logger.warn("{} has not stopped!", instance);
+        if (!instance.getStatus().isStopped()) {
+            logger.info("Camel CDI is stopping {}", instance);
+            try {
+                instance.stop();
+            } catch (Exception cause) {
+                throw ObjectHelper.wrapRuntimeCamelException(cause);
+            }
+        }
     }
 }
