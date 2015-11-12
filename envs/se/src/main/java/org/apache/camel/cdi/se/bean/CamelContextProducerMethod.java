@@ -29,7 +29,7 @@ public class CamelContextProducerMethod {
     @ApplicationScoped
     CamelContext createAndStartContext() throws Exception {
         DefaultCamelContext context = new DefaultCamelContext();
-        context.setName("camel-produced");
+        context.setName("camel-producer-method");
         context.start();
         return context;
     }
