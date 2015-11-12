@@ -35,7 +35,7 @@ final class CamelBeanInjectionTarget<T> extends DelegateInjectionTarget<T> imple
 
     @Override
     public void inject(T instance, CreationalContext<T> ctx) {
-        delegate.inject(instance, ctx);
+        super.inject(instance, ctx);
         try {
             // TODO: see how to retrieve the bean name
             processor.postProcessBeforeInitialization(instance, instance.getClass().getName());
