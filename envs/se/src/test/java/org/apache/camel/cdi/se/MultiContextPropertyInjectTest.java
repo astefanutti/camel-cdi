@@ -109,15 +109,6 @@ public class MultiContextPropertyInjectTest {
         return component;
     }
 
-//    @Produces
-//    @ApplicationScoped
-//    @Named("second:properties")
-//    private static PropertiesComponent secondCamelContextConfiguration() {
-//        Properties configuration = new Properties();
-//        configuration.put("property", "second");
-//        return new CdiPropertiesComponent(configuration);
-//    }
-
     @Test
     @InSequence(1)
     public void configureAndStartCamelContexts() throws Exception {
