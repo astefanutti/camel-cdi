@@ -94,4 +94,12 @@ public class ContextComponentTest {
 
         MockEndpoint.assertIsSatisfied(1L, TimeUnit.SECONDS, outbound);
     }
+
+    @Test
+    @InSequence(4)
+    public void stopCamelContexts(@ContextName("first") CamelContext first, @ContextName("second") CamelContext second) throws Exception {
+        first.stop();
+        second.stop();
+        main.stop();
+    }
 }
