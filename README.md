@@ -338,6 +338,28 @@ class CustomCamelContext extends DefaultCamelContext {
 }
 ```
 
+[Producer][] and [disposer][] methods can be used as well to customize the a Camel context bean, e.g.:
+```java
+class CamelContextFactory {
+
+    @Produces
+    @ApplicationScoped
+    CamelContext produces() throws Exception {
+        DefaultCamelContext context = new DefaultCamelContext();
+        context.setName("custom");
+        context.start();
+        return context;
+    }
+
+    void disposes(@Disposes CamelContext context) throws Exception {
+        context.stop();
+    }
+}
+```
+
+[Producer]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#producer_method
+[disposer]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#disposer_method
+
 ##### `@Uri` and `@Mock` Endpoint Qualifiers Unification
 
 As commented by [@jstrachan](https://github.com/jstrachan) in [CAMEL-5553](https://issues.apache.org/jira/browse/CAMEL-5553?focusedCommentId=13445936&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-13445936), the `@Mock` qualifier has been introduced to work around _ambiguous resolution_ with the producer method for other kinds of endpoints. Yet it is redundant with the semantic provided by the `@Uri` qualifier.

@@ -47,6 +47,7 @@ import javax.enterprise.inject.spi.ProcessBeanAttributes;
 import javax.enterprise.inject.spi.ProcessInjectionPoint;
 import javax.enterprise.inject.spi.ProcessInjectionTarget;
 import javax.enterprise.inject.spi.ProcessObserverMethod;
+import javax.enterprise.inject.spi.ProcessProducer;
 import javax.enterprise.inject.spi.WithAnnotations;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
@@ -104,7 +105,11 @@ public class CdiCamelExtension implements Extension {
     }
 
     private <T extends CamelContext> void camelContextBeans(@Observes ProcessInjectionTarget<T> pit, BeanManager manager) {
-        pit.setInjectionTarget(new CamelContextInjectionTarget<>(pit.getAnnotatedType(), pit.getInjectionTarget(), manager, this));
+        pit.setInjectionTarget(new CamelContextInjectionTarget<>(pit.getInjectionTarget(), pit.getAnnotatedType(), manager, this));
+    }
+
+    private <T extends CamelContext> void camelContextProducers(@Observes ProcessProducer<?, T> pp, BeanManager manager) {
+        pp.setProducer(new CamelContextProducer<>(pp.getProducer(), pp.getAnnotatedMember(), manager, this));
     }
 
     private <T> void camelBeansPostProcessor(@Observes ProcessInjectionTarget<T> pit, BeanManager manager) {
