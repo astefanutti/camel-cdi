@@ -338,7 +338,7 @@ class CustomCamelContext extends DefaultCamelContext {
 }
 ```
 
-[Producer][] and [disposer][] methods can be used as well to customize the a Camel context bean, e.g.:
+[Producer][producer method] and [disposer][disposer method] methods can be used as well to customize the a Camel context bean, e.g.:
 ```java
 class CamelContextFactory {
 
@@ -357,8 +357,23 @@ class CamelContextFactory {
 }
 ```
 
-[Producer]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#producer_method
-[disposer]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#disposer_method
+Similarly, [producer fields][producer field] can be used, e.g.:
+```java
+@Produces
+@ApplicationScoped
+CamelContext context = new CustomCamelContext();
+
+class CustomCamelContext extends DefaultCamelContext {
+
+    CustomCamelContext() {
+        setName("custom");
+    }
+}
+```
+
+[producer method]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#producer_method
+[disposer method]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#disposer_method
+[producer field]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#producer_field
 
 ##### `@Uri` and `@Mock` Endpoint Qualifiers Unification
 
