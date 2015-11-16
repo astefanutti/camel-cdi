@@ -43,11 +43,14 @@ import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
+import javax.enterprise.inject.spi.ProcessBean;
 import javax.enterprise.inject.spi.ProcessBeanAttributes;
 import javax.enterprise.inject.spi.ProcessInjectionPoint;
 import javax.enterprise.inject.spi.ProcessInjectionTarget;
 import javax.enterprise.inject.spi.ProcessObserverMethod;
 import javax.enterprise.inject.spi.ProcessProducer;
+import javax.enterprise.inject.spi.ProcessProducerField;
+import javax.enterprise.inject.spi.ProcessProducerMethod;
 import javax.enterprise.inject.spi.WithAnnotations;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
@@ -57,6 +60,7 @@ import java.util.EnumSet;
 import java.util.EventObject;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -72,6 +76,8 @@ public class CdiCamelExtension implements Extension {
     private final Map<InjectionPoint, ForwardingObserverMethod<?>> cdiEventEndpoints = new ConcurrentHashMap<>();
 
     private final Map<ContextName, EnumSet<ContextInfo>> namedContexts = new ConcurrentHashMap<>();
+
+    private final EnumSet<ContextInfo> anyContext = EnumSet.noneOf(ContextInfo.class);
 
     private final EnumSet<ContextInfo> defaultContext = EnumSet.noneOf(ContextInfo.class);
 
@@ -99,11 +105,6 @@ public class CdiCamelExtension implements Extension {
         eagerBeans.add(pat.getAnnotatedType());
     }
 
-    private void camelContextNames(@Observes ProcessAnnotatedType<? extends CamelContext> pat) {
-        if (pat.getAnnotatedType().isAnnotationPresent(ContextName.class))
-            namedContexts.put(pat.getAnnotatedType().getAnnotation(ContextName.class), EnumSet.noneOf(ContextInfo.class));
-    }
-
     private <T extends CamelContext> void camelContextBeans(@Observes ProcessInjectionTarget<T> pit, BeanManager manager) {
         pit.setInjectionTarget(new CamelContextInjectionTarget<>(pit.getInjectionTarget(), pit.getAnnotatedType(), manager));
     }
@@ -124,15 +125,15 @@ public class CdiCamelExtension implements Extension {
     }
 
     private <T extends Endpoint> void endpointProducers(@Observes ProcessBeanAttributes<T> pba) {
-        if (CdiEventEndpoint.class.equals(CdiSpiHelper.getRawType(pba.getAnnotated().getBaseType())))
-            // Veto the bean as we first need to collect the injection points metadata during the bean discovery phase in the cdiEventEndpoints() method. The bean attributes decoration is done after the bean discovery in the cdiEventEndpointProducers() method.  
+        // Veto the bean as we first need to collect the metadata during the bean discovery phase. The bean attributes decoration is done after the bean discovery.
+        if (pba.getAnnotated() instanceof AnnotatedMethod && CdiCamelFactory.class.equals(((AnnotatedMethod) pba.getAnnotated()).getDeclaringType().getJavaClass()))
             pba.veto();
-        else
-            pba.setBeanAttributes(new BeanAttributesDecorator<>(pba.getBeanAttributes(), namedContexts.keySet()));
     }
 
     private void producerTemplates(@Observes ProcessBeanAttributes<ProducerTemplate> pba) {
-        pba.setBeanAttributes(new BeanAttributesDecorator<>(pba.getBeanAttributes(), namedContexts.keySet()));
+        // Veto the bean as we first need to collect the metadata during the bean discovery phase. The bean attributes decoration is done after the bean discovery.
+        if (pba.getAnnotated() instanceof AnnotatedMethod && CdiCamelFactory.class.equals(((AnnotatedMethod) pba.getAnnotated()).getDeclaringType().getJavaClass()))
+            pba.veto();
     }
 
     private void camelEventNotifiers(@Observes ProcessObserverMethod<? extends EventObject, ?> pom) {
@@ -142,26 +143,67 @@ public class CdiCamelExtension implements Extension {
             Set<Annotation> qualifiers = pom.getObserverMethod().getObservedQualifiers();
             if (qualifiers.isEmpty()) {
                 defaultContext.add(ContextInfo.EventNotifierSupport);
-                for (EnumSet<ContextInfo> info : namedContexts.values())
-                    info.add(ContextInfo.EventNotifierSupport);
+                anyContext.add(ContextInfo.EventNotifierSupport);
             } else {
                 for (Annotation qualifier : qualifiers)
                     if (qualifier instanceof ContextName)
-                        // TODO: fix NPE in case corresponding Camel context does not exist and throw DeploymentException
-                        namedContexts.get(qualifier).add(ContextInfo.EventNotifierSupport);
+                        // Use the functional API introduced in JDK 8 when it becomes a pre-requisite
+                        if (namedContexts.containsKey(qualifier))
+                            namedContexts.get(qualifier).add(ContextInfo.EventNotifierSupport);
+                        else
+                            namedContexts.put((ContextName) qualifier, EnumSet.of(ContextInfo.EventNotifierSupport));
                     else if (qualifier instanceof Default)
                         defaultContext.add(ContextInfo.EventNotifierSupport);
+                    // FIXME: support for explicit @Any qualifier
             }
         }
     }
 
-    private void cdiEventEndpointProducers(@Observes AfterBeanDiscovery abd, BeanManager manager) {
+    private <T extends CamelContext> void camelContextBeans(@Observes ProcessBean<T> pb) {
+        processCamelContextBean(pb.getBean());
+    }
+
+    private <T extends CamelContext> void camelContextProducerFields(@Observes ProcessProducerField<T, ?> pb) {
+        processCamelContextBean(pb.getBean());
+    }
+
+    private <T extends CamelContext> void camelContextProducerMethods(@Observes ProcessProducerMethod<T, ?> pb) {
+        processCamelContextBean(pb.getBean());
+    }
+
+    private void processCamelContextBean(Bean<?> bean) {
+        ContextName name = CdiSpiHelper.getQualifierByType(bean, ContextName.class);
+        if (name != null) {
+            // Use the functional API introduced in JDK 8 when it becomes a pre-requisite
+            if (namedContexts.containsKey(name))
+                namedContexts.get(name).add(ContextInfo.ProcessBean);
+            else
+                namedContexts.put(name, EnumSet.of(ContextInfo.ProcessBean));
+        } else {
+            defaultContext.add(ContextInfo.ProcessBean);
+        }
+    }
+
+    private void cdiCamelFactoryProducers(@Observes AfterBeanDiscovery abd, BeanManager manager) {
+        // Do not take contexts info that do not correspond to any deployed bean into account
+        Iterator<EnumSet<ContextInfo>> it = namedContexts.values().iterator();
+        while (it.hasNext())
+            if (!it.next().contains(ContextInfo.ProcessBean))
+                it.remove();
+        // Decorate the CDI Camel factory beans with the metadata gathered during the bean discovery phase
+        Bean<CdiCamelFactory> bean = (Bean<CdiCamelFactory>) manager.resolve(manager.getBeans(CdiCamelFactory.class));
         for (AnnotatedMethod<? super CdiCamelFactory> am : abd.getAnnotatedType(CdiCamelFactory.class, null).getMethods()) {
-            if (am.isAnnotationPresent(Produces.class) && CdiEventEndpoint.class.equals(CdiSpiHelper.getRawType(am.getBaseType()))) {
+            if (!am.isAnnotationPresent(Produces.class))
+                continue;
+            Class<?> type = CdiSpiHelper.getRawType(am.getBaseType());
+            if (CdiEventEndpoint.class.equals(type)) {
                 Set<Annotation> qualifiers = new HashSet<>();
+                // TODO: exclude @ContextName qualifiers from injection points
                 for (InjectionPoint ip : cdiEventEndpoints.keySet())
                     qualifiers.addAll(ip.getQualifiers());
-                abd.addBean(manager.createBean(new BeanAttributesDecorator<>(manager.createBeanAttributes(am), qualifiers), CdiCamelFactory.class, manager.getProducerFactory(am, (Bean<CdiCamelFactory>) manager.resolve(manager.getBeans(CdiCamelFactory.class)))));
+                abd.addBean(manager.createBean(new BeanAttributesDecorator<>(manager.createBeanAttributes(am), qualifiers), CdiCamelFactory.class, manager.getProducerFactory(am, bean)));
+            } else if (Endpoint.class.isAssignableFrom(type) || ProducerTemplate.class.isAssignableFrom(type)) {
+                abd.addBean(manager.createBean(new BeanAttributesDecorator<>(manager.createBeanAttributes(am), namedContexts.keySet()), CdiCamelFactory.class, manager.getProducerFactory(am, bean)));
             }
         }
     }
@@ -176,7 +218,15 @@ public class CdiCamelExtension implements Extension {
             abd.addObserverMethod(method);
     }
 
-    private void configureCamelContexts(@Observes AfterDeploymentValidation adv, BeanManager manager) {
+    private void updateContextInfo(@Observes AfterBeanDiscovery abd) {
+        if (anyContext.contains(ContextInfo.EventNotifierSupport)) {
+            defaultContext.add(ContextInfo.EventNotifierSupport);
+            for (EnumSet<ContextInfo> context : namedContexts.values())
+                context.add(ContextInfo.EventNotifierSupport);
+        }
+    }
+
+    private void createCamelContexts(@Observes AfterDeploymentValidation adv, BeanManager manager) {
         String defaultContextName = "camel-cdi";
         // Instantiate the Camel contexts
         Map<String, CamelContext> camelContexts = new HashMap<>();

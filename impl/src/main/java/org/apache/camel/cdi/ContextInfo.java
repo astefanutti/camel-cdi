@@ -18,5 +18,6 @@ package org.apache.camel.cdi;
 
 enum ContextInfo {
 
+    ProcessBean,
     EventNotifierSupport
 }
