@@ -67,7 +67,7 @@ final class CdiSpiHelper {
             if (rawType != null)
                 return Array.newInstance(rawType, 0).getClass();
         }
-        return null;
+        throw new UnsupportedOperationException("Unable to retrieve raw type for [" + type + "]");
     }
 
     private static Class<?> getBound(Type[] bounds) {
