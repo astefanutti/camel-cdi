@@ -17,15 +17,14 @@
 package org.apache.camel.cdi.se;
 
 import org.apache.camel.CamelContext;
+import org.apache.camel.ProducerTemplate;
 import org.apache.camel.cdi.CdiCamelExtension;
 import org.apache.camel.cdi.Uri;
 import org.apache.camel.cdi.se.bean.CustomLifecycleCamelContext;
 import org.apache.camel.cdi.se.bean.UriEndpointRoute;
-import org.apache.camel.ProducerTemplate;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.arquillian.junit.InSequence;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -66,7 +65,6 @@ public class CustomCamelContextTest {
     private MockEndpoint outbound;
 
     @Test
-    @InSequence(1)
     public void verifyCamelContext(CamelContext context) {
         assertThat(context.getName(), is(equalTo("custom")));
 
