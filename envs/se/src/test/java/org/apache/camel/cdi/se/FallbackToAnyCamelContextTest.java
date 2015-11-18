@@ -16,12 +16,17 @@
  */
 package org.apache.camel.cdi.se;
 
+import org.apache.camel.CamelContext;
+import org.apache.camel.ProducerTemplate;
 import org.apache.camel.cdi.CdiCamelExtension;
+import org.apache.camel.cdi.ContextName;
+import org.apache.camel.cdi.Uri;
 import org.apache.camel.cdi.se.bean.FirstCamelContextBean;
 import org.apache.camel.cdi.se.bean.UriEndpointRoute;
+import org.apache.camel.component.mock.MockEndpoint;
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.container.test.api.ShouldThrowException;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit.InSequence;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -29,25 +34,57 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.enterprise.inject.spi.DeploymentException;
+import javax.inject.Inject;
+import java.util.concurrent.TimeUnit;
+
+import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
-public class NoContextForRouteBuilderTest {
+public class FallbackToAnyCamelContextTest {
 
     @Deployment
-    @ShouldThrowException(DeploymentException.class)
     public static Archive<?> deployment() {
         return ShrinkWrap.create(JavaArchive.class)
             // Camel CDI
             .addPackage(CdiCamelExtension.class.getPackage())
             // Test classes
-            .addClasses(FirstCamelContextBean.class,
-                UriEndpointRoute.class)
+            .addClasses(FirstCamelContextBean.class, UriEndpointRoute.class)
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
+    @Inject
+    @Uri("direct:inbound")
+    private ProducerTemplate inbound;
+
+    @Inject
+    private MockEndpoint outbound;
+
     @Test
-    public void test() {
+    @InSequence(1)
+    public void verifyAndStartContext(@ContextName("first") CamelContext context) throws Exception {
+        assertThat(context.getName(), is(equalTo("first")));
+
+        context.start();
+    }
+
+    @Test
+    @InSequence(2)
+    public void sendMessageToInbound() throws InterruptedException {
+        outbound.expectedMessageCount(1);
+        outbound.expectedBodiesReceived("test");
+
+        inbound.sendBody("test");
+
+        assertIsSatisfied(2L, TimeUnit.SECONDS, outbound);
+    }
+
+    @Test
+    @InSequence(3)
+    public void stopContext(@ContextName("first") CamelContext context) throws Exception {
+        context.stop();
     }
 }

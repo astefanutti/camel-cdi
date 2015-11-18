@@ -40,7 +40,7 @@ final class CdiCamelBeanPostProcessor extends DefaultCamelBeanPostProcessor {
 
     private final Map<String, CamelPostProcessorHelper> postProcessorHelpers = new HashMap<>();
 
-    // TODO: proper support for multi Camel contexts method post processing
+    // TODO: proper support for multi Camel contexts and custom context qualifiers
     CdiCamelBeanPostProcessor(BeanManager manager) {
         this.manager = manager;
     }
@@ -105,6 +105,7 @@ final class CdiCamelBeanPostProcessor extends DefaultCamelBeanPostProcessor {
     }
 
     private CamelContext getOrLookupCamelContext(String contextName) {
+        // TODO: proper support for custom context qualifiers
         return BeanManagerHelper.getReferenceByType(manager, CamelContext.class, contextName.isEmpty() ? DefaultLiteral.INSTANCE : new ContextName.Literal(contextName));
     }
 

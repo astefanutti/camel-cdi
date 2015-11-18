@@ -30,6 +30,9 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.DeploymentException;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Producer;
+import java.lang.annotation.Annotation;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 class CamelContextProducer<T extends CamelContext> implements Producer<T> {
@@ -54,6 +57,7 @@ class CamelContextProducer<T extends CamelContext> implements Producer<T> {
         ContextName name = annotated.getAnnotation(ContextName.class);
         // Do not override the name if it's been already set (in the bean constructor for example)
         if (instance.getNameStrategy() instanceof DefaultCamelContextNameStrategy)
+            // TODO: proper support for @Named and custom context qualifiers
             instance.setNameStrategy(new ExplicitCamelContextNameStrategy(name != null ? name.value() : "camel-cdi"));
 
         // Add bean registry and Camel injector
@@ -66,8 +70,18 @@ class CamelContextProducer<T extends CamelContext> implements Producer<T> {
         }
 
         // Add event notifier if at least one observer is present
-        if (manager.getExtension(CdiCamelExtension.class).getContextInfo(name).contains(ContextInfo.EventNotifierSupport))
-            instance.getManagementStrategy().addEventNotifier(new CdiEventNotifier(manager, name));
+        HashSet<Annotation> qualifiers = new HashSet<>(annotated.getAnnotations());
+        Iterator<Annotation> it = qualifiers.iterator();
+        while (it.hasNext())
+            if (!manager.isQualifier(it.next().annotationType()))
+                it.remove();
+        if (qualifiers.isEmpty())
+            qualifiers.add(DefaultLiteral.INSTANCE);
+
+        Set<Annotation> events = new HashSet<>(manager.getExtension(CdiCamelExtension.class).getObserverEvents());
+        events.retainAll(qualifiers);
+        if (!events.isEmpty())
+            instance.getManagementStrategy().addEventNotifier(new CdiEventNotifier(manager, qualifiers));
 
         return instance;
     }

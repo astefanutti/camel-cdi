@@ -20,6 +20,7 @@ import javax.enterprise.inject.Vetoed;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import java.lang.annotation.Annotation;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,7 +30,7 @@ final class BeanManagerHelper {
     static <T> Set<T> getReferencesByType(BeanManager manager, Class<T> type, Annotation... qualifiers) {
         Set<T> references = new HashSet<>();
         for (Bean<?> bean : manager.getBeans(type, qualifiers))
-            references.add(getReferenceByType(manager, type, bean));
+            references.add(getReference(manager, type, bean));
 
         return references;
     }
@@ -39,7 +40,11 @@ final class BeanManagerHelper {
         if (beans == null || beans.isEmpty())
             return null;
 
-        return getReferenceByType(manager, type, manager.resolve(beans));
+        return getReference(manager, type, manager.resolve(beans));
+    }
+
+    static <T> T getReferenceByType(BeanManager manager, Class<T> type, Collection<Annotation> qualifiers) {
+        return getReferenceByType(manager, type, qualifiers.toArray(new Annotation[qualifiers.size()]));
     }
 
     static <T> T getReferenceByType(BeanManager manager, Class<T> type, Annotation... qualifiers) {
@@ -47,10 +52,10 @@ final class BeanManagerHelper {
         if (beans == null || beans.isEmpty())
             return null;
 
-        return getReferenceByType(manager, type, manager.resolve(beans));
+        return getReference(manager, type, manager.resolve(beans));
     }
 
-    static <T> T getReferenceByType(BeanManager manager, Class<T> type, Bean<?> bean) {
+    static <T> T getReference(BeanManager manager, Class<T> type, Bean<?> bean) {
         return type.cast(manager.getReference(bean, type, manager.createCreationalContext(bean)));
     }
 }

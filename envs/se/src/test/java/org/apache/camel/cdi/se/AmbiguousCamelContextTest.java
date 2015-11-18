@@ -16,11 +16,11 @@
  */
 package org.apache.camel.cdi.se;
 
+import org.apache.camel.ServiceStatus;
 import org.apache.camel.cdi.CdiCamelExtension;
 import org.apache.camel.cdi.se.bean.CustomLifecycleCamelContext;
 import org.apache.camel.cdi.se.bean.CustomPropertiesCamelContext;
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.container.test.api.ShouldThrowException;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -29,25 +29,27 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.enterprise.inject.spi.DeploymentException;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
 public class AmbiguousCamelContextTest {
 
     @Deployment
-    @ShouldThrowException(DeploymentException.class)
     public static Archive<?> deployment() {
         return ShrinkWrap.create(JavaArchive.class)
             // Camel CDI
             .addPackage(CdiCamelExtension.class.getPackage())
             // Test classes
-            .addClasses(CustomLifecycleCamelContext.class,
-                CustomPropertiesCamelContext.class)
+            .addClasses(CustomLifecycleCamelContext.class, CustomPropertiesCamelContext.class)
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Test
-    public void test() {
+    public void test(CustomLifecycleCamelContext lifecycleCamelContext, CustomPropertiesCamelContext propertiesCamelContext) {
+        assertThat(lifecycleCamelContext.getStatus(), is(equalTo(ServiceStatus.Started)));
+        assertThat(propertiesCamelContext.getStatus(), is(equalTo(ServiceStatus.Stopped)));
     }
 }

@@ -31,7 +31,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -41,15 +40,12 @@ final class CdiCamelContextBean implements Bean<DefaultCamelContext>, Passivatio
 
     private final BeanManager manager;
 
-    private final EnumSet<ContextInfo> info;
-
     private final Set<Annotation> qualifiers;
 
     private final Set<Type> types;
 
-    CdiCamelContextBean(BeanManager manager, EnumSet<ContextInfo> info) {
+    CdiCamelContextBean(BeanManager manager) {
         this.manager = manager;
-        this.info = info;
         this.qualifiers = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(AnyLiteral.INSTANCE, DefaultLiteral.INSTANCE)));
         this.types = Collections.unmodifiableSet(manager.createAnnotatedType(DefaultCamelContext.class).getTypeClosure());
     }
@@ -74,7 +70,8 @@ final class CdiCamelContextBean implements Bean<DefaultCamelContext>, Passivatio
         context.setInjector(new CdiCamelInjector(context.getInjector(), manager));
 
         // Add event notifier if at least one observer is present
-        if (info.contains(ContextInfo.EventNotifierSupport))
+        Set<Annotation> events = manager.getExtension(CdiCamelExtension.class).getObserverEvents();
+        if (events.contains(AnyLiteral.INSTANCE) || events.contains(DefaultLiteral.INSTANCE))
             context.getManagementStrategy().addEventNotifier(new CdiEventNotifier(manager));
 
         return context;
