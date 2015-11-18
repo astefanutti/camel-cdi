@@ -19,7 +19,6 @@ package org.apache.camel.cdi;
 import org.apache.camel.util.ObjectHelper;
 
 import javax.enterprise.inject.Vetoed;
-import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
@@ -32,10 +31,6 @@ import java.util.Collection;
 
 @Vetoed
 final class CdiSpiHelper {
-
-    static <T extends Annotation> T getQualifierByType(Bean<?> bean, Class<T> type) {
-        return getFirstElementOfType(bean.getQualifiers(), type);
-    }
 
     static <T extends Annotation> T getQualifierByType(InjectionPoint ip, Class<T> type) {
         return getFirstElementOfType(ip.getQualifiers(), type);
