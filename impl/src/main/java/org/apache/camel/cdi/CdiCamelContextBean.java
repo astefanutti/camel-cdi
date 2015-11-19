@@ -72,7 +72,7 @@ final class CdiCamelContextBean implements Bean<DefaultCamelContext>, Passivatio
         // Add event notifier if at least one observer is present
         Set<Annotation> events = manager.getExtension(CdiCamelExtension.class).getObserverEvents();
         if (events.contains(AnyLiteral.INSTANCE) || events.contains(DefaultLiteral.INSTANCE))
-            context.getManagementStrategy().addEventNotifier(new CdiEventNotifier(manager));
+            context.getManagementStrategy().addEventNotifier(new CdiEventNotifier(manager, Collections.<Annotation>singleton(DefaultLiteral.INSTANCE)));
 
         return context;
     }

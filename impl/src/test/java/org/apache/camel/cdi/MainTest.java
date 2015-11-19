@@ -29,7 +29,6 @@ import java.util.concurrent.TimeUnit;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasKey;
-import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -41,9 +40,9 @@ public class MainTest {
         Main main = new Main();
         main.start();
 
-        assertThat("Camel contexts are not deployed!", main.getCamelContextMap(), allOf(hasKey("camel-cdi"), hasKey("foo")));
+        assertThat("Camel contexts are not deployed!", main.getCamelContextMap(), allOf(hasKey("default"), hasKey("foo")));
 
-        CamelContext context = main.getCamelContextMap().get("camel-cdi");
+        CamelContext context = main.getCamelContextMap().get("default");
         assertThat("Default Camel context is not started", context.getStatus(), is(equalTo(ServiceStatus.Started)));
         assertThat("Foo Camel context is not started", main.getCamelContextMap().get("foo").getStatus(), is(equalTo(ServiceStatus.Started)));
 

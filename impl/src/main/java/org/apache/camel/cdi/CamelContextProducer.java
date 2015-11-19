@@ -30,9 +30,9 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.DeploymentException;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Producer;
+import javax.inject.Named;
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 class CamelContextProducer<T extends CamelContext> implements Producer<T> {
@@ -54,11 +54,20 @@ class CamelContextProducer<T extends CamelContext> implements Producer<T> {
     @Override
     public T produce(CreationalContext<T> ctx) {
         T instance = delegate.produce(ctx);
-        ContextName name = annotated.getAnnotation(ContextName.class);
         // Do not override the name if it's been already set (in the bean constructor for example)
-        if (instance.getNameStrategy() instanceof DefaultCamelContextNameStrategy)
-            // TODO: proper support for @Named and custom context qualifiers
-            instance.setNameStrategy(new ExplicitCamelContextNameStrategy(name != null ? name.value() : "camel-cdi"));
+        if (instance.getNameStrategy() instanceof DefaultCamelContextNameStrategy) {
+            if (annotated.isAnnotationPresent(ContextName.class)) {
+                instance.setNameStrategy(new ExplicitCamelContextNameStrategy(annotated.getAnnotation(ContextName.class).value()));
+            }
+            else if (annotated.isAnnotationPresent(Named.class)) {
+                String name = annotated.getAnnotation(Named.class).value();
+                if (name.isEmpty()) {
+                    name = CdiSpiHelper.getRawType(annotated.getBaseType()).getSimpleName();
+                    name = Character.toLowerCase(name.charAt(0)) + name.substring(1);
+                }
+                instance.setNameStrategy(new ExplicitCamelContextNameStrategy(name));
+            }
+        }
 
         // Add bean registry and Camel injector
         if (instance instanceof DefaultCamelContext) {
@@ -70,15 +79,10 @@ class CamelContextProducer<T extends CamelContext> implements Producer<T> {
         }
 
         // Add event notifier if at least one observer is present
-        HashSet<Annotation> qualifiers = new HashSet<>(annotated.getAnnotations());
-        Iterator<Annotation> it = qualifiers.iterator();
-        while (it.hasNext())
-            if (!manager.isQualifier(it.next().annotationType()))
-                it.remove();
-        if (qualifiers.isEmpty())
-            qualifiers.add(DefaultLiteral.INSTANCE);
-
-        Set<Annotation> events = new HashSet<>(manager.getExtension(CdiCamelExtension.class).getObserverEvents());
+        CdiCamelExtension extension = manager.getExtension(CdiCamelExtension.class);
+        Set<Annotation> events = new HashSet<>(extension.getObserverEvents());
+        // Annotated must be wrapped because of OWB-1099
+        Set<Annotation> qualifiers = extension.getContextBean(new AnnotatedWrapper(annotated)).getQualifiers();
         events.retainAll(qualifiers);
         if (!events.isEmpty())
             instance.getManagementStrategy().addEventNotifier(new CdiEventNotifier(manager, qualifiers));

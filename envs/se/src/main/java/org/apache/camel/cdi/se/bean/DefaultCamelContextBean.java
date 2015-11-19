@@ -20,7 +20,9 @@ package org.apache.camel.cdi.se.bean;
 import org.apache.camel.impl.DefaultCamelContext;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Named;
 
+@Named("camel-cdi")
 @ApplicationScoped
 public class DefaultCamelContextBean extends DefaultCamelContext {
 

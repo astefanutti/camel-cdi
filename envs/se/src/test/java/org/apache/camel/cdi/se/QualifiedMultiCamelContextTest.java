@@ -41,6 +41,7 @@ import org.junit.runner.RunWith;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.concurrent.TimeUnit;
 
 import static org.apache.camel.cdi.se.expression.ExchangeExpression.fromCamelContext;
@@ -174,7 +175,7 @@ class FooCamelContext extends DefaultCamelContext {
 }
 
 @BarQualifier
-@ContextName("second")
+@Named("second")
 @ApplicationScoped
 class BarCamelContext extends DefaultCamelContext {
 

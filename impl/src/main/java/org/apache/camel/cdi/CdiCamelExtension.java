@@ -30,9 +30,12 @@ import org.apache.camel.RoutesBuilder;
 import org.apache.camel.management.event.AbstractExchangeEvent;
 
 import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Any;
+import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.AfterDeploymentValidation;
+import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
@@ -51,6 +54,7 @@ import javax.enterprise.inject.spi.ProcessProducer;
 import javax.enterprise.inject.spi.ProcessProducerField;
 import javax.enterprise.inject.spi.ProcessProducerMethod;
 import javax.enterprise.inject.spi.WithAnnotations;
+import javax.inject.Named;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -76,6 +80,8 @@ public class CdiCamelExtension implements Extension {
 
     private final Map<InjectionPoint, ForwardingObserverMethod<?>> cdiEventEndpoints = new ConcurrentHashMap<>();
 
+    private final Map<Annotated, Bean<?>> contextBeans = new ConcurrentHashMap<>();
+
     private final Set<Annotation> contextQualifiers = newSetFromMap(new ConcurrentHashMap<Annotation, Boolean>());
 
     private final Set<Annotation> eventQualifiers = newSetFromMap(new ConcurrentHashMap<Annotation, Boolean>());
@@ -86,6 +92,10 @@ public class CdiCamelExtension implements Extension {
 
     Set<Annotation> getObserverEvents() {
         return eventQualifiers;
+    }
+
+    Bean<?> getContextBean(Annotated annotated) {
+        return contextBeans.get(annotated);
     }
 
     Collection<Annotation> retainContextQualifiers(Collection<Annotation> annotations) {
@@ -149,19 +159,21 @@ public class CdiCamelExtension implements Extension {
     }
 
     private <T extends CamelContext> void camelContextBeans(@Observes ProcessBean<T> pb) {
-        processCamelContextBean(pb.getBean());
+        processCamelContextBean(pb.getAnnotated(), pb.getBean());
     }
 
     private <T extends CamelContext> void camelContextProducerFields(@Observes ProcessProducerField<T, ?> pb) {
-        processCamelContextBean(pb.getBean());
+        processCamelContextBean(pb.getAnnotated(), pb.getBean());
     }
 
     private <T extends CamelContext> void camelContextProducerMethods(@Observes ProcessProducerMethod<T, ?> pb) {
-        processCamelContextBean(pb.getBean());
+        processCamelContextBean(pb.getAnnotated(), pb.getBean());
     }
 
-    private void processCamelContextBean(Bean<?> bean) {
+    private void processCamelContextBean(Annotated annotated, Bean<?> bean) {
         contextQualifiers.addAll(bean.getQualifiers());
+        // Annotated must be wrapped because of OWB-1099
+        contextBeans.put(new AnnotatedWrapper(annotated), bean);
     }
 
     private void cdiCamelFactoryProducers(@Observes AfterBeanDiscovery abd, BeanManager manager) {
@@ -176,9 +188,9 @@ public class CdiCamelExtension implements Extension {
                 // TODO: exclude the context qualifiers from injection points
                 for (InjectionPoint ip : cdiEventEndpoints.keySet())
                     qualifiers.addAll(ip.getQualifiers());
-                abd.addBean(manager.createBean(qualifiers.isEmpty() ? manager.createBeanAttributes(am) : new BeanAttributesDecorator<>(manager.createBeanAttributes(am), qualifiers), CdiCamelFactory.class, manager.getProducerFactory(am, bean)));
+                abd.addBean(manager.createBean(new BeanAttributesDecorator<>(manager.createBeanAttributes(am), qualifiers), CdiCamelFactory.class, manager.getProducerFactory(am, bean)));
             } else if (Endpoint.class.isAssignableFrom(type) || ProducerTemplate.class.isAssignableFrom(type)) {
-                abd.addBean(manager.createBean(new BeanAttributesDecorator<>(manager.createBeanAttributes(am), contextQualifiers, Arrays.asList(AnyLiteral.INSTANCE, DefaultLiteral.INSTANCE)), CdiCamelFactory.class, manager.getProducerFactory(am, bean)));
+                abd.addBean(manager.createBean(new BeanAttributesDecorator<>(manager.createBeanAttributes(am), contextQualifiers, Arrays.asList(Any.class, Default.class, Named.class)), CdiCamelFactory.class, manager.getProducerFactory(am, bean)));
             }
         }
     }

@@ -29,11 +29,6 @@ final class CdiEventNotifier extends EventNotifierSupport {
 
     private final Annotation[] qualifiers;
 
-    CdiEventNotifier(BeanManager manager) {
-        this.manager = manager;
-        this.qualifiers = new Annotation[]{DefaultLiteral.INSTANCE};
-    }
-
     CdiEventNotifier(BeanManager manager, Set<Annotation> qualifiers) {
         this.manager = manager;
         this.qualifiers = qualifiers.toArray(new Annotation[qualifiers.size()]);
