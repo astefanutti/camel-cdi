@@ -66,6 +66,9 @@ class CamelContextProducer<T extends CamelContext> implements Producer<T> {
                     name = Character.toLowerCase(name.charAt(0)) + name.substring(1);
                 }
                 instance.setNameStrategy(new ExplicitCamelContextNameStrategy(name));
+            } else {
+                // Use a specific naming strategy for Camel CDI as the default one increments the suffix for each CDI proxy created
+                instance.setNameStrategy(new CdiCamelContextNameStrategy());
             }
         }
 

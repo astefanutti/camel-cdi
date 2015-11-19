@@ -59,7 +59,7 @@ public class UnstoppedCamelContextProducerMethodTest {
     }
 
 
-    private static CamelContext context = new DefaultCamelContext();
+    private static DefaultCamelContext context = new DefaultCamelContext();
 
     @ClassRule
     public static Verifier verifier = new Verifier() {
@@ -82,6 +82,7 @@ public class UnstoppedCamelContextProducerMethodTest {
     @Produces
     @ApplicationScoped
     private CamelContext produceAndStartContext() throws Exception {
+        context.setName("unstopped-context");
         context.start();
         return context;
     }
