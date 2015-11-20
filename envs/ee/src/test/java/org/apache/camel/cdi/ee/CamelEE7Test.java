@@ -45,7 +45,7 @@ public class CamelEE7Test {
                     .withTransitivity()
                     .as(JavaArchive.class))
             .addAsModule(
-                ShrinkWrap.create(JavaArchive.class)
+                ShrinkWrap.create(JavaArchive.class, "camel-ee7.jar")
                     .addClass(Bootstrap.class)
                     .addClass(HelloCamel.class)
                     // FIXME: Test class must be added until ARQ-659 is fixed
