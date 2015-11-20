@@ -276,9 +276,15 @@
                                     <unescape>false</unescape>
                                     <regex>true</regex>
                                     <replacements>
+                                        <!-- Replace Camel CDI -->
                                         <replacement>
                                             <token>resource-root path="camel-cdi-.*\.jar"</token>
                                             <value>resource-root path="camel-cdi-${project.version}.jar"</value>
+                                        </replacement>
+                                        <!-- Remove DeltaSpike -->
+                                        <replacement>
+                                            <token><![CDATA[<module name="org\.apache\.deltaspike.*" />]]></token>
+                                            <value></value>
                                         </replacement>
                                     </replacements>
                                 </configuration>
