@@ -451,22 +451,22 @@ String property;
 @Produce(uri = "mock:outbound")
 ProducerTemplate producer;
 
+//Equivalent to:
+//@Inject @Uri("direct:inbound")
+//Endpoint endpoint;
 @EndpointInject(uri = "direct:inbound")
 Endpoint endpoint;
-// Equivalent to:
-// @Inject @Uri("direct:inbound")
-// Endpoint endpoint;
 
+//Equivalent to:
+//@Inject @ContextName("foo") @Uri("direct:inbound")
+//Endpoint contextEndpoint;
 @EndpointInject(uri = "direct:inbound", context = "foo")
 Endpoint contextEndpoint;
-// Equivalent to:
-// @Inject @ContextName("foo") @Uri("direct:inbound")
-// Endpoint contextEndpoint;
 
+//Equivalent to:
+//@Inject MyBean bean;
 @BeanInject
 MyBean bean;
-// Equivalent to:
-// @Inject MyBean bean;
 
 @Consume(uri = "seda:inbound")
 void consume(@Body String body) {
