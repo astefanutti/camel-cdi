@@ -20,8 +20,8 @@
         </camel.osgi.export.pkg>
         <camel.osgi.import.pkg>
             !${camel.osgi.export.pkg},
+            !org.apache.deltaspike.cdise.api.*,
             org.apache.camel.*,
-            org.apache.deltaspike.cdise.api;version="[1.1,2)";resolution:="optional",
             *
         </camel.osgi.import.pkg>
         <camel.osgi.private.pkg>!*</camel.osgi.private.pkg>
@@ -109,7 +109,7 @@
                         <Export-Package>${camel.osgi.export.pkg}</Export-Package>
                         <Import-Package>${camel.osgi.import.pkg}</Import-Package>
                         <DynamicImport-Package>${camel.osgi.dynamic}</DynamicImport-Package>
-                        <Provide-Capability>org.ops4j.pax.cdi.extension; extension=camel-cdi</Provide-Capability>
+                        <Provide-Capability>org.ops4j.pax.cdi.extension; extension=camel-cdi-extension</Provide-Capability>
                         <Private-Package>${camel.osgi.private.pkg}</Private-Package>
                         <Implementation-Title>Apache Camel CDI</Implementation-Title>
                         <Implementation-Version>${project.version}</Implementation-Version>

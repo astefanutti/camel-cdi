@@ -19,10 +19,9 @@
         </camel.osgi.export.pkg>
         <camel.osgi.import.pkg>
             !${camel.osgi.export.pkg},
-            javax.annotation;version="[1.1,2)",
+            !org.apache.deltaspike.cdise.api.*,
+            !javax.annotation.*,
             org.apache.camel.*,
-            org.apache.camel.cdi.*,
-            org.apache.camel.support,
             *
         </camel.osgi.import.pkg>
         <camel.osgi.private.pkg>!*</camel.osgi.private.pkg>

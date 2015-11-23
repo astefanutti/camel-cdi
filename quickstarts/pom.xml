@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
     <parent>
-        <artifactId>camel-cdi-parent</artifactId>
         <groupId>io.astefanutti.camel.cdi</groupId>
+        <artifactId>camel-cdi-parent</artifactId>
         <version>1.2-SNAPSHOT</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
 
     <artifactId>quickstarts</artifactId>
     <name>Camel CDI :: Quickstarts</name>
@@ -162,6 +163,9 @@
         </profile>
         <profile>
             <id>bundle</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <properties>
                 <packaging.type>bundle</packaging.type>
             </properties>
@@ -181,7 +185,7 @@
                                 <Import-Package>${camel.osgi.import.pkg}</Import-Package>
                                 <Require-Capability>
                                     osgi.extender; filter:="(osgi.extender=pax.cdi)",
-                                    org.ops4j.pax.cdi.extension; filter:="(extension=camel-cdi)"
+                                    org.ops4j.pax.cdi.extension; filter:="(extension=camel-cdi-extension)"
                                 </Require-Capability>
                                 <DynamicImport-Package>${camel.osgi.dynamic}</DynamicImport-Package>
                                 <Private-Package>${camel.osgi.private.pkg}</Private-Package>
