@@ -74,7 +74,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Maven dependencies -->
-        <camel.version>2.16.0</camel.version>
+        <camel.version>2.16.1</camel.version>
         <cdi.version>1.2</cdi.version>
         <deltaspike.version>1.5.1</deltaspike.version>
         <javaee.version>7.0</javaee.version>
