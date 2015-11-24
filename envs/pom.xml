@@ -15,7 +15,7 @@
     <modules>
         <module>ee</module>
         <module>se</module>
-        <module>karaf</module>
+        <module>osgi</module>
     </modules>
 
     <profiles>
