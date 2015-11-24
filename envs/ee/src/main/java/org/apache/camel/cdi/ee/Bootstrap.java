@@ -17,7 +17,6 @@
 package org.apache.camel.cdi.ee;
 
 import org.apache.camel.CamelContext;
-import org.apache.camel.builder.RouteBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,13 +25,9 @@ import javax.annotation.PreDestroy;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.inject.Inject;
-import java.util.logging.Level;
 
-/**
- * @author Arun Gupta / Markus Eisele
- */
-@Singleton
 @Startup
+@Singleton
 public class Bootstrap {
 
     @Inject
@@ -41,38 +36,22 @@ public class Bootstrap {
     Logger logger = LoggerFactory.getLogger(Bootstrap.class);
 
     @PostConstruct
-    public void init() {
-        logger.info(">> Create Camel context and register Camel route.");
-
+    void init() {
         try {
-            context.addRoutes(new RouteBuilder() {
-                @Override
-                public void configure() {
-
-                    from("timer://timer1?period=1000")
-                        .setBody()
-                        .simple("Camel")
-                        .bean("helloCamel", "sayHello")
-                        .log(">> Response : ${body}");
-                }
-            });
-        // Start Camel context
-        context.start();
-
-        logger.info(">> Camel context created and Camel route started.");
+            logger.info("Starting {}...", context);
+            context.start();
         } catch (Exception cause) {
-            java.util.logging.Logger.getLogger(Bootstrap.class.getName()).log(Level.SEVERE, null, cause);
+            logger.error("Error while starting {}", context, cause);
         }
     }
 
     @PreDestroy
-    public void shutdown() {
-        // Graceful shutdown Camel context
+    void shutdown() {
         try {
+            logger.info("Gracefully shutting down {}...", context);
             context.stop();
-            logger.info(">> Camel context stopped.");
         } catch (Exception cause) {
-            java.util.logging.Logger.getLogger(Bootstrap.class.getName()).log(Level.SEVERE, null, cause);
+            logger.error("Error while stopping {}", context, cause);
         }
     }
 }

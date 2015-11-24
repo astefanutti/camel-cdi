@@ -16,6 +16,8 @@
  */
 package org.apache.camel.cdi.ee;
 
+import org.apache.camel.CamelContext;
+import org.apache.camel.ServiceStatus;
 import org.apache.camel.cdi.ee.category.Integration;
 import org.apache.camel.cdi.ee.category.WildFlyCamel;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -26,15 +28,21 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.wildfly.extension.camel.CamelAware;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
 // Should ideally be removed so that there is no compile dependency on WildFly Camel
 @CamelAware
 @RunWith(Arquillian.class)
 @Category({Integration.class, WildFlyCamel.class})
+@Ignore("https://github.com/wildfly-extras/wildfly-camel/issues/978")
 public class CamelWildFlyEarTest {
 
     @Deployment
@@ -44,8 +52,9 @@ public class CamelWildFlyEarTest {
             .addAsManifestResource("jboss-deployment-structure.xml")
             .addAsModule(
                 ShrinkWrap.create(JavaArchive.class, "camel-wildfly.jar")
-                    .addClass(Bootstrap.class)
-                    .addClass(HelloCamel.class)
+                    .addClasses(Bootstrap.class,
+                        CamelRoute.class,
+                        HelloCamel.class)
                     // FIXME: Test class must be added until ARQ-659 is fixed
                     .addClass(CamelWildFlyEarTest.class)
                     .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml"));
@@ -53,6 +62,13 @@ public class CamelWildFlyEarTest {
 
     @Test
     @InSequence(1)
+    public void verifyContext(CamelContext context) {
+        assertThat("Camel context is not started!", context.getStatus(), is(equalTo(ServiceStatus.Started)));
+        assertThat("Timer route is not started!", context.getRouteStatus("timer"), is(equalTo(ServiceStatus.Started)));
+    }
+
+    @Test
+    @InSequence(2)
     public void pauseWhileLogging() throws InterruptedException {
         Thread.sleep(10000L);
     }

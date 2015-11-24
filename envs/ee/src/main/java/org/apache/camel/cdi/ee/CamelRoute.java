@@ -16,14 +16,15 @@
  */
 package org.apache.camel.cdi.ee;
 
-import org.apache.camel.Body;
+import org.apache.camel.builder.RouteBuilder;
 
-import javax.inject.Named;
+class CamelRoute extends RouteBuilder {
 
-@Named
-public class HelloCamel {
-
-    public String sayHello(@Body String message) {
-        return "Hello " + message + " user!";
+    @Override
+    public void configure() {
+        from("timer://timer1?period=1000").routeId("timer")
+            .setBody().simple("Camel")
+            .bean("helloCamel", "sayHello")
+            .log(">> Response: ${body}");
     }
 }

@@ -16,6 +16,8 @@
  */
 package org.apache.camel.cdi.ee;
 
+import org.apache.camel.CamelContext;
+import org.apache.camel.ServiceStatus;
 import org.apache.camel.cdi.ee.category.Integration;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -29,6 +31,10 @@ import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
 @Category(Integration.class)
@@ -46,8 +52,9 @@ public class CamelEE7Test {
                     .as(JavaArchive.class))
             .addAsModule(
                 ShrinkWrap.create(JavaArchive.class, "camel-ee7.jar")
-                    .addClass(Bootstrap.class)
-                    .addClass(HelloCamel.class)
+                    .addClasses(Bootstrap.class,
+                        CamelRoute.class,
+                        HelloCamel.class)
                     // FIXME: Test class must be added until ARQ-659 is fixed
                     .addClass(CamelEE7Test.class)
                     .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml"));
@@ -55,6 +62,13 @@ public class CamelEE7Test {
 
     @Test
     @InSequence(1)
+    public void verifyContext(CamelContext context) {
+        assertThat("Camel context is not started!", context.getStatus(), is(equalTo(ServiceStatus.Started)));
+        assertThat("Timer route is not started!", context.getRouteStatus("timer"), is(equalTo(ServiceStatus.Started)));
+    }
+
+    @Test
+    @InSequence(2)
     public void pauseWhileLogging() throws InterruptedException {
         Thread.sleep(10000L);
     }
