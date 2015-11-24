@@ -19,7 +19,6 @@ package org.apache.camel.cdi.example2;
 import org.apache.camel.Endpoint;
 import org.apache.camel.EndpointInject;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.cdi.Uri;
 
 import javax.inject.Inject;
 
@@ -28,8 +27,7 @@ public class SimpleCamelRoute extends RouteBuilder {
     @EndpointInject(uri = "timer://start")
     private Endpoint timerEP;
 
-    @Inject
-    @Uri("direct:continue")
+    @EndpointInject(uri = "direct:continue")
     private Endpoint directEP;
 
     @Inject

@@ -35,23 +35,21 @@
 
     <dependencies>
 
-        <!-- CDI -->
         <dependency>
             <groupId>javax.enterprise</groupId>
             <artifactId>cdi-api</artifactId>
         </dependency>
 
-        <!-- Camel CDI -->
         <dependency>
-            <groupId>io.astefanutti.camel.cdi</groupId>
-            <artifactId>camel-cdi</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-core</artifactId>
         </dependency>
 
         <!-- DeltaSpike container control -->
         <dependency>
             <groupId>org.apache.deltaspike.cdictrl</groupId>
             <artifactId>deltaspike-cdictrl-api</artifactId>
+            <optional>true</optional>
         </dependency>
 
     </dependencies>
