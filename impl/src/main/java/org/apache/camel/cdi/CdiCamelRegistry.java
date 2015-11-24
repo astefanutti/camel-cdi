@@ -21,11 +21,9 @@ import org.apache.camel.util.ObjectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Resource;
 import javax.enterprise.inject.Vetoed;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.Unmanaged;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -40,15 +38,8 @@ final class CdiCamelRegistry implements Registry {
 
     private final BeanManager manager;
 
-    @Vetoed
-    private final static class JavaEE {
-        @Resource(lookup = "java:comp/BeanManager")
-        private BeanManager manager;
-    }
-
     CdiCamelRegistry(BeanManager manager) {
-        JavaEE javaEE = new Unmanaged<>(manager, JavaEE.class).newInstance().produce().inject().get();
-        this.manager = javaEE.manager != null ? javaEE.manager : manager;
+        this.manager = manager;
     }
 
     @Override
@@ -101,6 +92,7 @@ final class CdiCamelRegistry implements Registry {
     }
 
     @Override
+
     public String toString() {
         return "CDI Bean Registry [" + System.identityHashCode(this) + "]";
     }
