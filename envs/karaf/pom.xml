@@ -12,7 +12,6 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>features</module>
         <module>itest</module>
     </modules>
 
