@@ -43,6 +43,14 @@
             <artifactId>camel-core</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>io.astefanutti.camel.cdi</groupId>
+            <artifactId>camel-cdi</artifactId>
+            <version>${project.version}</version>
+            <!-- That example only depends on Camel API -->
+            <scope>runtime</scope>
+        </dependency>
+
         <!-- DeltaSpike container control -->
         <dependency>
             <groupId>org.apache.deltaspike.cdictrl</groupId>
