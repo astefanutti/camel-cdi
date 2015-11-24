@@ -21,8 +21,7 @@ import org.apache.deltaspike.cdise.api.CdiContainer;
 import org.apache.deltaspike.cdise.api.CdiContainerLoader;
 
 import javax.enterprise.inject.Vetoed;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.CDI;
 import java.util.concurrent.CountDownLatch;
 
 @Vetoed
@@ -37,10 +36,8 @@ public class Main {
         Runtime.getRuntime().addShutdownHook(shutdownHook);
         container.boot();
 
-        BeanManager manager = container.getBeanManager();
-        Bean<?> bean = manager.resolve(manager.getBeans(CamelContext.class));
-        CamelContext context = (CamelContext) manager.getReference(bean, CamelContext.class, manager.createCreationalContext(bean));
-        context.start();
+        // Start the Camel context
+        CDI.current().select(CamelContext.class).get().start();
 
         // Wait until the JVM exits
         shutdownHook.latch.await();
@@ -59,7 +56,7 @@ public class Main {
         @Override
         public void run() {
             try {
-                // Camel context is stopped in the @PreDestroy lifecycle callback
+                // Camel context is gracefully shut down by Camel CDI
                 container.shutdown();
             } catch (Exception cause) {
                 cause.printStackTrace();
