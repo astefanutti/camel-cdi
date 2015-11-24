@@ -27,8 +27,8 @@ import org.ops4j.pax.exam.karaf.options.LogLevelOption;
 import java.io.File;
 
 import static org.junit.Assert.assertTrue;
-import static org.ops4j.pax.exam.CoreOptions.bundle;
 import static org.ops4j.pax.exam.CoreOptions.maven;
+import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.configureConsole;
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.features;
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.karafDistributionConfiguration;
@@ -60,15 +60,15 @@ public class CdiPaxExamKarafTest {
 
             // Load Features PAX CDI Weld and Camel CDI
             features(
-                maven().groupId("org.ops4j.pax.cdi").artifactId("pax-cdi-features").type("xml").classifier("features").version("1.0.0.RC1"),
+                maven().groupId("org.ops4j.pax.cdi").artifactId("pax-cdi-features").type("xml").classifier("features").versionAsInProject(),
                 "pax-cdi-weld"
             ),
             features(
-                maven().groupId("io.astefanutti.camel.cdi").artifactId("camel-cdi").type("xml").classifier("features").version("1.2-SNAPSHOT"),
+                maven().groupId("io.astefanutti.camel.cdi").artifactId("camel-cdi").type("xml").classifier("features").versionAsInProject(),
                 "camel-cdi"
             ),
             // Install example
-            bundle("mvn:io.astefanutti.camel.cdi/simplecontextname/1.2-SNAPSHOT")
+            mavenBundle().groupId("io.astefanutti.camel.cdi").artifactId("simplecontextname").versionAsInProject()
         };
     }
 
