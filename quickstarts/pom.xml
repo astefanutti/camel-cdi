@@ -38,7 +38,7 @@
                         <argument>${arguments}</argument>
                         <argument>-classpath</argument>
                         <classpath/>
-                        <argument>${example.main.class}</argument>
+                        <argument>org.apache.camel.cdi.Main</argument>
                     </arguments>
                 </configuration>
             </plugin>

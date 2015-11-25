@@ -12,27 +12,21 @@
     <packaging>${packaging.type}</packaging>
 
     <properties>
-        <!-- OSGI Properties -->
         <camel.osgi.dynamic />
         <camel.osgi.export.pkg>
             org.apache.camel.cdi.example2.*
         </camel.osgi.export.pkg>
         <camel.osgi.import.pkg>
             !${camel.osgi.export.pkg},
-            !org.apache.deltaspike.cdise.api.*,
             org.apache.camel.*,
             *
         </camel.osgi.import.pkg>
         <camel.osgi.private.pkg>!*</camel.osgi.private.pkg>
         <camel.osgi.symbolic.name>${project.groupId}.${project.artifactId}</camel.osgi.symbolic.name>
         <camel.osgi.bundle.name>${project.name}</camel.osgi.bundle.name>
-
-        <!-- Main Class to Boot -->
-        <example.main.class>org.apache.camel.cdi.example2.Main</example.main.class>
     </properties>
 
     <dependencies>
-
         <dependency>
             <groupId>javax.enterprise</groupId>
             <artifactId>cdi-api</artifactId>
@@ -47,17 +41,8 @@
             <groupId>io.astefanutti.camel.cdi</groupId>
             <artifactId>camel-cdi</artifactId>
             <version>${project.version}</version>
-            <!-- That example only depends on Camel API -->
+            <!-- That example only depends on Camel and CDI API -->
             <scope>runtime</scope>
         </dependency>
-
-        <!-- DeltaSpike container control -->
-        <dependency>
-            <groupId>org.apache.deltaspike.cdictrl</groupId>
-            <artifactId>deltaspike-cdictrl-api</artifactId>
-            <optional>true</optional>
-        </dependency>
-
     </dependencies>
-
 </project>
