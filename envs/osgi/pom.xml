@@ -119,10 +119,10 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Examples -->
+        <!-- Samples -->
         <dependency>
             <groupId>io.astefanutti.camel.cdi</groupId>
-            <artifactId>simplecontextname</artifactId>
+            <artifactId>camel-cdi-sample-hello</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

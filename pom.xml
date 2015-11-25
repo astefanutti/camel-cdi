@@ -100,9 +100,9 @@
 
     <modules>
         <module>impl</module>
-        <module>envs</module>
         <module>maven</module>
-        <module>quickstarts</module>
+        <module>samples</module>
+        <module>envs</module>
     </modules>
 
     <build>
