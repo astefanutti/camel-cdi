@@ -168,10 +168,13 @@
             </activation>
             <properties>
                 <packaging.type>bundle</packaging.type>
+                <camel.osgi.dynamic />
+                <camel.osgi.export.pkg />
+                <camel.osgi.import.pkg>*</camel.osgi.import.pkg>
+                <camel.osgi.private.pkg>!*</camel.osgi.private.pkg>
             </properties>
             <build>
                 <plugins>
-                    <!-- Felix Maven Plugin -->
                     <plugin>
                         <groupId>org.apache.felix</groupId>
                         <artifactId>maven-bundle-plugin</artifactId>
@@ -179,8 +182,8 @@
                         <extensions>true</extensions>
                         <configuration>
                             <instructions>
-                                <Bundle-Name>${camel.osgi.bundle.name}</Bundle-Name>
-                                <Bundle-SymbolicName>${camel.osgi.symbolic.name}</Bundle-SymbolicName>
+                                <Bundle-Name>${project.name}</Bundle-Name>
+                                <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
                                 <Export-Package>${camel.osgi.export.pkg}</Export-Package>
                                 <Import-Package>${camel.osgi.import.pkg}</Import-Package>
                                 <Require-Capability>

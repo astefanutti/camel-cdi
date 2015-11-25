@@ -12,19 +12,11 @@
     <packaging>${packaging.type}</packaging>
 
     <properties>
-        <camel.osgi.dynamic />
-        <camel.osgi.export.pkg>
-            org.apache.camel.cdi.example1.*
-        </camel.osgi.export.pkg>
+        <camel.osgi.private.pkg>org.apache.camel.cdi.example1.*</camel.osgi.private.pkg>
         <camel.osgi.import.pkg>
-            !${camel.osgi.export.pkg},
             !javax.annotation.*,
-            org.apache.camel.*,
             *
         </camel.osgi.import.pkg>
-        <camel.osgi.private.pkg>!*</camel.osgi.private.pkg>
-        <camel.osgi.symbolic.name>${project.groupId}.${project.artifactId}</camel.osgi.symbolic.name>
-        <camel.osgi.bundle.name>${project.name}</camel.osgi.bundle.name>
     </properties>
 
     <dependencies>
