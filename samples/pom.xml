@@ -19,6 +19,7 @@
     <modules>
         <module>hello</module>
         <module>properties</module>
+        <module>sjms</module>
     </modules>
 
     <build>
