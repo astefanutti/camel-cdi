@@ -14,18 +14,13 @@
 
     <properties>
         <!-- OSGI Properties -->
-        <camel.osgi.dynamic />
         <camel.osgi.export.pkg>
             org.apache.camel.cdi.*
         </camel.osgi.export.pkg>
         <camel.osgi.import.pkg>
-            !${camel.osgi.export.pkg},
             !org.apache.deltaspike.cdise.api.*,
-            org.apache.camel.*,
             *
         </camel.osgi.import.pkg>
-        <camel.osgi.private.pkg>!*</camel.osgi.private.pkg>
-        <camel.osgi.symbolic.name>${project.groupId}.${project.artifactId}</camel.osgi.symbolic.name>
 
         <!-- JUL configuration for OWB -->
         <argLine>-Djava.util.logging.config.file=src/test/resources/logging.properties</argLine>
@@ -139,12 +134,10 @@
                 <configuration>
                     <instructions>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
-                        <Bundle-SymbolicName>${camel.osgi.symbolic.name}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
                         <Export-Package>${camel.osgi.export.pkg}</Export-Package>
                         <Import-Package>${camel.osgi.import.pkg}</Import-Package>
-                        <DynamicImport-Package>${camel.osgi.dynamic}</DynamicImport-Package>
                         <Provide-Capability>org.ops4j.pax.cdi.extension; extension=camel-cdi-extension</Provide-Capability>
-                        <Private-Package>${camel.osgi.private.pkg}</Private-Package>
                         <Implementation-Title>Apache Camel CDI</Implementation-Title>
                         <Implementation-Version>${project.version}</Implementation-Version>
                         <Karaf-Info>Camel;${project.artifactId}=${project.version}</Karaf-Info>
