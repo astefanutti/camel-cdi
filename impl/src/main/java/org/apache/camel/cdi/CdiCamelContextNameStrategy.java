@@ -18,6 +18,7 @@ package org.apache.camel.cdi;
 
 import org.apache.camel.spi.CamelContextNameStrategy;
 
+import javax.enterprise.inject.Vetoed;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -29,6 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @see CamelContextNameStrategy
  */
+@Vetoed
 final class CdiCamelContextNameStrategy implements CamelContextNameStrategy {
 
     private static final AtomicInteger CONTEXT_COUNTER = new AtomicInteger(0);
