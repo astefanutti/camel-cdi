@@ -4,38 +4,66 @@ Welcome to the Camel CDI samples which demonstrate how to use CDI with your Came
 
 ## Java SE
 
-Each sample can be individually launched using the `Main` class that is provided by Camel CDI (directly from the IDE or the `java` command) or using the Exec Maven plugin:
+Each sample can be launched individually using the [`Main`](../impl/src/main/java/org/apache/camel/cdi/Main.java) class that is provided by Camel CDI (directly from the IDE or the `java` command) or using the Camel, Exec or HawtIO Maven plugins.
 
-```
-$ mvn clean compile exec:exec
-```
+The CDI implementation used to execute the samples can be explicitly defined, e.g.:
 
-Or to explicitly use Weld SE as CDI implementation (the default):
+- To use Weld SE as CDI implementation (the default):
 
-```
-$ mvn clean compile exec:exec -Pstandalone,weld
-```
+    ```
+    $ mvn hawtio:camel -Pstandalone,weld
+    ```
 
-Or to use OpenWebBeans as CDI implementation:
+- Or to use OpenWebBeans as CDI implementation:
 
-```
-$ mvn clean compile exec:exec -Pstandalone,owb
-```
+    ```
+    $ mvn hawtio:camel -Pstandalone,owb
+    ```
 
-Alternatively, you can also use the Camel Maven plugin that is able to start a CDI container with DeltaSpike container control:
+#### Camel Maven Plugin
 
-```
-$ mvn clean compile camel:run
-```
+To run a sample using the [Camel Maven plugin](http://camel.apache.org/camel-maven-plugin.html):
 
-Or to explicitly use Weld SE as CDI implementation (the default):
+- Compile the sample:
 
-```
-$ mvn clean compile camel:run -Pstandalone,weld
-```
+    ```
+    $ mvn clean compile camel:run
+    ```
 
-Or to use OpenWebBeans as CDI implementation:
+- Run the Camel Maven plugin:
 
-```
-$ mvn clean compile camel:run -Pstandalone,owb
-```
+    ```
+    $ mvn camel:run
+    ```
+
+#### Exec Maven Plugin
+
+To run a sample using the [Exec Maven plugin](http://www.mojohaus.org/exec-maven-plugin/):
+
+- Compile the sample:
+
+    ```
+    $ mvn clean compile
+    ```
+
+- Run the Exec Maven plugin:
+
+    ```
+    $ mvn exec:exec
+    ```
+
+#### HawtIO Maven Plugin
+
+To run a sample using the [HawtIO Maven plugin](http://hawt.io/maven/):
+
+- Compile the sample:
+
+    ```
+    $ mvn clean compile
+    ```
+
+- Run the HawtIO Maven plugin:
+
+    ```
+    $ mvn hawtio:camel
+    ```

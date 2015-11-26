@@ -117,6 +117,12 @@
                 </plugin>
 
                 <plugin>
+                    <groupId>io.hawt</groupId>
+                    <artifactId>hawtio-maven-plugin</artifactId>
+                    <version>1.4.58</version>
+                </plugin>
+
+                <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>build-helper-maven-plugin</artifactId>
                     <version>1.9.1</version>
