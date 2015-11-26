@@ -90,14 +90,10 @@ public class Main extends MainSupport {
         cdiContainer = container;
         super.doStart();
         postProcessContext();
-        for (CamelContext context : getCamelContexts())
-            context.start();
     }
 
     @Override
     protected void doStop() throws Exception {
-        for (CamelContext context : getCamelContexts())
-            context.stop();
         super.doStop();
         if (cdiContainer != null)
             ((org.apache.deltaspike.cdise.api.CdiContainer) cdiContainer).shutdown();
