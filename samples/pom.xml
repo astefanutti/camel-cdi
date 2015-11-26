@@ -97,8 +97,6 @@
                     <plugin>
                         <groupId>org.apache.felix</groupId>
                         <artifactId>maven-bundle-plugin</artifactId>
-                        <version>${maven-bundle-plugin.version}</version>
-                        <extensions>true</extensions>
                     </plugin>
                 </plugins>
             </build>
@@ -174,8 +172,6 @@
                     <plugin>
                         <groupId>org.apache.felix</groupId>
                         <artifactId>maven-bundle-plugin</artifactId>
-                        <version>${maven-bundle-plugin.version}</version>
-                        <extensions>true</extensions>
                         <configuration>
                             <instructions>
                                 <Bundle-Name>${project.name}</Bundle-Name>
