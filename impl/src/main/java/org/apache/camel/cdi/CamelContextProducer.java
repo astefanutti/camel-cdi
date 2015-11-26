@@ -96,18 +96,22 @@ class CamelContextProducer<T extends CamelContext> implements Producer<T> {
     @Override
     public void dispose(T instance) {
         delegate.dispose(instance);
-        if (!instance.getStatus().isStopped()) {
-            logger.info("Camel CDI is stopping {}", instance);
-            try {
-                instance.stop();
-            } catch (Exception cause) {
-                throw ObjectHelper.wrapRuntimeCamelException(cause);
-            }
-        }
+        stopCamelContext(instance);
     }
 
     @Override
     public Set<InjectionPoint> getInjectionPoints() {
         return delegate.getInjectionPoints();
+    }
+
+    protected void stopCamelContext(T context) {
+        if (!context.getStatus().isStopped()) {
+            logger.info("Camel CDI is stopping {}", context);
+            try {
+                context.stop();
+            } catch (Exception cause) {
+                throw ObjectHelper.wrapRuntimeCamelException(cause);
+            }
+        }
     }
 }

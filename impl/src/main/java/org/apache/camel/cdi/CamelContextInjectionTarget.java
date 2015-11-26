@@ -17,9 +17,6 @@
 package org.apache.camel.cdi;
 
 import org.apache.camel.CamelContext;
-import org.apache.camel.util.ObjectHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Annotated;
@@ -27,8 +24,6 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionTarget;
 
 final class CamelContextInjectionTarget<T extends CamelContext> extends CamelContextProducer<T> implements InjectionTarget<T> {
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final InjectionTarget<T> delegate;
 
@@ -55,13 +50,6 @@ final class CamelContextInjectionTarget<T extends CamelContext> extends CamelCon
     @Override
     public void preDestroy(T instance) {
         delegate.preDestroy(instance);
-        if (!instance.getStatus().isStopped()) {
-            logger.info("Camel CDI is stopping {}", instance);
-            try {
-                instance.stop();
-            } catch (Exception cause) {
-                throw ObjectHelper.wrapRuntimeCamelException(cause);
-            }
-        }
+        stopCamelContext(instance);
     }
 }
