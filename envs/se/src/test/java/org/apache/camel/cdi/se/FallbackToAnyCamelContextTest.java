@@ -26,7 +26,6 @@ import org.apache.camel.cdi.se.bean.UriEndpointRoute;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.arquillian.junit.InSequence;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -64,15 +63,11 @@ public class FallbackToAnyCamelContextTest {
     private MockEndpoint outbound;
 
     @Test
-    @InSequence(1)
-    public void verifyAndStartContext(@ContextName("first") CamelContext context) throws Exception {
+    public void verifyContext(@ContextName("first") CamelContext context) {
         assertThat(context.getName(), is(equalTo("first")));
-
-        context.start();
     }
 
     @Test
-    @InSequence(2)
     public void sendMessageToInbound() throws InterruptedException {
         outbound.expectedMessageCount(1);
         outbound.expectedBodiesReceived("test");
@@ -80,11 +75,5 @@ public class FallbackToAnyCamelContextTest {
         inbound.sendBody("test");
 
         assertIsSatisfied(2L, TimeUnit.SECONDS, outbound);
-    }
-
-    @Test
-    @InSequence(3)
-    public void stopContext(@ContextName("first") CamelContext context) throws Exception {
-        context.stop();
     }
 }

@@ -16,7 +16,6 @@
  */
 package org.apache.camel.cdi.se;
 
-import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.AdviceWithRouteBuilder;
 import org.apache.camel.cdi.CdiCamelExtension;
@@ -81,15 +80,13 @@ public class AdvisedRouteTest {
 
     @Test
     @InSequence(1)
-    public void startCamelContext(ModelCamelContext context) throws Exception {
+    public void adviseCamelContext(ModelCamelContext context) throws Exception {
         context.getRouteDefinition("route").adviceWith(context, new AdviceWithRouteBuilder() {
             @Override
             public void configure() {
                 interceptSendToEndpoint("{{to}}").skipSendToOriginalEndpoint().to("mock:outbound");
             }
         });
-
-        context.start();
     }
 
     @Test
@@ -102,11 +99,5 @@ public class AdvisedRouteTest {
         inbound.sendBody("test");
 
         assertIsSatisfied(2L, TimeUnit.SECONDS, outbound);
-    }
-
-    @Test
-    @InSequence(3)
-    public void stopCamelContext(CamelContext context) throws Exception {
-        context.stop();
     }
 }

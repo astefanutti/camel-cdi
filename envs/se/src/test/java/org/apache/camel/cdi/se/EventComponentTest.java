@@ -16,9 +16,9 @@
  */
 package org.apache.camel.cdi.se;
 
-import org.apache.camel.CamelContext;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.cdi.CdiCamelExtension;
+import org.apache.camel.impl.DefaultCamelContext;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -27,6 +27,8 @@ import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import javax.enterprise.context.ApplicationScoped;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -46,10 +48,12 @@ public class EventComponentTest {
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
+    // We should ideally use an ExpectedException JUnit rule to assert the content of the exception thrown at deployment time. Unfortunately, OpenWebBeans does not enable access to the underlying cause added as deployment exception. To work-around that, we delay the start of the Camel context at runtime.
+
     @Test
-    public void createEventEndpointByUri(CamelContext context) {
+    public void createEventEndpointByUri(NotStartedCamelContext context) {
         try {
-            context.start();
+            context.start(true);
         } catch (Exception exception) {
             Throwable cause = exception.getCause().getCause();
             assertThat("Exception cause is not an UnsupportedOperationException!", cause, is(instanceOf(UnsupportedOperationException.class)));
@@ -59,11 +63,25 @@ public class EventComponentTest {
         fail("CDI event endpoint creation by URI should throw an exception!");
     }
 
-    private static class CdiEventComponentRoute extends RouteBuilder {
+    static class CdiEventComponentRoute extends RouteBuilder {
 
         @Override
-        public void configure() throws Exception {
+        public void configure() {
             from("cdi-event://Object").log("Unsupported operation!");
+        }
+    }
+
+    @ApplicationScoped
+    static class NotStartedCamelContext extends DefaultCamelContext {
+
+        @Override
+        public void start() throws Exception {
+            start(false);
+        }
+
+        void start(boolean start) throws Exception {
+            if (start)
+                super.start();
         }
     }
 }

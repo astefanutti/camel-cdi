@@ -18,7 +18,7 @@ package org.apache.camel.cdi.se;
 
 import org.apache.camel.ServiceStatus;
 import org.apache.camel.cdi.CdiCamelExtension;
-import org.apache.camel.cdi.se.bean.CustomLifecycleCamelContext;
+import org.apache.camel.cdi.se.bean.ManualStartupCamelContext;
 import org.apache.camel.cdi.se.bean.CustomPropertiesCamelContext;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -42,14 +42,14 @@ public class AmbiguousCamelContextTest {
             // Camel CDI
             .addPackage(CdiCamelExtension.class.getPackage())
             // Test classes
-            .addClasses(CustomLifecycleCamelContext.class, CustomPropertiesCamelContext.class)
+            .addClasses(ManualStartupCamelContext.class, CustomPropertiesCamelContext.class)
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Test
-    public void test(CustomLifecycleCamelContext lifecycleCamelContext, CustomPropertiesCamelContext propertiesCamelContext) {
+    public void test(ManualStartupCamelContext lifecycleCamelContext, CustomPropertiesCamelContext propertiesCamelContext) {
         assertThat(lifecycleCamelContext.getStatus(), is(equalTo(ServiceStatus.Started)));
-        assertThat(propertiesCamelContext.getStatus(), is(equalTo(ServiceStatus.Stopped)));
+        assertThat(propertiesCamelContext.getStatus(), is(equalTo(ServiceStatus.Started)));
     }
 }

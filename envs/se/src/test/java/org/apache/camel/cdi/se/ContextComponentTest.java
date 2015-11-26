@@ -20,7 +20,6 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.cdi.CdiCamelExtension;
-import org.apache.camel.cdi.ContextName;
 import org.apache.camel.cdi.Uri;
 import org.apache.camel.cdi.se.bean.DefaultCamelContextBean;
 import org.apache.camel.cdi.se.bean.FirstNamedCamelContextBean;
@@ -78,14 +77,6 @@ public class ContextComponentTest {
 
     @Test
     @InSequence(2)
-    public void startCamelContexts(@ContextName("first") CamelContext first, @ContextName("second") CamelContext second) throws Exception {
-        first.start();
-        second.start();
-        main.start();
-    }
-
-    @Test
-    @InSequence(3)
     public void sendMessageToInbound(@Uri("direct:inbound") ProducerTemplate inbound, @Uri("mock:outbound") MockEndpoint outbound) throws InterruptedException {
         outbound.expectedMessageCount(1);
         outbound.expectedBodiesReceived("first-test");
@@ -93,13 +84,5 @@ public class ContextComponentTest {
         inbound.sendBody("test");
 
         MockEndpoint.assertIsSatisfied(1L, TimeUnit.SECONDS, outbound);
-    }
-
-    @Test
-    @InSequence(4)
-    public void stopCamelContexts(@ContextName("first") CamelContext first, @ContextName("second") CamelContext second) throws Exception {
-        first.stop();
-        second.stop();
-        main.stop();
     }
 }

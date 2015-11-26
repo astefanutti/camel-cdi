@@ -81,9 +81,8 @@ public class UnstoppedCamelContextProducerMethodTest {
 
     @Produces
     @ApplicationScoped
-    private CamelContext produceAndStartContext() throws Exception {
+    private CamelContext produceAndStartContext() {
         context.setName("unstopped-context");
-        context.start();
         return context;
     }
 }

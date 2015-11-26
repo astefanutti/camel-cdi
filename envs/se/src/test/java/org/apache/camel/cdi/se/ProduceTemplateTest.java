@@ -53,15 +53,13 @@ public class ProduceTemplateTest {
 
     @Test
     @InSequence(1)
-    public void configureAndStartCamelContext(CamelContext context) throws Exception {
+    public void configureCamelContext(CamelContext context) throws Exception {
         context.addRoutes(new RouteBuilder() {
             @Override
             public void configure() {
                 from("direct:inbound").bean(ProduceTemplateBean.class);
             }
         });
-
-        context.start();
     }
 
     @Test
@@ -73,11 +71,5 @@ public class ProduceTemplateTest {
         in.sendBody("test");
 
         assertIsSatisfied(2L, TimeUnit.SECONDS, out);
-    }
-
-    @Test
-    @InSequence(3)
-    public void stopCamelContext(CamelContext context) throws Exception {
-        context.stop();
     }
 }

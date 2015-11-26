@@ -16,7 +16,6 @@
  */
 package org.apache.camel.cdi.se;
 
-import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.cdi.CdiCamelExtension;
 import org.apache.camel.cdi.Uri;
@@ -60,12 +59,6 @@ public class EndpointInjectTest {
     private MockEndpoint outbound;
 
     @Test
-    @InSequence(1)
-    public void startCamelContext(CamelContext context) throws Exception {
-        context.start();
-    }
-
-    @Test
     @InSequence(2)
     public void sendMessageToInbound() throws InterruptedException {
         outbound.expectedMessageCount(1);
@@ -74,11 +67,5 @@ public class EndpointInjectTest {
         inbound.sendBody("test");
 
         assertIsSatisfied(2L, TimeUnit.SECONDS, outbound);
-    }
-
-    @Test
-    @InSequence(3)
-    public void stopCamelContext(CamelContext context) throws Exception {
-        context.stop();
     }
 }

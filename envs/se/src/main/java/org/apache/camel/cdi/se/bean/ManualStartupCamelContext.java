@@ -26,28 +26,15 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 @ApplicationScoped
-public class CustomLifecycleCamelContext extends DefaultCamelContext {
+public class ManualStartupCamelContext extends DefaultCamelContext {
 
     @Inject
-    CustomLifecycleCamelContext() {
-        setName("custom");
+    ManualStartupCamelContext() {
+        setName("manual-startup");
     }
 
     @PostConstruct
     void postConstruct() {
-        try {
-            super.start();
-        } catch (Exception cause) {
-            throw ObjectHelper.wrapRuntimeCamelException(cause);
-        }
-    }
-
-    @PreDestroy
-    void preDestroy() {
-        try {
-            super.stop();
-        } catch (Exception cause) {
-            throw ObjectHelper.wrapRuntimeCamelException(cause);
-        }
+        setAutoStartup(false);
     }
 }

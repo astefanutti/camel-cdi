@@ -25,10 +25,8 @@ import org.apache.camel.cdi.Uri;
 import org.apache.camel.cdi.se.bean.NamedCamelBean;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.impl.DefaultCamelContext;
-import org.apache.camel.util.ObjectHelper;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.arquillian.junit.InSequence;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -73,14 +71,12 @@ public class CamelContextProducerFieldTest {
     private MockEndpoint outbound;
 
     @Test
-    @InSequence(1)
-    public void verifyProducedCamelContext(CamelContext context) throws Exception {
+    public void verifyProducedCamelContext(CamelContext context) {
         assertThat("The producer field sets the context name!", context.getName(), is(equalTo("camel-producer-field")));
         assertThat("The producer field starts the Camel context!", context.getStatus(), is(equalTo(ServiceStatus.Started)));
     }
 
     @Test
-    @InSequence(2)
     public void sendMessageToInbound() throws InterruptedException {
         outbound.expectedMessageCount(1);
         outbound.expectedBodiesReceived("test-processed");
@@ -90,15 +86,9 @@ public class CamelContextProducerFieldTest {
         assertIsSatisfied(2L, TimeUnit.SECONDS, outbound);
     }
 
-    @Test
-    @InSequence(3)
-    public void stopCamelContext(CamelContext context) throws Exception {
-        context.stop();
-    }
-
     private static class NamedBeanRoute extends RouteBuilder {
         @Override
-        public void configure() throws Exception {
+        public void configure() {
             from("direct:inbound").bean("beanName").to("mock:outbound");
         }
     }
@@ -108,10 +98,5 @@ class CustomCamelContext extends DefaultCamelContext {
 
     CustomCamelContext() {
         setName("camel-producer-field");
-        try {
-            start();
-        } catch (Exception cause) {
-            throw ObjectHelper.wrapRuntimeCamelException(cause);
-        }
     }
 }

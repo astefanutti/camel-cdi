@@ -120,17 +120,13 @@ public class MultiCamelContextProducerTest {
 
     @Test
     @InSequence(2)
-    public void configureAndStartCamelContexts() throws Exception {
+    public void configureCamelContexts() throws Exception {
         secondCamelContext.addRoutes(new RouteBuilder() {
             @Override
             public void configure() {
                 from("direct:inbound").setHeader("context").constant("second").to("mock:outbound");
             }
         });
-
-        defaultCamelContext.start();
-        firstCamelContext.start();
-        secondCamelContext.start();
     }
 
     @Test
@@ -169,13 +165,5 @@ public class MultiCamelContextProducerTest {
         secondInbound.sendBody("test-second");
 
         assertIsSatisfied(2L, TimeUnit.SECONDS, secondOutbound);
-    }
-
-    @Test
-    @InSequence(6)
-    public void stopCamelContexts() throws Exception {
-        defaultCamelContext.stop();
-        firstCamelContext.stop();
-        secondCamelContext.stop();
     }
 }

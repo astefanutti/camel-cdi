@@ -16,7 +16,6 @@
  */
 package org.apache.camel.cdi.se;
 
-import org.apache.camel.CamelContext;
 import org.apache.camel.NoTypeConversionAvailableException;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.TypeConverter;
@@ -30,7 +29,6 @@ import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.component.properties.PropertiesComponent;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.arquillian.junit.InSequence;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -80,13 +78,6 @@ public class InjectedTypeConverterTest {
     }
 
     @Test
-    @InSequence(1)
-    public void startCamelContext(CamelContext context) throws Exception {
-        context.start();
-    }
-
-    @Test
-    @InSequence(2)
     public void sendMessageToInbound(@Uri("direct:inbound") ProducerTemplate inbound, @Uri("mock:outbound") MockEndpoint outbound) throws InterruptedException {
         outbound.expectedMessageCount(1);
 
@@ -100,7 +91,6 @@ public class InjectedTypeConverterTest {
     }
 
     @Test
-    @InSequence(3)
     public void convertWithTypeConverter(TypeConverter converter) throws NoTypeConversionAvailableException {
         TypeConverterInput input = new TypeConverterInput();
         input.setProperty("property value is [{{property2}}]");
@@ -108,11 +98,5 @@ public class InjectedTypeConverterTest {
         TypeConverterOutput output = converter.mandatoryConvertTo(TypeConverterOutput.class, input);
 
         assertThat(output.getProperty(), is(equalTo("property value is [value 2]")));
-    }
-
-    @Test
-    @InSequence(4)
-    public void stopCamelContext(CamelContext context) throws Exception {
-        context.stop();
     }
 }

@@ -21,7 +21,6 @@ import org.apache.camel.component.properties.PropertiesComponent;
 import org.apache.camel.impl.DefaultCamelContext;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
@@ -31,22 +30,6 @@ public class SimpleCamelContext extends DefaultCamelContext {
     @PostConstruct
     void postConstruct() {
         super.setTracing(false);
-
         getComponent("properties", PropertiesComponent.class).setLocation("classpath:placeholder.properties");
-
-        try {
-            super.start();
-        } catch (Exception cause) {
-            cause.printStackTrace();
-        }
-    }
-
-    @PreDestroy
-    void preDestroy() {
-        try {
-            super.stop();
-        } catch (Exception cause) {
-            cause.printStackTrace();
-        }
     }
 }

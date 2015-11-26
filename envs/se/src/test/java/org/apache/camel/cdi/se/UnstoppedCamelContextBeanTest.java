@@ -17,7 +17,6 @@
 package org.apache.camel.cdi.se;
 
 import org.apache.camel.ProducerTemplate;
-import org.apache.camel.RuntimeCamelException;
 import org.apache.camel.cdi.CdiCamelExtension;
 import org.apache.camel.cdi.Uri;
 import org.apache.camel.cdi.se.bean.SimpleCamelRoute;
@@ -34,7 +33,6 @@ import org.junit.Test;
 import org.junit.rules.Verifier;
 import org.junit.runner.RunWith;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import java.util.concurrent.TimeUnit;
 
@@ -80,15 +78,6 @@ public class UnstoppedCamelContextBeanTest {
 
     @ApplicationScoped
     static class UnstoppedCamelContext extends DefaultCamelContext {
-
-        @PostConstruct
-        void startContext() {
-            try {
-                start();
-            } catch (Exception cause) {
-                throw new RuntimeCamelException(cause);
-            }
-        }
 
         @Override
         public void stop() throws Exception {

@@ -179,7 +179,7 @@ public class MultiContextEventNotifierTest {
 
     @Test
     @InSequence(1)
-    public void configureAndStartCamelContexts(List<Class> defaultEvents, @ContextName("first") List<Class> firstEvents, @ContextName("second") List<Class> secondEvents, @Named("anyContext") List<Class> anyEvents) throws Exception {
+    public void configureCamelContexts(List<Class> defaultEvents, @ContextName("first") List<Class> firstEvents, @ContextName("second") List<Class> secondEvents, @Named("anyContext") List<Class> anyEvents) throws Exception {
         secondCamelContext.addRoutes(new RouteBuilder() {
             @Override
             public void configure() {
@@ -187,9 +187,7 @@ public class MultiContextEventNotifierTest {
             }
         });
 
-        defaultCamelContext.start();
-        firstCamelContext.start();
-        secondCamelContext.start();
+        secondCamelContext.startAllRoutes();
 
         assertThat("Events fired for any contexts are incorrect", anyEvents, everyItem(Matchers.<Class>isOneOf(CamelContextStartingEvent.class, CamelContextStartedEvent.class)));
         assertThat("Events fired for default context are incorrect", defaultEvents, Matchers.<Class>contains(CamelContextStartingEvent.class, CamelContextStartedEvent.class));

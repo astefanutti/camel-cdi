@@ -111,7 +111,7 @@ public class MultiContextPropertyInjectTest {
 
     @Test
     @InSequence(1)
-    public void configureAndStartCamelContexts() throws Exception {
+    public void configureCamelContexts() throws Exception {
         defaultCamelContext.addRoutes(new RouteBuilder() {
             @Override
             public void configure() {
@@ -133,9 +133,7 @@ public class MultiContextPropertyInjectTest {
             }
         });
 
-        defaultCamelContext.start();
-        firstCamelContext.start();
-        secondCamelContext.start();
+        secondCamelContext.startAllRoutes();
     }
 
     @Test
@@ -190,13 +188,5 @@ public class MultiContextPropertyInjectTest {
     @InSequence(7)
     public void retrieveReferenceFromSecondCamelContext(SecondCamelContextPropertyInjectBean bean) {
         assertThat(bean.getProperty(), is(equalTo("default")));
-    }
-
-    @Test
-    @InSequence(8)
-    public void stopCamelContexts() throws Exception {
-        defaultCamelContext.stop();
-        firstCamelContext.stop();
-        secondCamelContext.stop();
     }
 }

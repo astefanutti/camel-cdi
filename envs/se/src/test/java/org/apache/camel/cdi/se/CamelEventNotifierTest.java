@@ -101,8 +101,7 @@ public class CamelEventNotifierTest {
 
     @Test
     @InSequence(1)
-    public void startCamelContext(CamelContext context, List<Class> events) throws Exception {
-        context.start();
+    public void startedCamelContext(List<Class> events) throws Exception {
         assertThat("Events fired are incorrect", events, Matchers.<Class>contains(CamelContextStartingEvent.class, CamelContextStartedEvent.class));
     }
 

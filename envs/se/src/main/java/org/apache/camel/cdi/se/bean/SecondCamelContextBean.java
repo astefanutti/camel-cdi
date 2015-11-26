@@ -20,10 +20,15 @@ package org.apache.camel.cdi.se.bean;
 import org.apache.camel.cdi.ContextName;
 import org.apache.camel.impl.DefaultCamelContext;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 @ContextName("second")
 public class SecondCamelContextBean extends DefaultCamelContext {
 
+    @PostConstruct
+    void postConstruct() {
+        setAutoStartup(false);
+    }
 }

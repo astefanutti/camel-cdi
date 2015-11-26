@@ -27,7 +27,10 @@ import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.PropertyInject;
 import org.apache.camel.RoutesBuilder;
+import org.apache.camel.ServiceStatus;
 import org.apache.camel.management.event.AbstractExchangeEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Any;
@@ -71,6 +74,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import static java.util.Collections.newSetFromMap;
 
 public class CdiCamelExtension implements Extension {
+
+    private final Logger logger = LoggerFactory.getLogger(CdiCamelExtension.class);
 
     private final Set<Class<?>> converters = newSetFromMap(new ConcurrentHashMap<Class<?>, Boolean>());
 
@@ -217,7 +222,7 @@ public class CdiCamelExtension implements Extension {
                 loader.loadConverterMethods(context.getTypeConverterRegistry(), converter);
 
         // Instantiate route builders and add them to the corresponding Camel contexts
-        // This should ideally be done in the @PostConstruct callback of the CdiCamelContext class as this would enable custom Camel contexts that inherit from CdiCamelContext and start the context in their own @PostConstruct callback with their routes already added. However, that leads to circular dependencies between the RouteBuilder beans and the CdiCamelContext bean itself.
+        // This should ideally be done right after the Camel context bean gets instantiated as this would enable custom Camel contexts that start in their own @PostConstruct lifecycle callback with their routes already added. However, that leads to circular dependencies between the RouteBuilder beans and the Camel context bean itself.
         for (Bean<?> route : manager.getBeans(RoutesBuilder.class, AnyLiteral.INSTANCE)) {
             CamelContext context = BeanManagerHelper.getReferenceByType(manager, CamelContext.class, retainContextQualifiers(route.getQualifiers()));
             if (context != null)
@@ -230,6 +235,19 @@ public class CdiCamelExtension implements Extension {
         for (AnnotatedType<?> type : eagerBeans)
             // Calling toString is necessary to force the initialization of normal-scoped beans
             BeanManagerHelper.getReferencesByType(manager, type.getJavaClass(), AnyLiteral.INSTANCE).toString();
+
+        // Start Camel contexts
+        for (CamelContext context : contexts) {
+            // Should !context.isAutoStartup() skip context.start()?
+            if (ServiceStatus.Started.equals(context.getStatus()))
+                continue;
+            logger.info("Camel CDI is starting {}", context);
+            try {
+                context.start();
+            } catch (Exception exception) {
+                adv.addDeploymentProblem(exception);
+            }
+        }
 
         // Clean-up
         converters.clear();

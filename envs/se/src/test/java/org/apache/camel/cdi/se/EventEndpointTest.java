@@ -16,19 +16,17 @@
  */
 package org.apache.camel.cdi.se;
 
-import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.cdi.CdiCamelExtension;
 import org.apache.camel.cdi.Uri;
 import org.apache.camel.cdi.se.bean.EventConsumingRoute;
-import org.apache.camel.cdi.se.pojo.EventPayload;
 import org.apache.camel.cdi.se.bean.EventProducingRoute;
+import org.apache.camel.cdi.se.pojo.EventPayload;
 import org.apache.camel.cdi.se.qualifier.BarQualifier;
 import org.apache.camel.cdi.se.qualifier.FooQualifier;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.arquillian.junit.InSequence;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -60,8 +58,7 @@ public class EventEndpointTest {
             // Camel CDI
             .addPackage(CdiCamelExtension.class.getPackage())
             // Test classes
-            .addClasses(EventConsumingRoute.class,
-                EventProducingRoute.class)
+            .addClasses(EventConsumingRoute.class, EventProducingRoute.class)
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
@@ -126,14 +123,18 @@ public class EventEndpointTest {
     @Inject
     private EventObserver observer;
 
-    @Test
-    @InSequence(1)
-    public void startCamelContext(CamelContext context) throws Exception {
-        context.start();
+    @Before
+    public void resetCollectedEventsAndMockEndpoints() {
+        observer.reset();
+        consumeObject.reset();
+        consumeString.reset();
+        consumeStringPayload.reset();
+        consumeIntegerPayload.reset();
+        consumeFooQualifier.reset();
+        consumeBarQualifier.reset();
     }
 
     @Test
-    @InSequence(2)
     public void sendEventsToConsumers() throws InterruptedException {
         consumeObject.expectedMessageCount(8);
         consumeObject.expectedBodiesReceived(1234, new EventPayload<>("foo"), new EventPayload<>("bar"), "test", new EventPayload<>(1), new EventPayload<>(2), 123L, 987L);
@@ -166,7 +167,6 @@ public class EventEndpointTest {
     }
 
     @Test
-    @InSequence(3)
     public void sendMessagesToProducers() {
         produceObject.sendBody("string");
         EventPayload foo = new EventPayload<>("foo");
@@ -188,17 +188,6 @@ public class EventEndpointTest {
         assertThat(observer.getDefaultQualifierEvents(), contains("string", foo, 1234, "test", bar, baz, 777L));
         assertThat(observer.getFooQualifierEvents(), contains(456L));
         assertThat(observer.getBarQualifierEvents(), contains(495L));
-    }
-
-    @Test
-    @InSequence(4)
-    public void stopCamelContext(CamelContext context) throws Exception {
-        context.stop();
-    }
-
-    @Before
-    public void resetCollectedEvents() {
-        observer.reset();
     }
 
     @ApplicationScoped

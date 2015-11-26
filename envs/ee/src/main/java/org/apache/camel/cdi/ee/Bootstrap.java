@@ -37,21 +37,11 @@ public class Bootstrap {
 
     @PostConstruct
     void init() {
-        try {
-            logger.info("Starting {}...", context);
-            context.start();
-        } catch (Exception cause) {
-            logger.error("Error while starting {}", context, cause);
-        }
+        logger.info("Bootstrap {}...", context);
     }
 
     @PreDestroy
     void shutdown() {
-        try {
-            logger.info("Gracefully shutting down {}...", context);
-            context.stop();
-        } catch (Exception cause) {
-            logger.error("Error while stopping {}", context, cause);
-        }
+        logger.info("Shutdown {}...", context);
     }
 }

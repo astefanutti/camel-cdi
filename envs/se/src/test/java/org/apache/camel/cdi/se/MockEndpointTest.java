@@ -25,7 +25,6 @@ import org.apache.camel.cdi.se.bean.MockAnnotationRoute;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.arquillian.junit.InSequence;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -50,8 +49,7 @@ public class MockEndpointTest {
             // Camel CDI
             .addPackage(CdiCamelExtension.class.getPackage())
             // Test classes
-            .addClasses(DefaultCamelContextBean.class,
-                MockAnnotationRoute.class)
+            .addClasses(DefaultCamelContextBean.class, MockAnnotationRoute.class)
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
@@ -68,20 +66,12 @@ public class MockEndpointTest {
     private MockEndpoint defaultOutbound;
 
     @Test
-    @InSequence(1)
     public void verifyCamelContext() {
         assertThat(defaultCamelContext.getName(), is(equalTo("camel-cdi")));
         assertThat(defaultOutbound.getCamelContext().getName(), is(equalTo(defaultCamelContext.getName())));
     }
 
     @Test
-    @InSequence(2)
-    public void configureAndStartCamelContexts() throws Exception {
-        defaultCamelContext.start();
-    }
-
-    @Test
-    @InSequence(3)
     public void sendMessageToInbound() throws InterruptedException {
         defaultOutbound.expectedMessageCount(1);
         defaultOutbound.expectedBodiesReceived("test");
@@ -90,12 +80,5 @@ public class MockEndpointTest {
         defaultInbound.sendBodyAndHeader("test","foo","bar");
 
         assertIsSatisfied(2L, TimeUnit.SECONDS, defaultOutbound);
-    }
-
-
-    @Test
-    @InSequence(4)
-    public void stopCamelContext() throws Exception {
-        defaultCamelContext.stop();
     }
 }

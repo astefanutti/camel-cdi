@@ -16,20 +16,13 @@
  */
 package org.apache.camel.cdi.sample.sjms;
 
-import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.cdi.Uri;
 import org.apache.camel.management.event.CamelContextStartedEvent;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.Initialized;
 import javax.enterprise.event.Observes;
 
 class Producer {
-
-    void startContext(@Observes @Initialized(ApplicationScoped.class) Object event, CamelContext context) throws Exception {
-        context.start();
-    }
 
     void sendMessage(@Observes CamelContextStartedEvent event, @Uri("sjms:sample.queue") ProducerTemplate producer) {
         producer.sendBodyAndHeader("Sample Message", "Sender", getClass().getSimpleName());

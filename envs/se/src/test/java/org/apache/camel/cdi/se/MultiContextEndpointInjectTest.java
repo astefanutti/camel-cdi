@@ -53,12 +53,12 @@ public class MultiContextEndpointInjectTest {
             // Camel CDI
             .addPackage(CdiCamelExtension.class.getPackage())
             // Test classes
-            .addClass(DefaultCamelContextBean.class)
-            .addClass(EndpointInjectRoute.class)
-            .addClass(FirstCamelContextBean.class)
-            .addClass(FirstCamelContextEndpointInjectRoute.class)
-            .addClass(SecondCamelContextBean.class)
-            .addClass(SecondCamelContextEndpointInjectRoute.class)
+            .addClasses(DefaultCamelContextBean.class,
+                EndpointInjectRoute.class,
+                FirstCamelContextBean.class,
+                FirstCamelContextEndpointInjectRoute.class,
+                SecondCamelContextBean.class,
+                SecondCamelContextEndpointInjectRoute.class)
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
@@ -92,10 +92,8 @@ public class MultiContextEndpointInjectTest {
 
     @Test
     @InSequence(1)
-    public void startCamelContexts() throws Exception {
-        defaultCamelContext.start();
-        firstCamelContext.start();
-        secondCamelContext.start();
+    public void configureCamelContexts() throws Exception {
+        secondCamelContext.startAllRoutes();
     }
 
     @Test
@@ -134,13 +132,5 @@ public class MultiContextEndpointInjectTest {
         secondInbound.sendBody("test-second");
 
         assertIsSatisfied(2L, TimeUnit.SECONDS, secondOutbound);
-    }
-
-    @Test
-    @InSequence(5)
-    public void stopCamelContexts() throws Exception {
-        defaultCamelContext.stop();
-        firstCamelContext.stop();
-        secondCamelContext.stop();
     }
 }

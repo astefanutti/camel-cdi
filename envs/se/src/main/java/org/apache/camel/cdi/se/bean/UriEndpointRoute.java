@@ -19,10 +19,13 @@ package org.apache.camel.cdi.se.bean;
 
 import org.apache.camel.builder.RouteBuilder;
 
+import javax.enterprise.context.ApplicationScoped;
+
+@ApplicationScoped
 public class UriEndpointRoute extends RouteBuilder {
 
     @Override
     public void configure() {
-        from("direct:inbound").to("mock:outbound");
+        from("direct:inbound").routeId("uri-route").to("mock:outbound");
     }
 }

@@ -323,19 +323,17 @@ Any `CamelContext` class can be used to declare a custom Camel context bean that
 class CustomCamelContext extends DefaultCamelContext {
 
     @PostConstruct
-    void postConstruct() {
+    void customize() {
         // Sets the Camel context name
         setName("custom");
         // Adds properties location
         getComponent("properties", PropertiesComponent.class)
             .setLocation("classpath:placeholder.properties");
-        // Binds the Camel context lifecycle to that of the bean
-        start();
     }
 
     @PreDestroy
-    void preDestroy() {
-        stop();
+    void cleanUp() {
+        // ...
     }
 }
 ```
@@ -346,15 +344,14 @@ class CamelContextFactory {
 
     @Produces
     @ApplicationScoped
-    CamelContext produces() throws Exception {
+    CamelContext customize() {
         DefaultCamelContext context = new DefaultCamelContext();
         context.setName("custom");
-        context.start();
         return context;
     }
 
-    void disposes(@Disposes CamelContext context) throws Exception {
-        context.stop();
+    void cleanUp(@Disposes CamelContext context) {
+        // ...
     }
 }
 ```
@@ -371,6 +368,19 @@ class CustomCamelContext extends DefaultCamelContext {
         setName("custom");
     }
 }
+```
+
+This pattern can be used to avoid having the Camel context started automatically at deployment time by calling the `setAutoStartup` method, e.g.:
+```java
+@ApplicationScoped
+class ManualStartupCamelContext extends DefaultCamelContext {
+
+    @PostConstruct
+    void manual() {
+        setAutoStartup(false);
+    }
+}
+
 ```
 
 [producer method]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#producer_method

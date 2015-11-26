@@ -52,9 +52,7 @@ public class CamelWildFlyEarTest {
             .addAsManifestResource("jboss-deployment-structure.xml")
             .addAsModule(
                 ShrinkWrap.create(JavaArchive.class, "camel-wildfly.jar")
-                    .addClasses(Bootstrap.class,
-                        CamelRoute.class,
-                        HelloCamel.class)
+                    .addClasses(CamelRoute.class, HelloCamel.class)
                     // FIXME: Test class must be added until ARQ-659 is fixed
                     .addClass(CamelWildFlyEarTest.class)
                     .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml"));

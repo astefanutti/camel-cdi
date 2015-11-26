@@ -72,15 +72,13 @@ public class PropertyInjectTest {
 
     @Test
     @InSequence(1)
-    public void configureAndStartCamelContext(CamelContext context) throws Exception {
+    public void configureCamelContext(CamelContext context) throws Exception {
         context.addRoutes(new RouteBuilder() {
             @Override
             public void configure() {
                 from("direct:in").bean(PropertyInjectBean.class).to("mock:out");
             }
         });
-
-        context.start();
     }
 
     @Test
@@ -99,11 +97,5 @@ public class PropertyInjectTest {
     @InSequence(3)
     public void retrieveContextualReference(PropertyInjectBean bean) {
         assertThat(bean.getProperty(), is(equalTo("value")));
-    }
-
-    @Test
-    @InSequence(4)
-    public void stopCamelContext(CamelContext context) throws Exception {
-        context.stop();
     }
 }

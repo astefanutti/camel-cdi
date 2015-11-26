@@ -99,9 +99,8 @@ public class MultiContextEventEndpointTest {
 
     @Test
     @InSequence(1)
-    public void startCamelContexts(@ContextName("first") CamelContext firstContext, @ContextName("second") CamelContext secondContext) throws Exception {
-        firstContext.start();
-        secondContext.start();
+    public void configureCamelContexts(@ContextName("second") CamelContext secondContext) throws Exception {
+        secondContext.startAllRoutes();
     }
 
     @Test
@@ -130,13 +129,6 @@ public class MultiContextEventEndpointTest {
         assertThat(observer.getStringEvents(), contains("testFirst", "testSecond"));
         assertThat(observer.getFirstStringEvents(), contains("testFirst"));
         assertThat(observer.secondStringEvents(), contains("testSecond"));
-    }
-
-    @Test
-    @InSequence(4)
-    public void stopCamelContexts(@ContextName("first") CamelContext firstContext, @ContextName("second") CamelContext secondContext) throws Exception {
-        firstContext.stop();
-        secondContext.stop();
     }
 
     @Before

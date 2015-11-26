@@ -16,7 +16,6 @@
  */
 package org.apache.camel.cdi.se;
 
-import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.cdi.CdiCamelExtension;
 import org.apache.camel.cdi.Uri;
@@ -24,7 +23,6 @@ import org.apache.camel.cdi.se.bean.RecipientListMethodBean;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.arquillian.junit.InSequence;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -45,7 +43,7 @@ public class RecipientListMethodTest {
         return ShrinkWrap.create(JavaArchive.class)
             // Camel CDI
             .addPackage(CdiCamelExtension.class.getPackage())
-            // Test classes
+            // Test class
             .addClass(RecipientListMethodBean.class)
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
@@ -64,13 +62,6 @@ public class RecipientListMethodTest {
     private MockEndpoint outbound2;
 
     @Test
-    @InSequence(1)
-    public void startCamelContext(CamelContext context) throws Exception {
-        context.start();
-    }
-
-    @Test
-    @InSequence(2)
     public void consumeAnnotation() throws InterruptedException {
         outbound1.expectedMessageCount(1);
         outbound1.expectedBodiesReceived("test");
@@ -82,11 +73,5 @@ public class RecipientListMethodTest {
 
         assertIsSatisfied(2L, TimeUnit.SECONDS, outbound1);
         assertIsSatisfied(2L, TimeUnit.SECONDS, outbound2);
-    }
-
-    @Test
-    @InSequence(3)
-    public void stopCamelContext(CamelContext context) throws Exception {
-        context.stop();
     }
 }
