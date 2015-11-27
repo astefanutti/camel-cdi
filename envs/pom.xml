@@ -137,6 +137,12 @@
         <!-- test dependencies -->
 
         <dependency>
+            <groupId>io.astefanutti.camel.cdi</groupId>
+            <artifactId>camel-cdi-test</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
