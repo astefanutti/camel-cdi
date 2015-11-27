@@ -21,6 +21,7 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.cdi.CdiCamelExtension;
 import org.apache.camel.cdi.Uri;
+import org.apache.camel.cdi.se.bean.ManualStartupCamelContext;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -45,6 +46,8 @@ public class AdvisedMockEndpointProducerTest {
         return ShrinkWrap.create(JavaArchive.class)
             // Camel CDI
             .addPackage(CdiCamelExtension.class.getPackage())
+            // Test class
+            .addClass(ManualStartupCamelContext.class)
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
@@ -76,7 +79,7 @@ public class AdvisedMockEndpointProducerTest {
             }
         });
 
-        context.start();
+        context.startAllRoutes();
     }
 
     @Test
@@ -89,11 +92,5 @@ public class AdvisedMockEndpointProducerTest {
         inbound.sendBody("test");
 
         assertIsSatisfied(2L, TimeUnit.SECONDS, outbound, intercepted);
-    }
-
-    @Test
-    @InSequence(3)
-    public void stopCamelContext(CamelContext context) throws Exception {
-        context.stop();
     }
 }

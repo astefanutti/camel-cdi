@@ -20,6 +20,7 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.AdviceWithRouteBuilder;
 import org.apache.camel.cdi.CdiCamelExtension;
 import org.apache.camel.cdi.Uri;
+import org.apache.camel.cdi.se.bean.ManualStartupCamelContext;
 import org.apache.camel.cdi.se.bean.PropertyEndpointRoute;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.component.properties.PropertiesComponent;
@@ -51,8 +52,8 @@ public class AdvisedRouteTest {
         return ShrinkWrap.create(JavaArchive.class)
             // Camel CDI
             .addPackage(CdiCamelExtension.class.getPackage())
-            // Test class
-            .addClass(PropertyEndpointRoute.class)
+            // Test classes
+            .addClasses(ManualStartupCamelContext.class, PropertyEndpointRoute.class)
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
@@ -87,6 +88,7 @@ public class AdvisedRouteTest {
                 interceptSendToEndpoint("{{to}}").skipSendToOriginalEndpoint().to("mock:outbound");
             }
         });
+        context.startAllRoutes();
     }
 
     @Test
