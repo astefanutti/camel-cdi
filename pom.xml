@@ -97,6 +97,7 @@
         <module>maven</module>
         <module>samples</module>
         <module>envs</module>
+        <module>test</module>
     </modules>
 
     <build>
