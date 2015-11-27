@@ -20,6 +20,7 @@
         <module>hello</module>
         <module>properties</module>
         <module>sjms</module>
+        <module>xml</module>
     </modules>
 
     <build>
