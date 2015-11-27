@@ -571,7 +571,7 @@ class FooCamelContextRoute extends RouteBuilder {
     public void configure() {
         // Lookup CDI bean with qualifier @Named("foo:beanName")
         // Then @Named("beanName") if any
-        from("...").beanRef("beanName");
+        from("...").bean("beanName");
     }
 }
 ```
