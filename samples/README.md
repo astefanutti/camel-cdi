@@ -27,7 +27,7 @@ To run a sample using the [Camel Maven plugin](http://camel.apache.org/camel-mav
 - Compile the sample:
 
     ```
-    $ mvn clean compile camel:run
+    $ mvn clean compile
     ```
 
 - Run the Camel Maven plugin:
