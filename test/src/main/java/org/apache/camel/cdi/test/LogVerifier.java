@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class LogVerifier extends Verifier {
+public class LogVerifier extends Verifier {
 
     private final Appender appender;
 
@@ -59,10 +59,13 @@ public abstract class LogVerifier extends Verifier {
             public void evaluate() throws Throwable {
                 appender.start();
                 ((Logger) LogManager.getRootLogger()).addAppender(appender);
-                base.evaluate();
-                verify();
-                ((Logger) LogManager.getRootLogger()).removeAppender(appender);
-                appender.stop();
+                try {
+                    base.evaluate();
+                    verify();
+                } finally {
+                    ((Logger) LogManager.getRootLogger()).removeAppender(appender);
+                    appender.stop();
+                }
             }
         };
     }
