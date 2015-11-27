@@ -223,13 +223,12 @@ public class CdiCamelExtension implements Extension {
 
         // Instantiate route builders and add them to the corresponding Camel contexts
         // This should ideally be done right after the Camel context bean gets instantiated as this would enable custom Camel contexts that start in their own @PostConstruct lifecycle callback with their routes already added. However, that leads to circular dependencies between the RouteBuilder beans and the Camel context bean itself.
-        for (Bean<?> route : manager.getBeans(RoutesBuilder.class, AnyLiteral.INSTANCE)) {
-            CamelContext context = BeanManagerHelper.getReferenceByType(manager, CamelContext.class, retainContextQualifiers(route.getQualifiers()));
-            if (context != null)
-                addRouteToContext(route, context, manager, adv);
-            else
-                adv.addDeploymentProblem(new DeploymentException("No corresponding Camel context found for RouteBuilder bean [" + route + "]"));
-        }
+        boolean allRoutesAdded = true;
+        for (Bean<?> route : manager.getBeans(RoutesBuilder.class, AnyLiteral.INSTANCE))
+            allRoutesAdded &= addRouteToContext(route, BeanManagerHelper.getReferenceByType(manager, CamelContext.class, retainContextQualifiers(route.getQualifiers())), manager, adv);
+
+        if (!allRoutesAdded)
+            return;
 
         // Trigger eager beans instantiation
         for (AnnotatedType<?> type : eagerBeans)
@@ -255,11 +254,17 @@ public class CdiCamelExtension implements Extension {
         eagerBeans.clear();
     }
 
-    private void addRouteToContext(Bean<?> route, CamelContext context, BeanManager manager, AfterDeploymentValidation adv) {
+    private boolean addRouteToContext(Bean<?> route, CamelContext context, BeanManager manager, AfterDeploymentValidation adv) {
+        if (context == null) {
+            adv.addDeploymentProblem(new DeploymentException("No corresponding Camel context found for RouteBuilder bean [" + route + "]"));
+            return false;
+        }
         try {
             context.addRoutes(BeanManagerHelper.getReference(manager, RoutesBuilder.class, route));
         } catch (Exception exception) {
             adv.addDeploymentProblem(exception);
+            return false;
         }
+        return true;
     }
 }
