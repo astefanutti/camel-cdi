@@ -29,6 +29,8 @@ import org.apache.camel.PropertyInject;
 import org.apache.camel.RoutesBuilder;
 import org.apache.camel.ServiceStatus;
 import org.apache.camel.management.event.AbstractExchangeEvent;
+import org.apache.camel.model.RouteContainer;
+import org.apache.camel.model.RoutesDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -222,10 +224,13 @@ public class CdiCamelExtension implements Extension {
                 loader.loadConverterMethods(context.getTypeConverterRegistry(), converter);
 
         // Instantiate route builders and add them to the corresponding Camel contexts
-        // This should ideally be done right after the Camel context bean gets instantiated as this would enable custom Camel contexts that start in their own @PostConstruct lifecycle callback with their routes already added. However, that leads to circular dependencies between the RouteBuilder beans and the Camel context bean itself.
+        // This should ideally be done right after the Camel context beans get instantiated as this would enable custom Camel contexts that start in their own @PostConstruct lifecycle callback with their routes already added. However, that leads to circular dependencies between the RouteBuilder beans and the Camel context bean itself.
         boolean allRoutesAdded = true;
         for (Bean<?> route : manager.getBeans(RoutesBuilder.class, AnyLiteral.INSTANCE))
             allRoutesAdded &= addRouteToContext(route, BeanManagerHelper.getReferenceByType(manager, CamelContext.class, retainContextQualifiers(route.getQualifiers())), manager, adv);
+
+        for (Bean<?> definition : manager.getBeans(RouteContainer.class, AnyLiteral.INSTANCE))
+            allRoutesAdded &= addRouteToContext(definition, BeanManagerHelper.getReferenceByType(manager, CamelContext.class, retainContextQualifiers(definition.getQualifiers())), manager, adv);
 
         if (!allRoutesAdded)
             return;
@@ -260,7 +265,13 @@ public class CdiCamelExtension implements Extension {
             return false;
         }
         try {
-            context.addRoutes(BeanManagerHelper.getReference(manager, RoutesBuilder.class, route));
+            Object reference = BeanManagerHelper.getReference(manager, Object.class, route);
+            if (reference instanceof RoutesBuilder)
+                context.addRoutes((RoutesBuilder) reference);
+            else if (reference instanceof RouteContainer)
+                context.addRouteDefinitions(((RouteContainer) reference).getRoutes());
+            else
+                throw new IllegalArgumentException("Cannot add [" + reference + "] to " + context);
         } catch (Exception exception) {
             adv.addDeploymentProblem(exception);
             return false;
