@@ -125,6 +125,12 @@
                     <artifactId>weld-core-impl</artifactId>
                     <scope>runtime</scope>
                 </dependency>
+
+                <!-- test dependencies -->
+                <dependency>
+                    <groupId>org.jboss.arquillian.container</groupId>
+                    <artifactId>arquillian-weld-se-embedded-1.1</artifactId>
+                </dependency>
             </dependencies>
         </profile>
 
@@ -151,6 +157,12 @@
                     <groupId>org.slf4j</groupId>
                     <artifactId>jul-to-slf4j</artifactId>
                     <scope>runtime</scope>
+                </dependency>
+
+                <!-- test dependencies -->
+                <dependency>
+                    <groupId>org.apache.openwebbeans.arquillian</groupId>
+                    <artifactId>owb-arquillian-standalone</artifactId>
                 </dependency>
             </dependencies>
         </profile>
@@ -194,4 +206,40 @@
             </build>
         </profile>
     </profiles>
+
+    <dependencies>
+
+        <!-- test dependencies -->
+
+        <dependency>
+            <groupId>io.astefanutti.camel.cdi</groupId>
+            <artifactId>camel-cdi-test</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-library</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.arquillian.junit</groupId>
+            <artifactId>arquillian-junit-container</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.shrinkwrap.descriptors</groupId>
+            <artifactId>shrinkwrap-descriptors-depchain</artifactId>
+            <type>pom</type>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
 </project>
