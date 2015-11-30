@@ -14,9 +14,7 @@
     <properties>
         <gravia.version>1.1.0.Beta43</gravia.version>
         <karaf.version>3.0.5</karaf.version>
-        <karaf-tooling.version>2.3.9</karaf-tooling.version>
         <pax-exam.version>4.3.0</pax-exam.version>
-        <karaf.home>${project.build.directory}/apache-karaf-${karaf.version}</karaf.home>
     </properties>
 
     <dependencies>
@@ -230,7 +228,7 @@
                         <phase>process-test-resources</phase>
                         <configuration>
                             <target>
-                                <copy file="src/test/resources/users.properties" todir="${karaf.home}/etc" overwrite="true" />
+                                <copy file="src/test/resources/users.properties" todir="${project.build.directory}/apache-karaf-${karaf.version}/etc" overwrite="true" />
                             </target>
                         </configuration>
                     </execution>
