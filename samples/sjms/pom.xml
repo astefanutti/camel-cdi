@@ -12,10 +12,6 @@
     <name>Camel CDI :: Samples :: SJMS Component</name>
     <packaging>${packaging.type}</packaging>
 
-    <properties>
-        <activemq.version>5.12.0</activemq.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>javax.enterprise</groupId>
