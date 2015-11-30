@@ -34,6 +34,8 @@ import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.wildfly.extension.camel.CamelAware;
 
+import javax.inject.Inject;
+
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -48,19 +50,20 @@ public class CamelWildFlyEarTest {
     @Deployment
     public static Archive<?> deployment() {
         return ShrinkWrap.create(EnterpriseArchive.class, "camel-wildfly.ear")
-            .addAsManifestResource("jboss-all.xml")
-            .addAsManifestResource("jboss-deployment-structure.xml")
             .addAsModule(
                 ShrinkWrap.create(JavaArchive.class, "camel-wildfly.jar")
-                    .addClasses(CamelRoute.class, HelloCamel.class)
+                    .addClasses(Bootstrap.class, CamelRoute.class, HelloCamel.class)
                     // FIXME: Test class must be added until ARQ-659 is fixed
                     .addClass(CamelWildFlyEarTest.class)
                     .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml"));
     }
 
+    @Inject
+    private CamelContext context;
+
     @Test
     @InSequence(1)
-    public void verifyContext(CamelContext context) {
+    public void verifyContext() {
         assertThat("Camel context is not started!", context.getStatus(), is(equalTo(ServiceStatus.Started)));
         assertThat("Timer route is not started!", context.getRouteStatus("timer"), is(equalTo(ServiceStatus.Started)));
     }
