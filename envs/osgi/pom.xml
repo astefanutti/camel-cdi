@@ -47,11 +47,29 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- PAX CDI -->
+        <!-- Features -->
         <dependency>
             <groupId>org.ops4j.pax.cdi</groupId>
             <artifactId>pax-cdi-features</artifactId>
             <version>${pax-cdi.version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-karaf</artifactId>
+            <version>5.12.1</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.camel.karaf</groupId>
+            <artifactId>apache-camel</artifactId>
+            <version>${camel.version}</version>
             <classifier>features</classifier>
             <type>xml</type>
             <scope>test</scope>
@@ -123,6 +141,13 @@
         <dependency>
             <groupId>io.astefanutti.camel.cdi</groupId>
             <artifactId>camel-cdi-sample-hello</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.astefanutti.camel.cdi</groupId>
+            <artifactId>camel-cdi-sample-sjms</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
