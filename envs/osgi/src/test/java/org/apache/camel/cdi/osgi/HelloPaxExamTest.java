@@ -35,7 +35,7 @@ import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.keepRunti
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.logLevel;
 
 @RunWith(PaxExam.class)
-public class CdiPaxExamKarafTest {
+public class HelloPaxExamTest {
 
     @Configuration
     public Option[] config() {
