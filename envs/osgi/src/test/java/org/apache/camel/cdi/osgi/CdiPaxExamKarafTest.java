@@ -19,7 +19,6 @@ package org.apache.camel.cdi.osgi;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
-import org.ops4j.pax.exam.ConfigurationManager;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.karaf.options.LogLevelOption;
@@ -40,15 +39,13 @@ public class CdiPaxExamKarafTest {
 
     @Configuration
     public Option[] config() {
-        String karafVersion = new ConfigurationManager().getProperty("pax.exam.karaf.version", "3.0.2");
         return new Option[]{
             karafDistributionConfiguration()
                 .frameworkUrl(
-                    maven("org.apache.karaf", "apache-karaf", karafVersion).type("zip"))
-                .karafVersion(karafVersion)
+                    maven().groupId("org.apache.karaf").artifactId("apache-karaf").versionAsInProject().type("zip"))
                 .name("Apache Karaf")
                 .useDeployFolder(false)
-                .unpackDirectory(new File("target/paxexam/unpack/")),
+                .unpackDirectory(new File("target/pax-exam/unpack/")),
             keepRuntimeFolder(),
             // Don't bother with local console output as it just ends up cluttering the logs
             configureConsole().ignoreLocalConsole(),
