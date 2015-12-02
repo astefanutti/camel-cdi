@@ -3,7 +3,7 @@
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.0.0 ">
 
-    <feature name="camel-cdi" version="${project.version}">
+    <feature name="camel-cdi" version="${project.version}" start-level="50">
         <feature version="${pax-cdi.version}">pax-cdi</feature>
         <bundle>mvn:org.apache.camel/camel-core/${camel.version}</bundle>
         <bundle>mvn:io.astefanutti.camel.cdi/camel-cdi/${project.version}</bundle>
