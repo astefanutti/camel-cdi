@@ -22,6 +22,7 @@
             <groupId>io.astefanutti.camel.cdi</groupId>
             <artifactId>camel-cdi</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
 
     </dependencies>
