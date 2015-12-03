@@ -199,6 +199,7 @@ public class CdiCamelExtension implements Extension {
                     qualifiers.addAll(ip.getQualifiers());
                 abd.addBean(manager.createBean(new BeanAttributesDecorator<>(manager.createBeanAttributes(am), qualifiers), CdiCamelFactory.class, manager.getProducerFactory(am, bean)));
             } else if (Endpoint.class.isAssignableFrom(type) || ProducerTemplate.class.isAssignableFrom(type)) {
+                // TODO: should be more correct to add a bean for each Camel context bean
                 abd.addBean(manager.createBean(new BeanAttributesDecorator<>(manager.createBeanAttributes(am), contextQualifiers, Arrays.asList(Any.class, Default.class, Named.class)), CdiCamelFactory.class, manager.getProducerFactory(am, bean)));
             }
         }
@@ -225,8 +226,7 @@ public class CdiCamelExtension implements Extension {
             for (CamelContext context : contexts)
                 loader.loadConverterMethods(context.getTypeConverterRegistry(), converter);
 
-        // Instantiate route builders and add them to the corresponding Camel contexts
-        // This should ideally be done right after the Camel context beans get instantiated as this would enable custom Camel contexts that start in their own @PostConstruct lifecycle callback with their routes already added. However, that leads to circular dependencies between the RouteBuilder beans and the Camel context bean itself.
+        // Add routes to the Camel contexts
         boolean allRoutesAdded = true;
         for (Bean<?> route : manager.getBeans(RoutesBuilder.class, AnyLiteral.INSTANCE))
             allRoutesAdded &= addRouteToContext(route, BeanManagerHelper.getReferenceByType(manager, CamelContext.class, retainContextQualifiers(route.getQualifiers())), manager, adv);
