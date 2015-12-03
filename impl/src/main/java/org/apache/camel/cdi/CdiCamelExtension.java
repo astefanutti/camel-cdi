@@ -30,7 +30,6 @@ import org.apache.camel.RoutesBuilder;
 import org.apache.camel.ServiceStatus;
 import org.apache.camel.management.event.AbstractExchangeEvent;
 import org.apache.camel.model.RouteContainer;
-import org.apache.camel.model.RoutesDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
