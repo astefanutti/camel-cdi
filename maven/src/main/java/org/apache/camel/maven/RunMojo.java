@@ -16,6 +16,22 @@
  */
 package org.apache.camel.maven;
 
+import java.io.File;
+import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
+
 import org.apache.camel.util.CastUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
@@ -39,13 +55,6 @@ import org.apache.maven.project.artifact.MavenMetadataSource;
 import org.codehaus.mojo.exec.AbstractExecMojo;
 import org.codehaus.mojo.exec.ExecutableDependency;
 import org.codehaus.mojo.exec.Property;
-
-import java.io.File;
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.*;
 
 /**
  * Runs a CamelContext using any Spring or Blueprint XML configuration files found in
@@ -85,23 +94,6 @@ public class RunMojo extends AbstractExecMojo {
     protected String duration;
 
     /**
-     * The DOT output directory name used to generate the DOT diagram of the
-     * route definitions
-     *
-     * @parameter default-value="${project.build.directory}/site/cameldoc"
-     * @readonly
-     */
-    protected String dotDir;
-
-    /**
-     * Allows the DOT file generation to be enabled
-     *
-     * @parameter property="camel.usdDot"
-     *            default-value="false"
-     */
-    protected boolean useDot;
-
-    /**
      * Whether to log the classpath when starting
      *
      * @parameter property="camel.logClasspath"
@@ -124,7 +116,7 @@ public class RunMojo extends AbstractExecMojo {
      *            default-value="false"
      */
     protected boolean useCDI;
-    
+
     protected String extendedPluginDependencyArtifactId;
 
     /**
@@ -175,13 +167,6 @@ public class RunMojo extends AbstractExecMojo {
     private boolean trace;
 
     /**
-     * Output all routes to the specified XML file
-     *
-     * @parameter property="camel.routesOutputFile"
-     */
-    private String routesOutputFile;    
-    
-    /**
      * The main class to execute.
      *
      * @parameter property="camel.mainClass"
@@ -201,7 +186,7 @@ public class RunMojo extends AbstractExecMojo {
      * @parameter property="camel.configClasses"
      */
     private String configClasses;
-    
+
     /**
      * The classpath based application context uri that spring want to gets.
      *
@@ -215,19 +200,19 @@ public class RunMojo extends AbstractExecMojo {
      * @parameter property="camel.fileApplicationContextUri"
      */
     private String fileApplicationContextUri;
-    
+
     /**
-     * The configureAdmin persistent id, it will be used when loading the 
+     * The configureAdmin persistent id, it will be used when loading the
      * camel context from blueprint.
-     * 
+     *
      * @parameter property="camel.configAdminPid"
      */
     private String configAdminPid;
-    
+
     /**
-     * The configureAdmin persistent file name, it will be used when 
+     * The configureAdmin persistent file name, it will be used when
      * loading the camel context from blueprint.
-     * 
+     *
      * @parameter property="camel.configAdminFileName"
      */
     private String configAdminFileName;
@@ -364,7 +349,7 @@ public class RunMojo extends AbstractExecMojo {
     private Properties originalSystemProperties;
 
     private String extraPluginDependencyArtifactId;
-    
+
 
     /**
      * Execute goal.
@@ -383,19 +368,10 @@ public class RunMojo extends AbstractExecMojo {
 
         // lets create the command line arguments to pass in...
         List<String> args = new ArrayList<String>();
-        if (dotDir != null && useDot) {
-            args.add("-o");
-            args.add(dotDir);
-        }
         if (trace) {
             args.add("-t");
         }
 
-        if (routesOutputFile != null) {
-            args.add("-output");
-            args.add(routesOutputFile);
-        }        
-        
         if (applicationContextUri != null) {
             args.add("-ac");
             args.add(applicationContextUri);
@@ -403,24 +379,24 @@ public class RunMojo extends AbstractExecMojo {
             args.add("-fa");
             args.add(fileApplicationContextUri);
         }
-        
+
         if (configClasses != null) {
             args.add("-cc");
             args.add(configClasses);
             usingSpringJavaConfigureMain = true;
-        }        
+        }
         if (basedPackages != null) {
             args.add("-bp");
             args.add(basedPackages);
             usingSpringJavaConfigureMain = true;
         }
- 
+
         args.add("-d");
         args.add(duration);
         if (arguments != null) {
             args.addAll(Arrays.asList(arguments));
         }
-        
+
         if (usingSpringJavaConfigureMain) {
             mainClass = "org.apache.camel.spring.javaconfig.Main";
             getLog().info("Using org.apache.camel.spring.javaconfig.Main to initiate a CamelContext");
@@ -428,7 +404,7 @@ public class RunMojo extends AbstractExecMojo {
             mainClass = "org.apache.camel.cdi.Main";
             // must include plugin dependencies for cdi
             extraPluginDependencyArtifactId = "camel-cdi";
-            getLog().info("Using " + mainClass + " to initiate a CDI CamelContext");
+            getLog().info("Using " + mainClass + " to initiate a CamelContext");
         } else if (usingBlueprintMain) {
             mainClass = "org.apache.camel.test.blueprint.Main";
             // must include plugin dependencies for blueprint
@@ -454,7 +430,7 @@ public class RunMojo extends AbstractExecMojo {
 
         arguments = new String[args.size()];
         args.toArray(arguments);
-        
+
         if (getLog().isDebugEnabled()) {
             StringBuilder msg = new StringBuilder("Invoking: ");
             msg.append(mainClass);
@@ -477,7 +453,7 @@ public class RunMojo extends AbstractExecMojo {
 
                     getLog().info("Starting Camel ...");
                     Method main = Thread.currentThread().getContextClassLoader()
-                            .loadClass(mainClass).getMethod("main", String[].class);
+                        .loadClass(mainClass).getMethod("main", String[].class);
                     main.invoke(null, new Object[]{arguments});
 
                     afterBootstrapCamel();
@@ -599,7 +575,7 @@ public class RunMojo extends AbstractExecMojo {
         // generally abnormal
         if (thread.isAlive()) {
             getLog().warn("thread " + thread + " was interrupted but is still alive after waiting at least "
-                              + timeoutMsecs + "msecs");
+                + timeoutMsecs + "msecs");
         }
     }
 
@@ -642,16 +618,16 @@ public class RunMojo extends AbstractExecMojo {
                     thread.stop();
                 } else {
                     getLog().warn("thread " + thread
-                            + " will linger despite being asked to die via interruption");
+                        + " will linger despite being asked to die via interruption");
                 }
             }
         }
         if (!uncooperativeThreads.isEmpty()) {
             getLog().warn("NOTE: "
-                    + uncooperativeThreads.size()
-                          + " thread(s) did not finish despite being asked to "
-                          + " via interruption. This is not a problem with exec:java, it is a problem with the running code."
-                          + " Although not serious, it should be remedied.");
+                + uncooperativeThreads.size()
+                + " thread(s) did not finish despite being asked to "
+                + " via interruption. This is not a problem with exec:java, it is a problem with the running code."
+                + " Although not serious, it should be remedied.");
         } else {
             int activeCount = threadGroup.activeCount();
             if (activeCount != 0) {
@@ -660,7 +636,7 @@ public class RunMojo extends AbstractExecMojo {
                 Thread[] threadsArray = new Thread[1];
                 threadGroup.enumerate(threadsArray);
                 getLog().debug("strange; " + activeCount + " thread(s) still active in the group "
-                                   + threadGroup + " such as " + threadsArray[0]);
+                    + threadGroup + " such as " + threadsArray[0]);
             }
         }
     }
@@ -738,7 +714,7 @@ public class RunMojo extends AbstractExecMojo {
                 }
 
                 getLog().debug("Adding plugin dependency artifact: " + classPathElement.getArtifactId()
-                                   + " to classpath");
+                    + " to classpath");
                 path.add(classPathElement.getFile().toURI().toURL());
             }
         } catch (MalformedURLException e) {
@@ -764,24 +740,19 @@ public class RunMojo extends AbstractExecMojo {
             for (Artifact artifact : artifacts) {
                 // must
                 if (artifact.getArtifactId().equals(extraPluginDependencyArtifactId)
-                        || artifact.getArtifactId().equals(extendedPluginDependencyArtifactId)) {
+                    || artifact.getArtifactId().equals(extendedPluginDependencyArtifactId)) {
                     getLog().debug("Adding extra plugin dependency artifact: " + artifact.getArtifactId()
-                            + " to classpath");
+                        + " to classpath");
                     path.add(artifact.getFile().toURI().toURL());
 
                     // add the transient dependencies of this artifact
-                    Set<Artifact> deps = resolveExecutableDependencies(artifact);
-                    for (Artifact dep : deps) {
-
-                        // we must skip org.apache.aries.blueprint.core:, otherwise we get duplicate blueprint extenders
-                        if (dep.getArtifactId().equals("org.apache.aries.blueprint.core")) {
-                            getLog().debug("Skipping org.apache.aries.blueprint.core -> " + dep.getGroupId() + "/" + dep.getArtifactId() + "/" + dep.getVersion());
-                            continue;
-                        }
-
-                        getLog().debug("Adding extra plugin dependency artifact: " + dep.getArtifactId()
+                    Set<Artifact> deps = resolveExecutableDependencies(artifact, true);
+                    if (deps != null) {
+                        for (Artifact dep : deps) {
+                            getLog().debug("Adding extra plugin dependency artifact: " + dep.getArtifactId()
                                 + " to classpath");
-                        path.add(dep.getFile().toURI().toURL());
+                            path.add(dep.getFile().toURI().toURL());
+                        }
                     }
                 }
             }
@@ -816,7 +787,7 @@ public class RunMojo extends AbstractExecMojo {
                 while (iter.hasNext()) {
                     Artifact classPathElement = iter.next();
                     getLog().debug("Adding project dependency artifact: " + classPathElement.getArtifactId()
-                                       + " to classpath");
+                        + " to classpath");
                     File file = classPathElement.getFile();
                     if (file != null) {
                         path.add(file.toURI().toURL());
@@ -874,7 +845,7 @@ public class RunMojo extends AbstractExecMojo {
             }
 
             Artifact art = this.artifactFactory.createDependencyArtifact(groupId, artifactId, versionRange,
-                                                                         type, classifier, scope, null, optional);
+                type, classifier, scope, null, optional);
 
             if (scope.equalsIgnoreCase(Artifact.SCOPE_SYSTEM)) {
                 art.setFile(new File(dependency.getSystemPath()));
@@ -914,7 +885,7 @@ public class RunMojo extends AbstractExecMojo {
                 getLog().debug("Selected plugin Dependencies will be included.");
                 Artifact executableArtifact = this.findExecutableArtifact();
                 Artifact executablePomArtifact = this.getExecutablePomArtifact(executableArtifact);
-                relevantDependencies = this.resolveExecutableDependencies(executablePomArtifact);
+                relevantDependencies = this.resolveExecutableDependencies(executablePomArtifact, false);
             }
         } else {
             relevantDependencies = Collections.emptySet();
@@ -954,46 +925,49 @@ public class RunMojo extends AbstractExecMojo {
 
         if (executableTool == null) {
             throw new MojoExecutionException("No dependency of the plugin matches the specified executableDependency."
-                                                 + "  Specified executableToolAssembly is: "
-                                                 + executableDependency.toString());
+                + "  Specified executableToolAssembly is: "
+                + executableDependency.toString());
         }
 
         return executableTool;
     }
 
-    private Set<Artifact> resolveExecutableDependencies(Artifact executablePomArtifact) throws MojoExecutionException {
+    private Set<Artifact> resolveExecutableDependencies(Artifact executablePomArtifact, boolean ignoreFailures) throws MojoExecutionException {
 
-        Set<Artifact> executableDependencies;
+        Set<Artifact> executableDependencies = null;
         try {
             MavenProject executableProject = this.projectBuilder.buildFromRepository(executablePomArtifact,
-                                                                                     this.remoteRepositories,
-                                                                                     this.localRepository);
+                this.remoteRepositories,
+                this.localRepository);
 
             // get all of the dependencies for the executable project
             List<Artifact> dependencies = CastUtils.cast(executableProject.getDependencies());
 
             // make Artifacts of all the dependencies
-            Set<Artifact> dependencyArtifacts 
+            Set<Artifact> dependencyArtifacts
                 = CastUtils.cast(MavenMetadataSource.createArtifacts(this.artifactFactory, dependencies,
-                                                                          null, null, null));
+                null, null, null));
 
             // not forgetting the Artifact of the project itself
             dependencyArtifacts.add(executableProject.getArtifact());
 
-            // resolve all dependencies transitively to obtain a comprehensive
-            // list of assemblies
+            // resolve runtime dependencies transitively to obtain a comprehensive list of assemblies
             ArtifactResolutionResult result = artifactResolver.resolveTransitively(dependencyArtifacts,
-                                                                                   executablePomArtifact,
-                                                                                   Collections.emptyMap(),
-                                                                                   this.localRepository,
-                                                                                   this.remoteRepositories,
-                                                                                   metadataSource, new ScopeArtifactFilter(DefaultArtifact.SCOPE_RUNTIME),
-                                                                                   Collections.emptyList());
+                executablePomArtifact,
+                Collections.emptyMap(),
+                this.localRepository,
+                this.remoteRepositories,
+                metadataSource, new ScopeArtifactFilter(DefaultArtifact.SCOPE_RUNTIME),
+                Collections.emptyList());
             executableDependencies = CastUtils.cast(result.getArtifacts());
 
         } catch (Exception ex) {
-            throw new MojoExecutionException("Encountered problems resolving dependencies of the executable "
-                                             + "in preparation for its execution.", ex);
+            if (ignoreFailures) {
+                getLog().debug("Ignoring maven resolving dependencies failure " + ex.getMessage());
+            } else {
+                throw new MojoExecutionException("Encountered problems resolving dependencies of the executable "
+                    + "in preparation for its execution.", ex);
+            }
         }
 
         return executableDependencies;
