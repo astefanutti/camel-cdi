@@ -29,7 +29,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.service.log.LogService;
 
 import java.io.InputStream;
 
@@ -71,7 +70,7 @@ public class CdiArquillianKarafTest {
                 builder.addBundleVersion("1.0.0");
 
                 // Import the LogService package
-                builder.addImportPackages(LogService.class);
+//                builder.addImportPackages(LogService.class);
 
                 return builder.openStream();
             }

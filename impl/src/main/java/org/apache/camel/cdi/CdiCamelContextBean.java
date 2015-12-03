@@ -34,7 +34,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-final class CdiCamelContextBean implements Bean<DefaultCamelContext>, PassivationCapable {
+class CdiCamelContextBean implements Bean<DefaultCamelContext>, PassivationCapable {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 

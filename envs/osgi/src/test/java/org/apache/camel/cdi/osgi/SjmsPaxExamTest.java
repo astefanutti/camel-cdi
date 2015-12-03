@@ -16,16 +16,25 @@
  */
 package org.apache.camel.cdi.osgi;
 
+import org.apache.camel.CamelContext;
+import org.apache.camel.ServiceStatus;
+import org.apache.felix.service.command.CommandProcessor;
+import org.apache.felix.service.command.CommandSession;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.karaf.options.LogLevelOption;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerClass;
 
+import javax.inject.Inject;
 import java.io.File;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertThat;
+import static org.ops4j.pax.exam.CoreOptions.junitBundles;
 import static org.ops4j.pax.exam.CoreOptions.maven;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.configureConsole;
@@ -35,11 +44,12 @@ import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.keepRunti
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.logLevel;
 
 @RunWith(PaxExam.class)
+@ExamReactorStrategy(PerClass.class)
 public class SjmsPaxExamTest {
 
     @Configuration
     public Option[] config() {
-        return new Option[]{
+        return new Option[] {
             karafDistributionConfiguration()
                 .frameworkUrl(
                     maven().groupId("org.apache.karaf").artifactId("apache-karaf").versionAsInProject().type("zip"))
@@ -55,32 +65,50 @@ public class SjmsPaxExamTest {
             // Option to be used to do remote debugging
             //debugConfiguration("5005", true),
 
-            // Load Features PAX CDI Weld and Camel CDI
-            features(
-                maven().groupId("org.ops4j.pax.cdi").artifactId("pax-cdi-features").type("xml").classifier("features").versionAsInProject(),
-                "pax-cdi-weld"
-            ),
-            features(
-                maven().groupId("io.astefanutti.camel.cdi").artifactId("camel-cdi").type("xml").classifier("features").versionAsInProject(),
-                "camel-cdi"
-            ),
-            features(
-                maven().groupId("org.apache.karaf.features").artifactId("enterprise").type("xml").classifier("features").versionAsInProject(), "jms"
-            ),
-            features(
-                maven().groupId("org.apache.activemq").artifactId("activemq-karaf").type("xml").classifier("features").versionAsInProject(), "activemq-broker"
-            ),
-            mavenBundle()
-                .groupId("org.apache.camel").artifactId("camel-sjms").versionAsInProject(),
-            mavenBundle()
-                .groupId("commons-pool").artifactId("commons-pool").versionAsInProject(),
-            mavenBundle()
-                .groupId("io.astefanutti.camel.cdi").artifactId("camel-cdi-sample-sjms").versionAsInProject()
+            // JUnit and Hamcrest
+            junitBundles(),
+            // PAX CDI Weld
+            features(maven("org.ops4j.pax.cdi", "pax-cdi-features")
+                .type("xml").classifier("features").versionAsInProject(),
+                "pax-cdi-weld"),
+            // Camel CDI
+            features(maven("io.astefanutti.camel.cdi", "camel-cdi")
+                .type("xml").classifier("features").versionAsInProject(),
+                "camel-cdi"),
+            // Karaf Camel commands
+            mavenBundle("org.apache.camel.karaf", "camel-karaf-commands").versionAsInProject(),
+            mavenBundle("org.apache.camel", "camel-commands-core").versionAsInProject(),
+            mavenBundle("org.apache.camel", "camel-catalog").versionAsInProject(),
+
+            // SJMS sample
+            mavenBundle("io.astefanutti.camel.cdi", "camel-cdi-sample-sjms").versionAsInProject(),
+            features(maven("org.apache.karaf.features", "enterprise")
+                .type("xml").classifier("features").versionAsInProject(),
+                "jms"),
+            features(maven("org.apache.activemq", "activemq-karaf")
+                .type("xml").classifier("features").versionAsInProject(),
+                "activemq-broker"),
+            mavenBundle("org.apache.camel", "camel-sjms").versionAsInProject(),
+            mavenBundle("commons-pool", "commons-pool").versionAsInProject()
         };
     }
 
+    @Inject
+    private CamelContext context;
+
+    @Inject
+    private CommandProcessor commandProcessor;
+
     @Test
-    public void test() {
-        assertTrue(true);
+    public void getRouteStatus() {
+        assertThat(context.getRouteStatus("consumer-route"), equalTo(ServiceStatus.Started));
+    }
+
+    @Test
+    public void executeCommands() throws Exception {
+        CommandSession session = commandProcessor.createSession(System.in, System.out, System.err);
+        session.execute("camel:context-list");
+        session.execute("camel:route-list");
+        session.execute("camel:route-info consumer-route");
     }
 }

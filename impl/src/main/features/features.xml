@@ -6,6 +6,7 @@
     <feature name="camel-cdi" version="${project.version}" start-level="50">
         <feature version="${pax-cdi.version}">pax-cdi</feature>
         <bundle>mvn:org.apache.camel/camel-core/${camel.version}</bundle>
+        <bundle>mvn:org.apache.camel/camel-core-osgi/${camel.version}</bundle>
         <bundle>mvn:io.astefanutti.camel.cdi/camel-cdi/${project.version}</bundle>
     </feature>
 

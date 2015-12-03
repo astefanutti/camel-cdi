@@ -55,17 +55,20 @@ public class HelloPaxExamTest {
             // Option to be used to do remote debugging
             //debugConfiguration("5005", true),
 
-            // Load Features PAX CDI Weld and Camel CDI
-            features(
-                maven().groupId("org.ops4j.pax.cdi").artifactId("pax-cdi-features").type("xml").classifier("features").versionAsInProject(),
-                "pax-cdi-weld"
-            ),
-            features(
-                maven().groupId("io.astefanutti.camel.cdi").artifactId("camel-cdi").type("xml").classifier("features").versionAsInProject(),
-                "camel-cdi"
-            ),
-            // Install example
-            mavenBundle().groupId("io.astefanutti.camel.cdi").artifactId("camel-cdi-sample-hello").versionAsInProject()
+            // TODO: camel-core-osgi requires OSGi compendium API though this is not actually necessary
+            features(maven("org.apache.karaf.features", "standard")
+                    .type("xml").classifier("features").versionAsInProject(),
+                "eventadmin"),
+            // PAX CDI Weld
+            features(maven("org.ops4j.pax.cdi", "pax-cdi-features")
+                    .type("xml").classifier("features").versionAsInProject(),
+                "pax-cdi-weld"),
+            // Camel CDI
+            features(maven("io.astefanutti.camel.cdi", "camel-cdi")
+                    .type("xml").classifier("features").versionAsInProject(),
+                "camel-cdi"),
+            // Hello sample
+            mavenBundle("io.astefanutti.camel.cdi", "camel-cdi-sample-hello").versionAsInProject()
         };
     }
 

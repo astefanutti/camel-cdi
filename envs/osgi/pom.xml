@@ -12,32 +12,59 @@
     <name>Camel CDI :: Environments :: OSGi</name>
 
     <properties>
-        <gravia.version>1.1.0.Beta43</gravia.version>
         <karaf.version>3.0.5</karaf.version>
         <pax-exam.version>4.3.0</pax-exam.version>
+        <gravia.version>1.1.0.Beta43</gravia.version>
     </properties>
 
     <dependencies>
 
-        <!-- Pax Exam -->
+        <!-- CDI -->
+
+        <dependency>
+            <groupId>javax.enterprise</groupId>
+            <artifactId>cdi-api</artifactId>
+        </dependency>
+
+        <!-- Camel CDI Samples -->
+
+        <dependency>
+            <groupId>io.astefanutti.camel.cdi</groupId>
+            <artifactId>camel-cdi-sample-hello</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.astefanutti.camel.cdi</groupId>
+            <artifactId>camel-cdi-sample-sjms</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Pax Exam & URL Aether -->
+
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam</artifactId>
             <version>${pax-exam.version}</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam-spi</artifactId>
             <version>${pax-exam.version}</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam-junit4</artifactId>
             <version>${pax-exam.version}</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam-container-karaf</artifactId>
@@ -45,7 +72,38 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Features -->
+        <dependency>
+            <groupId>org.ops4j.pax.url</groupId>
+            <artifactId>pax-url-aether</artifactId>
+            <version>2.4.3</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Karaf & Command Shell -->
+
+        <dependency>
+            <groupId>org.apache.karaf</groupId>
+            <artifactId>apache-karaf</artifactId>
+            <version>${karaf.version}</version>
+            <type>zip</type>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.karaf.features</groupId>
+                    <artifactId>framework</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.gogo.runtime</artifactId>
+            <version>0.16.2</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Karaf Features -->
+
         <dependency>
             <groupId>org.ops4j.pax.cdi</groupId>
             <artifactId>pax-cdi-features</artifactId>
@@ -62,6 +120,12 @@
             <classifier>features</classifier>
             <type>xml</type>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -71,23 +135,56 @@
             <classifier>features</classifier>
             <type>xml</type>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
-        <!-- Karaf -->
+        <!-- Karaf Camel commands -->
+
         <dependency>
-            <groupId>org.apache.karaf</groupId>
-            <artifactId>apache-karaf</artifactId>
-            <version>${karaf.version}</version>
-            <type>zip</type>
+            <groupId>org.apache.camel.karaf</groupId>
+            <artifactId>camel-karaf-commands</artifactId>
+            <version>${camel.version}</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-commands-core</artifactId>
+            <version>${camel.version}</version>
             <scope>test</scope>
         </dependency>
 
-        <!-- Arquillian -->
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-catalog</artifactId>
+            <version>${camel.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Arquillian, Gravia & JBoss OSGi -->
+
         <dependency>
             <groupId>org.jboss.arquillian.container</groupId>
             <artifactId>arquillian-container-karaf-managed</artifactId>
             <version>${arquillian-osgi.version}</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.jboss.arquillian.container</groupId>
+                    <artifactId>arquillian-container-osgi</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -97,56 +194,17 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Gravia -->
         <dependency>
             <groupId>org.jboss.gravia</groupId>
             <artifactId>gravia-arquillian-container-managed</artifactId>
-            <version>1.1.0.Beta43</version>
+            <version>${gravia.version}</version>
             <scope>test</scope>
         </dependency>
 
-        <!-- OSGI -->
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.enterprise</artifactId>
-            <version>4.2.0</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.framework</artifactId>
-            <version>4.0.3</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- Karaf -->
-        <dependency>
-            <groupId>org.apache.karaf</groupId>
-            <artifactId>org.apache.karaf.main</artifactId>
-            <version>${karaf.version}</version>
-        </dependency>
-
-        <!-- JBoss OSGI -->
         <dependency>
             <groupId>org.jboss.osgi.metadata</groupId>
             <artifactId>jbosgi-metadata</artifactId>
             <version>4.0.0.CR1</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- Samples -->
-        <dependency>
-            <groupId>io.astefanutti.camel.cdi</groupId>
-            <artifactId>camel-cdi-sample-hello</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>io.astefanutti.camel.cdi</groupId>
-            <artifactId>camel-cdi-sample-sjms</artifactId>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -159,6 +217,7 @@
                 <filtering>true</filtering>
             </testResource>
         </testResources>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.servicemix.tooling</groupId>
@@ -172,6 +231,7 @@
                     </execution>
                 </executions>
             </plugin>
+
             <plugin>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
@@ -217,6 +277,7 @@
                     </execution>
                 </executions>
             </plugin>
+
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <inherited>false</inherited>
@@ -234,10 +295,11 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- Exclude nto working unit test -->
+
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
+                    <!-- TODO: to be removed once the test passes -->
                     <excludes>
                         <exclude>**/CdiArquillianKarafTest.java</exclude>
                     </excludes>

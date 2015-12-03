@@ -79,6 +79,8 @@ public class CdiCamelExtension implements Extension {
 
     private final Logger logger = LoggerFactory.getLogger(CdiCamelExtension.class);
 
+    private final CdiCamelEnvironment environment = new CdiCamelEnvironment();
+
     private final Set<Class<?>> converters = newSetFromMap(new ConcurrentHashMap<Class<?>, Boolean>());
 
     private final Set<AnnotatedType<?>> camelBeans = newSetFromMap(new ConcurrentHashMap<AnnotatedType<?>, Boolean>());
@@ -204,7 +206,7 @@ public class CdiCamelExtension implements Extension {
 
     private void addDefaultCamelContext(@Observes AfterBeanDiscovery abd, BeanManager manager) {
         if (manager.getBeans(CamelContext.class, AnyLiteral.INSTANCE).isEmpty())
-            abd.addBean(new CdiCamelContextBean(manager));
+            abd.addBean(environment.defaultCamelContextBean(manager));
     }
 
     private void addCdiEventObserverMethods(@Observes AfterBeanDiscovery abd) {
