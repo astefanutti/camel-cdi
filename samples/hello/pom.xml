@@ -13,6 +13,7 @@
     <packaging>${packaging.type}</packaging>
 
     <dependencies>
+
         <dependency>
             <groupId>javax.enterprise</groupId>
             <artifactId>cdi-api</artifactId>
@@ -21,7 +22,6 @@
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-core</artifactId>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -30,7 +30,7 @@
             <version>${project.version}</version>
             <!-- That example only depends on Camel and CDI API -->
             <scope>runtime</scope>
-            <optional>true</optional>
         </dependency>
+
     </dependencies>
 </project>

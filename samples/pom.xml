@@ -27,17 +27,13 @@
         <plugins>
             <!-- Java SE - Maven Exec Plugin -->
             <!-- TODO: the Exec Maven plugin exec goal parent process does not wait for the child process to exit when the JVM terminates in response to a user interrupt, such as typing ^C. That leads to the child process logs not being streamed back to the parent process stream handler. See https://github.com/mojohaus/exec-maven-plugin/issues/9 -->
+            <!-- TODO: ideally the Camel CDI dependency should be added as plugin dependency to the Exec Maven plugin though it's not supported by the exec goal at the moment. See https://github.com/mojohaus/exec-maven-plugin/issues/17 -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <configuration>
                     <executable>java</executable>
-                    <arguments>
-                        <argument>${arguments}</argument>
-                        <argument>-classpath</argument>
-                        <classpath/>
-                        <argument>org.apache.camel.cdi.Main</argument>
-                    </arguments>
+                    <commandlineArgs>${arguments} -classpath %classpath org.apache.camel.cdi.Main</commandlineArgs>
                 </configuration>
             </plugin>
 
@@ -59,6 +55,13 @@
                     <mainClass>org.apache.camel.cdi.Main</mainClass>
                     <openWebConsoleDelay>5</openWebConsoleDelay>
                 </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>io.astefanutti.camel.cdi</groupId>
+                        <artifactId>camel-cdi</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>
@@ -134,6 +137,7 @@
                 </dependency>
 
                 <!-- test dependencies -->
+
                 <dependency>
                     <groupId>org.jboss.arquillian.container</groupId>
                     <artifactId>arquillian-weld-se-embedded-1.1</artifactId>
@@ -171,6 +175,7 @@
                 </dependency>
 
                 <!-- test dependencies -->
+
                 <dependency>
                     <groupId>org.apache.openwebbeans.arquillian</groupId>
                     <artifactId>owb-arquillian-standalone</artifactId>
