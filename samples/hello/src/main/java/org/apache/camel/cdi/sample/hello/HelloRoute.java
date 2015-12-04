@@ -16,36 +16,21 @@
  */
 package org.apache.camel.cdi.sample.hello;
 
-import org.apache.camel.Endpoint;
-import org.apache.camel.EndpointInject;
+import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.cdi.Uri;
+import org.apache.camel.management.event.CamelContextStartedEvent;
 
-import javax.inject.Inject;
+import javax.enterprise.event.Observes;
 
-public class SimpleCamelRoute extends RouteBuilder {
+public class HelloRoute extends RouteBuilder {
 
-    @EndpointInject(uri = "timer://start")
-    private Endpoint timerEP;
-
-    @EndpointInject(uri = "direct:continue")
-    private Endpoint directEP;
-
-    @Inject
-    HelloBean helloBean;
+    void hello(@Observes CamelContextStartedEvent event, @Uri("direct:hello") ProducerTemplate producer) {
+        producer.sendBody(event);
+    }
 
     @Override
     public void configure() {
-        from(timerEP).routeId("timerToDirect")
-            .setHeader("context").constant("simple")
-            .setBody().constant("Camel CDI Example 2")
-            .log("Message received : ${body} for the Context : ${header.context}")
-            .setHeader("header.message").simple("properties:header.message")
-            .log("Message received : ${body} for the header : ${header.header.message}")
-            .to(directEP);
-
-        from(directEP).routeId("directToBean")
-            .setBody().constant("CDI")
-            .bean(helloBean, "sayHello")
-            .log(">> Response : ${body}");
+        from("direct:hello").log("Hello from ${body.context}");
     }
 }
