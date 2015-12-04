@@ -143,6 +143,9 @@ public class CdiCamelExtension implements Extension {
 
     private void cdiEventEndpoints(@Observes ProcessInjectionPoint<?, CdiEventEndpoint> pip) {
         InjectionPoint ip = pip.getInjectionPoint();
+        // FIXME: to be removed when OWB-1102 is fixed
+        if (!CdiEventEndpoint.class.isAssignableFrom(CdiSpiHelper.getRawType(ip.getType())))
+            return;
         // TODO: refine the key to the type and qualifiers instead of the whole injection point as it leads to registering redundant observers
         if (ip.getType() instanceof ParameterizedType)
             cdiEventEndpoints.put(ip, new ForwardingObserverMethod<>(((ParameterizedType) ip.getType()).getActualTypeArguments()[0], ip.getQualifiers()));
