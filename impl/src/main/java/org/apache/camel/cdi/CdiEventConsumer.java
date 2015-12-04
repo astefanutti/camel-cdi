@@ -20,8 +20,13 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.RuntimeExchangeException;
 import org.apache.camel.impl.DefaultConsumer;
+import org.apache.camel.management.event.AbstractExchangeEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /* package-private */ final class CdiEventConsumer<T> extends DefaultConsumer {
+
+    private final Logger logger = LoggerFactory.getLogger(CdiEventConsumer.class);
 
     private final CdiEventEndpoint<T> endpoint;
 
@@ -43,13 +48,22 @@ import org.apache.camel.impl.DefaultConsumer;
     }
 
     void notify(T event) {
-        // TODO: add debug logging
+        logger.debug("Processing CDI event: {}", event);
+
         Exchange exchange = getEndpoint().createExchange();
         exchange.getIn().setBody(event);
+
+        // Avoid infinite loop of exchange events
+        if (event instanceof AbstractExchangeEvent)
+            exchange.setProperty(Exchange.NOTIFY_EVENT, Boolean.TRUE);
+
         try {
             getProcessor().process(exchange);
         } catch (Exception cause) {
             throw new RuntimeExchangeException("Error while processing CDI event", exchange, cause);
+        } finally {
+            if (event instanceof AbstractExchangeEvent)
+                exchange.setProperty(Exchange.NOTIFY_EVENT, Boolean.FALSE);
         }
     }
 }
