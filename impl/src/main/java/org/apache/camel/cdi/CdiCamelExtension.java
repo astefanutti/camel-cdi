@@ -141,10 +141,13 @@ public class CdiCamelExtension implements Extension {
             pit.setInjectionTarget(new CamelBeanInjectionTarget<>(pit.getInjectionTarget(), manager));
     }
 
-    private <T> void cdiEventEndpoints(@Observes ProcessInjectionPoint<?, CdiEventEndpoint<T>> pip) {
+    private void cdiEventEndpoints(@Observes ProcessInjectionPoint<?, CdiEventEndpoint> pip) {
         InjectionPoint ip = pip.getInjectionPoint();
         // TODO: refine the key to the type and qualifiers instead of the whole injection point as it leads to registering redundant observers
-        cdiEventEndpoints.put(ip, new ForwardingObserverMethod<T>(((ParameterizedType) ip.getType()).getActualTypeArguments()[0], ip.getQualifiers()));
+        if (ip.getType() instanceof ParameterizedType)
+            cdiEventEndpoints.put(ip, new ForwardingObserverMethod<>(((ParameterizedType) ip.getType()).getActualTypeArguments()[0], ip.getQualifiers()));
+        else if (ip.getType() instanceof Class)
+            cdiEventEndpoints.put(ip, new ForwardingObserverMethod<>(Object.class, ip.getQualifiers()));
     }
 
     private <T extends Endpoint> void endpointProducers(@Observes ProcessBeanAttributes<T> pba) {
@@ -160,6 +163,7 @@ public class CdiCamelExtension implements Extension {
     }
 
     private <T extends EventObject> void camelEventNotifiers(@Observes ProcessObserverMethod<T, ?> pom) {
+        // Only activate Camel event notifiers for explicit Camel event observers, that is, an observer method for a super type won't activate notifiers.
         Type type = pom.getObserverMethod().getObservedType();
         // Camel events are raw types
         if (type instanceof Class && Class.class.cast(type).getPackage().equals(AbstractExchangeEvent.class.getPackage()))

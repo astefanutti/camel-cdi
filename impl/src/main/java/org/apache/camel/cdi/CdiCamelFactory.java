@@ -99,7 +99,9 @@ final class CdiCamelFactory {
     // Qualifiers are dynamically added in CdiCamelExtension
     private static <T> CdiEventEndpoint<T> cdiEventEndpoint(InjectionPoint ip, @Any Instance<CamelContext> instance, CdiCamelExtension extension, @Any Event<Object> event) throws Exception {
         CamelContext context = selectContext(ip, instance, extension);
-        Type type = ((ParameterizedType) ip.getType()).getActualTypeArguments()[0];
+        Type type = Object.class;
+        if (ip.getType() instanceof ParameterizedType)
+            type = ((ParameterizedType) ip.getType()).getActualTypeArguments()[0];
         String uri = eventEndpointUri(type, ip.getQualifiers());
         if (context.hasEndpoint(uri) == null) {
             // FIXME: to be replaced once event firing with dynamic parameterized type is properly supported (see https://issues.jboss.org/browse/CDI-516)
