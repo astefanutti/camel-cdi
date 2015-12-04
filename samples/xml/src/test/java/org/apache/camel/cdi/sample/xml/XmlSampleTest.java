@@ -56,10 +56,12 @@ public class XmlSampleTest {
     public static TestRule verifier = new LogVerifier() {
         @Override
         protected void verify() throws Throwable {
-            assertThat(getMessages(), hasItems(
-                containsString("(CamelContext: camel-cdi) is starting"),
-                startsWith("Date is"),
-                containsString("(CamelContext: camel-cdi) is shutdown")));
+            assertThat("Log messages not found!", getMessages(),
+                hasItems(
+                    containsString("(CamelContext: camel-cdi) is starting"),
+                    startsWith("Date is"),
+                    containsString("(CamelContext: camel-cdi) is shutdown"))
+            );
         }
     };
 

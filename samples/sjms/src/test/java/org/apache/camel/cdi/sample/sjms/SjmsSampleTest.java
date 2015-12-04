@@ -52,10 +52,12 @@ public class SjmsSampleTest {
     public static TestRule verifier = new LogVerifier() {
         @Override
         protected void verify() throws Throwable {
-            assertThat(getMessages(), hasItems(
-                containsString("(CamelContext: camel-cdi) is starting"),
-                equalTo("Received message [Sample Message] from [Producer]"),
-                containsString("(CamelContext: camel-cdi) is shutdown")));
+            assertThat("Log messages not found!", getMessages(),
+                hasItems(
+                    containsString("(CamelContext: camel-cdi) is starting"),
+                    equalTo("Received message [Sample Message] from [Producer]"),
+                    containsString("(CamelContext: camel-cdi) is shutdown"))
+            );
         }
     };
 
