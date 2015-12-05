@@ -16,6 +16,8 @@
  */
 package org.apache.camel.cdi.osgi;
 
+import org.apache.camel.CamelContext;
+import org.apache.camel.api.management.mbean.ManagedRouteMBean;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
@@ -23,9 +25,13 @@ import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.karaf.options.LogLevelOption;
 
+import javax.inject.Inject;
 import java.io.File;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.ops4j.pax.exam.CoreOptions.junitBundles;
 import static org.ops4j.pax.exam.CoreOptions.maven;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.configureConsole;
@@ -55,25 +61,32 @@ public class HelloPaxExamTest {
             // Option to be used to do remote debugging
             //debugConfiguration("5005", true),
 
+            // JUnit and Hamcrest
+            junitBundles(),
             // TODO: camel-core-osgi requires OSGi compendium API though this is not actually necessary
             features(maven("org.apache.karaf.features", "standard")
-                    .type("xml").classifier("features").versionAsInProject(),
+                .type("xml").classifier("features").versionAsInProject(),
                 "eventadmin"),
             // PAX CDI Weld
             features(maven("org.ops4j.pax.cdi", "pax-cdi-features")
-                    .type("xml").classifier("features").versionAsInProject(),
+                .type("xml").classifier("features").versionAsInProject(),
                 "pax-cdi-weld"),
             // Camel CDI
             features(maven("io.astefanutti.camel.cdi", "camel-cdi")
-                    .type("xml").classifier("features").versionAsInProject(),
+                .type("xml").classifier("features").versionAsInProject(),
                 "camel-cdi"),
             // Hello sample
             mavenBundle("io.astefanutti.camel.cdi", "camel-cdi-sample-hello").versionAsInProject()
         };
     }
 
+    @Inject
+    private CamelContext context;
+
     @Test
-    public void test() {
-        assertTrue(true);
+    public void test() throws Exception {
+        assertThat("Number of routes is incorrect!", context.getRoutes().size(), is(equalTo(1)));
+        ManagedRouteMBean route = context.getManagedRoute(context.getRoutes().get(0).getId(), ManagedRouteMBean.class);
+        assertThat("Number of exchanges completed is incorrect!", route.getExchangesCompleted(), is(equalTo(1L)));
     }
 }
