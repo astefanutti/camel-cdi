@@ -27,6 +27,7 @@ import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Typed;
+import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.util.TypeLiteral;
 import java.lang.annotation.Annotation;
@@ -42,15 +43,15 @@ import java.util.Set;
 final class CdiCamelFactory {
 
     @Produces
-    private static TypeConverter typeConverter(InjectionPoint ip, @Any Instance<CamelContext> instance, CdiCamelExtension extension) {
-        return selectContext(ip, instance, extension).getTypeConverter();
+    private static TypeConverter typeConverter(InjectionPoint ip, @Any Instance<CamelContext> instance, BeanManager manager) {
+        return selectContext(ip, instance, manager).getTypeConverter();
     }
 
     @Uri("")
     @Produces
     // Qualifiers are dynamically added in CdiCamelExtension
-    private static ProducerTemplate producerTemplate(InjectionPoint ip, @Any Instance<CamelContext> instance, CdiCamelExtension extension) {
-        CamelContext context = selectContext(ip, instance, extension);
+    private static ProducerTemplate producerTemplate(InjectionPoint ip, @Any Instance<CamelContext> instance, BeanManager manager) {
+        CamelContext context = selectContext(ip, instance, manager);
         ProducerTemplate producerTemplate = context.createProducerTemplate();
         // FIXME: avoid NPE caused by missing @Uri qualifier when injection point is @ContextName qualified
         String uri = CdiSpiHelper.getQualifierByType(ip, Uri.class).value();
@@ -62,18 +63,18 @@ final class CdiCamelFactory {
     @Produces
     @Typed(MockEndpoint.class)
     // Qualifiers are dynamically added in CdiCamelExtension
-    private static MockEndpoint mockEndpointFromMember(InjectionPoint ip, @Any Instance<CamelContext> instance, CdiCamelExtension extension) {
+    private static MockEndpoint mockEndpointFromMember(InjectionPoint ip, @Any Instance<CamelContext> instance, BeanManager manager) {
         String uri = "mock:" + ip.getMember().getName();
-        return selectContext(ip, instance, extension).getEndpoint(uri, MockEndpoint.class);
+        return selectContext(ip, instance, manager).getEndpoint(uri, MockEndpoint.class);
     }
 
     @Uri("")
     @Produces
     @Typed(MockEndpoint.class)
     // Qualifiers are dynamically added in CdiCamelExtension
-    private static MockEndpoint mockEndpointFromUri(InjectionPoint ip, @Any Instance<CamelContext> instance, CdiCamelExtension extension) {
+    private static MockEndpoint mockEndpointFromUri(InjectionPoint ip, @Any Instance<CamelContext> instance, BeanManager manager) {
         String uri = CdiSpiHelper.getQualifierByType(ip, Uri.class).value();
-        return selectContext(ip, instance, extension).getEndpoint(uri, MockEndpoint.class);
+        return selectContext(ip, instance, manager).getEndpoint(uri, MockEndpoint.class);
     }
 
     // Maintained for backward compatibility reason though this is redundant with @Uri, see https://issues.apache.org/jira/browse/CAMEL-5553?focusedCommentId=13445936&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-13445936
@@ -81,24 +82,24 @@ final class CdiCamelFactory {
     @Produces
     @Typed(MockEndpoint.class)
     // Qualifiers are dynamically added in CdiCamelExtension
-    private static MockEndpoint createMockEndpoint(InjectionPoint ip, @Any Instance<CamelContext> instance, CdiCamelExtension extension) {
+    private static MockEndpoint createMockEndpoint(InjectionPoint ip, @Any Instance<CamelContext> instance, BeanManager manager) {
         String uri = CdiSpiHelper.getQualifierByType(ip, Mock.class).value();
-        return selectContext(ip, instance, extension).getEndpoint(uri, MockEndpoint.class);
+        return selectContext(ip, instance, manager).getEndpoint(uri, MockEndpoint.class);
     }
 
     @Uri("")
     @Produces
     // Qualifiers are dynamically added in CdiCamelExtension
-    private static Endpoint endpoint(InjectionPoint ip, @Any Instance<CamelContext> instance, CdiCamelExtension extension) {
+    private static Endpoint endpoint(InjectionPoint ip, @Any Instance<CamelContext> instance, BeanManager manager) {
         String uri = CdiSpiHelper.getQualifierByType(ip, Uri.class).value();
-        return selectContext(ip, instance, extension).getEndpoint(uri, Endpoint.class);
+        return selectContext(ip, instance, manager).getEndpoint(uri, Endpoint.class);
     }
 
     @Produces
     @SuppressWarnings("unchecked")
     // Qualifiers are dynamically added in CdiCamelExtension
-    private static <T> CdiEventEndpoint<T> cdiEventEndpoint(InjectionPoint ip, @Any Instance<CamelContext> instance, CdiCamelExtension extension, @Any Event<Object> event) throws Exception {
-        CamelContext context = selectContext(ip, instance, extension);
+    private static <T> CdiEventEndpoint<T> cdiEventEndpoint(InjectionPoint ip, @Any Instance<CamelContext> instance, BeanManager manager, @Any Event<Object> event) throws Exception {
+        CamelContext context = selectContext(ip, instance, manager);
         Type type = Object.class;
         if (ip.getType() instanceof ParameterizedType)
             type = ((ParameterizedType) ip.getType()).getActualTypeArguments()[0];
@@ -113,13 +114,14 @@ final class CdiCamelFactory {
                     break;
                 }
             }
-            context.addEndpoint(uri, new CdiEventEndpoint<>(event.select(literal, ip.getQualifiers().toArray(new Annotation[ip.getQualifiers().size()])), uri, context, (ForwardingObserverMethod<T>) extension.getObserverMethod(ip)));
+            context.addEndpoint(uri, new CdiEventEndpoint<>(event.select(literal, ip.getQualifiers().toArray(new Annotation[ip.getQualifiers().size()])), uri, context, (ForwardingObserverMethod<T>) manager.getExtension(CdiCamelExtension.class).getObserverMethod(ip)));
         }
         return context.getEndpoint(uri, CdiEventEndpoint.class);
     }
 
-    private static <T extends CamelContext> T selectContext(InjectionPoint ip, Instance<T> instance, CdiCamelExtension extension) {
-        Collection<Annotation> qualifiers = extension.retainContextQualifiers(ip.getQualifiers());
+    private static <T extends CamelContext> T selectContext(InjectionPoint ip, Instance<T> instance, BeanManager manager) {
+        // TODO: understand why that causes an exception to directly inject the extension when executed in Karaf + PAX CDI Weld. In the meantime, retrieving the extension from the bean manager works as expected.
+        Collection<Annotation> qualifiers = manager.getExtension(CdiCamelExtension.class).retainContextQualifiers(ip.getQualifiers());
         if (qualifiers.isEmpty() && !instance.select(DefaultLiteral.INSTANCE).isUnsatisfied())
             return instance.select(DefaultLiteral.INSTANCE).get();
         return instance.select(qualifiers.toArray(new Annotation[qualifiers.size()])).get();
