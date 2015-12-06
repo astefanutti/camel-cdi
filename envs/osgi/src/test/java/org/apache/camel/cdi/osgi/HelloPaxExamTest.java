@@ -45,7 +45,7 @@ public class HelloPaxExamTest {
 
     @Configuration
     public Option[] config() {
-        return new Option[]{
+        return new Option[] {
             karafDistributionConfiguration()
                 .frameworkUrl(
                     maven().groupId("org.apache.karaf").artifactId("apache-karaf").versionAsInProject().type("zip"))
@@ -63,10 +63,6 @@ public class HelloPaxExamTest {
 
             // JUnit and Hamcrest
             junitBundles(),
-            // TODO: camel-core-osgi requires OSGi compendium API though this is not actually necessary
-            features(maven("org.apache.karaf.features", "standard")
-                .type("xml").classifier("features").versionAsInProject(),
-                "eventadmin"),
             // PAX CDI Weld
             features(maven("org.ops4j.pax.cdi", "pax-cdi-features")
                 .type("xml").classifier("features").versionAsInProject(),

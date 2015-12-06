@@ -18,8 +18,8 @@ package org.apache.camel.cdi.osgi;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.ServiceStatus;
-import org.apache.felix.service.command.CommandProcessor;
-import org.apache.felix.service.command.CommandSession;
+import org.apache.karaf.shell.api.console.Session;
+import org.apache.karaf.shell.api.console.SessionFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
@@ -97,7 +97,7 @@ public class SjmsPaxExamTest {
     private CamelContext context;
 
     @Inject
-    private CommandProcessor commandProcessor;
+    private SessionFactory sessionFactory;
 
     @Test
     public void getRouteStatus() {
@@ -106,7 +106,7 @@ public class SjmsPaxExamTest {
 
     @Test
     public void executeCommands() throws Exception {
-        CommandSession session = commandProcessor.createSession(System.in, System.out, System.err);
+        Session session = sessionFactory.create(System.in, System.out, System.err);
         session.execute("camel:context-list");
         session.execute("camel:route-list");
         session.execute("camel:route-info consumer-route");
