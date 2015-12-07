@@ -22,6 +22,11 @@ import org.apache.camel.cdi.CdiEventEndpoint;
 import org.apache.camel.cdi.Uri;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.management.event.CamelContextStartedEvent;
+import org.apache.camel.management.event.ExchangeCompletedEvent;
+import org.apache.camel.management.event.ExchangeCreatedEvent;
+import org.apache.camel.management.event.ExchangeSendingEvent;
+import org.apache.camel.management.event.ExchangeSentEvent;
+import org.apache.camel.management.event.RouteStartedEvent;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -32,10 +37,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
+import java.util.EventObject;
 
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
@@ -53,9 +59,39 @@ public class CamelEventEndpointTest {
     }
 
     @Test
-    public void sendMessageToInbound(@Uri("mock:events") MockEndpoint events) {
-        assertThat("Event count is incorrect!", events.getExchanges().size(), is(equalTo(1)));
-        assertThat("Event type is incorrect!", events.getExchanges().get(0).getIn().getBody(), instanceOf(CamelContextStartedEvent.class));
+    public void camelStartedEvent(@Uri("mock:started") MockEndpoint started) {
+        assertThat("Event fired is incorrect!", started.getExchanges(), contains(hasProperty("in", hasProperty("body", instanceOf(CamelContextStartedEvent.class)))));
+    }
+
+    @Test
+    public void camelAllEvents(@Uri("mock:events") MockEndpoint events) {
+        assertThat("Events fired are incorrect!", events.getExchanges(),
+            contains(
+                // Started route: route1
+                hasProperty("in", hasProperty("body", instanceOf(ExchangeCreatedEvent.class))),
+                hasProperty("in", hasProperty("body", instanceOf(ExchangeSendingEvent.class))),
+                hasProperty("in", hasProperty("body", instanceOf(RouteStartedEvent.class))),
+                hasProperty("in", hasProperty("body", instanceOf(ExchangeSentEvent.class))),
+                hasProperty("in", hasProperty("body", instanceOf(ExchangeCompletedEvent.class))),
+                // Started route: route2
+                hasProperty("in", hasProperty("body", instanceOf(ExchangeCreatedEvent.class))),
+                hasProperty("in", hasProperty("body", instanceOf(ExchangeSendingEvent.class))),
+                hasProperty("in", hasProperty("body", instanceOf(RouteStartedEvent.class))),
+                hasProperty("in", hasProperty("body", instanceOf(ExchangeSentEvent.class))),
+                hasProperty("in", hasProperty("body", instanceOf(ExchangeCompletedEvent.class))),
+                // Started CamelContext: camel-cdi
+                hasProperty("in", hasProperty("body", instanceOf(ExchangeCreatedEvent.class))),
+                hasProperty("in", hasProperty("body", instanceOf(ExchangeSendingEvent.class))),
+                hasProperty("in", hasProperty("body", instanceOf(CamelContextStartedEvent.class))),
+                hasProperty("in", hasProperty("body", instanceOf(ExchangeSentEvent.class))),
+                hasProperty("in", hasProperty("body", instanceOf(ExchangeCompletedEvent.class))),
+                // Started CamelContext: camel-cdi (for CdiEventEndpoint<CamelContextStartedEvent> started)
+                hasProperty("in", hasProperty("body", instanceOf(ExchangeCreatedEvent.class))),
+                hasProperty("in", hasProperty("body", instanceOf(ExchangeSendingEvent.class))),
+                hasProperty("in", hasProperty("body", instanceOf(ExchangeSentEvent.class))),
+                hasProperty("in", hasProperty("body", instanceOf(ExchangeCompletedEvent.class)))
+            )
+        );
     }
 }
 
@@ -64,8 +100,12 @@ class CamelEventRoute extends RouteBuilder {
     @Inject
     private CdiEventEndpoint<CamelContextStartedEvent> started;
 
+    @Inject
+    private CdiEventEndpoint<EventObject> events;
+
     @Override
     public void configure() {
-        from(started).to("mock:events");
+        from(events).startupOrder(1).to("mock:events");
+        from(started).startupOrder(2).to("mock:started");
     }
 }
