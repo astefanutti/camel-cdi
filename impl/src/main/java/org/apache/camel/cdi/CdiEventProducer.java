@@ -38,6 +38,7 @@ import javax.enterprise.event.Event;
     public void process(Exchange exchange) {
         logger.debug("Firing CDI event of type: {}", event);
         // TODO: leverage Camel type converter mechanism based on the endpoint type
+        // The EventMetadata injection point will be that of the event which is not very useful for the end user. Using BeanManager.fire would be a way to hide that internal though it will be necessary to check whether the exchange event type is assignable to the endpoint event type.
         event.fire((T) exchange.getIn().getBody());
     }
 }
