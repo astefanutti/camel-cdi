@@ -51,6 +51,7 @@ import org.slf4j.LoggerFactory;
         logger.debug("Processing CDI event: {}", event);
 
         Exchange exchange = getEndpoint().createExchange();
+        // TODO: would that be possible to propagate the event metadata?
         exchange.getIn().setBody(event);
 
         // Avoid infinite loop of exchange events
