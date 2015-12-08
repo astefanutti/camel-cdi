@@ -40,6 +40,7 @@ import javax.inject.Inject;
 import java.util.EventObject;
 
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.either;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -66,30 +67,58 @@ public class CamelEventEndpointTest {
     @Test
     public void camelAllEvents(@Uri("mock:events") MockEndpoint events) {
         assertThat("Events fired are incorrect!", events.getExchanges(),
-            contains(
-                // Started route: route1
-                hasProperty("in", hasProperty("body", instanceOf(ExchangeCreatedEvent.class))),
-                hasProperty("in", hasProperty("body", instanceOf(ExchangeSendingEvent.class))),
-                hasProperty("in", hasProperty("body", instanceOf(RouteStartedEvent.class))),
-                hasProperty("in", hasProperty("body", instanceOf(ExchangeSentEvent.class))),
-                hasProperty("in", hasProperty("body", instanceOf(ExchangeCompletedEvent.class))),
-                // Started route: route2
-                hasProperty("in", hasProperty("body", instanceOf(ExchangeCreatedEvent.class))),
-                hasProperty("in", hasProperty("body", instanceOf(ExchangeSendingEvent.class))),
-                hasProperty("in", hasProperty("body", instanceOf(RouteStartedEvent.class))),
-                hasProperty("in", hasProperty("body", instanceOf(ExchangeSentEvent.class))),
-                hasProperty("in", hasProperty("body", instanceOf(ExchangeCompletedEvent.class))),
-                // Started CamelContext: camel-cdi
-                hasProperty("in", hasProperty("body", instanceOf(ExchangeCreatedEvent.class))),
-                hasProperty("in", hasProperty("body", instanceOf(ExchangeSendingEvent.class))),
-                hasProperty("in", hasProperty("body", instanceOf(CamelContextStartedEvent.class))),
-                hasProperty("in", hasProperty("body", instanceOf(ExchangeSentEvent.class))),
-                hasProperty("in", hasProperty("body", instanceOf(ExchangeCompletedEvent.class))),
-                // Started CamelContext: camel-cdi (for CdiEventEndpoint<CamelContextStartedEvent> started)
-                hasProperty("in", hasProperty("body", instanceOf(ExchangeCreatedEvent.class))),
-                hasProperty("in", hasProperty("body", instanceOf(ExchangeSendingEvent.class))),
-                hasProperty("in", hasProperty("body", instanceOf(ExchangeSentEvent.class))),
-                hasProperty("in", hasProperty("body", instanceOf(ExchangeCompletedEvent.class)))
+            // We cannot rely on the delivery order of the camel context started event being fired and observed by both CDI event endpoints
+            either(
+                contains(
+                    // Started route: route1
+                    hasProperty("in", hasProperty("body", instanceOf(ExchangeCreatedEvent.class))),
+                    hasProperty("in", hasProperty("body", instanceOf(ExchangeSendingEvent.class))),
+                    hasProperty("in", hasProperty("body", instanceOf(RouteStartedEvent.class))),
+                    hasProperty("in", hasProperty("body", instanceOf(ExchangeSentEvent.class))),
+                    hasProperty("in", hasProperty("body", instanceOf(ExchangeCompletedEvent.class))),
+                    // Started route: route2
+                    hasProperty("in", hasProperty("body", instanceOf(ExchangeCreatedEvent.class))),
+                    hasProperty("in", hasProperty("body", instanceOf(ExchangeSendingEvent.class))),
+                    hasProperty("in", hasProperty("body", instanceOf(RouteStartedEvent.class))),
+                    hasProperty("in", hasProperty("body", instanceOf(ExchangeSentEvent.class))),
+                    hasProperty("in", hasProperty("body", instanceOf(ExchangeCompletedEvent.class))),
+                    // Started CamelContext: camel-cdi
+                    hasProperty("in", hasProperty("body", instanceOf(ExchangeCreatedEvent.class))),
+                    hasProperty("in", hasProperty("body", instanceOf(ExchangeSendingEvent.class))),
+                    hasProperty("in", hasProperty("body", instanceOf(CamelContextStartedEvent.class))),
+                    hasProperty("in", hasProperty("body", instanceOf(ExchangeSentEvent.class))),
+                    hasProperty("in", hasProperty("body", instanceOf(ExchangeCompletedEvent.class))),
+                    // Started CamelContext: camel-cdi (for CdiEventEndpoint<CamelContextStartedEvent> started)
+                    hasProperty("in", hasProperty("body", instanceOf(ExchangeCreatedEvent.class))),
+                    hasProperty("in", hasProperty("body", instanceOf(ExchangeSendingEvent.class))),
+                    hasProperty("in", hasProperty("body", instanceOf(ExchangeSentEvent.class))),
+                    hasProperty("in", hasProperty("body", instanceOf(ExchangeCompletedEvent.class)))
+            )).or(
+                contains(
+                    // Started route: route1
+                    hasProperty("in", hasProperty("body", instanceOf(ExchangeCreatedEvent.class))),
+                    hasProperty("in", hasProperty("body", instanceOf(ExchangeSendingEvent.class))),
+                    hasProperty("in", hasProperty("body", instanceOf(RouteStartedEvent.class))),
+                    hasProperty("in", hasProperty("body", instanceOf(ExchangeSentEvent.class))),
+                    hasProperty("in", hasProperty("body", instanceOf(ExchangeCompletedEvent.class))),
+                    // Started route: route2
+                    hasProperty("in", hasProperty("body", instanceOf(ExchangeCreatedEvent.class))),
+                    hasProperty("in", hasProperty("body", instanceOf(ExchangeSendingEvent.class))),
+                    hasProperty("in", hasProperty("body", instanceOf(RouteStartedEvent.class))),
+                    hasProperty("in", hasProperty("body", instanceOf(ExchangeSentEvent.class))),
+                    hasProperty("in", hasProperty("body", instanceOf(ExchangeCompletedEvent.class))),
+                    // Started CamelContext: camel-cdi (for CdiEventEndpoint<CamelContextStartedEvent> started)
+                    hasProperty("in", hasProperty("body", instanceOf(ExchangeCreatedEvent.class))),
+                    hasProperty("in", hasProperty("body", instanceOf(ExchangeSendingEvent.class))),
+                    hasProperty("in", hasProperty("body", instanceOf(ExchangeSentEvent.class))),
+                    hasProperty("in", hasProperty("body", instanceOf(ExchangeCompletedEvent.class))),
+                    // Started CamelContext: camel-cdi
+                    hasProperty("in", hasProperty("body", instanceOf(ExchangeCreatedEvent.class))),
+                    hasProperty("in", hasProperty("body", instanceOf(ExchangeSendingEvent.class))),
+                    hasProperty("in", hasProperty("body", instanceOf(CamelContextStartedEvent.class))),
+                    hasProperty("in", hasProperty("body", instanceOf(ExchangeSentEvent.class))),
+                    hasProperty("in", hasProperty("body", instanceOf(ExchangeCompletedEvent.class)))
+                )
             )
         );
     }
