@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
     }
 
     void notify(T event) {
-        logger.debug("Processing CDI event: {}", event);
+        logger.debug("Consuming CDI event [{}] with {}", event, this);
 
         Exchange exchange = getEndpoint().createExchange();
         // TODO: would that be possible to propagate the event metadata?
