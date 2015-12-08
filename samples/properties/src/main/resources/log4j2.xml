@@ -9,7 +9,6 @@
         <Logger name="org.jboss.weld" level="info" />
         <logger name="org.apache.webbeans" level="info" />
         <logger name="org.apache.camel" level="info" />
-        <logger name="org.apache.camel.cdi" level="debug" />
         <Root level="info">
             <AppenderRef ref="Console"/>
         </Root>

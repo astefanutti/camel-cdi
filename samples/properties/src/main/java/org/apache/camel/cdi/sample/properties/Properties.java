@@ -16,11 +16,22 @@
  */
 package org.apache.camel.cdi.sample.properties;
 
-import org.apache.camel.Body;
+import org.apache.camel.component.properties.PropertiesComponent;
 
-public class HelloBean {
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Produces;
+import javax.inject.Named;
+import java.util.Locale;
 
-    public String sayHello(@Body String message) {
-        return "Hello " + message + " user for example 1.";
+public class Properties {
+
+    @Produces
+    @ApplicationScoped
+    @Named("properties")
+    PropertiesComponent properties() {
+        PropertiesComponent component = new PropertiesComponent();
+        component.setLocation("classpath:hello.properties");
+        component.setPropertyPrefix(Locale.getDefault().getISO3Language() + ".");
+        return component;
     }
 }
