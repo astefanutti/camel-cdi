@@ -93,7 +93,6 @@
 
         <profile>
             <id>wildfly-8.x</id>
-
             <build>
                 <plugins>
                     <plugin>
@@ -126,10 +125,10 @@
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
                             <excludedGroups>org.apache.camel.cdi.ee.category.WildFlyCamel</excludedGroups>
-                            <systemProperties>
+                            <systemPropertyVariables>
                                 <arquillian.launch>wildfly-8-managed</arquillian.launch>
                                 <jacoco.agent>${argLine}</jacoco.agent>
-                            </systemProperties>
+                            </systemPropertyVariables>
                         </configuration>
                     </plugin>
                 </plugins>
