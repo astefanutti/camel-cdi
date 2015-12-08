@@ -34,6 +34,7 @@ import static org.junit.Assert.assertThat;
 import static org.ops4j.pax.exam.CoreOptions.junitBundles;
 import static org.ops4j.pax.exam.CoreOptions.maven;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
+import static org.ops4j.pax.exam.CoreOptions.vmOption;
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.configureConsole;
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.features;
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.karafDistributionConfiguration;
@@ -57,7 +58,10 @@ public class HelloPaxExamTest {
             configureConsole().ignoreLocalConsole(),
             // Force the log level to INFO so we have more details during the test. It defaults to WARN.
             logLevel(LogLevelOption.LogLevel.INFO),
-
+            // JaCoCo code coverage
+            System.getProperty("jacoco.agent", "").isEmpty() ?
+                new Option() {} :
+                vmOption(System.getProperty("jacoco.agent")),
             // Option to be used to do remote debugging
             //debugConfiguration("5005", true),
 
