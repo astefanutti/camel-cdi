@@ -26,11 +26,16 @@ import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Annotated;
+import javax.enterprise.inject.spi.AnnotatedField;
+import javax.enterprise.inject.spi.AnnotatedMember;
+import javax.enterprise.inject.spi.AnnotatedMethod;
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.DeploymentException;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Producer;
 import javax.inject.Named;
+import java.beans.Introspector;
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;
@@ -59,11 +64,19 @@ class CamelContextProducer<T extends CamelContext> implements Producer<T> {
             if (annotated.isAnnotationPresent(ContextName.class)) {
                 instance.setNameStrategy(new ExplicitCamelContextNameStrategy(annotated.getAnnotation(ContextName.class).value()));
             }
+            // TODO: support stereotype with empty @Named annotation
             else if (annotated.isAnnotationPresent(Named.class)) {
                 String name = annotated.getAnnotation(Named.class).value();
                 if (name.isEmpty()) {
-                    name = CdiSpiHelper.getRawType(annotated.getBaseType()).getSimpleName();
-                    name = Character.toLowerCase(name.charAt(0)) + name.substring(1);
+                    if (annotated instanceof AnnotatedField) {
+                        name = ((AnnotatedField) annotated).getJavaMember().getName();
+                    } else if (annotated instanceof AnnotatedMethod) {
+                        name = ((AnnotatedMethod) annotated).getJavaMember().getName();
+                        if (name.startsWith("get"))
+                            name = Introspector.decapitalize(name.substring(3));
+                    } else {
+                        name = Introspector.decapitalize(CdiSpiHelper.getRawType(annotated.getBaseType()).getSimpleName());
+                    }
                 }
                 instance.setNameStrategy(new ExplicitCamelContextNameStrategy(name));
             } else {
