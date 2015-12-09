@@ -18,6 +18,7 @@
 
     <modules>
         <module>hello</module>
+        <module>metrics</module>
         <module>properties</module>
         <module>sjms</module>
         <module>xml</module>
