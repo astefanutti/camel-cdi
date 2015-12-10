@@ -34,9 +34,7 @@ class CamelContext extends DefaultCamelContext {
     @ApplicationScoped
     @Named(MetricsComponent.METRIC_REGISTRY_NAME)
     // FIXME: to be removed when Camel Metrics component looks up for the Metrics registry by type only
-    MetricRegistry metricRegistry() {
-        return new MetricRegistry();
-    }
+    MetricRegistry registry = new MetricRegistry();
 
     @PostConstruct
     void addRoutePolicy() {

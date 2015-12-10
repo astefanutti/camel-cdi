@@ -21,15 +21,14 @@ import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.metrics.MetricsConstants;
 
-public class MetricsRoute extends RouteBuilder {
+class MetricsRoute extends RouteBuilder {
 
     @Override
     public void configure() {
         onException()
-            .maximumRedeliveries(2)
             .handled(true)
-            .logStackTrace(false)
-            .logExhausted(false)
+            .maximumRedeliveries(2)
+            .logStackTrace(false).logExhausted(false)
             .log(LoggingLevel.ERROR, "Failed processing ${body}")
             .to("metrics:meter:redelivery?mark=2")
             .to("metrics:meter:error");
@@ -38,7 +37,7 @@ public class MetricsRoute extends RouteBuilder {
             .setBody(header(Exchange.TIMER_COUNTER).prepend("event #"))
             .log("Processing ${body}...")
             .to("metrics:meter:generated")
-            .bean(RandomFailure.class)
+            .bean(UnreliableService.class)
             .filter(header(Exchange.REDELIVERED))
                 .log(LoggingLevel.WARN, "Processed ${body} after ${header.CamelRedeliveryCounter} retries")
                 .setHeader(MetricsConstants.HEADER_METER_MARK, header(Exchange.REDELIVERY_COUNTER))
