@@ -33,7 +33,7 @@ class MetricsRoute extends RouteBuilder {
             .to("metrics:meter:redelivery?mark=2")
             .to("metrics:meter:error");
 
-        from("timer:generator?period=1000").routeId("service")
+        from("timer:generator?period=1000").routeId("unreliable-service")
             .setBody(header(Exchange.TIMER_COUNTER).prepend("event #"))
             .log("Processing ${body}...")
             .to("metrics:meter:generated")
