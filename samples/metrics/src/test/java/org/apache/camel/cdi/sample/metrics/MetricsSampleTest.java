@@ -53,23 +53,11 @@ public class MetricsSampleTest {
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
-    @Inject @Metric(absolute = true)
-    Meter generated;
-
-    @Inject @Metric(absolute = true)
-    Meter attempt;
-
-    @Inject @Metric(absolute = true)
-    Meter success;
-
-    @Inject @Metric(absolute = true)
-    Meter redelivery;
-
-    @Inject @Metric(absolute = true)
-    Meter error;
+    @Inject
+    Meter generated, attempt, success, redelivery, error;
 
     @Inject
-    @Metric(absolute = true, name = "success-ratio")
+    @Metric(name = "success-ratio")
     Gauge<Double> ratio;
 
     @Test

@@ -27,15 +27,10 @@ import javax.inject.Inject;
 class SuccessRatioGauge {
 
     @Inject
-    @Metric(absolute = true)
-    Meter generated;
-
-    @Inject
-    @Metric(absolute = true)
-    Meter success;
+    Meter generated, success;
 
     @Produces
-    @Metric(absolute = true, name = "success-ratio")
+    @Metric(name = "success-ratio")
     Gauge<Double> successRatio = new RatioGauge() {
         @Override
         protected Ratio getRatio() {

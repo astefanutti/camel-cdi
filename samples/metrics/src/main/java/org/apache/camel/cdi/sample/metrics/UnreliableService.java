@@ -18,7 +18,6 @@
 package org.apache.camel.cdi.sample.metrics;
 
 import com.codahale.metrics.Meter;
-import com.codahale.metrics.annotation.Metric;
 import org.apache.camel.Exchange;
 import org.apache.camel.RuntimeExchangeException;
 
@@ -29,7 +28,6 @@ import javax.inject.Inject;
 public class UnreliableService {
 
     @Inject
-    @Metric(absolute = true)
     private Meter attempt;
 
     public void unreliable(Exchange exchange) {

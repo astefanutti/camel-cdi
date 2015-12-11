@@ -17,18 +17,24 @@
 package org.apache.camel.cdi.sample.metrics;
 
 import com.codahale.metrics.MetricRegistry;
+import io.astefanutti.metrics.cdi.MetricsConfiguration;
 import org.apache.camel.component.metrics.MetricsComponent;
 import org.apache.camel.component.metrics.routepolicy.MetricsRoutePolicyFactory;
 import org.apache.camel.impl.DefaultCamelContext;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Produces;
 import javax.inject.Named;
 
 @ApplicationScoped
 @Named("camel-cdi-metrics")
 class CamelContext extends DefaultCamelContext {
+
+    static void configureMetricsCdi(@Observes MetricsConfiguration metrics) {
+        metrics.useAbsoluteName(true);
+    }
 
     @Produces
     @ApplicationScoped
