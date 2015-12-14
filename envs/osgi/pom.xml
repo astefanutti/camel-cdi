@@ -37,6 +37,13 @@
 
         <dependency>
             <groupId>io.astefanutti.camel.cdi</groupId>
+            <artifactId>camel-cdi-sample-metrics</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.astefanutti.camel.cdi</groupId>
             <artifactId>camel-cdi-sample-sjms</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
