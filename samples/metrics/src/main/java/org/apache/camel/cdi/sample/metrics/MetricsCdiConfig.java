@@ -16,11 +16,22 @@
  */
 package org.apache.camel.cdi.sample.metrics;
 
+import com.codahale.metrics.MetricRegistry;
 import io.astefanutti.metrics.cdi.MetricsConfiguration;
+import org.apache.camel.component.metrics.MetricsComponent;
 
 import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Produces;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
 class MetricsCdiConfig {
+
+    @Produces
+    @Singleton
+    @Named(MetricsComponent.METRIC_REGISTRY_NAME)
+    // FIXME: to be removed when Camel Metrics component looks up for the Metrics registry by type only
+        MetricRegistry registry = new MetricRegistry();
 
     static void configure(@Observes MetricsConfiguration config) {
         config.useAbsoluteName(true);

@@ -16,25 +16,16 @@
  */
 package org.apache.camel.cdi.sample.metrics;
 
-import com.codahale.metrics.MetricRegistry;
-import org.apache.camel.component.metrics.MetricsComponent;
 import org.apache.camel.component.metrics.routepolicy.MetricsRoutePolicyFactory;
 import org.apache.camel.impl.DefaultCamelContext;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Produces;
 import javax.inject.Named;
 
 @ApplicationScoped
 @Named("camel-cdi-metrics")
-class CamelContext extends DefaultCamelContext {
-
-    @Produces
-    @ApplicationScoped
-    @Named(MetricsComponent.METRIC_REGISTRY_NAME)
-    // FIXME: to be removed when Camel Metrics component looks up for the Metrics registry by type only
-    MetricRegistry registry = new MetricRegistry();
+public class CamelContext extends DefaultCamelContext {
 
     @PostConstruct
     void addRoutePolicy() {
