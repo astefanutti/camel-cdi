@@ -196,6 +196,10 @@
                 <camel.osgi.export.pkg />
                 <camel.osgi.import.pkg>*</camel.osgi.import.pkg>
                 <camel.osgi.private.pkg>org.apache.camel.cdi.sample.*</camel.osgi.private.pkg>
+                <camel.osgi.require.cap>
+                    osgi.extender; filter:="(osgi.extender=pax.cdi)",
+                    org.ops4j.pax.cdi.extension; filter:="(extension=camel-cdi-extension)"
+                </camel.osgi.require.cap>
             </properties>
             <build>
                 <plugins>
@@ -208,10 +212,7 @@
                                 <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
                                 <Export-Package>${camel.osgi.export.pkg}</Export-Package>
                                 <Import-Package>${camel.osgi.import.pkg}</Import-Package>
-                                <Require-Capability>
-                                    osgi.extender; filter:="(osgi.extender=pax.cdi)",
-                                    org.ops4j.pax.cdi.extension; filter:="(extension=camel-cdi-extension)"
-                                </Require-Capability>
+                                <Require-Capability>${camel.osgi.require.cap}</Require-Capability>
                                 <DynamicImport-Package>${camel.osgi.dynamic}</DynamicImport-Package>
                                 <Private-Package>${camel.osgi.private.pkg}</Private-Package>
                                 <Implementation-Title>Apache Camel CDI :: Karaf Example</Implementation-Title>

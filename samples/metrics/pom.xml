@@ -12,6 +12,14 @@
     <name>Camel CDI :: Samples :: Dropwizard Metrics</name>
     <packaging>${packaging.type}</packaging>
 
+    <properties>
+        <camel.osgi.require.cap>
+            osgi.extender; filter:="(osgi.extender=pax.cdi)",
+            org.ops4j.pax.cdi.extension; filter:="(extension=camel-cdi-extension)",
+            org.ops4j.pax.cdi.extension; filter:="(extension=metrics-cdi-extension)"
+        </camel.osgi.require.cap>
+    </properties>
+
     <dependencies>
 
         <dependency>
@@ -34,7 +42,7 @@
         <dependency>
             <groupId>io.astefanutti.metrics.cdi</groupId>
             <artifactId>metrics-cdi</artifactId>
-            <version>1.3.0</version>
+            <version>1.3.1</version>
         </dependency>
 
     </dependencies>
