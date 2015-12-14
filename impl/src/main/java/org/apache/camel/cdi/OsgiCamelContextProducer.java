@@ -16,6 +16,8 @@
  */
 package org.apache.camel.cdi;
 
+
+import org.apache.camel.CamelContext;
 import org.apache.camel.core.osgi.OsgiCamelContextHelper;
 import org.apache.camel.core.osgi.OsgiCamelContextPublisher;
 import org.apache.camel.core.osgi.utils.BundleContextUtils;
@@ -25,26 +27,35 @@ import org.apache.camel.spi.CamelContextNameStrategy;
 import org.osgi.framework.BundleContext;
 
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.DeploymentException;
+import javax.enterprise.inject.spi.Producer;
 
-final class OsgiCdiCamelContextBean extends CdiCamelContextBean {
+class OsgiCamelContextProducer<T extends CamelContext> extends CamelContextProducer<T> {
 
-    OsgiCdiCamelContextBean(BeanManager manager) {
-        super(manager);
+    OsgiCamelContextProducer(Producer<T> delegate, Annotated annotated, BeanManager manager) {
+        super(delegate, annotated, manager);
     }
 
     @Override
-    public DefaultCamelContext create(CreationalContext<DefaultCamelContext> creational) {
-        DefaultCamelContext context = super.create(creational);
-
+    public T produce(CreationalContext<T> ctx) {
+        T context = super.produce(ctx);
         BundleContext bundle = BundleContextUtils.getBundleContext(getClass());
         context.getManagementStrategy().addEventNotifier(new OsgiCamelContextPublisher(bundle));
-        context.setRegistry(OsgiCamelContextHelper.wrapRegistry(context, context.getRegistry(), bundle));
-        CamelContextNameStrategy strategy = context.getNameStrategy();
-        OsgiCamelContextHelper.osgiUpdate(context, bundle);
-        // FIXME: the above call should not override explicit strategies provided by the end user or should decorate them instead of overriding them completely
-        if (!(strategy instanceof DefaultCamelContextNameStrategy))
-            context.setNameStrategy(strategy);
+
+        if (context instanceof DefaultCamelContext) {
+            DefaultCamelContext adapted = context.adapt(DefaultCamelContext.class);
+            adapted.setRegistry(OsgiCamelContextHelper.wrapRegistry(context, context.getRegistry(), bundle));
+            CamelContextNameStrategy strategy = context.getNameStrategy();
+            OsgiCamelContextHelper.osgiUpdate(adapted, bundle);
+            // FIXME: the above call should not override explicit strategies provided by the end user or should decorate them instead of overriding them completely
+            if (!(strategy instanceof DefaultCamelContextNameStrategy))
+                context.setNameStrategy(strategy);
+        } else {
+            // Fail fast for the moment to avoid side effects by the time these two methods get declared on the CamelContext interface
+            throw new DeploymentException("Camel CDI requires " + context + " to be a subtype of DefaultCamelContext");
+        }
 
         return context;
     }

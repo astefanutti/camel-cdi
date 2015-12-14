@@ -23,11 +23,11 @@ import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionTarget;
 
-final class CamelContextInjectionTarget<T extends CamelContext> extends CamelContextProducer<T> implements InjectionTarget<T> {
+final class OsgiCamelContextInjectionTarget<T extends CamelContext> extends OsgiCamelContextProducer<T> implements InjectionTarget<T> {
 
     private final InjectionTarget<T> delegate;
 
-    CamelContextInjectionTarget(InjectionTarget<T> delegate, Annotated annotated, BeanManager manager) {
+    OsgiCamelContextInjectionTarget(InjectionTarget<T> delegate, Annotated annotated, BeanManager manager) {
         super(delegate, annotated, manager);
         this.delegate = delegate;
     }

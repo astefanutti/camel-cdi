@@ -20,8 +20,11 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.core.osgi.utils.BundleContextUtils;
 
 import javax.enterprise.inject.Vetoed;
+import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.InjectionTarget;
+import javax.enterprise.inject.spi.Producer;
 
 @Vetoed
 final class CdiCamelEnvironment {
@@ -34,6 +37,14 @@ final class CdiCamelEnvironment {
 
     Bean<? extends CamelContext> defaultCamelContextBean(BeanManager manager) {
         return hasBundleContext ? new OsgiCdiCamelContextBean(manager) : new CdiCamelContextBean(manager);
+    }
+
+    <T extends CamelContext> Producer<T> camelContextProducer(Producer<T> delegate, Annotated annotated, BeanManager manager) {
+        return hasBundleContext ? new OsgiCamelContextProducer<>(delegate, annotated, manager) : new CamelContextProducer<>(delegate, annotated, manager);
+    }
+
+    <T extends CamelContext> InjectionTarget<T> camelContextInjectionTarget(InjectionTarget<T> delegate, Annotated annotated, BeanManager manager) {
+        return hasBundleContext ? new OsgiCamelContextInjectionTarget<>(delegate, annotated, manager) : new CamelContextInjectionTarget<>(delegate, annotated, manager);
     }
 
     private static boolean isCamelCoreOsgiPresent() {
