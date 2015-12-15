@@ -17,15 +17,15 @@
 package org.apache.camel.cdi;
 
 import org.apache.camel.impl.DefaultCamelContext;
-import org.apache.camel.util.ObjectHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.camel.impl.ExplicitCamelContextNameStrategy;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.PassivationCapable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -36,18 +36,17 @@ import java.util.Set;
 
 class CdiCamelContextBean implements Bean<DefaultCamelContext>, PassivationCapable {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
-    private final BeanManager manager;
-
     private final Set<Annotation> qualifiers;
 
     private final Set<Type> types;
 
+    private final InjectionTarget<DefaultCamelContext> target;
+
     CdiCamelContextBean(BeanManager manager) {
-        this.manager = manager;
         this.qualifiers = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(AnyLiteral.INSTANCE, DefaultLiteral.INSTANCE)));
-        this.types = Collections.unmodifiableSet(manager.createAnnotatedType(DefaultCamelContext.class).getTypeClosure());
+        AnnotatedType<DefaultCamelContext> annotated = manager.createAnnotatedType(DefaultCamelContext.class);
+        this.types = Collections.unmodifiableSet(annotated.getTypeClosure());
+        this.target = new CamelContextInjectionTarget<>(manager.createInjectionTarget(annotated), qualifiers, new ExplicitCamelContextNameStrategy("camel-cdi"), manager);
     }
 
     @Override
@@ -62,31 +61,12 @@ class CdiCamelContextBean implements Bean<DefaultCamelContext>, PassivationCapab
 
     @Override
     public DefaultCamelContext create(CreationalContext<DefaultCamelContext> creational) {
-        DefaultCamelContext context = new DefaultCamelContext();
-        context.setName("camel-cdi");
-
-        // Add bean registry and Camel injector
-        context.setRegistry(new CdiCamelRegistry(manager));
-        context.setInjector(new CdiCamelInjector(context.getInjector(), manager));
-
-        // Add event notifier if at least one observer is present
-        Set<Annotation> events = manager.getExtension(CdiCamelExtension.class).getObserverEvents();
-        if (events.contains(AnyLiteral.INSTANCE) || events.contains(DefaultLiteral.INSTANCE))
-            context.getManagementStrategy().addEventNotifier(new CdiEventNotifier(manager, Collections.<Annotation>singleton(DefaultLiteral.INSTANCE)));
-
-        return context;
+        return target.produce(creational);
     }
 
     @Override
     public void destroy(DefaultCamelContext instance, CreationalContext<DefaultCamelContext> creational) {
-        if (!instance.getStatus().isStopped()) {
-            logger.info("Camel CDI is stopping {}", instance);
-            try {
-                instance.stop();
-            } catch (Exception cause) {
-                throw ObjectHelper.wrapRuntimeCamelException(cause);
-            }
-        }
+        target.preDestroy(instance);
     }
 
     @Override

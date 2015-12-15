@@ -17,15 +17,23 @@
 package org.apache.camel.cdi;
 
 import org.apache.camel.CamelContext;
+import org.apache.camel.spi.CamelContextNameStrategy;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionTarget;
+import java.lang.annotation.Annotation;
+import java.util.Set;
 
 final class CamelContextInjectionTarget<T extends CamelContext> extends CamelContextProducer<T> implements InjectionTarget<T> {
 
     private final InjectionTarget<T> delegate;
+
+    CamelContextInjectionTarget(InjectionTarget<T> delegate, Set<Annotation> qualifiers, CamelContextNameStrategy strategy, BeanManager manager) {
+        super(delegate, qualifiers, strategy, manager);
+        this.delegate = delegate;
+    }
 
     CamelContextInjectionTarget(InjectionTarget<T> delegate, Annotated annotated, BeanManager manager) {
         super(delegate, annotated, manager);
