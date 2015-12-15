@@ -17,35 +17,45 @@
 package org.apache.camel.cdi;
 
 import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.InjectionTarget;
+import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Producer;
+import java.util.Set;
 
-abstract class DelegateInjectionTarget<T> extends DelegateProducer<T> implements InjectionTarget<T> {
+abstract class DelegateProducer<T> implements Producer<T> {
 
-    private final InjectionTarget<T> delegate;
+    private final Producer<T> delegate;
 
-    DelegateInjectionTarget(InjectionTarget<T> delegate) {
-        super(delegate);
+    DelegateProducer(Producer<T> delegate) {
         this.delegate = delegate;
     }
 
-    DelegateInjectionTarget(InjectionTarget<T> target, Producer<T> producer) {
-        super(producer);
-        this.delegate = target;
+    @Override
+    public T produce(CreationalContext<T> ctx) {
+        return delegate.produce(ctx);
     }
 
     @Override
-    public void inject(T instance, CreationalContext<T> ctx) {
-        delegate.inject(instance, ctx);
+    public void dispose(T instance) {
+        delegate.dispose(instance);
     }
 
     @Override
-    public void postConstruct(T instance) {
-        delegate.postConstruct(instance);
+    public Set<InjectionPoint> getInjectionPoints() {
+        return delegate.getInjectionPoints();
     }
 
     @Override
-    public void preDestroy(T instance) {
-        delegate.preDestroy(instance);
+    public String toString() {
+        return delegate.toString();
+    }
+
+    @Override
+    public int hashCode() {
+        return delegate.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return delegate.equals(object);
     }
 }

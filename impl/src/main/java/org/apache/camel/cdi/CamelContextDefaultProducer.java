@@ -16,35 +16,41 @@
  */
 package org.apache.camel.cdi;
 
-import org.apache.camel.CamelContext;
+import org.apache.camel.impl.DefaultCamelContext;
 
 import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.Annotated;
-import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
+import java.util.Collections;
+import java.util.Set;
 
-final class OsgiCamelContextInjectionTarget<T extends CamelContext> extends OsgiCamelContextProducer<T> implements InjectionTarget<T> {
+final class CamelContextDefaultProducer implements InjectionTarget<DefaultCamelContext> {
 
-    private final InjectionTarget<T> delegate;
-
-    OsgiCamelContextInjectionTarget(InjectionTarget<T> delegate, Annotated annotated, BeanManager manager) {
-        super(delegate, annotated, manager);
-        this.delegate = delegate;
+    @Override
+    public DefaultCamelContext produce(CreationalContext<DefaultCamelContext> ctx) {
+        DefaultCamelContext context = new DefaultCamelContext();
+        context.setName("camel-cdi");
+        return context;
     }
 
     @Override
-    public void inject(T instance, CreationalContext<T> ctx) {
-        delegate.inject(instance, ctx);
+    public void inject(DefaultCamelContext instance, CreationalContext<DefaultCamelContext> ctx) {
     }
 
     @Override
-    public void postConstruct(T instance) {
-        delegate.postConstruct(instance);
+    public void postConstruct(DefaultCamelContext instance) {
     }
 
     @Override
-    public void preDestroy(T instance) {
-        delegate.preDestroy(instance);
-        stopCamelContext(instance);
+    public void preDestroy(DefaultCamelContext instance) {
+    }
+
+    @Override
+    public void dispose(DefaultCamelContext instance) {
+    }
+
+    @Override
+    public Set<InjectionPoint> getInjectionPoints() {
+        return Collections.emptySet();
     }
 }

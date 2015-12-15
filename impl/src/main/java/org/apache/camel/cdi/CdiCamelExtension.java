@@ -28,6 +28,7 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.camel.PropertyInject;
 import org.apache.camel.RoutesBuilder;
 import org.apache.camel.ServiceStatus;
+import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.management.event.AbstractExchangeEvent;
 import org.apache.camel.model.RouteContainer;
 import org.slf4j.Logger;
@@ -47,6 +48,8 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.DeploymentException;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.InjectionTarget;
+import javax.enterprise.inject.spi.InjectionTargetFactory;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.enterprise.inject.spi.ProcessBean;
@@ -211,9 +214,14 @@ public class CdiCamelExtension implements Extension {
         }
     }
 
-    private void addDefaultCamelContext(@Observes AfterBeanDiscovery abd, BeanManager manager) {
+    private void addDefaultCamelContext(@Observes AfterBeanDiscovery abd, final BeanManager manager) {
         if (manager.getBeans(CamelContext.class, AnyLiteral.INSTANCE).isEmpty())
-            abd.addBean(environment.defaultCamelContextBean(manager));
+            abd.addBean(manager.createBean(new CamelContextBeanAttributes(manager), DefaultCamelContext.class, new InjectionTargetFactory<DefaultCamelContext>() {
+                @Override
+                public InjectionTarget<DefaultCamelContext> createInjectionTarget(Bean<DefaultCamelContext> bean) {
+                    return environment.camelContextInjectionTarget(new CamelContextDefaultProducer(), null, manager);
+                }
+            }));
     }
 
     private void addCdiEventObserverMethods(@Observes AfterBeanDiscovery abd) {

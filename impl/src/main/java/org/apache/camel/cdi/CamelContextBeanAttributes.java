@@ -17,16 +17,10 @@
 package org.apache.camel.cdi;
 
 import org.apache.camel.impl.DefaultCamelContext;
-import org.apache.camel.impl.ExplicitCamelContextNameStrategy;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanAttributes;
 import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.InjectionTarget;
-import javax.enterprise.inject.spi.PassivationCapable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Arrays;
@@ -34,19 +28,15 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-class CdiCamelContextBean implements Bean<DefaultCamelContext>, PassivationCapable {
+final class CamelContextBeanAttributes implements BeanAttributes<DefaultCamelContext> {
 
     private final Set<Annotation> qualifiers;
 
     private final Set<Type> types;
 
-    private final InjectionTarget<DefaultCamelContext> target;
-
-    CdiCamelContextBean(BeanManager manager) {
+    CamelContextBeanAttributes(BeanManager manager) {
         this.qualifiers = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(AnyLiteral.INSTANCE, DefaultLiteral.INSTANCE)));
-        AnnotatedType<DefaultCamelContext> annotated = manager.createAnnotatedType(DefaultCamelContext.class);
-        this.types = Collections.unmodifiableSet(annotated.getTypeClosure());
-        this.target = new CamelContextInjectionTarget<>(manager.createInjectionTarget(annotated), qualifiers, new ExplicitCamelContextNameStrategy("camel-cdi"), manager);
+        this.types = Collections.unmodifiableSet(manager.createAnnotatedType(DefaultCamelContext.class).getTypeClosure());
     }
 
     @Override
@@ -60,34 +50,9 @@ class CdiCamelContextBean implements Bean<DefaultCamelContext>, PassivationCapab
     }
 
     @Override
-    public DefaultCamelContext create(CreationalContext<DefaultCamelContext> creational) {
-        return target.produce(creational);
-    }
-
-    @Override
-    public void destroy(DefaultCamelContext instance, CreationalContext<DefaultCamelContext> creational) {
-        target.preDestroy(instance);
-    }
-
-    @Override
-    public Class<DefaultCamelContext> getBeanClass() {
-        return DefaultCamelContext.class;
-    }
-
-    @Override
-    public Set<InjectionPoint> getInjectionPoints() {
-        return Collections.emptySet();
-    }
-
-    @Override
     public String getName() {
-        // Not called as this is not a named bean
+        // This is not a named bean
         return null;
-    }
-
-    @Override
-    public String toString() {
-        return "Default CDI CamelContext Bean";
     }
 
     @Override
@@ -103,15 +68,5 @@ class CdiCamelContextBean implements Bean<DefaultCamelContext>, PassivationCapab
     @Override
     public boolean isAlternative() {
         return false;
-    }
-
-    @Override
-    public boolean isNullable() {
-        return false;
-    }
-
-    @Override
-    public String getId() {
-        return getClass().getName();
     }
 }

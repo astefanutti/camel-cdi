@@ -31,50 +31,71 @@ import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.DeploymentException;
-import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.Producer;
 import javax.inject.Named;
-import javax.inject.Provider;
 import java.beans.Introspector;
 import java.lang.annotation.Annotation;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-class CamelContextProducer<T extends CamelContext> implements Producer<T> {
+final class CamelContextProducer<T extends CamelContext> extends DelegateProducer<T> {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final Producer<T> delegate;
+    private final Annotated annotated;
 
     private final BeanManager manager;
 
-    // We need to delay the logic until the ProcessBean lifecycle event is fired. To be replaced with the Supplier functional interface when Java 8 becomes a pre-requisite.
-    private final Provider<Set<Annotation>> qualifiers;
-
-    private final CamelContextNameStrategy strategy;
-
-    CamelContextProducer(Producer<T> delegate, final Set<Annotation> qualifiers, CamelContextNameStrategy strategy, BeanManager manager) {
-        this.delegate = delegate;
-        this.qualifiers = new Provider<Set<Annotation>>() {
-            @Override
-            public Set<Annotation> get() {
-                return qualifiers;
-            }
-        };
-        this.strategy = strategy;
+    CamelContextProducer(Producer<T> delegate, Annotated annotated, BeanManager manager) {
+        super(delegate);
+        this.annotated = annotated;
         this.manager = manager;
     }
 
-    CamelContextProducer(Producer<T> delegate, final Annotated annotated, final BeanManager manager) {
-        this.delegate = delegate;
-        this.qualifiers = new Provider<Set<Annotation>>() {
-            @Override
-            public Set<Annotation> get() {
-                return manager.getExtension(CdiCamelExtension.class).getContextBean(new AnnotatedWrapper(annotated)).getQualifiers();
+    @Override
+    public T produce(CreationalContext<T> ctx) {
+        T context = super.produce(ctx);
+
+        // Do not override the name if it's been already set (in the bean constructor for example)
+        if (context.getNameStrategy() instanceof DefaultCamelContextNameStrategy)
+            context.setNameStrategy(nameStrategy(annotated));
+
+        // Add bean registry and Camel injector
+        if (context instanceof DefaultCamelContext) {
+            DefaultCamelContext adapted = context.adapt(DefaultCamelContext.class);
+            adapted.setRegistry(new CdiCamelRegistry(manager));
+            adapted.setInjector(new CdiCamelInjector(context.getInjector(), manager));
+        } else {
+            // Fail fast for the time being to avoid side effects by the time these two methods get declared on the CamelContext interface
+            throw new DeploymentException("Camel CDI requires " + context + " to be a subtype of DefaultCamelContext");
+        }
+
+        // Add event notifier if at least one observer is present
+        CdiCamelExtension extension = manager.getExtension(CdiCamelExtension.class);
+        Set<Annotation> events = new HashSet<>(extension.getObserverEvents());
+        // Annotated must be wrapped because of OWB-1099
+        Collection<Annotation> qualifiers = annotated != null ? extension.getContextBean(new AnnotatedWrapper(annotated)).getQualifiers() : Arrays.asList(AnyLiteral.INSTANCE, DefaultLiteral.INSTANCE);
+        events.retainAll(qualifiers);
+        if (!events.isEmpty())
+            context.getManagementStrategy().addEventNotifier(new CdiEventNotifier(manager, qualifiers));
+
+        return context;
+    }
+
+    @Override
+    public void dispose(T context) {
+        super.dispose(context);
+
+        if (!context.getStatus().isStopped()) {
+            logger.info("Camel CDI is stopping {}", context);
+            try {
+                context.stop();
+            } catch (Exception cause) {
+                throw ObjectHelper.wrapRuntimeCamelException(cause);
             }
-        };
-        this.strategy = nameStrategy(annotated);
-        this.manager = manager;
+        }
     }
 
     private static CamelContextNameStrategy nameStrategy(Annotated annotated) {
@@ -99,54 +120,6 @@ class CamelContextProducer<T extends CamelContext> implements Producer<T> {
         } else {
             // Use a specific naming strategy for Camel CDI as the default one increments the suffix for each CDI proxy created
             return new CdiCamelContextNameStrategy();
-        }
-    }
-
-    @Override
-    public T produce(CreationalContext<T> ctx) {
-        T instance = delegate.produce(ctx);
-        // Do not override the name if it's been already set (in the bean constructor for example)
-        if (instance.getNameStrategy() instanceof DefaultCamelContextNameStrategy)
-            instance.setNameStrategy(strategy);
-
-        // Add bean registry and Camel injector
-        if (instance instanceof DefaultCamelContext) {
-            DefaultCamelContext adapted = instance.adapt(DefaultCamelContext.class);
-            adapted.setRegistry(new CdiCamelRegistry(manager));
-            adapted.setInjector(new CdiCamelInjector(instance.getInjector(), manager));
-        } else {
-            // Fail fast for the moment to avoid side effects by the time these two methods get declared on the CamelContext interface
-            throw new DeploymentException("Camel CDI requires " + instance + " to be a subtype of DefaultCamelContext");
-        }
-
-        // Add event notifier if at least one observer is present
-        Set<Annotation> events = new HashSet<>(manager.getExtension(CdiCamelExtension.class).getObserverEvents());
-        events.retainAll(qualifiers.get());
-        if (!events.isEmpty())
-            instance.getManagementStrategy().addEventNotifier(new CdiEventNotifier(manager, qualifiers.get()));
-
-        return instance;
-    }
-
-    @Override
-    public void dispose(T instance) {
-        delegate.dispose(instance);
-        stopCamelContext(instance);
-    }
-
-    @Override
-    public Set<InjectionPoint> getInjectionPoints() {
-        return delegate.getInjectionPoints();
-    }
-
-    protected void stopCamelContext(T context) {
-        if (!context.getStatus().isStopped()) {
-            logger.info("Camel CDI is stopping {}", context);
-            try {
-                context.stop();
-            } catch (Exception cause) {
-                throw ObjectHelper.wrapRuntimeCamelException(cause);
-            }
         }
     }
 }

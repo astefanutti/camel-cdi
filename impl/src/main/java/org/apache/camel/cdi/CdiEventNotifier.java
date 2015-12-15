@@ -20,8 +20,8 @@ import org.apache.camel.support.EventNotifierSupport;
 
 import javax.enterprise.inject.spi.BeanManager;
 import java.lang.annotation.Annotation;
+import java.util.Collection;
 import java.util.EventObject;
-import java.util.Set;
 
 final class CdiEventNotifier extends EventNotifierSupport {
 
@@ -29,7 +29,7 @@ final class CdiEventNotifier extends EventNotifierSupport {
 
     private final Annotation[] qualifiers;
 
-    CdiEventNotifier(BeanManager manager, Set<Annotation> qualifiers) {
+    CdiEventNotifier(BeanManager manager, Collection<Annotation> qualifiers) {
         this.manager = manager;
         this.qualifiers = qualifiers.toArray(new Annotation[qualifiers.size()]);
         // TODO: be more fine grained for the kind of events that are emitted depending on the observed event types
