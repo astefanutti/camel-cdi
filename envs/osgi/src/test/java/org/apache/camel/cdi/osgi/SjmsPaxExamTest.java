@@ -105,7 +105,7 @@ public class SjmsPaxExamTest {
 
     @Test
     public void getRouteStatus() {
-        assertThat(context.getRouteStatus("consumer-route"), equalTo(ServiceStatus.Started));
+        assertThat("Route status is incorrect!", context.getRouteStatus("consumer-route"), equalTo(ServiceStatus.Started));
     }
 
     @Test

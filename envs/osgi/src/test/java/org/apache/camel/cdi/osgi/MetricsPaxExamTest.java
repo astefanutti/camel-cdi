@@ -105,7 +105,9 @@ public class MetricsPaxExamTest {
 
     @Test
     public void test() throws Exception {
-        assertThat(context.getRouteStatus("unreliable-service"), equalTo(ServiceStatus.Started));
+        assertThat("Context name is incorrect!", context.getName(), equalTo("camel-cdi-metrics"));
+
+        assertThat("Route status is incorrect!", context.getRouteStatus("unreliable-service"), equalTo(ServiceStatus.Started));
 
         // Wait a while so that the timer can kick in
         Thread.sleep(10000L);
