@@ -77,7 +77,7 @@
         <cdi.version>1.2</cdi.version>
         <osgi.version>6.0.0</osgi.version>
         <pax-cdi.version>1.0.0.RC1</pax-cdi.version>
-        <deltaspike.version>1.5.1</deltaspike.version>
+        <deltaspike.version>1.5.2</deltaspike.version>
         <javaee.version>7.0</javaee.version>
         <slf4j.version>1.7.13</slf4j.version>
         <log4j.version>2.5</log4j.version>
