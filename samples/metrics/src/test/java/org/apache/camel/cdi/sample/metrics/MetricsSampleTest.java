@@ -22,19 +22,26 @@ import com.codahale.metrics.annotation.Metric;
 import io.astefanutti.metrics.cdi.MetricsExtension;
 import org.apache.camel.CamelContext;
 import org.apache.camel.cdi.CdiCamelExtension;
+import org.apache.camel.cdi.test.LogVerifier;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.matchesPattern;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
@@ -52,6 +59,22 @@ public class MetricsSampleTest {
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
+
+    @ClassRule
+    public static TestRule verifier = new LogVerifier() {
+        @Override
+        protected void verify() throws Throwable {
+            assertThat("Log messages not found!", getMessages(),
+                hasItems(
+                    containsString("(CamelContext: camel-cdi-metrics) is starting"),
+                    anyOf(
+                        matchesPattern("Successfully processed event #\\d+"),
+                        matchesPattern("Processed event #\\d+ after \\d+ retries"),
+                        matchesPattern("Failed processing event #\\d+")),
+                    containsString("(CamelContext: camel-cdi-metrics) is shutdown"))
+            );
+        }
+    };
 
     @Inject
     Meter generated, attempt, success, redelivery, error;
