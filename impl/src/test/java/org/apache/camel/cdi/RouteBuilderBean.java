@@ -19,8 +19,9 @@ package org.apache.camel.cdi;
 import org.apache.camel.builder.RouteBuilder;
 
 public class RouteBuilderBean extends RouteBuilder {
+
     @Override
-    public void configure() throws Exception {
+    public void configure() {
         from("direct:inbound").log("inbound >> [${body}] >> outbound").to("mock:outbound");
     }
 }
