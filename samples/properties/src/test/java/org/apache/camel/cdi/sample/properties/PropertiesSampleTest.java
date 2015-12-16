@@ -73,9 +73,9 @@ public class PropertiesSampleTest {
         protected void verify() throws Throwable {
             assertThat("Log messages not found!", getMessages(),
                 hasItems(
-                    containsString("(CamelContext: camel-cdi) is starting"),
-                    equalTo("Bonjour de CamelContext(camel-cdi)"),
-                    containsString("(CamelContext: camel-cdi) is shutdown"))
+                    containsString("(CamelContext: camel-1) is starting"),
+                    equalTo("Bonjour de CamelContext(camel-1)"),
+                    containsString("(CamelContext: camel-1) is shutdown"))
             );
         }
     };

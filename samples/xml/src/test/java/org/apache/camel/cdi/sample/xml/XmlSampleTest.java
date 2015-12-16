@@ -58,9 +58,9 @@ public class XmlSampleTest {
         protected void verify() throws Throwable {
             assertThat("Log messages not found!", getMessages(),
                 hasItems(
-                    containsString("(CamelContext: camel-cdi) is starting"),
+                    containsString("(CamelContext: camel-1) is starting"),
                     startsWith("Date is"),
-                    containsString("(CamelContext: camel-cdi) is shutdown"))
+                    containsString("(CamelContext: camel-1) is shutdown"))
             );
         }
     };

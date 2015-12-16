@@ -16,6 +16,7 @@
  */
 package org.apache.camel.cdi;
 
+import org.apache.camel.impl.DefaultCamelContextNameStrategy;
 import org.apache.camel.spi.CamelContextNameStrategy;
 
 import javax.enterprise.inject.Vetoed;
@@ -31,28 +32,12 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @see CamelContextNameStrategy
  */
 @Vetoed
-final class CdiCamelContextNameStrategy implements CamelContextNameStrategy {
+final class CdiCamelContextNameStrategy extends DefaultCamelContextNameStrategy implements CamelContextNameStrategy {
 
     private static final AtomicInteger CONTEXT_COUNTER = new AtomicInteger(0);
 
-    private String name;
-
-    CdiCamelContextNameStrategy() {
-        this.name = getNextName();
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
     @Override
     public String getNextName() {
-        return  "camel-cdi" + "-" + CONTEXT_COUNTER.incrementAndGet();
-    }
-
-    @Override
-    public boolean isFixedName() {
-        return false;
+        return "camel" + "-" + CONTEXT_COUNTER.incrementAndGet();
     }
 }

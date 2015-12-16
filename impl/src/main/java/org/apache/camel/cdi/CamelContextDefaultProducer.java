@@ -29,7 +29,7 @@ final class CamelContextDefaultProducer implements InjectionTarget<DefaultCamelC
     @Override
     public DefaultCamelContext produce(CreationalContext<DefaultCamelContext> ctx) {
         DefaultCamelContext context = new DefaultCamelContext();
-        context.setName("camel-cdi");
+        context.setNameStrategy(new CdiCamelContextNameStrategy());
         return context;
     }
 

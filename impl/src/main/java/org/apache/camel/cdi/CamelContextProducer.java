@@ -59,7 +59,7 @@ final class CamelContextProducer<T extends CamelContext> extends DelegateProduce
         T context = super.produce(ctx);
 
         // Do not override the name if it's been already set (in the bean constructor for example)
-        if (context.getNameStrategy() instanceof DefaultCamelContextNameStrategy)
+        if (annotated != null && context.getNameStrategy() instanceof DefaultCamelContextNameStrategy)
             context.setNameStrategy(nameStrategy(annotated));
 
         // Add bean registry and Camel injector
