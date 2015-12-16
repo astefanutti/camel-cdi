@@ -20,7 +20,6 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.cdi.CdiCamelExtension;
 import org.apache.camel.cdi.Uri;
-import org.apache.camel.cdi.se.bean.UriEndpointRoute;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.model.ModelHelper;
 import org.apache.camel.model.RoutesDefinition;
