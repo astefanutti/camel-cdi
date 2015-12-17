@@ -90,10 +90,4 @@ final class CdiCamelRegistry implements Registry {
     public <T> Map<String, T> lookupByType(Class<T> type) {
         return findByTypeWithName(type);
     }
-
-    @Override
-
-    public String toString() {
-        return "CDI Bean Registry [" + System.identityHashCode(this) + "]";
-    }
 }
