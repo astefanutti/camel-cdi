@@ -230,20 +230,24 @@ public class CdiCamelExtension implements Extension {
         for (Bean<?> context : manager.getBeans(CamelContext.class, AnyLiteral.INSTANCE))
             contexts.add(BeanManagerHelper.getReference(manager, CamelContext.class, context));
 
-        // Add type converters to the Camel contexts
+        // Add type converters to Camel contexts
         CdiTypeConverterLoader loader = new CdiTypeConverterLoader();
         for (Class<?> converter : converters)
             for (CamelContext context : contexts)
                 loader.loadConverterMethods(context.getTypeConverterRegistry(), converter);
 
-        // Add routes to the Camel contexts
+        // Add routes to Camel contexts
         boolean deploymentException = false;
-        for (Bean<?> builder : manager.getBeans(RoutesBuilder.class, AnyLiteral.INSTANCE))
-            deploymentException |= addRouteToContext(builder, BeanManagerHelper.getReferenceByType(manager, CamelContext.class, CdiSpiHelper.excludeElementOfTypes(builder.getQualifiers(), Named.class)), manager, adv);
-
-        for (Bean<?> container : manager.getBeans(RouteContainer.class, AnyLiteral.INSTANCE))
-            deploymentException |= addRouteToContext(container, BeanManagerHelper.getReferenceByType(manager, CamelContext.class, CdiSpiHelper.excludeElementOfTypes(container.getQualifiers(), Named.class)), manager, adv);
-
+        Set<Bean<?>> routes = new HashSet<>(manager.getBeans(RoutesBuilder.class, AnyLiteral.INSTANCE));
+        routes.addAll(manager.getBeans(RouteContainer.class, AnyLiteral.INSTANCE));
+        for (Bean<?> context : manager.getBeans(CamelContext.class, AnyLiteral.INSTANCE))
+            for (Bean<?> route : routes) {
+                Set<Annotation> qualifiers = new HashSet<>(context.getQualifiers());
+                qualifiers.retainAll(route.getQualifiers());
+                if (qualifiers.size() > 1)
+                    deploymentException |= addRouteToContext(route, context, manager, adv);
+            }
+        // Let's return to avoid starting misconfigured contexts
         if (deploymentException)
             return;
 
@@ -270,19 +274,16 @@ public class CdiCamelExtension implements Extension {
         eagerBeans.clear();
     }
 
-    private boolean addRouteToContext(Bean<?> route, CamelContext context, BeanManager manager, AfterDeploymentValidation adv) {
-        if (context == null) {
-            logger.debug("No corresponding Camel context found for {}", route);
-            return false;
-        }
+    private boolean addRouteToContext(Bean<?> routeBean, Bean<?> contextBean, BeanManager manager, AfterDeploymentValidation adv) {
         try {
-            Object reference = BeanManagerHelper.getReference(manager, Object.class, route);
-            if (reference instanceof RoutesBuilder)
-                context.addRoutes((RoutesBuilder) reference);
-            else if (reference instanceof RouteContainer)
-                context.addRouteDefinitions(((RouteContainer) reference).getRoutes());
+            CamelContext context = BeanManagerHelper.getReference(manager, CamelContext.class, contextBean);
+            Object route = BeanManagerHelper.getReference(manager, Object.class, routeBean);
+            if (route instanceof RoutesBuilder)
+                context.addRoutes((RoutesBuilder) route);
+            else if (route instanceof RouteContainer)
+                context.addRouteDefinitions(((RouteContainer) route).getRoutes());
             else
-                throw new IllegalArgumentException("Cannot add [" + reference + "] to " + context);
+                throw new IllegalArgumentException("Cannot add [" + route + "] to " + context);
         } catch (Exception exception) {
             adv.addDeploymentProblem(exception);
             return true;
