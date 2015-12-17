@@ -18,14 +18,16 @@ package org.apache.camel.cdi.se;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
+import org.apache.camel.ServiceStatus;
 import org.apache.camel.cdi.CdiCamelExtension;
-import org.apache.camel.cdi.ContextName;
 import org.apache.camel.cdi.Uri;
-import org.apache.camel.cdi.se.bean.FirstCamelContextBean;
-import org.apache.camel.cdi.se.bean.UriEndpointRoute;
+import org.apache.camel.cdi.se.bean.ManualCamelRoute;
+import org.apache.camel.cdi.se.bean.SimpleCamelRoute;
+import org.apache.camel.cdi.se.qualifier.Manual;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit.InSequence;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -42,7 +44,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
-public class FallbackToAnyCamelContextTest {
+public class ManualCamelContextTest {
 
     @Deployment
     public static Archive<?> deployment() {
@@ -50,24 +52,49 @@ public class FallbackToAnyCamelContextTest {
             // Camel CDI
             .addPackage(CdiCamelExtension.class.getPackage())
             // Test classes
-            .addClasses(FirstCamelContextBean.class, UriEndpointRoute.class)
+            .addClasses(SimpleCamelRoute.class, ManualCamelRoute.class)
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Inject
-    @Uri("direct:inbound")
+    @Uri("direct:start")
     private ProducerTemplate inbound;
 
     @Inject
+    @Uri("mock:result")
     private MockEndpoint outbound;
 
+    @Inject
+    @Uri("direct:manual")
+    private ProducerTemplate manual;
+
+    @Inject
+    @Uri("mock:manual")
+    private MockEndpoint mock;
+
+    @Inject
+    @Manual
+    private ManualCamelRoute builder;
+
     @Test
-    public void verifyContext(@ContextName("first") CamelContext context) {
-        assertThat(context.getName(), is(equalTo("first")));
+    @InSequence(1)
+    public void verifyContext(CamelContext context) {
+        assertThat("Number of routes is incorrect!", context.getRoutes().size(), is(equalTo(1)));
+        assertThat("Configured route is incorrect!", context.getRouteStatus("simple"), is(equalTo(ServiceStatus.Started)));
     }
 
     @Test
+    @InSequence(2)
+    public void addManualRoute(CamelContext context) throws Exception {
+        context.addRoutes(builder);
+
+        assertThat("Number of routes is incorrect!", context.getRoutes().size(), is(equalTo(2)));
+        assertThat("Configured route is incorrect!", context.getRouteStatus("manual"), is(equalTo(ServiceStatus.Started)));
+    }
+
+    @Test
+    @InSequence(3)
     public void sendMessageToInbound() throws InterruptedException {
         outbound.expectedMessageCount(1);
         outbound.expectedBodiesReceived("test");
@@ -75,5 +102,16 @@ public class FallbackToAnyCamelContextTest {
         inbound.sendBody("test");
 
         assertIsSatisfied(2L, TimeUnit.SECONDS, outbound);
+    }
+
+    @Test
+    @InSequence(4)
+    public void sendMessageToManual() throws InterruptedException {
+        mock.expectedMessageCount(1);
+        mock.expectedBodiesReceived("manual");
+
+        manual.sendBody("manual");
+
+        assertIsSatisfied(2L, TimeUnit.SECONDS, mock);
     }
 }

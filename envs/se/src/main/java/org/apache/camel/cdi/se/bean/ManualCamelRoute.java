@@ -16,25 +16,14 @@
  */
 package org.apache.camel.cdi.se.bean;
 
-import org.apache.camel.Endpoint;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.cdi.Uri;
-import org.apache.camel.component.mock.MockEndpoint;
+import org.apache.camel.cdi.se.qualifier.Manual;
 
-import javax.inject.Inject;
-
-public class SimpleCamelRoute extends RouteBuilder {
-
-    @Inject
-    @Uri("direct:start")
-    private Endpoint directEP;
-
-    @Inject
-    @Uri("mock:result")
-    private MockEndpoint mockEP;
+@Manual
+public class ManualCamelRoute extends RouteBuilder {
 
     @Override
     public void configure() {
-        from(directEP).routeId("simple").to(mockEP);
+        from("direct:manual").routeId("manual").to("mock:manual");
     }
 }

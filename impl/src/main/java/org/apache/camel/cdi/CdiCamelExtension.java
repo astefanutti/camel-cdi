@@ -45,7 +45,6 @@ import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.DeploymentException;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
@@ -240,14 +239,14 @@ public class CdiCamelExtension implements Extension {
                 loader.loadConverterMethods(context.getTypeConverterRegistry(), converter);
 
         // Add routes to the Camel contexts
-        boolean allRoutesAdded = true;
-        for (Bean<?> route : manager.getBeans(RoutesBuilder.class, AnyLiteral.INSTANCE))
-            allRoutesAdded &= addRouteToContext(route, BeanManagerHelper.getReferenceByType(manager, CamelContext.class, retainContextQualifiers(route.getQualifiers())), manager, adv);
+        boolean deploymentException = false;
+        for (Bean<?> builder : manager.getBeans(RoutesBuilder.class, AnyLiteral.INSTANCE))
+            deploymentException |= addRouteToContext(builder, BeanManagerHelper.getReferenceByType(manager, CamelContext.class, CdiSpiHelper.excludeElementOfTypes(builder.getQualifiers(), Named.class)), manager, adv);
 
-        for (Bean<?> definition : manager.getBeans(RouteContainer.class, AnyLiteral.INSTANCE))
-            allRoutesAdded &= addRouteToContext(definition, BeanManagerHelper.getReferenceByType(manager, CamelContext.class, retainContextQualifiers(definition.getQualifiers())), manager, adv);
+        for (Bean<?> container : manager.getBeans(RouteContainer.class, AnyLiteral.INSTANCE))
+            deploymentException |= addRouteToContext(container, BeanManagerHelper.getReferenceByType(manager, CamelContext.class, CdiSpiHelper.excludeElementOfTypes(container.getQualifiers(), Named.class)), manager, adv);
 
-        if (!allRoutesAdded)
+        if (deploymentException)
             return;
 
         // Trigger eager beans instantiation
@@ -257,7 +256,6 @@ public class CdiCamelExtension implements Extension {
 
         // Start Camel contexts
         for (CamelContext context : contexts) {
-            // Should !context.isAutoStartup() skip context.start()?
             if (ServiceStatus.Started.equals(context.getStatus()))
                 continue;
             logger.info("Camel CDI is starting {}", context);
@@ -276,7 +274,7 @@ public class CdiCamelExtension implements Extension {
 
     private boolean addRouteToContext(Bean<?> route, CamelContext context, BeanManager manager, AfterDeploymentValidation adv) {
         if (context == null) {
-            adv.addDeploymentProblem(new DeploymentException("No corresponding Camel context found for RouteBuilder bean [" + route + "]"));
+            logger.debug("No corresponding Camel context found for {}", route);
             return false;
         }
         try {
@@ -289,8 +287,8 @@ public class CdiCamelExtension implements Extension {
                 throw new IllegalArgumentException("Cannot add [" + reference + "] to " + context);
         } catch (Exception exception) {
             adv.addDeploymentProblem(exception);
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 }
