@@ -28,6 +28,8 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 @Vetoed
 final class CdiSpiHelper {
@@ -42,6 +44,23 @@ final class CdiSpiHelper {
                 return ObjectHelper.cast(type, item);
 
         return null;
+    }
+
+    @SafeVarargs
+    static <T> Set<T> excludeElementOfTypes(Set<T> annotations, Class<? extends T>... exclusions) {
+        Set<T> set = new HashSet<>();
+        for (T qualifier : annotations) {
+            boolean exclude = false;
+            for (Class<? extends T> exclusion : exclusions) {
+                if (exclusion.isAssignableFrom(qualifier.getClass())) {
+                    exclude = true;
+                    break;
+                }
+            }
+            if (!exclude)
+                set.add(qualifier);
+        }
+        return set;
     }
 
     static Class<?> getRawType(Type type) {

@@ -66,7 +66,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EventObject;
@@ -209,7 +208,7 @@ public class CdiCamelExtension implements Extension {
                 abd.addBean(manager.createBean(new BeanAttributesDecorator<>(manager.createBeanAttributes(am), qualifiers), CdiCamelFactory.class, manager.getProducerFactory(am, bean)));
             } else if (Endpoint.class.isAssignableFrom(type) || ProducerTemplate.class.isAssignableFrom(type)) {
                 // TODO: should be more correct to add a bean for each Camel context bean
-                abd.addBean(manager.createBean(new BeanAttributesDecorator<>(manager.createBeanAttributes(am), contextQualifiers, Arrays.asList(Any.class, Default.class, Named.class)), CdiCamelFactory.class, manager.getProducerFactory(am, bean)));
+                abd.addBean(manager.createBean(new BeanAttributesDecorator<>(manager.createBeanAttributes(am), CdiSpiHelper.excludeElementOfTypes(contextQualifiers, Any.class, Default.class, Named.class)), CdiCamelFactory.class, manager.getProducerFactory(am, bean)));
             }
         }
     }
