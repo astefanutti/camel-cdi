@@ -37,6 +37,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -121,7 +122,8 @@ final class CdiCamelFactory {
 
     private static <T extends CamelContext> T selectContext(InjectionPoint ip, Instance<T> instance, BeanManager manager) {
         // TODO: understand why that causes an exception to directly inject the extension when executed in Karaf + PAX CDI Weld. In the meantime, retrieving the extension from the bean manager works as expected.
-        Collection<Annotation> qualifiers = manager.getExtension(CdiCamelExtension.class).retainContextQualifiers(ip.getQualifiers());
+        Collection<Annotation> qualifiers = new HashSet<>(ip.getQualifiers());
+        qualifiers.retainAll(manager.getExtension(CdiCamelExtension.class).getContextQualifiers());
         if (qualifiers.isEmpty() && !instance.select(DefaultLiteral.INSTANCE).isUnsatisfied())
             return instance.select(DefaultLiteral.INSTANCE).get();
         return instance.select(qualifiers.toArray(new Annotation[qualifiers.size()])).get();

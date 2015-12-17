@@ -107,10 +107,8 @@ public class CdiCamelExtension implements Extension {
         return contextBeans.get(annotated);
     }
 
-    Collection<Annotation> retainContextQualifiers(Collection<Annotation> annotations) {
-        Collection<Annotation> qualifiers = new HashSet<>(annotations);
-        qualifiers.retainAll(contextQualifiers);
-        return qualifiers;
+    Set<Annotation> getContextQualifiers() {
+        return contextQualifiers;
     }
 
     private void typeConverters(@Observes @WithAnnotations(Converter.class) ProcessAnnotatedType<?> pat) {
