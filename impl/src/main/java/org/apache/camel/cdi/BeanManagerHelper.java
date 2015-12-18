@@ -20,7 +20,6 @@ import javax.enterprise.inject.Vetoed;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import java.lang.annotation.Annotation;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -41,10 +40,6 @@ final class BeanManagerHelper {
             return null;
 
         return getReference(manager, type, manager.resolve(beans));
-    }
-
-    static <T> T getReferenceByType(BeanManager manager, Class<T> type, Collection<Annotation> qualifiers) {
-        return getReferenceByType(manager, type, qualifiers.toArray(new Annotation[qualifiers.size()]));
     }
 
     static <T> T getReferenceByType(BeanManager manager, Class<T> type, Annotation... qualifiers) {

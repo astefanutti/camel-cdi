@@ -48,14 +48,4 @@ abstract class DelegateProducer<T> implements Producer<T> {
     public String toString() {
         return delegate.toString();
     }
-
-    @Override
-    public int hashCode() {
-        return delegate.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        return delegate.equals(object);
-    }
 }
