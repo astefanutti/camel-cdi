@@ -6,7 +6,7 @@
 [Travis build]: https://travis-ci.org/astefanutti/camel-cdi
 [Coveralls badge]: https://coveralls.io/repos/astefanutti/camel-cdi/badge.svg?branch=master
 [Coveralls build]: https://coveralls.io/r/astefanutti/camel-cdi?branch=master
-[VersionEye badge]: https://www.versioneye.com/user/projects/53fca400e09da310ea0006c4/badge.svg?style=flat
+[VersionEye badge]: https://www.versioneye.com/user/projects/53fca400e09da310ea0006c4/badge.svg
 [VersionEye build]: https://www.versioneye.com/user/projects/53fca400e09da310ea0006c4
 [Maven Central badge]: http://img.shields.io/maven-central/v/io.astefanutti.camel.cdi/camel-cdi.svg?style=flat
 [Maven Central build]: http://repo1.maven.org/maven2/io/astefanutti/camel/cdi/camel-cdi/1.1.0/
