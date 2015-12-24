@@ -23,69 +23,40 @@ import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
-import org.ops4j.pax.exam.karaf.options.LogLevelOption;
 
 import javax.inject.Inject;
-import java.io.File;
 
+import static org.apache.camel.cdi.osgi.CommonPaxExamOptions.CAMEL_CDI;
+import static org.apache.camel.cdi.osgi.CommonPaxExamOptions.KARAF;
+import static org.apache.camel.cdi.osgi.CommonPaxExamOptions.PAX_CDI;
+import static org.apache.camel.cdi.osgi.CommonPaxExamOptions.PAX_CDI_IMPL;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.ops4j.pax.exam.CoreOptions.junitBundles;
-import static org.ops4j.pax.exam.CoreOptions.maven;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
-import static org.ops4j.pax.exam.CoreOptions.vmOption;
-import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.configureConsole;
-import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.features;
-import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.karafDistributionConfiguration;
-import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.keepRuntimeFolder;
-import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.logLevel;
+import static org.ops4j.pax.exam.CoreOptions.options;
+import static org.ops4j.pax.exam.CoreOptions.when;
+import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.debugConfiguration;
 
 @RunWith(PaxExam.class)
 public class HelloPaxExamTest {
 
     @Configuration
     public Option[] config() {
-        return new Option[] {
-            karafDistributionConfiguration()
-                .frameworkUrl(
-                    maven().groupId("org.apache.karaf").artifactId("apache-karaf").versionAsInProject().type("zip"))
-                .name("Apache Karaf")
-                .useDeployFolder(false)
-                .unpackDirectory(new File("target/pax-exam/unpack/")),
-            keepRuntimeFolder(),
-            // Don't bother with local console output as it just ends up cluttering the logs
-            configureConsole().ignoreLocalConsole(),
-            // Force the log level to INFO so we have more details during the test. It defaults to WARN.
-            logLevel(LogLevelOption.LogLevel.INFO),
-            // JaCoCo code coverage
-            System.getProperty("jacoco.agent", "").isEmpty() ?
-                new Option() {} :
-                vmOption(System.getProperty("jacoco.agent")),
-            // Option to be used to do remote debugging
-            //debugConfiguration("5005", true),
-
-            // JUnit and Hamcrest
-            junitBundles(),
-            // PAX CDI
-            features(
-                maven("org.ops4j.pax.cdi", "pax-cdi-features").type("xml").classifier("features").versionAsInProject(),
-                "pax-cdi"),
-            // PAX CDI implementation
-            System.getProperty("pax.cdi.implementation", "").isEmpty() ?
-                features(
-                    maven("org.ops4j.pax.cdi", "pax-cdi-features").type("xml").classifier("features").versionAsInProject(),
-                    "pax-cdi-weld") :
-                features(
-                    "file:" + System.getProperty("user.dir") + "/src/test/features/features.xml",
-                    System.getProperty("pax.cdi.implementation")),
-            // Camel CDI
-            features(
-                maven("io.astefanutti.camel.cdi", "camel-cdi").type("xml").classifier("features").versionAsInProject(),
-                "camel-cdi"),
+        return options(
+            KARAF.option(),
+            PAX_CDI.option(),
+            PAX_CDI_IMPL.option(),
+            CAMEL_CDI.option(),
             // Hello sample
-            mavenBundle("io.astefanutti.camel.cdi", "camel-cdi-sample-hello").versionAsInProject()
-        };
+            mavenBundle()
+                .groupId("io.astefanutti.camel.cdi")
+                .artifactId("camel-cdi-sample-hello")
+                .versionAsInProject(),
+            when(false)
+                .useOptions(
+                    debugConfiguration("5005", true))
+        );
     }
 
     @Inject
