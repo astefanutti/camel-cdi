@@ -17,6 +17,25 @@
         <gravia.version>1.1.0.Beta43</gravia.version>
     </properties>
 
+    <profiles>
+        <profile>
+            <id>weld</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <pax.cdi.implementation>pax-cdi-weld-2.3.2.Final</pax.cdi.implementation>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>owb</id>
+            <properties>
+                <pax.cdi.implementation>pax-cdi-openwebbeans-1.6.2</pax.cdi.implementation>
+            </properties>
+        </profile>
+    </profiles>
+
     <dependencies>
 
         <!-- CDI -->
@@ -311,6 +330,7 @@
                     </excludes>
                     <systemPropertyVariables>
                         <jacoco.agent>${argLine}</jacoco.agent>
+                        <pax.cdi.implementation>${pax.cdi.implementation}</pax.cdi.implementation>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>

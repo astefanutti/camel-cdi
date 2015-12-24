@@ -67,13 +67,21 @@ public class HelloPaxExamTest {
 
             // JUnit and Hamcrest
             junitBundles(),
-            // PAX CDI Weld
-            features(maven("org.ops4j.pax.cdi", "pax-cdi-features")
-                .type("xml").classifier("features").versionAsInProject(),
-                "pax-cdi-weld"),
+            // PAX CDI
+            features(
+                maven("org.ops4j.pax.cdi", "pax-cdi-features").type("xml").classifier("features").versionAsInProject(),
+                "pax-cdi"),
+            // PAX CDI implementation
+            System.getProperty("pax.cdi.implementation", "").isEmpty() ?
+                features(
+                    maven("org.ops4j.pax.cdi", "pax-cdi-features").type("xml").classifier("features").versionAsInProject(),
+                    "pax-cdi-weld") :
+                features(
+                    "file:" + System.getProperty("user.dir") + "/src/test/features/features.xml",
+                    System.getProperty("pax.cdi.implementation")),
             // Camel CDI
-            features(maven("io.astefanutti.camel.cdi", "camel-cdi")
-                .type("xml").classifier("features").versionAsInProject(),
+            features(
+                maven("io.astefanutti.camel.cdi", "camel-cdi").type("xml").classifier("features").versionAsInProject(),
                 "camel-cdi"),
             // Hello sample
             mavenBundle("io.astefanutti.camel.cdi", "camel-cdi-sample-hello").versionAsInProject()
