@@ -30,8 +30,8 @@ class MetricsCdiConfig {
     @Produces
     @Singleton
     @Named(MetricsComponent.METRIC_REGISTRY_NAME)
-    // FIXME: to be removed when Camel Metrics component looks up for the Metrics registry by type only
-        MetricRegistry registry = new MetricRegistry();
+    // TODO: change to @ApplicationScoped when WELD-2083 is fixed, and remove when Camel Metrics component looks up for the Metrics registry by type only
+    MetricRegistry registry = new MetricRegistry();
 
     static void configure(@Observes MetricsConfiguration config) {
         config.useAbsoluteName(true);
