@@ -52,10 +52,9 @@ public class CamelEE7Test {
                     .as(JavaArchive.class))
             .addAsModule(
                 ShrinkWrap.create(JavaArchive.class, "camel-ee7.jar")
-                    .addClasses(Bootstrap.class,
-                        CamelRoute.class,
-                        HelloCamel.class)
-                    // FIXME: Test class must be added until ARQ-659 is fixed
+                    // FIXME: Arquillian throws a ClassNotFoundException when removing the Bootstrap class
+                    .addClasses(Bootstrap.class, CamelRoute.class, HelloCamel.class)
+                    // TODO: to be removed when ARQ-659 is fixed
                     .addClass(CamelEE7Test.class)
                     .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml"));
     }

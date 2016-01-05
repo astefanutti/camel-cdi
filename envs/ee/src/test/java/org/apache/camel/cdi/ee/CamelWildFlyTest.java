@@ -46,7 +46,7 @@ public class CamelWildFlyTest {
     public static Archive<?> deployment() {
         return ShrinkWrap.create(WebArchive.class, "camel-wildfly.war")
             .addClasses(CamelRoute.class, HelloCamel.class)
-            // FIXME: Test class must be added until ARQ-659 is fixed
+            // TODO: to be removed when ARQ-659 is fixed
             .addClass(CamelWildFlyTest.class)
             .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
