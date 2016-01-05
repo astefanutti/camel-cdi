@@ -58,7 +58,7 @@ public enum CommonPaxExamOptions {
         // JUnit and Hamcrest
         junitBundles()
     ),
-    CAMEL_COMMANDS(
+    CAMEL_COMMANDS (
         mavenBundle()
             .groupId("org.apache.camel.karaf")
             .artifactId("camel-karaf-commands")
@@ -83,7 +83,6 @@ public enum CommonPaxExamOptions {
             "pax-cdi")
     ),
     PAX_CDI_IMPL (
-        // TODO: use when()...
         System.getProperty("pax.cdi.implementation", "").isEmpty() ?
             features(
                 maven()
