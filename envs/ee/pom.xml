@@ -182,10 +182,10 @@
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
                             <excludedGroups>org.apache.camel.cdi.ee.category.WildFlyCamel</excludedGroups>
-                            <systemProperties>
+                            <systemPropertyVariables>
                                 <arquillian.launch>wildfly-9-managed</arquillian.launch>
                                 <jacoco.agent>${argLine}</jacoco.agent>
-                            </systemProperties>
+                            </systemPropertyVariables>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -295,10 +295,10 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
-                            <systemProperties>
+                            <systemPropertyVariables>
                                 <arquillian.launch>wildfly-camel-managed</arquillian.launch>
                                 <jacoco.agent>${argLine}</jacoco.agent>
-                            </systemProperties>
+                            </systemPropertyVariables>
                         </configuration>
                     </plugin>
                 </plugins>
