@@ -260,7 +260,7 @@ public class CdiCamelExtension implements Extension {
         for (CamelContext context : contexts) {
             if (ServiceStatus.Started.equals(context.getStatus()))
                 continue;
-            logger.info("Camel CDI is starting {}", context);
+            logger.info("Camel CDI is starting Camel context [{}]", context.getName());
             try {
                 context.start();
             } catch (Exception exception) {
@@ -283,7 +283,7 @@ public class CdiCamelExtension implements Extension {
             else if (route instanceof RouteContainer)
                 context.addRouteDefinitions(((RouteContainer) route).getRoutes());
             else
-                throw new IllegalArgumentException("Cannot add [" + route + "] to " + context);
+                throw new IllegalArgumentException("Error adding routes of type [" + routeBean.getBeanClass().getName() + "] to Camel context [" + context.getName() + "], must be either of type RoutesBuilder or RouteContainer!");
         } catch (Exception exception) {
             adv.addDeploymentProblem(exception);
             return true;

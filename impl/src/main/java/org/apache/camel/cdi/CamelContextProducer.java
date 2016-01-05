@@ -69,7 +69,7 @@ final class CamelContextProducer<T extends CamelContext> extends DelegateProduce
             adapted.setInjector(new CdiCamelInjector(context.getInjector(), manager));
         } else {
             // Fail fast for the time being to avoid side effects by the time these two methods get declared on the CamelContext interface
-            throw new DeploymentException("Camel CDI requires " + context + " to be a subtype of DefaultCamelContext");
+            throw new DeploymentException("Camel CDI requires Camel context [" + context.getName() + "] to be a subtype of DefaultCamelContext");
         }
 
         // Add event notifier if at least one observer is present
@@ -89,7 +89,7 @@ final class CamelContextProducer<T extends CamelContext> extends DelegateProduce
         super.dispose(context);
 
         if (!context.getStatus().isStopped()) {
-            logger.info("Camel CDI is stopping {}", context);
+            logger.info("Camel CDI is stopping Camel context [{}]", context.getName());
             try {
                 context.stop();
             } catch (Exception cause) {

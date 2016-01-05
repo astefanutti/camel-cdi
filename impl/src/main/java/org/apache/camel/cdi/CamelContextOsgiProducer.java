@@ -46,7 +46,7 @@ final class CamelContextOsgiProducer<T extends CamelContext> extends DelegatePro
 
         if (!(context instanceof DefaultCamelContext))
             // Fail fast for the time being to avoid side effects by some methods get declared on the CamelContext interface
-            throw new DeploymentException("Camel CDI requires " + context + " to be a subtype of DefaultCamelContext");
+            throw new DeploymentException("Camel CDI requires Camel context [" + context.getName() + "] to be a subtype of DefaultCamelContext");
 
         DefaultCamelContext adapted = context.adapt(DefaultCamelContext.class);
         adapted.setRegistry(OsgiCamelContextHelper.wrapRegistry(context, context.getRegistry(), bundle));

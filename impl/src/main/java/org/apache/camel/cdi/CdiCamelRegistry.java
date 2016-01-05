@@ -45,7 +45,7 @@ final class CdiCamelRegistry implements Registry {
     @Override
     public Object lookupByName(String name) {
         ObjectHelper.notEmpty(name, "name");
-        logger.trace("Looking up bean with name {}", name);
+        logger.trace("Looking up bean with name [{}]", name);
         return BeanManagerHelper.getReferenceByName(manager, name, Object.class);
     }
 
@@ -53,14 +53,14 @@ final class CdiCamelRegistry implements Registry {
     public <T> T lookupByNameAndType(String name, Class<T> type) {
         ObjectHelper.notEmpty(name, "name");
         ObjectHelper.notNull(type, "type");
-        logger.trace("Looking up bean with name {} of type {}", name, type);
+        logger.trace("Looking up bean with name [{}] of type [{}]", name, type);
         return BeanManagerHelper.getReferenceByName(manager, name, type);
     }
 
     @Override
     public <T> Map<String, T> findByTypeWithName(Class<T> type) {
         ObjectHelper.notNull(type, "type");
-        logger.trace("Looking up named beans of type {}", type);
+        logger.trace("Looking up named beans of type [{}]", type);
         Map<String, T> references = new HashMap<>();
         for (Bean<?> bean : manager.getBeans(type, AnyLiteral.INSTANCE))
             if (bean.getName() != null)
@@ -72,7 +72,7 @@ final class CdiCamelRegistry implements Registry {
     @Override
     public <T> Set<T> findByType(Class<T> type) {
         ObjectHelper.notNull(type, "type");
-        logger.trace("Looking up beans of type {}", type);
+        logger.trace("Looking up beans of type [{}]", type);
         return BeanManagerHelper.getReferencesByType(manager, type, AnyLiteral.INSTANCE);
     }
 
