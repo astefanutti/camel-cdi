@@ -16,6 +16,7 @@
  */
 package org.apache.camel.cdi;
 
+import org.apache.camel.component.properties.PropertiesComponent;
 import org.apache.camel.spi.Registry;
 import org.apache.camel.util.ObjectHelper;
 import org.slf4j.Logger;
@@ -46,6 +47,9 @@ final class CdiCamelRegistry implements Registry {
     public Object lookupByName(String name) {
         ObjectHelper.notEmpty(name, "name");
         logger.trace("Looking up bean with name [{}]", name);
+        // Work-around for WELD-2089
+        if ("properties".equals(name) && findByTypeWithName(PropertiesComponent.class).containsKey("properties"))
+            return BeanManagerHelper.getReferenceByName(manager, name, PropertiesComponent.class);
         return BeanManagerHelper.getReferenceByName(manager, name, Object.class);
     }
 
