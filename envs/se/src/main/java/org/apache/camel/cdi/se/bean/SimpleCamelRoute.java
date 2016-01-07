@@ -27,14 +27,14 @@ public class SimpleCamelRoute extends RouteBuilder {
 
     @Inject
     @Uri("direct:start")
-    private Endpoint directEP;
+    private Endpoint direct;
 
     @Inject
     @Uri("mock:result")
-    private MockEndpoint mockEP;
+    private MockEndpoint mock;
 
     @Override
     public void configure() {
-        from(directEP).routeId("simple").to(mockEP);
+        from(direct).routeId("simple").to(mock);
     }
 }

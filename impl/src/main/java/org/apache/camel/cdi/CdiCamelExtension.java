@@ -204,7 +204,7 @@ public class CdiCamelExtension implements Extension {
                     qualifiers.addAll(ip.getQualifiers());
                 abd.addBean(manager.createBean(new BeanAttributesDecorator<>(manager.createBeanAttributes(am), qualifiers), CdiCamelFactory.class, manager.getProducerFactory(am, bean)));
             } else if (Endpoint.class.isAssignableFrom(type) || ProducerTemplate.class.isAssignableFrom(type)) {
-                // TODO: should be more correct to add a bean for each Camel context bean
+                // TODO: would be more correct to add a bean for each Camel context bean
                 abd.addBean(manager.createBean(new BeanAttributesDecorator<>(manager.createBeanAttributes(am), CdiSpiHelper.excludeElementOfTypes(contextQualifiers, Any.class, Default.class, Named.class)), CdiCamelFactory.class, manager.getProducerFactory(am, bean)));
             }
         }
