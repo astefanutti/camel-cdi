@@ -19,11 +19,13 @@ package org.apache.camel.cdi;
 import org.apache.camel.impl.DefaultCamelContext;
 
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.Vetoed;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
 import java.util.Collections;
 import java.util.Set;
 
+@Vetoed
 final class CamelContextDefaultProducer implements InjectionTarget<DefaultCamelContext> {
 
     @Override
