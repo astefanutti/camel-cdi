@@ -33,7 +33,6 @@ import java.lang.annotation.Target;
  * {@literal @}Uri("mock:outbound")
  * MockEndpoint mock;
  * </code></pre>
- *
  */
 @Deprecated
 @Qualifier

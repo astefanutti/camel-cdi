@@ -26,12 +26,11 @@ import javax.enterprise.inject.Vetoed;
  * @deprecated Use {@link org.apache.camel.impl.DefaultCamelContext} directly instead:
  *
  * <pre><code>
- * {@literal@}ApplicationScoped
- * {@literal@}ContextName("foo")
+ * {@literal @}ApplicationScoped
+ * {@literal @}ContextName("foo")
  * public class FooCamelContext extends DefaultCamelContext {
  * }
  * </code></pre>
- *
  */
 @Vetoed
 @Deprecated

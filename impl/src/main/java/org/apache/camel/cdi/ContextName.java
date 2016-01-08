@@ -29,8 +29,8 @@ import java.lang.annotation.Target;
  * so that the Camel context is named accordingly, e.g.:
  *
  * <pre><code>
- * {@literal@}ApplicationScoped
- * {@literal@}ContextName("foo")
+ * {@literal @}ApplicationScoped
+ * {@literal @}ContextName("foo")
  * public class FooCamelContext extends DefaultCamelContext {
  * }
  * </code></pre>
@@ -40,22 +40,23 @@ import java.lang.annotation.Target;
  * corresponding Camel context, e.g.:
  *
  * <pre><code>
- * {@literal@}ContextName("foo")
+ * {@literal @}ContextName("foo")
  * public class FooRouteBuilder extends RouteBuilder {
- *     {@literal@}Override
+ *
+ *     {@literal @}Override
  *     public void configure() {
  *         from("direct:bar").to("mock:bar");
  *     }
  * }
  *
- * {@literal@}Inject
- * {@literal@}ContextName("foo")
- * {@literal@}Uri("direct:bar")
+ * {@literal @}Inject
+ * {@literal @}ContextName("foo")
+ * {@literal @}Uri("direct:bar")
  * ProducerTemplate barProducer;
  *
- * {@literal@}Inject
- * {@literal@}ContextName("foo")
- * {@literal@}Uri("mock:bar")
+ * {@literal @}Inject
+ * {@literal @}ContextName("foo")
+ * {@literal @}Uri("mock:bar")
  * MockEndpoint barMockEndpoint;
  * </code></pre>
  *
