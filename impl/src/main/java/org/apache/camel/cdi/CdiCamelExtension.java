@@ -196,15 +196,14 @@ public class CdiCamelExtension implements Extension {
         for (AnnotatedMethod<? super CdiCamelFactory> am : abd.getAnnotatedType(CdiCamelFactory.class, null).getMethods()) {
             if (!am.isAnnotationPresent(Produces.class))
                 continue;
+            // TODO: would be more correct to add a bean for each Camel context bean
             Class<?> type = CdiSpiHelper.getRawType(am.getBaseType());
             if (CdiEventEndpoint.class.equals(type)) {
                 Set<Annotation> qualifiers = new HashSet<>();
-                // TODO: exclude the context qualifiers from injection points
                 for (InjectionPoint ip : cdiEventEndpoints.keySet())
                     qualifiers.addAll(ip.getQualifiers());
                 abd.addBean(manager.createBean(new BeanAttributesDecorator<>(manager.createBeanAttributes(am), qualifiers), CdiCamelFactory.class, manager.getProducerFactory(am, bean)));
             } else if (Endpoint.class.isAssignableFrom(type) || ProducerTemplate.class.isAssignableFrom(type)) {
-                // TODO: would be more correct to add a bean for each Camel context bean
                 abd.addBean(manager.createBean(new BeanAttributesDecorator<>(manager.createBeanAttributes(am), CdiSpiHelper.excludeElementOfTypes(contextQualifiers, Any.class, Default.class, Named.class)), CdiCamelFactory.class, manager.getProducerFactory(am, bean)));
             }
         }
