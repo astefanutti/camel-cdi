@@ -19,6 +19,7 @@ package org.apache.camel.cdi;
 import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.main.MainSupport;
+import org.apache.deltaspike.cdise.api.CdiContainer;
 
 import javax.enterprise.inject.UnsatisfiedResolutionException;
 import javax.enterprise.inject.Vetoed;
@@ -41,7 +42,7 @@ public class Main extends MainSupport {
 
     private static Main instance;
 
-    private Object cdiContainer; // we don't want to use cdictrl API in OSGi
+    private CdiContainer cdiContainer;
 
     public static void main(String... args) throws Exception {
         Main main = new Main();
@@ -61,7 +62,7 @@ public class Main extends MainSupport {
 
     @Override
     protected ProducerTemplate findOrCreateCamelTemplate() {
-        BeanManager manager = ((org.apache.deltaspike.cdise.api.CdiContainer) cdiContainer).getBeanManager();
+        BeanManager manager = cdiContainer.getBeanManager();
         Bean<?> bean = manager.resolve(manager.getBeans(CamelContext.class));
         if (bean == null)
             throw new UnsatisfiedResolutionException("No default Camel context is deployed, cannot create default ProducerTemplate!");
@@ -72,7 +73,7 @@ public class Main extends MainSupport {
 
     @Override
     protected Map<String, CamelContext> getCamelContextMap() {
-        BeanManager manager = ((org.apache.deltaspike.cdise.api.CdiContainer) cdiContainer).getBeanManager();
+        BeanManager manager = cdiContainer.getBeanManager();
         Map<String, CamelContext> answer = new HashMap<>();
         for (Bean<?> bean : manager.getBeans(CamelContext.class, AnyLiteral.INSTANCE)) {
             CamelContext context = (CamelContext) manager.getReference(bean, CamelContext.class, manager.createCreationalContext(bean));
@@ -96,6 +97,6 @@ public class Main extends MainSupport {
     protected void doStop() throws Exception {
         super.doStop();
         if (cdiContainer != null)
-            ((org.apache.deltaspike.cdise.api.CdiContainer) cdiContainer).shutdown();
+            cdiContainer.shutdown();
     }
 }
