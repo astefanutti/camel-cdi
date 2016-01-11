@@ -45,4 +45,11 @@ public @interface Mock {
      */
     @Nonbinding
     String value() default "";
+
+    /**
+     * Returns the name of the Camel context to use to resolve the {@code MockEndpoint}.
+     */
+    @Nonbinding
+    String context() default "";
+
 }
