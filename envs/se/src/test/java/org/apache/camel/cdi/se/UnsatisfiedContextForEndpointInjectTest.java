@@ -33,7 +33,6 @@ import org.junit.runner.RunWith;
 import javax.enterprise.inject.spi.DeploymentException;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.startsWith;
 
 @RunWith(Arquillian.class)
 public class UnsatisfiedContextForEndpointInjectTest {
@@ -52,7 +51,7 @@ public class UnsatisfiedContextForEndpointInjectTest {
     @ClassRule
     public static TestRule exception = ExpectedDeploymentException.none()
         .expect(DeploymentException.class)
-        .expectMessage(startsWith("Error adding routes of type [org.apache.camel.cdi.se.bean.EndpointInjectWrongContextRoute] to Camel context"))
+        .expectMessage(containsString("Error adding routes of type [org.apache.camel.cdi.se.bean.EndpointInjectWrongContextRoute] to Camel context"))
         .expectMessage(containsString("No Camel context with name [foo] is deployed!"));
 
     @Test
