@@ -56,6 +56,7 @@ public class UriWithWrongContextTest {
     @ClassRule
     public static TestRule exception = ExpectedDeploymentException.none()
         .expect(DeploymentException.class)
+        .expectMessage(containsString("Error adding routes of type [org.apache.camel.cdi.se.UriWithWrongContextRoute] to Camel context [first]"))
         .expectMessage(containsString("Error injecting endpoint annotated with @org.apache.camel.cdi.Uri"))
         .expectMessage(containsString("No Camel context with name [second] is deployed!"));
 

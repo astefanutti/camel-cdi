@@ -45,6 +45,7 @@ import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.DeploymentException;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
@@ -244,7 +245,7 @@ public class CdiCamelExtension implements Extension {
                 Set<Annotation> qualifiers = new HashSet<>(context.getQualifiers());
                 qualifiers.retainAll(route.getQualifiers());
                 if (qualifiers.size() > 1)
-                    deploymentException |= addRouteToContext(route, context, manager, adv);
+                    deploymentException |= !addRouteToContext(route, context, manager, adv);
             }
         // Let's return to avoid starting misconfigured contexts
         if (deploymentException)
@@ -276,16 +277,20 @@ public class CdiCamelExtension implements Extension {
     private boolean addRouteToContext(Bean<?> routeBean, Bean<?> contextBean, BeanManager manager, AfterDeploymentValidation adv) {
         try {
             CamelContext context = BeanManagerHelper.getReference(manager, CamelContext.class, contextBean);
-            Object route = BeanManagerHelper.getReference(manager, Object.class, routeBean);
-            if (route instanceof RoutesBuilder)
-                context.addRoutes((RoutesBuilder) route);
-            else if (route instanceof RouteContainer)
-                context.addRouteDefinitions(((RouteContainer) route).getRoutes());
-            else
-                throw new IllegalArgumentException("Error adding routes of type [" + routeBean.getBeanClass().getName() + "] to Camel context [" + context.getName() + "], must be either of type RoutesBuilder or RouteContainer!");
+            try {
+                Object route = BeanManagerHelper.getReference(manager, Object.class, routeBean);
+                if (route instanceof RoutesBuilder)
+                    context.addRoutes((RoutesBuilder) route);
+                else if (route instanceof RouteContainer)
+                    context.addRouteDefinitions(((RouteContainer) route).getRoutes());
+                else
+                    throw new IllegalArgumentException("Invalid routes type [" + routeBean.getBeanClass().getName() + "], must be either of type RoutesBuilder or RouteContainer!");
+                return true;
+            } catch (Exception cause) {
+                adv.addDeploymentProblem(new DeploymentException("Error adding routes of type [" + routeBean.getBeanClass().getName() + "] to Camel context [" + context.getName() + "]", cause));
+            }
         } catch (Exception exception) {
             adv.addDeploymentProblem(exception);
-            return true;
         }
         return false;
     }
