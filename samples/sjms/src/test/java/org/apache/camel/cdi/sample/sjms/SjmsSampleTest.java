@@ -29,9 +29,9 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
+import static org.hamcrest.Matchers.containsInRelativeOrder;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItems;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
@@ -53,7 +53,7 @@ public class SjmsSampleTest {
         @Override
         protected void verify() throws Throwable {
             assertThat("Log messages not found!", getMessages(),
-                hasItems(
+                containsInRelativeOrder(
                     containsString("(CamelContext: camel-1) is starting"),
                     equalTo("Received message [Sample Message] from [Producer]"),
                     containsString("(CamelContext: camel-1) is shutdown"))

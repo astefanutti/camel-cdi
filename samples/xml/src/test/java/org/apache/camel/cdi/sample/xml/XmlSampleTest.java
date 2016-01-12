@@ -31,9 +31,9 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
+import static org.hamcrest.Matchers.containsInRelativeOrder;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
@@ -57,7 +57,7 @@ public class XmlSampleTest {
         @Override
         protected void verify() throws Throwable {
             assertThat("Log messages not found!", getMessages(),
-                hasItems(
+                containsInRelativeOrder(
                     containsString("(CamelContext: camel-1) is starting"),
                     startsWith("Date is"),
                     containsString("(CamelContext: camel-1) is shutdown"))
