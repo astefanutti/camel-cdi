@@ -12,7 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.allOf;
-import static org.hamcrest.Matchers.containsInRelativeOrder;
+import static org.hamcrest.CoreMatchers.anyOf;
+import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertThat;
 
 public final class ExpectedDeploymentException implements TestRule {
@@ -40,7 +41,9 @@ public final class ExpectedDeploymentException implements TestRule {
                                 assertThat(exception, allOf(pecs(exceptions)));
                                 try {
                                     // OpenWebBeans logs the deployment exception details
-                                    assertThat(log.getMessages(), containsInRelativeOrder(pecs(messages)));
+                                    // TODO: OpenWebBeans only log the root cause of exception thrown in producer methods
+                                    //assertThat(log.getMessages(), containsInRelativeOrder(pecs(messages)))
+                                    assertThat(log.getMessages(), anyOf(hasItems(messages)));
                                 } catch (AssertionError error) {
                                     // Weld stores the deployment exception details in the exception message
                                     assertThat(exception.getMessage(), allOf(pecs(messages)));
@@ -69,6 +72,14 @@ public final class ExpectedDeploymentException implements TestRule {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private <T> List<Matcher<? super T>> pecs(List<Matcher<T>> matchers) {
         return new ArrayList<>((List) matchers);
+    }
+
+    private <T> Matcher<Iterable<? super T>>[] hasItems(List<Matcher<T>> matchers) {
+        @SuppressWarnings("unchecked")
+        Matcher<Iterable<? super T>>[] items = new Matcher[matchers.size()];
+        for (int i = 0; i < items.length; i++)
+            items[i] = hasItem(matchers.get(i));
+        return items;
     }
 
     @Override
