@@ -18,7 +18,7 @@ package org.apache.camel.cdi.se;
 
 import org.apache.camel.cdi.CdiCamelExtension;
 import org.apache.camel.cdi.se.bean.EndpointInjectWrongContextRoute;
-import org.apache.camel.cdi.test.LogVerifier;
+import org.apache.camel.cdi.test.ExpectedDeploymentException;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -27,19 +27,12 @@ import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
-import org.junit.runner.Description;
 import org.junit.runner.RunWith;
-import org.junit.runners.model.Statement;
 
 import javax.enterprise.inject.spi.DeploymentException;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
 public class UnsatisfiedContextForEndpointInjectTest {
@@ -55,33 +48,10 @@ public class UnsatisfiedContextForEndpointInjectTest {
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
-    private static final LogVerifier log = new LogVerifier();
-
     @ClassRule
-    public static TestRule rules = RuleChain
-        .outerRule(log)
-        .around(new TestRule() {
-            @Override
-            public Statement apply(final Statement base, Description description) {
-                return new Statement() {
-                    @Override
-                    public void evaluate() throws Throwable {
-                        try {
-                            base.evaluate();
-                        } catch (Throwable exception) {
-                            assertThat(exception, is(instanceOf(DeploymentException.class)));
-                            try {
-                                // OpenWebBeans logs the deployment exception details
-                                assertThat(log.getMessages(), hasItem("No Camel context with name [foo] is deployed!"));
-                            } catch (AssertionError error) {
-                                // Weld stores the deployment exception details in the exception message
-                                assertThat(exception.getMessage(), containsString("No Camel context with name [foo] is deployed!"));
-                            }
-                        }
-                    }
-                };
-            }
-        });
+    public static TestRule exception = ExpectedDeploymentException.none()
+        .expect(DeploymentException.class)
+        .expectMessage(containsString("No Camel context with name [foo] is deployed!"));
 
     @Test
     public void test() {
