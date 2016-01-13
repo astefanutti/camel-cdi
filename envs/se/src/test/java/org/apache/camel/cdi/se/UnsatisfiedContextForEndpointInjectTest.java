@@ -51,7 +51,7 @@ public class UnsatisfiedContextForEndpointInjectTest {
     @ClassRule
     public static TestRule exception = ExpectedDeploymentException.none()
         .expect(DeploymentException.class)
-        .expectMessage(containsString("Error adding routes of type [org.apache.camel.cdi.se.bean.EndpointInjectWrongContextRoute] to Camel context"))
+        .expectMessage(containsString("Error adding routes of type [" + EndpointInjectWrongContextRoute.class.getName() + "] to Camel context"))
         .expectMessage(containsString("No Camel context with name [foo] is deployed!"));
 
     @Test
