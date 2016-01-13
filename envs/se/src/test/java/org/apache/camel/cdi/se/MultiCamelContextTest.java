@@ -56,7 +56,8 @@ public class MultiCamelContextTest {
             // Camel CDI
             .addPackage(CdiCamelExtension.class.getPackage())
             // Test classes
-            .addClasses(DefaultCamelContextBean.class,
+            .addClasses(
+                DefaultCamelContextBean.class,
                 UriEndpointRoute.class,
                 FirstCamelContextBean.class,
                 FirstCamelContextRoute.class,

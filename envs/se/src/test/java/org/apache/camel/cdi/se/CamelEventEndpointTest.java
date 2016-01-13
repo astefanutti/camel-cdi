@@ -61,7 +61,10 @@ public class CamelEventEndpointTest {
 
     @Test
     public void camelStartedEvent(@Uri("mock:started") MockEndpoint started) {
-        assertThat("Event fired is incorrect!", started.getExchanges(), contains(hasProperty("in", hasProperty("body", instanceOf(CamelContextStartedEvent.class)))));
+        assertThat("Event fired is incorrect!", started.getExchanges(),
+            contains(
+                hasProperty("in",
+                    hasProperty("body", instanceOf(CamelContextStartedEvent.class)))));
     }
 
     @Test

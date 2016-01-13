@@ -59,7 +59,8 @@ public class MultiCamelContextProducerTest {
             // Camel CDI
             .addPackage(CdiCamelExtension.class.getPackage())
             // Test classes
-            .addClasses(DefaultCamelContextBean.class,
+            .addClasses(
+                DefaultCamelContextBean.class,
                 UriEndpointRoute.class,
                 FirstCamelContextRoute.class)
             // Bean archive deployment descriptor

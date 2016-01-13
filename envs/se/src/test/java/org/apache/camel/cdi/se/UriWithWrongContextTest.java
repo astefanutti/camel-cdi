@@ -73,8 +73,7 @@ class UriWithWrongContextRoute extends RouteBuilder {
     Endpoint inbound;
 
     @Override
-    public void configure() throws Exception {
+    public void configure() {
         from(inbound).to("mock:outbound");
     }
 }
-

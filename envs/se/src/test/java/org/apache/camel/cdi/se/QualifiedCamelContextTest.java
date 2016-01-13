@@ -16,7 +16,6 @@
  */
 package org.apache.camel.cdi.se;
 
-import org.apache.camel.CamelContext;
 import org.apache.camel.Endpoint;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
@@ -64,9 +63,6 @@ public class QualifiedCamelContextTest {
     @Uri("mock:result")
     private MockEndpoint outbound;
 
-    @BarQualifier
-    CamelContext context;
-
     @Test
     public void sendMessageToInbound() throws InterruptedException {
         outbound.expectedMessageCount(1);
@@ -81,8 +77,8 @@ public class QualifiedCamelContextTest {
     public static class CamelRoute extends RouteBuilder {
 
         @Inject
-        @Uri("direct:start")
         @BarQualifier
+        @Uri("direct:start")
         private Endpoint directEP;
 
         @Inject

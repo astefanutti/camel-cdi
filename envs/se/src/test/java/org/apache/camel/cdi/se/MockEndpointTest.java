@@ -75,9 +75,9 @@ public class MockEndpointTest {
     public void sendMessageToInbound() throws InterruptedException {
         defaultOutbound.expectedMessageCount(1);
         defaultOutbound.expectedBodiesReceived("test");
-        defaultOutbound.expectedHeaderReceived("foo","bar");
+        defaultOutbound.expectedHeaderReceived("foo", "bar");
 
-        defaultInbound.sendBodyAndHeader("test","foo","bar");
+        defaultInbound.sendBodyAndHeader("test", "foo", "bar");
 
         assertIsSatisfied(2L, TimeUnit.SECONDS, defaultOutbound);
     }

@@ -61,6 +61,8 @@ import static org.apache.camel.cdi.se.expression.ExchangeExpression.fromCamelCon
 import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
 import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.oneOf;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
@@ -72,7 +74,8 @@ public class MultiContextEventNotifierTest {
             // Camel CDI
             .addPackage(CdiCamelExtension.class.getPackage())
             // Test classes
-            .addClasses(DefaultCamelContextBean.class,
+            .addClasses(
+                DefaultCamelContextBean.class,
                 UriEndpointRoute.class,
                 FirstCamelContextBean.class,
                 FirstCamelContextRoute.class,
@@ -179,7 +182,10 @@ public class MultiContextEventNotifierTest {
 
     @Test
     @InSequence(1)
-    public void configureCamelContexts(List<Class> defaultEvents, @ContextName("first") List<Class> firstEvents, @ContextName("second") List<Class> secondEvents, @Named("anyContext") List<Class> anyEvents) throws Exception {
+    public void configureCamelContexts(List<Class> defaultEvents,
+                                       @ContextName("first") List<Class> firstEvents,
+                                       @ContextName("second") List<Class> secondEvents,
+                                       @Named("anyContext") List<Class> anyEvents) throws Exception {
         secondCamelContext.addRoutes(new RouteBuilder() {
             @Override
             public void configure() {
@@ -189,10 +195,23 @@ public class MultiContextEventNotifierTest {
 
         secondCamelContext.startAllRoutes();
 
-        assertThat("Events fired for any contexts are incorrect", anyEvents, everyItem(Matchers.<Class>isOneOf(CamelContextStartingEvent.class, CamelContextStartedEvent.class)));
-        assertThat("Events fired for default context are incorrect", defaultEvents, Matchers.<Class>contains(CamelContextStartingEvent.class, CamelContextStartedEvent.class));
-        assertThat("Events fired for first context are incorrect", firstEvents, Matchers.<Class>contains(CamelContextStartingEvent.class, CamelContextStartedEvent.class));
-        assertThat("Events fired for second context are incorrect", secondEvents, Matchers.<Class>contains(CamelContextStartingEvent.class, CamelContextStartedEvent.class));
+        assertThat("Events fired for any contexts are incorrect", anyEvents,
+            everyItem(
+                is(Matchers.<Class>oneOf(
+                    CamelContextStartingEvent.class,
+                    CamelContextStartedEvent.class))));
+        assertThat("Events fired for default context are incorrect", defaultEvents,
+            Matchers.<Class>contains(
+                CamelContextStartingEvent.class,
+                CamelContextStartedEvent.class));
+        assertThat("Events fired for first context are incorrect", firstEvents,
+            Matchers.<Class>contains(
+                CamelContextStartingEvent.class,
+                CamelContextStartedEvent.class));
+        assertThat("Events fired for second context are incorrect", secondEvents,
+            Matchers.<Class>contains(
+                CamelContextStartingEvent.class,
+                CamelContextStartedEvent.class));
     }
 
     @Test
@@ -206,7 +225,16 @@ public class MultiContextEventNotifierTest {
 
         assertIsSatisfied(2L, TimeUnit.SECONDS, defaultOutbound);
 
-        assertThat("Events fired are incorrect", events, Matchers.<Class>contains(CamelContextStartingEvent.class, CamelContextStartedEvent.class, ExchangeSendingEvent.class, ExchangeCreatedEvent.class, ExchangeSendingEvent.class, ExchangeSentEvent.class, ExchangeCompletedEvent.class, ExchangeSentEvent.class));
+        assertThat("Events fired are incorrect", events,
+            Matchers.<Class>contains(
+                CamelContextStartingEvent.class,
+                CamelContextStartedEvent.class,
+                ExchangeSendingEvent.class,
+                ExchangeCreatedEvent.class,
+                ExchangeSendingEvent.class,
+                ExchangeSentEvent.class,
+                ExchangeCompletedEvent.class,
+                ExchangeSentEvent.class));
     }
 
     @Test
@@ -221,7 +249,16 @@ public class MultiContextEventNotifierTest {
 
         assertIsSatisfied(2L, TimeUnit.SECONDS, firstOutbound);
 
-        assertThat("Events fired are incorrect", events, Matchers.<Class>contains(CamelContextStartingEvent.class, CamelContextStartedEvent.class, ExchangeSendingEvent.class, ExchangeCreatedEvent.class, ExchangeSendingEvent.class, ExchangeSentEvent.class, ExchangeCompletedEvent.class, ExchangeSentEvent.class));
+        assertThat("Events fired are incorrect", events,
+            Matchers.<Class>contains(
+                CamelContextStartingEvent.class,
+                CamelContextStartedEvent.class,
+                ExchangeSendingEvent.class,
+                ExchangeCreatedEvent.class,
+                ExchangeSendingEvent.class,
+                ExchangeSentEvent.class,
+                ExchangeCompletedEvent.class,
+                ExchangeSentEvent.class));
     }
 
     @Test
@@ -236,12 +273,24 @@ public class MultiContextEventNotifierTest {
 
         assertIsSatisfied(2L, TimeUnit.SECONDS, secondOutbound);
 
-        assertThat("Events fired are incorrect", events, Matchers.<Class>contains(CamelContextStartingEvent.class, CamelContextStartedEvent.class, ExchangeSendingEvent.class, ExchangeCreatedEvent.class, ExchangeSendingEvent.class, ExchangeSentEvent.class, ExchangeCompletedEvent.class, ExchangeSentEvent.class));
+        assertThat("Events fired are incorrect", events,
+            Matchers.<Class>contains(
+                CamelContextStartingEvent.class,
+                CamelContextStartedEvent.class,
+                ExchangeSendingEvent.class,
+                ExchangeCreatedEvent.class,
+                ExchangeSendingEvent.class,
+                ExchangeSentEvent.class,
+                ExchangeCompletedEvent.class,
+                ExchangeSentEvent.class));
     }
 
     @Test
     @InSequence(5)
-    public void stopCamelContexts(List<Class> defaultEvents, @ContextName("first") List<Class> firstEvents, @ContextName("second") List<Class> secondEvents, @Named("anyContext") List<Class> anyEvents) throws Exception {
+    public void stopCamelContexts(List<Class> defaultEvents,
+                                  @ContextName("first") List<Class> firstEvents,
+                                  @ContextName("second") List<Class> secondEvents,
+                                  @Named("anyContext") List<Class> anyEvents) throws Exception {
         defaultCamelContext.stop();
         firstCamelContext.stop();
         secondCamelContext.stop();

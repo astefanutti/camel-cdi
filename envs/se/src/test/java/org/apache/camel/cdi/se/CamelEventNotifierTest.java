@@ -102,7 +102,10 @@ public class CamelEventNotifierTest {
     @Test
     @InSequence(1)
     public void startedCamelContext(List<Class> events) throws Exception {
-        assertThat("Events fired are incorrect", events, Matchers.<Class>contains(CamelContextStartingEvent.class, CamelContextStartedEvent.class));
+        assertThat("Events fired are incorrect", events,
+            Matchers.<Class>contains(
+                CamelContextStartingEvent.class,
+                CamelContextStartedEvent.class));
     }
 
     @Test
@@ -115,7 +118,16 @@ public class CamelEventNotifierTest {
 
         assertIsSatisfied(2L, TimeUnit.SECONDS, outbound);
 
-        assertThat("Events fired are incorrect", events, Matchers.<Class>contains(CamelContextStartingEvent.class, CamelContextStartedEvent.class, ExchangeSendingEvent.class, ExchangeCreatedEvent.class, ExchangeSendingEvent.class, ExchangeSentEvent.class, ExchangeCompletedEvent.class, ExchangeSentEvent.class));
+        assertThat("Events fired are incorrect", events,
+            Matchers.<Class>contains(
+                CamelContextStartingEvent.class,
+                CamelContextStartedEvent.class,
+                ExchangeSendingEvent.class,
+                ExchangeCreatedEvent.class,
+                ExchangeSendingEvent.class,
+                ExchangeSentEvent.class,
+                ExchangeCompletedEvent.class,
+                ExchangeSentEvent.class));
     }
 
     @Test
@@ -123,6 +135,17 @@ public class CamelEventNotifierTest {
     public void stopCamelContext(CamelContext context, List<Class> events) throws Exception {
         context.stop();
 
-        assertThat("Events fired are incorrect", events, Matchers.<Class>contains(CamelContextStartingEvent.class, CamelContextStartedEvent.class, ExchangeSendingEvent.class, ExchangeCreatedEvent.class, ExchangeSendingEvent.class, ExchangeSentEvent.class, ExchangeCompletedEvent.class, ExchangeSentEvent.class, CamelContextStoppingEvent.class, CamelContextStoppedEvent.class));
+        assertThat("Events fired are incorrect", events,
+            Matchers.<Class>contains(
+                CamelContextStartingEvent.class,
+                CamelContextStartedEvent.class,
+                ExchangeSendingEvent.class,
+                ExchangeCreatedEvent.class,
+                ExchangeSendingEvent.class,
+                ExchangeSentEvent.class,
+                ExchangeCompletedEvent.class,
+                ExchangeSentEvent.class,
+                CamelContextStoppingEvent.class,
+                CamelContextStoppedEvent.class));
     }
 }

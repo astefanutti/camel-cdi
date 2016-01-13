@@ -59,7 +59,7 @@ public class UriQualifierWithContextTest {
 
     @Inject
     @Uri(value = "direct:inbound", context = "first")
-    ProducerTemplate inbound;
+    private ProducerTemplate inbound;
 
     @Test
     public void sendMessageToInbound() throws InterruptedException {
@@ -84,7 +84,7 @@ class UriWithContextRoute extends RouteBuilder {
     MockEndpoint outbound;
 
     @Override
-    public void configure() throws Exception {
+    public void configure() {
         from(inbound).to(outbound);
     }
 }

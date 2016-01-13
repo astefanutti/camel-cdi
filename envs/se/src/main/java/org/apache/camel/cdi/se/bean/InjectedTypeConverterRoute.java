@@ -16,7 +16,6 @@
  */
 package org.apache.camel.cdi.se.bean;
 
-
 import org.apache.camel.cdi.se.pojo.TypeConverterOutput;
 import org.apache.camel.builder.RouteBuilder;
 

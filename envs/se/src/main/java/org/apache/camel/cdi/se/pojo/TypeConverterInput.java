@@ -16,7 +16,6 @@
  */
 package org.apache.camel.cdi.se.pojo;
 
-
 public class TypeConverterInput {
 
     private String property;

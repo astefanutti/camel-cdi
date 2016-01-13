@@ -49,7 +49,8 @@ public class ContextComponentTest {
             // Camel CDI
             .addPackage(CdiCamelExtension.class.getPackage())
             // Test classes
-            .addClasses(DefaultCamelContextBean.class,
+            .addClasses(
+                DefaultCamelContextBean.class,
                 FirstNamedCamelContextBean.class,
                 FirstNamedCamelContextRoute.class,
                 SecondNamedCamelContextBean.class,
@@ -77,7 +78,8 @@ public class ContextComponentTest {
 
     @Test
     @InSequence(2)
-    public void sendMessageToInbound(@Uri("direct:inbound") ProducerTemplate inbound, @Uri("mock:outbound") MockEndpoint outbound) throws InterruptedException {
+    public void sendMessageToInbound(@Uri("direct:inbound") ProducerTemplate inbound,
+                                     @Uri("mock:outbound") MockEndpoint outbound) throws InterruptedException {
         outbound.expectedMessageCount(1);
         outbound.expectedBodiesReceived("first-test");
 

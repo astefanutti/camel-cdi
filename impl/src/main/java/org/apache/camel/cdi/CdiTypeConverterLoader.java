@@ -16,7 +16,6 @@
  */
 package org.apache.camel.cdi;
 
-
 import org.apache.camel.impl.converter.AnnotationTypeConverterLoader;
 import org.apache.camel.spi.TypeConverterRegistry;
 

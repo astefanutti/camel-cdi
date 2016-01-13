@@ -111,7 +111,7 @@ public final class CdiEventEndpoint<T> extends DefaultEndpoint {
         }
     }
 
-     void unregisterConsumer(CdiEventConsumer<T> consumer) {
+    void unregisterConsumer(CdiEventConsumer<T> consumer) {
         synchronized (consumers) {
             consumers.remove(consumer);
         }

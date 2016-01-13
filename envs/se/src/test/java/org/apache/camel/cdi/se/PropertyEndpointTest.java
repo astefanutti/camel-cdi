@@ -25,7 +25,6 @@ import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.component.properties.PropertiesComponent;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.arquillian.junit.InSequence;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -50,10 +49,8 @@ public class PropertyEndpointTest {
         return ShrinkWrap.create(JavaArchive.class)
             // Camel CDI
             .addPackage(CdiCamelExtension.class.getPackage())
-            //Custom Camel context
-            .addClass(CustomPropertiesCamelContext.class)
-            // Test class
-            .addClass(PropertyEndpointRoute.class)
+            // Test classes
+            .addClasses(CustomPropertiesCamelContext.class, PropertyEndpointRoute.class)
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
@@ -79,7 +76,6 @@ public class PropertyEndpointTest {
     private MockEndpoint outbound;
 
     @Test
-    @InSequence(2)
     public void sendMessageToInbound() throws InterruptedException {
         outbound.expectedMessageCount(1);
         outbound.expectedBodiesReceived("test");

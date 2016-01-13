@@ -61,7 +61,8 @@ public class MultiContextPropertyInjectTest {
             // Camel CDI
             .addPackage(CdiCamelExtension.class.getPackage())
             // Test classes
-            .addClasses(DefaultCamelContextBean.class,
+            .addClasses(
+                DefaultCamelContextBean.class,
                 PropertyInjectBean.class,
                 FirstCamelContextBean.class,
                 FirstCamelContextPropertyInjectBean.class,

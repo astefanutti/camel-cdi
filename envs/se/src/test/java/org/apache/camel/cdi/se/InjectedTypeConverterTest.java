@@ -78,7 +78,8 @@ public class InjectedTypeConverterTest {
     }
 
     @Test
-    public void sendMessageToInbound(@Uri("direct:inbound") ProducerTemplate inbound, @Uri("mock:outbound") MockEndpoint outbound) throws InterruptedException {
+    public void sendMessageToInbound(@Uri("direct:inbound") ProducerTemplate inbound,
+                                     @Uri("mock:outbound") MockEndpoint outbound) throws InterruptedException {
         outbound.expectedMessageCount(1);
 
         TypeConverterInput input = new TypeConverterInput();

@@ -16,7 +16,6 @@
  */
 package org.apache.camel.cdi;
 
-
 import javax.enterprise.inject.spi.BeanAttributes;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;

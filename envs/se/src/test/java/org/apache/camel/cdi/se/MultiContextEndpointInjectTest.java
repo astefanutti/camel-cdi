@@ -53,7 +53,8 @@ public class MultiContextEndpointInjectTest {
             // Camel CDI
             .addPackage(CdiCamelExtension.class.getPackage())
             // Test classes
-            .addClasses(DefaultCamelContextBean.class,
+            .addClasses(
+                DefaultCamelContextBean.class,
                 EndpointInjectRoute.class,
                 FirstCamelContextBean.class,
                 FirstCamelContextEndpointInjectRoute.class,

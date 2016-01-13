@@ -112,13 +112,13 @@ public class EventEndpointTest {
     private ProducerTemplate produceBarQualifier;
 
     @Inject
-    Event<Object> objectEvent;
+    private Event<Object> objectEvent;
 
     @Inject
-    Event<EventPayload<String>> stringPayloadEvent;
+    private Event<EventPayload<String>> stringPayloadEvent;
 
     @Inject
-    Event<EventPayload<Integer>> integerPayloadEvent;
+    private Event<EventPayload<Integer>> integerPayloadEvent;
 
     @Inject
     private EventObserver observer;

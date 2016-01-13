@@ -54,7 +54,8 @@ public class MultiContextProduceTemplateTest {
             // Camel CDI
             .addPackage(CdiCamelExtension.class.getPackage())
             // Test classes
-            .addClasses(DefaultCamelContextBean.class,
+            .addClasses(
+                DefaultCamelContextBean.class,
                 ProduceTemplateBean.class,
                 FirstCamelContextBean.class,
                 FirstCamelContextProduceTemplateBean.class,

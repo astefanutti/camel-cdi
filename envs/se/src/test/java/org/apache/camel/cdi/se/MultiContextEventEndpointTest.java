@@ -61,7 +61,8 @@ public class MultiContextEventEndpointTest {
             // Camel CDI
             .addPackage(CdiCamelExtension.class.getPackage())
             // Test classes
-            .addClasses(FirstCamelContextBean.class,
+            .addClasses(
+                FirstCamelContextBean.class,
                 FirstCamelContextEventConsumingRoute.class,
                 FirstCamelContextEventProducingRoute.class,
                 SecondCamelContextBean.class,
@@ -92,7 +93,7 @@ public class MultiContextEventEndpointTest {
     private ProducerTemplate secondProduceString;
 
     @Inject
-    Event<Object> objectEvent;
+    private Event<Object> objectEvent;
 
     @Inject
     private EventObserver observer;

@@ -70,7 +70,8 @@ public class UnstoppedCamelContextProducerMethodTest {
     };
 
     @Test
-    public void sendMessageToInbound(@Uri("direct:start") ProducerTemplate inbound, @Uri("mock:result") MockEndpoint outbound) throws InterruptedException {
+    public void sendMessageToInbound(@Uri("direct:start") ProducerTemplate inbound,
+                                     @Uri("mock:result") MockEndpoint outbound) throws InterruptedException {
         outbound.expectedMessageCount(1);
         outbound.expectedBodiesReceived("test");
 

@@ -40,7 +40,7 @@ public class PropertiesMultipleLocationTest {
         return ShrinkWrap.create(JavaArchive.class)
             // Camel CDI
             .addPackage(CdiCamelExtension.class.getPackage())
-            // Test classes
+            // Test class
             .addClass(MultipleLocations.class)
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
