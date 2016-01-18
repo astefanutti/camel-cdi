@@ -18,7 +18,6 @@ package org.apache.camel.cdi.ee;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.ServiceStatus;
-import org.apache.camel.cdi.ee.category.Integration;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
@@ -29,7 +28,6 @@ import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -37,7 +35,6 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
-@Category(Integration.class)
 public class CamelEE7Test {
 
     @Deployment
