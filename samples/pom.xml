@@ -26,7 +26,6 @@
 
     <build>
         <plugins>
-            <!-- Java SE - Maven Exec Plugin -->
             <!-- TODO: the Exec Maven plugin exec goal parent process does not wait for the child process to exit when the JVM terminates in response to a user interrupt, such as typing ^C. That leads to the child process logs not being streamed back to the parent process stream handler. See https://github.com/mojohaus/exec-maven-plugin/issues/9 -->
             <!-- TODO: ideally the Camel CDI dependency should be added as plugin dependency to the Exec Maven plugin though it's not supported by the exec goal at the moment. See https://github.com/mojohaus/exec-maven-plugin/issues/17 -->
             <plugin>
@@ -38,7 +37,6 @@
                 </configuration>
             </plugin>
 
-            <!-- Java SE - Camel Maven Plugin -->
             <plugin>
                 <groupId>io.astefanutti.camel.cdi</groupId>
                 <artifactId>camel-maven-plugin</artifactId>
@@ -48,7 +46,6 @@
                 </configuration>
             </plugin>
 
-            <!-- Java SE - HawtIO Maven Plugin -->
             <plugin>
                 <groupId>io.hawt</groupId>
                 <artifactId>hawtio-maven-plugin</artifactId>
@@ -63,6 +60,14 @@
                         <version>${project.version}</version>
                     </dependency>
                 </dependencies>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <show>package</show>
+                </configuration>
             </plugin>
         </plugins>
     </build>
