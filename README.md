@@ -73,7 +73,7 @@ Add the `camel-cdi` library as a dependency:
 
 #### Required Dependencies
 
-Besides depending on Camel (`camel-core` and `camel-core-osgi` optionally), Camel CDI requires a CDI enabled environment running in Java 7 or greater.
+Besides depending on Camel (`camel-core` and `camel-core-osgi` optionally), Camel CDI requires a CDI enabled environment running in Java 8 or greater.
 
 #### Supported Containers
 

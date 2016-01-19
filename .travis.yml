@@ -23,8 +23,7 @@ script:
 #  - mvn -B test -Pjacoco -Pkaraf,owb -pl envs/osgi/
 
 jdk:
-  - oraclejdk7
-  - openjdk7
+  - openjdk8
   - oraclejdk8
 
 notifications:
