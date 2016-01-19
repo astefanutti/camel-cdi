@@ -10,7 +10,7 @@
 
     <groupId>io.astefanutti.camel.cdi</groupId>
     <artifactId>camel-cdi-parent</artifactId>
-    <version>1.2-SNAPSHOT</version>
+    <version>1.2.0</version>
     <packaging>pom</packaging>
 
     <name>Camel CDI</name>
@@ -47,7 +47,7 @@
         <connection>scm:git:git@github.com:astefanutti/camel-cdi.git</connection>
         <developerConnection>scm:git:git@github.com:astefanutti/camel-cdi.git</developerConnection>
         <url>scm:git:git@github.com:astefanutti/camel-cdi.git</url>
-        <tag>HEAD</tag>
+        <tag>1.2.0</tag>
     </scm>
 
     <repositories>
