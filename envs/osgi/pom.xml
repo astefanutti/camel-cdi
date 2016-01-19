@@ -15,14 +15,19 @@
         <karaf.version>4.0.3</karaf.version>
         <pax-exam.version>4.7.0</pax-exam.version>
         <gravia.version>1.1.0.Beta43</gravia.version>
+        <skipTests>true</skipTests>
     </properties>
 
     <profiles>
         <profile>
+            <id>karaf</id>
+            <properties>
+                <skipTests>false</skipTests>
+            </properties>
+        </profile>
+
+        <profile>
             <id>weld</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
             <properties>
                 <pax.cdi.implementation>pax-cdi-weld-2.3.2.Final</pax.cdi.implementation>
             </properties>

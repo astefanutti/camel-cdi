@@ -19,6 +19,8 @@ script:
   - mvn -B test -Pjacoco -Pwildfly-8.x -pl envs/ee
   - mvn -B test -Pjacoco -Pwildfly-9.x -pl envs/ee
   - mvn -B test -Pjacoco -Pwildfly-camel -pl envs/ee
+  - mvn -B test -Pjacoco -Pkaraf,weld -pl envs/osgi/
+#  - mvn -B test -Pjacoco -Pkaraf,owb -pl envs/osgi/
 
 jdk:
   - oraclejdk7
