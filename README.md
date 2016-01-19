@@ -24,7 +24,7 @@
 
 ## About
 
-Version `1.2.0` of this component has been merged into apache/camel@0421c24dfcf992f3296ed746469771e3800200e3. It now serves as an upstream project to explore possible evolution of the Camel CDI integration using the latest versions of the underlying technologies.
+Version `1.2.0` of this component has been [merged](apache/camel@0421c24dfcf992f3296ed746469771e3800200e3) into Apache Camel as part of [CAMEL-9201](https://issues.apache.org/jira/browse/CAMEL-9201). It now serves as an upstream project to explore possible evolution of the Camel CDI integration using the latest versions of the underlying technologies.
 
 Hereafter is the original project statement:
 > Since version `2.10` of Camel, the [Camel CDI][] component supports the integration of Camel in CDI enabled environments. However, some experiments and _battlefield_ tests prove it troublesome to use because of the following concerns:
@@ -73,7 +73,7 @@ Add the `camel-cdi` library as a dependency:
 
 #### Required Dependencies
 
-Besides depending on _Camel_ (`camel-core` and `camel-core-osgi` optionally), Camel CDI_ requires a CDI enabled environment running in Java 7 or greater.
+Besides depending on Camel (`camel-core` and `camel-core-osgi` optionally), Camel CDI requires a CDI enabled environment running in Java 7 or greater.
 
 #### Supported Containers
 
@@ -104,7 +104,7 @@ WildFly 8.1 requires to be patched with Weld 2.2+ as documented in [Weld 2.2 on 
 
 #### CDI Event Camel Endpoint
 
-The CDI event endpoint bridges the [CDI events][] facility with the Camel routes so that CDI events can be seamlessly observed / consumed (respectively produced / fired) from Camel consumers (respectively by Camel producers). This is the implementation fixing [CAMEL-5408][].
+The CDI event endpoint bridges the [CDI events][] facility with the Camel routes so that CDI events can be seamlessly observed / consumed (respectively produced / fired) from Camel consumers (respectively by Camel producers).
 
 The `CdiEventEndpoint<T>` bean can be used to observe / consume CDI events whose _event type_ is `T`, for example:
 
@@ -216,7 +216,7 @@ But more fundamentally, that would prevent efficient binding between the endpoin
 
 #### Camel Events to CDI Events
 
-Camel provides a series of [management events][] that can be subscribed to for listening to Camel context, service, route and exchange events. This version of Camel CDI seamlessly translates these Camel events into CDI events that can be observed using CDI [observer methods][], e.g.:
+Camel provides a set of [management events][] that can be subscribed to for listening to Camel context, service, route and exchange events. This version of Camel CDI seamlessly translates these Camel events into CDI events that can be observed using CDI [observer methods][], e.g.:
 
 ```java
 void onContextStarting(@Observes CamelContextStartingEvent event) {
@@ -243,6 +243,7 @@ void onExchangeCompleted(@Observes @Default ExchangeCompletedEvent event) {
 }
 
 ```
+
 In that example, if no qualifier is specified, the `@Any` qualifier is implicitly assumed, so that corresponding events for all the Camel contexts deployed get received.
 
 Note that the support for Camel events translation into CDI events is only activated if observer methods listening for Camel events are detected in the deployment, and that per Camel context.
@@ -268,7 +269,7 @@ Note that CDI injection is supported within the type converters.
 
 #### Multiple Camel Contexts
 
-The official Camel CDI declares the `@ContextName` annotation that can be used to declare multiple `CamelContext` instances. However that annotation is not declared as a [CDI qualifier][] and does not fit nicely in the CDI programming model as discussed in [CAMEL-5566][]. This version of Camel CDI alleviates that concern so that the `@ContextName` annotation can be used as a proper CDI qualifier, e.g.:
+The `@ContextName` qualifier can be used to declared multiple Camel contexts, e.g.:
 
 ```java
 @ApplicationScoped
@@ -276,22 +277,34 @@ The official Camel CDI declares the `@ContextName` annotation that can be used t
 class FooCamelContext extends DefaultCamelContext {
 
 }
+
+@ApplicationScoped
+@ContextName("bar")
+class BarCamelContext extends DefaultCamelContext {
+
+}
 ```
 
-And then by declaring an [injected field][], e.g.:
+And then use that same qualifier to declare [injected fields][], e.g.:
 
 ```java
 @Inject
 @ContextName("foo")
 CamelContext fooCamelContext;
+
+@Inject
+@ContextName("bar")
+CamelContext fooCamelContext;
 ```
 
-[CDI qualifier]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#qualifiers
-[injected field]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#injected_fields
+Note that Camel CDI provides the `@ContextName` qualifier for convenience though any [CDI qualifiers][] can be used to declare the Camel context beans and the injection points.
+
+[CDI qualifiers]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#qualifiers
+[injected fields]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#injected_fields
 
 #### Configuration Properties
 
-Instead of enforcing a specific configuration solution to setup the Camel [Properties component][], this version of Camel CDI relies on standard Camel and CDI mechanisms so that the configuration sourcing concern is separated and can be delegated to the application, e.g.:
+Camel CDI relies on _standard_ Camel abstractions and CDI mechanisms. The configuration sourcing concern is delegated to the application so that it can provide any `PropertiesComponent` bean that's tailored for its need, e.g.:
 
 ```java
 @Produces
@@ -332,7 +345,8 @@ class CustomCamelContext extends DefaultCamelContext {
 }
 ```
 
-[Producer][producer method] and [disposer][disposer method] methods can be used as well to customize the a Camel context bean, e.g.:
+[Producer][producer method] and [disposer][disposer method] methods can be used as well to customize the Camel context bean, e.g.:
+
 ```java
 class CamelContextFactory {
 
@@ -351,6 +365,7 @@ class CamelContextFactory {
 ```
 
 Similarly, [producer fields][producer field] can be used, e.g.:
+
 ```java
 @Produces
 @ApplicationScoped
@@ -365,6 +380,7 @@ class CustomCamelContext extends DefaultCamelContext {
 ```
 
 This pattern can be used to avoid having the Camel context started automatically at deployment time by calling the `setAutoStartup` method, e.g.:
+
 ```java
 @ApplicationScoped
 class ManualStartupCamelContext extends DefaultCamelContext {
@@ -380,29 +396,6 @@ class ManualStartupCamelContext extends DefaultCamelContext {
 [producer method]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#producer_method
 [disposer method]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#disposer_method
 [producer field]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#producer_field
-
-#### `@Uri` and `@Mock` Endpoint Qualifiers Unification
-
-As commented by [@jstrachan](https://github.com/jstrachan) in [CAMEL-5553](https://issues.apache.org/jira/browse/CAMEL-5553?focusedCommentId=13445936&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-13445936), the `@Mock` qualifier has been introduced to work around _ambiguous resolution_ with the producer method for other kinds of endpoints. Yet it is redundant with the semantic provided by the `@Uri` qualifier.
-
-The use of the [`@Typed`][] annotation to restrict the _bean types_ of the `MockEndpoint` bean alleviates that _ambiguous resolution_ so that it is possible to rely solely on the `@Uri` qualifier, e.g.:
-
-```java
-@Inject
-@Uri("mock:foo")
-MockEndpoint mockEndpoint;
-
-@Inject
-@Uri("direct:bar")
-Endpoint directEndpoint;
-
-@Inject
-MockEndpoint outbound; // URI defaults to the member name, i.e. mock:outbound
-```
-
-[`@Typed`]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#restricting_bean_types
-
-Note that the `@Mock` qualifier remains for backward compatibility reason though it shouldn't be used anymore as it will be removed in the next major version of Camel.
 
 #### Camel Route Builders
 
