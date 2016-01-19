@@ -24,7 +24,7 @@
 
 ## About
 
-Version `1.2.0` of this component has been [merged](apache/camel@0421c24dfcf992f3296ed746469771e3800200e3) into Apache Camel as part of [CAMEL-9201](https://issues.apache.org/jira/browse/CAMEL-9201). It now serves as an upstream project to explore possible evolution of the Camel CDI integration using the latest versions of the underlying technologies.
+Version `1.2.0` of this component [has been merged](https://github.com/apache/camel/commit/0421c24dfcf992f3296ed746469771e3800200e3) into Apache Camel as part of [CAMEL-9201](https://issues.apache.org/jira/browse/CAMEL-9201). It now serves as an upstream project to explore possible evolution of the Camel CDI integration using the latest versions of the underlying technologies.
 
 Hereafter is the original project statement:
 > Since version `2.10` of Camel, the [Camel CDI][] component supports the integration of Camel in CDI enabled environments. However, some experiments and _battlefield_ tests prove it troublesome to use because of the following concerns:
