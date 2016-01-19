@@ -22,26 +22,20 @@
 [CDI 1.1]: http://docs.jboss.org/cdi/spec/1.1/cdi-spec.html
 [CDI 1.2]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html
 
-
 ## About
 
-Since version `2.10` of Camel, the [Camel CDI][] component supports the integration of Camel in CDI enabled environments. However, some experiments and _battlefield_ tests prove it troublesome to use because of the following concerns:
-+ It relies on older [CDI 1.0][JSR 299] version of the specification and makes incorrect usages of [container lifecycle events][] w.r.t. [Assignability of type variables, raw and parameterized types]. As a consequence, it does not work properly with newer implementation versions like Weld 2.x and containers like WildFly 8.x as reported in [CAMEL-7760][] among other issues.
-+ It relies on Apache [DeltaSpike][] and its `BeanManagerProvider` class to retrieve the `BeanManager` instance during the CDI container initialisation. That may not be suitable in complex container configurations, for example, in multiple CDI containers per JVM context, as reported in [CAMEL-6338][] and that causes [CAMEL-6095][] and [CAMEL-6937][].
-+ It relies on DeltaSpike and its [configuration mechanism][DeltaSpike Configuration Mechanism] to source configuration locations for the [Properties component][]. While this is suitable for most use cases, it relies on the `ServiceLoader` mechanism to support custom [configuration sources][ConfigSource] that may not be suitable in more complex container configurations and relates to [CAMEL-5986][].
-+ Besides, while DeltaSpike is a valuable addition to the CDI ecosystem, Camel CDI having a direct dependency on it is questionable from a design standpoint as opposed to relying on standard Camel mechanism for producing the Camel Properties component and delegating, as a plugable strategy, the configuration sourcing concern and implementation choice to the application itself or eventually using the [Java EE Configuration JSR][] when available.
-+ It declares a `CamelContext` CDI bean that's automatically instantiated and started with a `@PostConstruct` lifecycle callback called before the CDI container is completely initialized. That prevents, among other side effects like [CAMEL-9336][], proper configuration of the Camel context as reported in [CAMEL-8325][] and advising of Camel routes as documented in [Camel AdviceWith][].
-+ It uses the `@ContextName` annotation to bind routes to the `CamelContext` instance specified by name as an attempt to provide support for multiple Camel contexts per application. However, that is an incomplete feature from the CDI programming model standpoint as discussed in [CAMEL-5566][] and that causes [CAMEL-5742][].
+Version `1.2.0` of this component has been merged into apache/camel@0421c24dfcf992f3296ed746469771e3800200e3. It now serves as an upstream project to explore possible evolution of the Camel CDI integration using the latest versions of the underlying technologies.
 
-The objective of this project is to alleviate all these concerns, provide additional features, and have that improved version of the Camel CDI component contributed back into the official codeline. In the meantime, you can get it from Maven Central with the following coordinates:
+Hereafter is the original project statement:
+> Since version `2.10` of Camel, the [Camel CDI][] component supports the integration of Camel in CDI enabled environments. However, some experiments and _battlefield_ tests prove it troublesome to use because of the following concerns:
+> + It relies on older [CDI 1.0][JSR 299] version of the specification and makes incorrect usages of [container lifecycle events][] w.r.t. [Assignability of type variables, raw and parameterized types]. As a consequence, it does not work properly with newer implementation versions like Weld 2.x and containers like WildFly 8.x as reported in [CAMEL-7760][] among other issues.
+> + It relies on Apache [DeltaSpike][] and its `BeanManagerProvider` class to retrieve the `BeanManager` instance during the CDI container initialisation. That may not be suitable in complex container configurations, for example, in multiple CDI containers per JVM context, as reported in [CAMEL-6338][] and that causes [CAMEL-6095][] and [CAMEL-6937][].
+> + It relies on DeltaSpike and its [configuration mechanism][DeltaSpike Configuration Mechanism] to source configuration locations for the [Properties component][]. While this is suitable for most use cases, it relies on the `ServiceLoader` mechanism to support custom [configuration sources][ConfigSource] that may not be suitable in more complex container configurations and relates to [CAMEL-5986][].
+> + Besides, while DeltaSpike is a valuable addition to the CDI ecosystem, Camel CDI having a direct dependency on it is questionable from a design standpoint as opposed to relying on standard Camel mechanism for producing the Camel Properties component and delegating, as a plugable strategy, the configuration sourcing concern and implementation choice to the application itself or eventually using the [Java EE Configuration JSR][] when available.
+> + It declares a `CamelContext` CDI bean that's automatically instantiated and started with a `@PostConstruct` lifecycle callback called before the CDI container is completely initialized. That prevents, among other side effects like [CAMEL-9336][], proper configuration of the Camel context as reported in [CAMEL-8325][] and advising of Camel routes as documented in [Camel AdviceWith][].
+> + It uses the `@ContextName` annotation to bind routes to the `CamelContext` instance specified by name as an attempt to provide support for multiple Camel contexts per application. However, that is an incomplete feature from the CDI programming model standpoint as discussed in [CAMEL-5566][] and that causes [CAMEL-5742][].
 
-```xml
-<dependency>
-    <groupId>io.astefanutti.camel.cdi</groupId>
-    <artifactId>camel-cdi</artifactId>
-    <version>1.2.0</version>
-</dependency>
-```
+> The objective of this project is to alleviate all these concerns, provide additional features, and have that improved version of the Camel CDI component contributed back into the official codeline.
 
 [Camel CDI]: http://camel.apache.org/cdi.html
 [DeltaSpike]: https://deltaspike.apache.org/
@@ -63,28 +57,25 @@ The objective of this project is to alleviate all these concerns, provide additi
 [Assignability of type variables, raw and parameterized types]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#observers_assignability
 [Java EE Configuration JSR]: http://javaeeconfig.blogspot.ch/
 
-## Contribution
+## Getting Started
 
-### Bug Fixes
+#### Using Maven
 
-This project fixes the following issues currently opened in the Camel CDI backlog:
-- [CAMEL-5742][]: The `@ContextName` should only refer to a `CamelContext` and not create a new `CamelContext` on the fly
-- [CAMEL-5986][]: Property placeholders do not work for CDI injection
-- [CAMEL-6336][]: Camel CDI uses `postConstruct` to inject in CDI beans
-- [CAMEL-6338][]: Camel CDI shouldn't use DeltaSpike bean manager provider in the `CamelExtension`
-- [CAMEL-6937][]: `BeanManager` cannot be retrieved when Camel CDI is deployed in Karaf
-- [CAMEL-7760][]: WELD-001409: ambiguous dependencies for type `CdiCamelContext`
-- [CAMEL-9336][]: Camel CDI should add routes to CamelContext before its started
+Add the `camel-cdi` library as a dependency:
 
-Besides bug fixes, this project completes the following improvements and features:
-- [CAMEL-5408][]: Extend CDI component with support for events
-- [CAMEL-5553][]: Support injection of endpoint and `@Produce` `@Consume` annotations
-- [CAMEL-8325][]: CDI integration don't detect duplicate routes, should support earlier context configuration
+```xml
+<dependency>
+    <groupId>io.astefanutti.camel.cdi</groupId>
+    <artifactId>camel-cdi</artifactId>
+    <version>1.2.0</version>
+</dependency>
+```
 
-[CAMEL-5408]: https://issues.apache.org/jira/browse/CAMEL-5408
-[CAMEL-5553]: https://issues.apache.org/jira/browse/CAMEL-5553
+#### Required Dependencies
 
-### Supported Containers
+Besides depending on _Camel_ (`camel-core` and `camel-core-osgi` optionally), Camel CDI_ requires a CDI enabled environment running in Java 7 or greater.
+
+#### Supported Containers
 
 This version of Camel CDI is currently successfully tested with the following containers:
 
@@ -109,9 +100,9 @@ WildFly 8.1 requires to be patched with Weld 2.2+ as documented in [Weld 2.2 on 
 [OSGi 6]: https://www.osgi.org/osgi-release-6-javadoc/
 [Weld 2.2 on WildFly]: http://weld.cdi-spec.org/news/2014/04/15/weld-220-final/
 
-### New Features
+## Usage
 
-##### CDI Event Camel Endpoint
+#### CDI Event Camel Endpoint
 
 The CDI event endpoint bridges the [CDI events][] facility with the Camel routes so that CDI events can be seamlessly observed / consumed (respectively produced / fired) from Camel consumers (respectively by Camel producers). This is the implementation fixing [CAMEL-5408][].
 
@@ -223,7 +214,7 @@ But more fundamentally, that would prevent efficient binding between the endpoin
 [Camel component]: http://camel.apache.org/component.html
 [URIs]: http://camel.apache.org/uris.html
 
-##### Camel Events to CDI Events
+#### Camel Events to CDI Events
 
 Camel provides a series of [management events][] that can be subscribed to for listening to Camel context, service, route and exchange events. This version of Camel CDI seamlessly translates these Camel events into CDI events that can be observed using CDI [observer methods][], e.g.:
 
@@ -259,7 +250,7 @@ Note that the support for Camel events translation into CDI events is only activ
 [management events]: http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/management/event/package-summary.html
 [observer methods]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#observer_methods
 
-##### Type Converter Beans
+#### Type Converter Beans
 
 CDI beans annotated with the `@Converter` annotation are automatically registered into all the deployed Camel contexts, e.g.:
 
@@ -275,9 +266,7 @@ public class TypeConverter {
 ```
 Note that CDI injection is supported within the type converters.
 
-### Improvements
-
-##### Multiple Camel Contexts
+#### Multiple Camel Contexts
 
 The official Camel CDI declares the `@ContextName` annotation that can be used to declare multiple `CamelContext` instances. However that annotation is not declared as a [CDI qualifier][] and does not fit nicely in the CDI programming model as discussed in [CAMEL-5566][]. This version of Camel CDI alleviates that concern so that the `@ContextName` annotation can be used as a proper CDI qualifier, e.g.:
 
@@ -300,7 +289,7 @@ CamelContext fooCamelContext;
 [CDI qualifier]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#qualifiers
 [injected field]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#injected_fields
 
-##### Configuration Properties
+#### Configuration Properties
 
 Instead of enforcing a specific configuration solution to setup the Camel [Properties component][], this version of Camel CDI relies on standard Camel and CDI mechanisms so that the configuration sourcing concern is separated and can be delegated to the application, e.g.:
 
@@ -319,7 +308,7 @@ PropertiesComponent propertiesComponent() {
 
 ```
 
-##### Camel Context Customization
+#### Camel Context Customization
 
 Any `CamelContext` class can be used to declare a custom Camel context bean that uses the `@PostConstruct` and `@PreDestroy` lifecycle callbacks, e.g.:
 
@@ -392,7 +381,7 @@ class ManualStartupCamelContext extends DefaultCamelContext {
 [disposer method]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#disposer_method
 [producer field]: http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#producer_field
 
-##### `@Uri` and `@Mock` Endpoint Qualifiers Unification
+#### `@Uri` and `@Mock` Endpoint Qualifiers Unification
 
 As commented by [@jstrachan](https://github.com/jstrachan) in [CAMEL-5553](https://issues.apache.org/jira/browse/CAMEL-5553?focusedCommentId=13445936&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-13445936), the `@Mock` qualifier has been introduced to work around _ambiguous resolution_ with the producer method for other kinds of endpoints. Yet it is redundant with the semantic provided by the `@Uri` qualifier.
 
@@ -415,9 +404,7 @@ MockEndpoint outbound; // URI defaults to the member name, i.e. mock:outbound
 
 Note that the `@Mock` qualifier remains for backward compatibility reason though it shouldn't be used anymore as it will be removed in the next major version of Camel.
 
-### Existing features
-
-##### Camel Route Builders
+#### Camel Route Builders
 
 Camel CDI detects any beans of type `RouteBuilder` and automatically adds the declared routes to the corresponding Camel context at deployment time, e.g.:
 
@@ -434,7 +421,7 @@ class FooCamelContextRoute extends RouteBuilder {
 }
 ```
 
-##### Camel CDI Beans
+#### Camel CDI Beans
 
 Camel CDI declares some producer method beans that can be used to inject Camel objects of types `Endpoint`, `MockEndpoint`, `ProducerTemplate` and `TypeConverter`, e.g.:
 
@@ -455,7 +442,7 @@ Endpoint endpoint;
 TypeConverter converter;
 ```
 
-##### Camel Annotations Support
+#### Camel Annotations Support
 
 Camel comes with a set of [annotations][Camel annotations] that are supported by Camel CDI for both standard CDI injection and Camel [bean integration][], e.g.:
 
@@ -492,7 +479,7 @@ void consume(@Body String body) {
 [Camel annotations]: http://camel.apache.org/bean-integration.html#BeanIntegration-Annotations
 [bean integration]: http://camel.apache.org/bean-integration.html
 
-##### Black Box Camel Contexts
+#### Black Box Camel Contexts
 
 The [context component][] enables the creation of Camel components out of Camel contexts and the mapping of local endpoints within these components from other Camel contexts based on the identifiers used to register these  _black box_ Camel contexts in the Camel registry.
 
@@ -545,48 +532,8 @@ BarRouteBuilder extends RouteBuilder {
 
 [context component]: http://camel.apache.org/context.html
 
-### Futures Ideas
-
-##### Camel Beans Integration with Multiple Camel Contexts
-
-The [bean integration][] support with multiple Camel contexts could be enhanced so that beans and components can be defined per Camel context.
-
-Each time a bean is looked up by type, a bean of that type annotated with the `@ContextName` qualifier is first looked up. If such bean exists, a contextual reference of that bean is retrieved, else the lookup falls back to a bean with the `@Default` qualifier, e.g.:
-
-```java
-@ContextName("foo")
-class FooCamelContextRoute extends RouteBuilder {
-
-    @Override
-    public void configure() {
-        // Lookup CDI bean with qualifier @ContextName("foo")
-        // Then @Default if any
-        from("...").bean(Bean.class);
-    }
-}
-```
-
-For Camel components that are looked up by name, that approach could not be used because bean names declared with the `@Named` qualifier must be unique as documented in [Ambiguous EL names][]. To still support the ability to define Camel beans and components per Camel context, the bean name could be prefixed with the context name for the lookup, e.g.:
-
-```java
-@ContextName("foo")
-class FooCamelContextRoute extends RouteBuilder {
-
-    @Override
-    public void configure() {
-        // Lookup CDI bean with qualifier @Named("foo:beanName")
-        // Then @Named("beanName") if any
-        from("...").bean("beanName");
-    }
-}
-```
-
-However, namespaces are not supported for EL variables as opposed to EL functions which leads to invalid EL names that cannot be used in EL expressions. One opposite alternative would be to remove that possibility and solely rely on distinct bean names for each Camel context. Though that does not meet the need for internal Camel components such as the [Properties component][] which is looked up by the `properties` name.
-
-[Ambiguous EL names]: [http://docs.jboss.org/cdi/spec/1.2/cdi-spec.html#ambig_names]
-
 ## License
 
-Copyright © 2014-2015, Antonin Stefanutti
+Copyright © 2014-2016, Antonin Stefanutti
 
 Published under Apache Software License 2.0, see LICENSE
