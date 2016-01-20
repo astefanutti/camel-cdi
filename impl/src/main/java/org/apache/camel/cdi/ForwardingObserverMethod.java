@@ -28,7 +28,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /* package-private */ final class ForwardingObserverMethod<T> implements ObserverMethod<T> {
 
-    // Should be replaced with the Java 8 functional interface Consumer<T>
     private final AtomicReference<CdiEventEndpoint<T>> observer = new AtomicReference<>();
 
     private final Type type;
