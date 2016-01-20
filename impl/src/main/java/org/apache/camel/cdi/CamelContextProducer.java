@@ -35,8 +35,6 @@ import javax.enterprise.inject.spi.Producer;
 import javax.inject.Named;
 import java.beans.Introspector;
 import java.lang.annotation.Annotation;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -59,7 +57,7 @@ final class CamelContextProducer<T extends CamelContext> extends DelegateProduce
         T context = super.produce(ctx);
 
         // Do not override the name if it's been already set (in the bean constructor for example)
-        if (annotated != null && context.getNameStrategy() instanceof DefaultCamelContextNameStrategy)
+        if (context.getNameStrategy() instanceof DefaultCamelContextNameStrategy)
             context.setNameStrategy(nameStrategy(annotated));
 
         // Add bean registry and Camel injector
@@ -73,12 +71,13 @@ final class CamelContextProducer<T extends CamelContext> extends DelegateProduce
         }
 
         // Add event notifier if at least one observer is present
-        CdiCamelExtension extension = manager.getExtension(CdiCamelExtension.class);
-        Set<Annotation> events = new HashSet<>(extension.getObserverEvents());
-        // Annotated must be wrapped because of OWB-1099
-        Collection<Annotation> qualifiers = annotated != null ? extension.getContextBean(new AnnotatedWrapper(annotated)).getQualifiers() : Arrays.asList(AnyLiteral.INSTANCE, DefaultLiteral.INSTANCE);
-        events.retainAll(qualifiers);
-        if (!events.isEmpty())
+        Set<Annotation> qualifiers = new HashSet<>(annotated.getAnnotations());
+        qualifiers.removeIf(annotation -> !manager.isQualifier(annotation.annotationType()) || Named.class.equals(annotation.annotationType()));
+        qualifiers.add(AnyLiteral.INSTANCE);
+        if (qualifiers.size() == 1)
+            qualifiers.add(DefaultLiteral.INSTANCE);
+        qualifiers.retainAll(manager.getExtension(CdiCamelExtension.class).getObserverEvents());
+        if (!qualifiers.isEmpty())
             context.getManagementStrategy().addEventNotifier(new CdiEventNotifier(manager, qualifiers));
 
         return context;

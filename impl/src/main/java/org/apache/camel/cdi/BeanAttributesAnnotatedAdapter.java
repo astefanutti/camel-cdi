@@ -17,63 +17,44 @@
 package org.apache.camel.cdi;
 
 import javax.enterprise.inject.spi.Annotated;
+import javax.enterprise.inject.spi.BeanAttributes;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Set;
 
-// This class is used as a work-around to OWB-1099
-final class AnnotatedWrapper implements Annotated {
+final class BeanAttributesAnnotatedAdapter<T> implements Annotated {
 
-    private final Annotated delegate;
+    private final BeanAttributes<T> delegate;
 
-    AnnotatedWrapper(Annotated delegate) {
+    private final Class<T> type;
+
+    BeanAttributesAnnotatedAdapter(BeanAttributes<T> delegate, Class<T> type) {
         this.delegate = delegate;
+        this.type = type;
     }
 
     @Override
     public Type getBaseType() {
-        return delegate.getBaseType();
+        return type;
     }
 
     @Override
     public Set<Type> getTypeClosure() {
-        return delegate.getTypeClosure();
+        return delegate.getTypes();
     }
 
     @Override
-    public <T extends Annotation> T getAnnotation(Class<T> annotationType) {
-        return delegate.getAnnotation(annotationType);
+    public <U extends Annotation> U getAnnotation(Class<U> annotationType) {
+        return CdiSpiHelper.getFirstElementOfType(delegate.getQualifiers(), annotationType);
     }
 
     @Override
     public Set<Annotation> getAnnotations() {
-        return delegate.getAnnotations();
+        return delegate.getQualifiers();
     }
 
     @Override
     public boolean isAnnotationPresent(Class<? extends Annotation> annotationType) {
-        return delegate.isAnnotationPresent(annotationType);
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
-
-        AnnotatedWrapper that = (AnnotatedWrapper) object;
-
-        if (!getBaseType().equals(that.getBaseType()))
-            return false;
-        else if (!getTypeClosure().equals(that.getTypeClosure()))
-            return false;
-        return getAnnotations().equals(that.getAnnotations());
-    }
-
-    @Override
-    public int hashCode() {
-        int result = getBaseType() != null ? getBaseType().hashCode() : 0;
-        result = 31 * result + (getTypeClosure() != null ? getTypeClosure().hashCode() : 0);
-        result = 31 * result + (getAnnotations() != null ? getAnnotations().hashCode() : 0);
-        return result;
+        return getAnnotation(annotationType) != null;
     }
 }
