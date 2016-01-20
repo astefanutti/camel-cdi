@@ -92,21 +92,6 @@ final class CdiCamelFactory {
         }
     }
 
-    // Maintained for backward compatibility reason though this is redundant with @Uri, see https://issues.apache.org/jira/browse/CAMEL-5553?focusedCommentId=13445936&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-13445936
-    @Mock("")
-    @Produces
-    @Typed(MockEndpoint.class)
-    // Qualifiers are dynamically added in CdiCamelExtension
-    private static MockEndpoint createMockEndpoint(InjectionPoint ip, @Any Instance<CamelContext> instance, CdiCamelExtension extension) {
-        Mock mock = CdiSpiHelper.getQualifierByType(ip, Mock.class);
-        try {
-            CamelContext context = mock.context().isEmpty() ? selectContext(ip, instance, extension) : selectContext(mock.context(), instance);
-            return context.getEndpoint(mock.value(), MockEndpoint.class);
-        } catch (Exception cause) {
-            throw new InjectionException("Error injecting mock endpoint annotated with " + mock + " into " + ip, cause);
-        }
-    }
-
     @Uri("")
     @Produces
     // Qualifiers are dynamically added in CdiCamelExtension

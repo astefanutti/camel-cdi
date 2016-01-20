@@ -18,25 +18,22 @@ package org.apache.camel.cdi.se.bean;
 
 import org.apache.camel.Endpoint;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.cdi.ContextName;
-import org.apache.camel.cdi.Mock;
 import org.apache.camel.cdi.Uri;
 import org.apache.camel.component.mock.MockEndpoint;
 
 import javax.inject.Inject;
 
-public class MockAnnotationRoute extends RouteBuilder {
+public class MockEndpointRoute extends RouteBuilder {
 
     @Inject
-    @Uri("direct:start")
-    private Endpoint directEP;
+    @Uri("direct:inbound")
+    private Endpoint inbound;
 
     @Inject
-    @Mock("mock:result")
-    private MockEndpoint mockEP;
+    private MockEndpoint outbound;
 
     @Override
     public void configure() {
-        from(directEP).to(mockEP);
+        from(inbound).to(outbound);
     }
 }

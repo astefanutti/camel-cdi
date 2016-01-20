@@ -16,12 +16,12 @@
  */
 package org.apache.camel.cdi.se;
 
+import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.cdi.CdiCamelExtension;
-import org.apache.camel.cdi.Mock;
 import org.apache.camel.cdi.Uri;
 import org.apache.camel.cdi.se.bean.DefaultCamelContextBean;
-import org.apache.camel.cdi.se.bean.MockAnnotationRoute;
+import org.apache.camel.cdi.se.bean.MockEndpointRoute;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -49,36 +49,36 @@ public class MockEndpointTest {
             // Camel CDI
             .addPackage(CdiCamelExtension.class.getPackage())
             // Test classes
-            .addClasses(DefaultCamelContextBean.class, MockAnnotationRoute.class)
+            .addClasses(DefaultCamelContextBean.class, MockEndpointRoute.class)
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Inject
-    private DefaultCamelContextBean defaultCamelContext;
+    private CamelContext context;
 
     @Inject
-    @Uri("direct:start")
-    private ProducerTemplate defaultInbound;
+    @Uri("direct:inbound")
+    private ProducerTemplate inbound;
 
     @Inject
-    @Mock("mock:result")
-    private MockEndpoint defaultOutbound;
+    @Uri("mock:outbound")
+    private MockEndpoint outbound;
 
     @Test
     public void verifyCamelContext() {
-        assertThat(defaultCamelContext.getName(), is(equalTo("camel-cdi")));
-        assertThat(defaultOutbound.getCamelContext().getName(), is(equalTo(defaultCamelContext.getName())));
+        assertThat(context.getName(), is(equalTo("camel-cdi")));
+        assertThat(outbound.getCamelContext().getName(), is(equalTo(context.getName())));
     }
 
     @Test
     public void sendMessageToInbound() throws InterruptedException {
-        defaultOutbound.expectedMessageCount(1);
-        defaultOutbound.expectedBodiesReceived("test");
-        defaultOutbound.expectedHeaderReceived("foo", "bar");
+        outbound.expectedMessageCount(1);
+        outbound.expectedBodiesReceived("test");
+        outbound.expectedHeaderReceived("foo", "bar");
 
-        defaultInbound.sendBodyAndHeader("test", "foo", "bar");
+        inbound.sendBodyAndHeader("test", "foo", "bar");
 
-        assertIsSatisfied(2L, TimeUnit.SECONDS, defaultOutbound);
+        assertIsSatisfied(2L, TimeUnit.SECONDS, outbound);
     }
 }

@@ -21,7 +21,6 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.cdi.CdiCamelExtension;
 import org.apache.camel.cdi.ContextName;
-import org.apache.camel.cdi.Mock;
 import org.apache.camel.cdi.Uri;
 import org.apache.camel.cdi.se.bean.FirstCamelContextBean;
 import org.apache.camel.component.mock.MockEndpoint;
@@ -80,7 +79,7 @@ class UriWithContextRoute extends RouteBuilder {
     Endpoint inbound;
 
     @Inject
-    @Mock(value = "mock:outbound", context = "first")
+    @Uri(value = "mock:outbound", context = "first")
     MockEndpoint outbound;
 
     @Override
