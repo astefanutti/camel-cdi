@@ -55,7 +55,6 @@ public class UnstoppedCamelContextBeanTest {
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
-
     private static boolean isStopCalled;
 
     @ClassRule

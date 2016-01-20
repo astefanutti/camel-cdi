@@ -16,7 +16,6 @@
  */
 package org.apache.camel.cdi.se.expression;
 
-
 import org.apache.camel.Exchange;
 import org.apache.camel.Expression;
 import org.apache.camel.Predicate;

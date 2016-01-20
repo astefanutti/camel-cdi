@@ -16,7 +16,6 @@
  */
 package org.apache.camel.cdi.se.bean;
 
-
 import org.apache.camel.Endpoint;
 import org.apache.camel.EndpointInject;
 import org.apache.camel.builder.RouteBuilder;

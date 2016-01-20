@@ -58,7 +58,6 @@ public class UnstoppedCamelContextProducerMethodTest {
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
-
     private static DefaultCamelContext context = new DefaultCamelContext();
 
     @ClassRule

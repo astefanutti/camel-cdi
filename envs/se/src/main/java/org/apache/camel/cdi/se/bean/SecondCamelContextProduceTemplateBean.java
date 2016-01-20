@@ -16,7 +16,6 @@
  */
 package org.apache.camel.cdi.se.bean;
 
-
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
 
