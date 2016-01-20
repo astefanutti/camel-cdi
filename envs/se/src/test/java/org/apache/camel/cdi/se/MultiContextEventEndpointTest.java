@@ -28,7 +28,6 @@ import org.apache.camel.cdi.se.bean.SecondCamelContextBean;
 import org.apache.camel.cdi.se.bean.SecondCamelContextEventConsumingRoute;
 import org.apache.camel.cdi.se.bean.SecondCamelContextEventProducingRoute;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.hamcrest.Matchers;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
@@ -126,7 +125,7 @@ public class MultiContextEventEndpointTest {
         firstProduceString.sendBody("testFirst");
         secondProduceString.sendBody("testSecond");
 
-        assertThat(observer.getObjectEvents(), Matchers.<Object>contains("testFirst", "testSecond"));
+        assertThat(observer.getObjectEvents(), contains("testFirst", "testSecond"));
         assertThat(observer.getStringEvents(), contains("testFirst", "testSecond"));
         assertThat(observer.getFirstStringEvents(), contains("testFirst"));
         assertThat(observer.secondStringEvents(), contains("testSecond"));

@@ -51,6 +51,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
+import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
@@ -119,7 +120,7 @@ public class CamelEventNotifierTest {
         assertIsSatisfied(2L, TimeUnit.SECONDS, outbound);
 
         assertThat("Events fired are incorrect", events,
-            Matchers.<Class>contains(
+            contains(
                 CamelContextStartingEvent.class,
                 CamelContextStartedEvent.class,
                 ExchangeSendingEvent.class,
@@ -136,7 +137,7 @@ public class CamelEventNotifierTest {
         context.stop();
 
         assertThat("Events fired are incorrect", events,
-            Matchers.<Class>contains(
+            contains(
                 CamelContextStartingEvent.class,
                 CamelContextStartedEvent.class,
                 ExchangeSendingEvent.class,

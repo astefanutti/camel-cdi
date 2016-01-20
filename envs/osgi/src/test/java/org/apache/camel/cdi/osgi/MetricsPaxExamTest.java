@@ -92,8 +92,7 @@ public class MetricsPaxExamTest {
         Meter success = registry.meter("success");
         Meter redelivery = registry.meter("redelivery");
         Meter error = registry.meter("error");
-        @SuppressWarnings("unchecked")
-        Gauge<Double> ratio = registry.getGauges().get("success-ratio");
+        Gauge ratio = registry.getGauges().get("success-ratio");
 
         assertThat("Meter counts are not consistent!", attempt.getCount() - redelivery.getCount() - success.getCount() - error.getCount(), equalTo(0L));
 
