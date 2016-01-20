@@ -16,19 +16,12 @@
  */
 package org.apache.camel.cdi.se.expression;
 
-import org.apache.camel.Exchange;
 import org.apache.camel.Expression;
-import org.apache.camel.Predicate;
 import org.apache.camel.util.PredicateToExpressionAdapter;
 
 public final class ExchangeExpression {
 
-    public static Expression fromCamelContext(final String contextName) {
-        return new PredicateToExpressionAdapter(new Predicate() {
-            @Override
-            public boolean matches(Exchange exchange) {
-                return exchange.getContext().getName().equals(contextName);
-            }
-        });
+    public static Expression fromCamelContext(String contextName) {
+        return new PredicateToExpressionAdapter(exchange -> exchange.getContext().getName().equals(contextName));
     }
 }

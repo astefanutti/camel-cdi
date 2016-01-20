@@ -18,23 +18,16 @@ package org.apache.camel.cdi.sample.metrics;
 
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Meter;
-import com.codahale.metrics.RatioGauge;
+import com.codahale.metrics.RatioGauge.Ratio;
 import com.codahale.metrics.annotation.Metric;
 
 import javax.enterprise.inject.Produces;
-import javax.inject.Inject;
 
 class SuccessRatioGauge {
 
-    @Inject
-    Meter generated, success;
-
     @Produces
     @Metric(name = "success-ratio")
-    Gauge<Double> successRatio = new RatioGauge() {
-        @Override
-        protected Ratio getRatio() {
-            return Ratio.of(success.getOneMinuteRate(), generated.getOneMinuteRate());
-        }
-    };
+    Gauge<Double> successRatio(Meter generated, Meter success) {
+        return () -> Ratio.of(success.getOneMinuteRate(), generated.getOneMinuteRate()).getValue();
+    }
 }

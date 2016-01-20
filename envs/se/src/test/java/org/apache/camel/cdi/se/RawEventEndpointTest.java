@@ -16,8 +16,6 @@
  */
 package org.apache.camel.cdi.se;
 
-import org.apache.camel.Exchange;
-import org.apache.camel.Predicate;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.cdi.CdiCamelExtension;
@@ -89,12 +87,9 @@ public class RawEventEndpointTest {
 
         produced.expectedMessageCount(1);
         produced.expectedBodiesReceived(random);
-        produced.message(0).predicate(new Predicate() {
-            @Override
-            public boolean matches(Exchange exchange) {
-                EventMetadata metadata = exchange.getIn().getHeader("metadata", EventMetadata.class);
-                return metadata.getType().equals(Long.class) && metadata.getQualifiers().equals(new HashSet<>(Arrays.asList(new AnnotationLiteral<Any>() {}, new AnnotationLiteral<Default>() {})));
-            }
+        produced.message(0).predicate(exchange -> {
+            EventMetadata metadata = exchange.getIn().getHeader("metadata", EventMetadata.class);
+            return metadata.getType().equals(Long.class) && metadata.getQualifiers().equals(new HashSet<>(Arrays.asList(new AnnotationLiteral<Any>() {}, new AnnotationLiteral<Default>() {})));
         });
 
         consumed.expectedMessageCount(1);

@@ -48,9 +48,7 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.DeploymentException;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.InjectionTargetFactory;
-import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.enterprise.inject.spi.ProcessBean;
 import javax.enterprise.inject.spi.ProcessBeanAttributes;
@@ -212,17 +210,11 @@ public class CdiCamelExtension implements Extension {
 
     private void addDefaultCamelContext(@Observes AfterBeanDiscovery abd, final BeanManager manager) {
         if (manager.getBeans(CamelContext.class, AnyLiteral.INSTANCE).isEmpty())
-            abd.addBean(manager.createBean(new CamelContextBeanAttributes(manager), DefaultCamelContext.class, new InjectionTargetFactory<DefaultCamelContext>() {
-                @Override
-                public InjectionTarget<DefaultCamelContext> createInjectionTarget(Bean<DefaultCamelContext> bean) {
-                    return environment.camelContextInjectionTarget(new CamelContextDefaultProducer(), null, manager);
-                }
-            }));
+            abd.addBean(manager.createBean(new CamelContextBeanAttributes(manager), DefaultCamelContext.class, (InjectionTargetFactory<DefaultCamelContext>) bean -> environment.camelContextInjectionTarget(new CamelContextDefaultProducer(), null, manager)));
     }
 
     private void addCdiEventObserverMethods(@Observes AfterBeanDiscovery abd) {
-        for (ObserverMethod method : cdiEventEndpoints.values())
-            abd.addObserverMethod(method);
+        cdiEventEndpoints.values().forEach(abd::addObserverMethod);
     }
 
     private void createCamelContexts(@Observes AfterDeploymentValidation adv, BeanManager manager) {
