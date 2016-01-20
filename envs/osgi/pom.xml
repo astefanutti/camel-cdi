@@ -333,6 +333,8 @@
                     <excludes>
                         <exclude>**/CdiArquillianKarafTest.java</exclude>
                     </excludes>
+                    <forkCount>1</forkCount>
+                    <reuseForks>false</reuseForks>
                     <systemPropertyVariables>
                         <jacoco.agent>${argLine}</jacoco.agent>
                         <pax.cdi.implementation>${pax.cdi.implementation}</pax.cdi.implementation>
