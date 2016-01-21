@@ -182,6 +182,7 @@ public class CdiCamelExtension implements Extension {
         contexts += manager.getBeans(RoutesBuilder.class, AnyLiteral.INSTANCE).stream()
             .flatMap(bean -> bean.getQualifiers().stream())
             .filter(qualifier -> ContextName.class.equals(qualifier.annotationType()))
+            .distinct()
             .filter(name -> manager.getBeans(CamelContext.class, name).isEmpty())
             .peek(contextQualifiers::add)
             .map(name -> camelContextBean(manager, AnyLiteral.INSTANCE, name))
