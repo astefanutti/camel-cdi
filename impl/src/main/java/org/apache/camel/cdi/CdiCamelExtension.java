@@ -195,11 +195,25 @@ public class CdiCamelExtension implements Extension {
         }
     }
 
-    private void addDefaultCamelContext(@Observes AfterBeanDiscovery abd, final BeanManager manager) {
-        if (manager.getBeans(CamelContext.class, AnyLiteral.INSTANCE).isEmpty()) {
-            CamelContextBeanAttributes attributes = new CamelContextBeanAttributes(manager);
-            abd.addBean(manager.createBean(attributes, DefaultCamelContext.class, (InjectionTargetFactory<DefaultCamelContext>) bean -> environment.camelContextInjectionTarget(new CamelContextDefaultProducer(), new BeanAttributesAnnotatedAdapter<>(attributes, DefaultCamelContext.class), manager)));
-        }
+    private void addCamelContextBeans(@Observes AfterBeanDiscovery abd, BeanManager manager) {
+        long contexts = manager.getBeans(CamelContext.class, AnyLiteral.INSTANCE).size();
+
+        contexts += manager.getBeans(RoutesBuilder.class, AnyLiteral.INSTANCE).stream()
+            .flatMap(bean -> bean.getQualifiers().stream())
+            .filter(qualifier -> ContextName.class.equals(qualifier.annotationType()))
+            .filter(name -> manager.getBeans(CamelContext.class, name).isEmpty())
+            .map(name -> addCamelContextBean(abd, manager, AnyLiteral.INSTANCE, name))
+            .count();
+
+        if (contexts == 0)
+            addCamelContextBean(abd, manager, AnyLiteral.INSTANCE, DefaultLiteral.INSTANCE);
+    }
+
+    private Bean<?> addCamelContextBean(AfterBeanDiscovery abd, BeanManager manager, Annotation... qualifiers) {
+        CamelContextBeanAttributes attributes = new CamelContextBeanAttributes(manager, qualifiers);
+        Bean<?> context = manager.createBean(attributes, DefaultCamelContext.class, (InjectionTargetFactory<DefaultCamelContext>) bean -> environment.camelContextInjectionTarget(new CamelContextDefaultProducer(), new BeanAttributesAnnotatedAdapter<>(attributes, DefaultCamelContext.class), manager));
+        abd.addBean(context);
+        return context;
     }
 
     private void addCdiEventObserverMethods(@Observes AfterBeanDiscovery abd) {

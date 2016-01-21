@@ -34,8 +34,8 @@ final class CamelContextBeanAttributes implements BeanAttributes<DefaultCamelCon
 
     private final Set<Type> types;
 
-    CamelContextBeanAttributes(BeanManager manager) {
-        this.qualifiers = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(AnyLiteral.INSTANCE, DefaultLiteral.INSTANCE)));
+    CamelContextBeanAttributes(BeanManager manager, Annotation... qualifiers) {
+        this.qualifiers = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(qualifiers)));
         this.types = Collections.unmodifiableSet(manager.createAnnotatedType(DefaultCamelContext.class).getTypeClosure());
     }
 
