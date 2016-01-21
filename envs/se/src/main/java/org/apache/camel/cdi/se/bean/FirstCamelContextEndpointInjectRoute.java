@@ -17,14 +17,18 @@
 package org.apache.camel.cdi.se.bean;
 
 import org.apache.camel.Endpoint;
-import org.apache.camel.EndpointInject;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.cdi.ContextName;
+import org.apache.camel.cdi.Uri;
+
+import javax.inject.Inject;
 
 @ContextName("first")
 public class FirstCamelContextEndpointInjectRoute extends RouteBuilder {
 
-    @EndpointInject(uri = "direct:inbound", context = "first")
+    @Inject
+    @ContextName("first")
+    @Uri("direct:inbound")
     private Endpoint inbound;
     
     @Override

@@ -176,8 +176,22 @@ public class CdiCamelExtension implements Extension {
         contextQualifiers.addAll(pb.getBean().getQualifiers());
     }
 
-    private void cdiCamelFactoryProducers(@Observes AfterBeanDiscovery abd, BeanManager manager) {
-        // Decorate the CDI Camel factory beans with the metadata gathered during the bean discovery phase
+    private void afterBeanDiscovery(@Observes AfterBeanDiscovery abd, BeanManager manager) {
+        // Add @ContextName Camel context beans if missing
+        long contexts = manager.getBeans(CamelContext.class, AnyLiteral.INSTANCE).size();
+        contexts += manager.getBeans(RoutesBuilder.class, AnyLiteral.INSTANCE).stream()
+            .flatMap(bean -> bean.getQualifiers().stream())
+            .filter(qualifier -> ContextName.class.equals(qualifier.annotationType()))
+            .filter(name -> manager.getBeans(CamelContext.class, name).isEmpty())
+            .peek(contextQualifiers::add)
+            .map(name -> camelContextBean(manager, AnyLiteral.INSTANCE, name))
+            .peek(abd::addBean)
+            .count();
+        // Add a default Camel context bean if any
+        if (contexts == 0)
+            abd.addBean(camelContextBean(manager, AnyLiteral.INSTANCE, DefaultLiteral.INSTANCE));
+
+        // Update the CDI Camel factory beans
         Bean<CdiCamelFactory> bean = (Bean<CdiCamelFactory>) manager.resolve(manager.getBeans(CdiCamelFactory.class));
         for (AnnotatedMethod<? super CdiCamelFactory> am : abd.getAnnotatedType(CdiCamelFactory.class, null).getMethods()) {
             if (!am.isAnnotationPresent(Produces.class))
@@ -193,34 +207,17 @@ public class CdiCamelExtension implements Extension {
                 abd.addBean(manager.createBean(new BeanAttributesDecorator<>(manager.createBeanAttributes(am), CdiSpiHelper.excludeElementOfTypes(contextQualifiers, Any.class, Default.class, Named.class)), CdiCamelFactory.class, manager.getProducerFactory(am, bean)));
             }
         }
-    }
 
-    private void addCamelContextBeans(@Observes AfterBeanDiscovery abd, BeanManager manager) {
-        long contexts = manager.getBeans(CamelContext.class, AnyLiteral.INSTANCE).size();
-
-        contexts += manager.getBeans(RoutesBuilder.class, AnyLiteral.INSTANCE).stream()
-            .flatMap(bean -> bean.getQualifiers().stream())
-            .filter(qualifier -> ContextName.class.equals(qualifier.annotationType()))
-            .filter(name -> manager.getBeans(CamelContext.class, name).isEmpty())
-            .map(name -> addCamelContextBean(abd, manager, AnyLiteral.INSTANCE, name))
-            .count();
-
-        if (contexts == 0)
-            addCamelContextBean(abd, manager, AnyLiteral.INSTANCE, DefaultLiteral.INSTANCE);
-    }
-
-    private Bean<?> addCamelContextBean(AfterBeanDiscovery abd, BeanManager manager, Annotation... qualifiers) {
-        CamelContextBeanAnnotated annotated = new CamelContextBeanAnnotated(manager, qualifiers);
-        Bean<?> context = manager.createBean(new CamelContextBeanAttributes(annotated), DefaultCamelContext.class, (InjectionTargetFactory<DefaultCamelContext>) bean -> environment.camelContextInjectionTarget(new CamelContextDefaultProducer(), annotated, manager));
-        abd.addBean(context);
-        return context;
-    }
-
-    private void addCdiEventObserverMethods(@Observes AfterBeanDiscovery abd) {
+        // Add CDI event endpoint observer methods
         cdiEventEndpoints.values().forEach(abd::addObserverMethod);
     }
 
-    private void createCamelContexts(@Observes AfterDeploymentValidation adv, BeanManager manager) {
+    private Bean<?> camelContextBean(BeanManager manager, Annotation... qualifiers) {
+        CamelContextBeanAnnotated annotated = new CamelContextBeanAnnotated(manager, qualifiers);
+        return manager.createBean(new CamelContextBeanAttributes(annotated), DefaultCamelContext.class, (InjectionTargetFactory<DefaultCamelContext>) bean -> environment.camelContextInjectionTarget(new CamelContextDefaultProducer(), annotated, manager));
+    }
+
+    private void afterDeploymentValidation(@Observes AfterDeploymentValidation adv, BeanManager manager) {
         Collection<CamelContext> contexts = new ArrayList<>();
         for (Bean<?> context : manager.getBeans(CamelContext.class, AnyLiteral.INSTANCE))
             contexts.add(BeanManagerHelper.getReference(manager, CamelContext.class, context));
