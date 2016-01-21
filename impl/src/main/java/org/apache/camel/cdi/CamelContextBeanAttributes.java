@@ -69,4 +69,9 @@ final class CamelContextBeanAttributes implements BeanAttributes<DefaultCamelCon
     public boolean isAlternative() {
         return false;
     }
+
+    @Override
+    public String toString() {
+        return "Default Camel context bean with qualifiers " + getQualifiers();
+    }
 }
