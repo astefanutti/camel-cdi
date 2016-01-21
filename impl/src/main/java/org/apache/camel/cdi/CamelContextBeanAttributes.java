@@ -20,12 +20,9 @@ import org.apache.camel.impl.DefaultCamelContext;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.spi.BeanAttributes;
-import javax.enterprise.inject.spi.BeanManager;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 final class CamelContextBeanAttributes implements BeanAttributes<DefaultCamelContext> {
@@ -34,9 +31,9 @@ final class CamelContextBeanAttributes implements BeanAttributes<DefaultCamelCon
 
     private final Set<Type> types;
 
-    CamelContextBeanAttributes(BeanManager manager, Annotation... qualifiers) {
-        this.qualifiers = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(qualifiers)));
-        this.types = Collections.unmodifiableSet(manager.createAnnotatedType(DefaultCamelContext.class).getTypeClosure());
+    CamelContextBeanAttributes(CamelContextBeanAnnotated annotated) {
+        this.qualifiers = annotated.getAnnotations();
+        this.types = annotated.getTypeClosure();
     }
 
     @Override

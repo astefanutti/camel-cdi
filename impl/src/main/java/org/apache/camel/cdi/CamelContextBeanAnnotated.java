@@ -16,41 +16,46 @@
  */
 package org.apache.camel.cdi;
 
+import org.apache.camel.impl.DefaultCamelContext;
+
 import javax.enterprise.inject.spi.Annotated;
-import javax.enterprise.inject.spi.BeanAttributes;
+import javax.enterprise.inject.spi.BeanManager;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
-final class BeanAttributesAnnotatedAdapter<T> implements Annotated {
+final class CamelContextBeanAnnotated implements Annotated {
 
-    private final BeanAttributes<T> delegate;
+    private final Set<Type> types;
 
-    private final Class<T> type;
+    private final Set<Annotation> annotations;
 
-    BeanAttributesAnnotatedAdapter(BeanAttributes<T> delegate, Class<T> type) {
-        this.delegate = delegate;
-        this.type = type;
+    CamelContextBeanAnnotated(BeanManager manager, Annotation... annotations) {
+        this.types = Collections.unmodifiableSet(manager.createAnnotatedType(DefaultCamelContext.class).getTypeClosure());
+        this.annotations = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(annotations)));
     }
 
     @Override
     public Type getBaseType() {
-        return type;
+        return DefaultCamelContext.class;
     }
 
     @Override
     public Set<Type> getTypeClosure() {
-        return delegate.getTypes();
+        return types;
     }
 
     @Override
     public <U extends Annotation> U getAnnotation(Class<U> annotationType) {
-        return CdiSpiHelper.getFirstElementOfType(delegate.getQualifiers(), annotationType);
+        return CdiSpiHelper.getFirstElementOfType(getAnnotations(), annotationType);
     }
 
     @Override
     public Set<Annotation> getAnnotations() {
-        return delegate.getQualifiers();
+        return annotations;
     }
 
     @Override

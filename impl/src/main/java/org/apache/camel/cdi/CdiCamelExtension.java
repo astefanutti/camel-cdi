@@ -210,8 +210,8 @@ public class CdiCamelExtension implements Extension {
     }
 
     private Bean<?> addCamelContextBean(AfterBeanDiscovery abd, BeanManager manager, Annotation... qualifiers) {
-        CamelContextBeanAttributes attributes = new CamelContextBeanAttributes(manager, qualifiers);
-        Bean<?> context = manager.createBean(attributes, DefaultCamelContext.class, (InjectionTargetFactory<DefaultCamelContext>) bean -> environment.camelContextInjectionTarget(new CamelContextDefaultProducer(), new BeanAttributesAnnotatedAdapter<>(attributes, DefaultCamelContext.class), manager));
+        CamelContextBeanAnnotated annotated = new CamelContextBeanAnnotated(manager, qualifiers);
+        Bean<?> context = manager.createBean(new CamelContextBeanAttributes(annotated), DefaultCamelContext.class, (InjectionTargetFactory<DefaultCamelContext>) bean -> environment.camelContextInjectionTarget(new CamelContextDefaultProducer(), annotated, manager));
         abd.addBean(context);
         return context;
     }
