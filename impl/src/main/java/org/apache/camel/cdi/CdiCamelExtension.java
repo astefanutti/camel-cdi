@@ -16,7 +16,8 @@
  */
 package org.apache.camel.cdi;
 
-import org.apache.camel.BeanInject;
+import
+    org.apache.camel.BeanInject;
 import org.apache.camel.CamelContext;
 import org.apache.camel.CamelContextAware;
 import org.apache.camel.Consume;
@@ -70,6 +71,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.newSetFromMap;
 
@@ -177,19 +179,23 @@ public class CdiCamelExtension implements Extension {
     }
 
     private void afterBeanDiscovery(@Observes AfterBeanDiscovery abd, BeanManager manager) {
-        // Add @ContextName Camel context beans if missing
-        long contexts = manager.getBeans(CamelContext.class, AnyLiteral.INSTANCE).size();
-        contexts += manager.getBeans(RoutesBuilder.class, AnyLiteral.INSTANCE).stream()
+        // Add Camel context beans
+        Set<Annotation> names = manager.getBeans(RoutesBuilder.class, AnyLiteral.INSTANCE).stream()
             .flatMap(bean -> bean.getQualifiers().stream())
             .filter(qualifier -> ContextName.class.equals(qualifier.annotationType()))
-            .distinct()
             .filter(name -> manager.getBeans(CamelContext.class, name).isEmpty())
             .peek(contextQualifiers::add)
-            .map(name -> camelContextBean(manager, AnyLiteral.INSTANCE, name))
-            .peek(abd::addBean)
-            .count();
-        // Add a default Camel context bean if any
-        if (contexts == 0)
+            .collect(Collectors.toSet());
+        if (names.size() == 1)
+            // Add @ContextName and @Default Camel context bean if only one
+            abd.addBean(camelContextBean(manager, AnyLiteral.INSTANCE, DefaultLiteral.INSTANCE, names.iterator().next()));
+        else
+            // Add missing @ContextName Camel context beans
+            names.stream()
+                .map(name -> camelContextBean(manager, AnyLiteral.INSTANCE, name))
+                .forEach(abd::addBean);
+        // Add @Default Camel context bean if any
+        if (contextQualifiers.size() == 0)
             abd.addBean(camelContextBean(manager, AnyLiteral.INSTANCE, DefaultLiteral.INSTANCE));
 
         // Update the CDI Camel factory beans
