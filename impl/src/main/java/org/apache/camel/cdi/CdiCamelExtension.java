@@ -16,8 +16,7 @@
  */
 package org.apache.camel.cdi;
 
-import
-    org.apache.camel.BeanInject;
+import org.apache.camel.BeanInject;
 import org.apache.camel.CamelContext;
 import org.apache.camel.CamelContextAware;
 import org.apache.camel.Consume;
@@ -64,16 +63,19 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EventObject;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Collections.newSetFromMap;
+import static org.apache.camel.cdi.BeanManagerHelper.getReferencesByType;
 
 public class CdiCamelExtension implements Extension {
 
@@ -199,6 +201,9 @@ public class CdiCamelExtension implements Extension {
             abd.addBean(camelContextBean(manager, AnyLiteral.INSTANCE, DefaultLiteral.INSTANCE));
 
         // Update the CDI Camel factory beans
+        Set<Annotation> producerQualifiers = contextQualifiers.stream()
+            .filter(qualifier -> !Arrays.asList(Any.class, Default.class, Named.class).contains(qualifier.annotationType()))
+            .collect(Collectors.toSet());
         Bean<CdiCamelFactory> bean = (Bean<CdiCamelFactory>) manager.resolve(manager.getBeans(CdiCamelFactory.class));
         for (AnnotatedMethod<? super CdiCamelFactory> am : abd.getAnnotatedType(CdiCamelFactory.class, null).getMethods()) {
             if (!am.isAnnotationPresent(Produces.class))
@@ -211,7 +216,7 @@ public class CdiCamelExtension implements Extension {
                     qualifiers.addAll(ip.getQualifiers());
                 abd.addBean(manager.createBean(new BeanAttributesDecorator<>(manager.createBeanAttributes(am), qualifiers), CdiCamelFactory.class, manager.getProducerFactory(am, bean)));
             } else if (Endpoint.class.isAssignableFrom(type) || ProducerTemplate.class.isAssignableFrom(type)) {
-                abd.addBean(manager.createBean(new BeanAttributesDecorator<>(manager.createBeanAttributes(am), CdiSpiHelper.excludeElementOfTypes(contextQualifiers, Any.class, Default.class, Named.class)), CdiCamelFactory.class, manager.getProducerFactory(am, bean)));
+                abd.addBean(manager.createBean(new BeanAttributesDecorator<>(manager.createBeanAttributes(am), producerQualifiers), CdiCamelFactory.class, manager.getProducerFactory(am, bean)));
             }
         }
 
@@ -225,7 +230,7 @@ public class CdiCamelExtension implements Extension {
     }
 
     private void afterDeploymentValidation(@Observes AfterDeploymentValidation adv, BeanManager manager) {
-        Collection<CamelContext> contexts = new ArrayList<>();
+        List<CamelContext> contexts = new ArrayList<>();
         for (Bean<?> context : manager.getBeans(CamelContext.class, AnyLiteral.INSTANCE))
             contexts.add(BeanManagerHelper.getReference(manager, CamelContext.class, context));
 
@@ -250,10 +255,8 @@ public class CdiCamelExtension implements Extension {
         if (deploymentException)
             return;
 
-        // Trigger eager beans instantiation
-        for (AnnotatedType<?> type : eagerBeans)
-            // Calling toString is necessary to force the initialization of normal-scoped beans
-            BeanManagerHelper.getReferencesByType(manager, type.getJavaClass(), AnyLiteral.INSTANCE).toString();
+        // Trigger eager beans instantiation (calling toString is necessary to force the initialization of normal-scoped beans)
+        eagerBeans.forEach(type -> getReferencesByType(manager, type.getJavaClass(), AnyLiteral.INSTANCE).toString());
 
         // Start Camel contexts
         for (CamelContext context : contexts) {
@@ -268,9 +271,7 @@ public class CdiCamelExtension implements Extension {
         }
 
         // Clean-up
-        converters.clear();
-        camelBeans.clear();
-        eagerBeans.clear();
+        Stream.of(converters, camelBeans, eagerBeans).forEach(Set::clear);
     }
 
     private boolean addRouteToContext(Bean<?> routeBean, Bean<?> contextBean, BeanManager manager, AfterDeploymentValidation adv) {

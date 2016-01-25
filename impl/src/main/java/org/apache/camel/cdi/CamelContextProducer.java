@@ -72,7 +72,7 @@ final class CamelContextProducer<T extends CamelContext> extends DelegateProduce
 
         // Add event notifier if at least one observer is present
         Set<Annotation> qualifiers = new HashSet<>(annotated.getAnnotations());
-        qualifiers.removeIf(annotation -> !manager.isQualifier(annotation.annotationType()) || Named.class.equals(annotation.annotationType()));
+        qualifiers.removeIf(q -> !manager.isQualifier(q.annotationType()) || Named.class.equals(q.annotationType()));
         qualifiers.add(AnyLiteral.INSTANCE);
         if (qualifiers.size() == 1)
             qualifiers.add(DefaultLiteral.INSTANCE);

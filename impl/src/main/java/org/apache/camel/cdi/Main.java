@@ -24,10 +24,10 @@ import org.apache.deltaspike.cdise.api.CdiContainerLoader;
 
 import javax.enterprise.inject.UnsatisfiedResolutionException;
 import javax.enterprise.inject.Vetoed;
-import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Camel CDI boot integration. Allows Camel and CDI to be booted up on the command line as a JVM process.
@@ -63,24 +63,17 @@ public class Main extends MainSupport {
 
     @Override
     protected ProducerTemplate findOrCreateCamelTemplate() {
-        BeanManager manager = cdiContainer.getBeanManager();
-        Bean<?> bean = manager.resolve(manager.getBeans(CamelContext.class));
-        if (bean == null)
-            throw new UnsatisfiedResolutionException("No default Camel context is deployed, cannot create default ProducerTemplate!");
-
-        CamelContext context = (CamelContext) manager.getReference(bean, CamelContext.class, manager.createCreationalContext(bean));
-        return context.createProducerTemplate();
+        return BeanManagerHelper.getReferenceByType(cdiContainer.getBeanManager(), CamelContext.class)
+            .orElseThrow(() -> new UnsatisfiedResolutionException("No default Camel context is deployed, cannot create default ProducerTemplate!"))
+            .createProducerTemplate();
     }
 
     @Override
     protected Map<String, CamelContext> getCamelContextMap() {
         BeanManager manager = cdiContainer.getBeanManager();
-        Map<String, CamelContext> answer = new HashMap<>();
-        for (Bean<?> bean : manager.getBeans(CamelContext.class, AnyLiteral.INSTANCE)) {
-            CamelContext context = (CamelContext) manager.getReference(bean, CamelContext.class, manager.createCreationalContext(bean));
-            answer.put(context.getName(), context);
-        }
-        return answer;
+        return manager.getBeans(CamelContext.class, AnyLiteral.INSTANCE).stream()
+            .map(bean -> BeanManagerHelper.getReference(manager, CamelContext.class, bean))
+            .collect(Collectors.toMap(CamelContext::getName, Function.identity()));
     }
 
     @Override

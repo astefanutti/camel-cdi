@@ -49,17 +49,24 @@ final class CamelContextBeanAnnotated implements Annotated {
     }
 
     @Override
-    public <U extends Annotation> U getAnnotation(Class<U> annotationType) {
-        return CdiSpiHelper.getFirstElementOfType(getAnnotations(), annotationType);
-    }
-
-    @Override
     public Set<Annotation> getAnnotations() {
         return annotations;
     }
 
     @Override
-    public boolean isAnnotationPresent(Class<? extends Annotation> annotationType) {
-        return getAnnotation(annotationType) != null;
+    public <U extends Annotation> U getAnnotation(Class<U> type) {
+        return annotations.stream()
+            .filter(a -> a.annotationType().equals(type))
+            .findAny()
+            .map(type::cast)
+            .orElse(null);
+    }
+
+    @Override
+    public boolean isAnnotationPresent(Class<? extends Annotation> type) {
+        return annotations.stream()
+            .filter(a -> a.annotationType().equals(type))
+            .findAny()
+            .isPresent();
     }
 }

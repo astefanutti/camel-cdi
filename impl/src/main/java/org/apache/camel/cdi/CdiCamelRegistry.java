@@ -25,9 +25,9 @@ import org.slf4j.LoggerFactory;
 import javax.enterprise.inject.Vetoed;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * The {@link Registry} used by Camel to perform lookup into the CDI {@link javax.enterprise.inject.spi.BeanManager}.
@@ -49,8 +49,8 @@ final class CdiCamelRegistry implements Registry {
         logger.trace("Looking up bean with name [{}]", name);
         // Work-around for WELD-2089
         if ("properties".equals(name) && findByTypeWithName(PropertiesComponent.class).containsKey("properties"))
-            return BeanManagerHelper.getReferenceByName(manager, name, PropertiesComponent.class);
-        return BeanManagerHelper.getReferenceByName(manager, name, Object.class);
+            return BeanManagerHelper.getReferenceByName(manager, name, PropertiesComponent.class).orElse(null);
+        return BeanManagerHelper.getReferenceByName(manager, name, Object.class).orElse(null);
     }
 
     @Override
@@ -58,19 +58,16 @@ final class CdiCamelRegistry implements Registry {
         ObjectHelper.notEmpty(name, "name");
         ObjectHelper.notNull(type, "type");
         logger.trace("Looking up bean with name [{}] of type [{}]", name, type);
-        return BeanManagerHelper.getReferenceByName(manager, name, type);
+        return BeanManagerHelper.getReferenceByName(manager, name, type).orElse(null);
     }
 
     @Override
     public <T> Map<String, T> findByTypeWithName(Class<T> type) {
         ObjectHelper.notNull(type, "type");
         logger.trace("Looking up named beans of type [{}]", type);
-        Map<String, T> references = new HashMap<>();
-        for (Bean<?> bean : manager.getBeans(type, AnyLiteral.INSTANCE))
-            if (bean.getName() != null)
-                references.put(bean.getName(), BeanManagerHelper.getReference(manager, type, bean));
-
-        return references;
+        return manager.getBeans(type, AnyLiteral.INSTANCE).stream()
+            .filter(bean -> bean.getName() != null)
+            .collect(Collectors.toMap(Bean::getName, bean -> BeanManagerHelper.getReference(manager, type, bean)));
     }
 
     @Override

@@ -16,52 +16,16 @@
  */
 package org.apache.camel.cdi;
 
-import org.apache.camel.util.ObjectHelper;
-
 import javax.enterprise.inject.Vetoed;
-import javax.enterprise.inject.spi.InjectionPoint;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 @Vetoed
 final class CdiSpiHelper {
-
-    static <T extends Annotation> T getQualifierByType(InjectionPoint ip, Class<T> type) {
-        return getFirstElementOfType(ip.getQualifiers(), type);
-    }
-
-    static <E, T extends E> T getFirstElementOfType(Collection<E> collection, Class<T> type) {
-        for (E item : collection)
-            if ((item != null) && type.isAssignableFrom(item.getClass()))
-                return ObjectHelper.cast(type, item);
-
-        return null;
-    }
-
-    @SafeVarargs
-    static <T> Set<T> excludeElementOfTypes(Set<T> annotations, Class<? extends T>... exclusions) {
-        Set<T> set = new HashSet<>();
-        for (T annotation : annotations) {
-            boolean exclude = false;
-            for (Class<? extends T> exclusion : exclusions) {
-                if (exclusion.isAssignableFrom(annotation.getClass())) {
-                    exclude = true;
-                    break;
-                }
-            }
-            if (!exclude)
-                set.add(annotation);
-        }
-        return set;
-    }
 
     static Class<?> getRawType(Type type) {
         if (type instanceof Class<?>) {

@@ -119,8 +119,7 @@ public final class CdiEventEndpoint<T> extends DefaultEndpoint {
 
     void notify(T t) {
         synchronized (consumers) {
-            for (CdiEventConsumer<T> consumer : consumers)
-                consumer.notify(t);
+            consumers.forEach(consumer -> consumer.notify(t));
         }
     }
 }
