@@ -1,8 +1,7 @@
 package org.apache.camel.cdi.test;
 
-
-import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
 import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
@@ -11,8 +10,8 @@ import org.junit.runners.model.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.allOf;
-import static org.hamcrest.CoreMatchers.anyOf;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertThat;
 
@@ -60,7 +59,7 @@ public final class ExpectedDeploymentException implements TestRule {
     }
 
     public ExpectedDeploymentException expect(Class<? extends Throwable> type) {
-        exceptions.add(CoreMatchers.<Throwable>instanceOf(type));
+        exceptions.add(Matchers.instanceOf(type));
         return this;
     }
 
