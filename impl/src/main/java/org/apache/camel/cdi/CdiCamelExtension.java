@@ -203,24 +203,17 @@ public class CdiCamelExtension implements Extension {
             abd.addBean(camelContextBean(manager, ANY, DEFAULT));
 
         // Update the CDI Camel factory beans
-        Set<Annotation> producerQualifiers = contextQualifiers.stream()
-            .filter(qualifier -> !Arrays.asList(Any.class, Default.class, Named.class).contains(qualifier.annotationType()))
+        Set<Annotation> endpointQualifiers = cdiEventEndpoints.keySet().stream()
+            .flatMap(ip -> ip.getQualifiers().stream())
             .collect(Collectors.toSet());
-        Bean<CdiCamelFactory> bean = (Bean<CdiCamelFactory>) manager.resolve(manager.getBeans(CdiCamelFactory.class));
-        for (AnnotatedMethod<? super CdiCamelFactory> am : abd.getAnnotatedType(CdiCamelFactory.class, null).getMethods()) {
-            if (!am.isAnnotationPresent(Produces.class))
-                continue;
-            // TODO: would be more correct to add a bean for each Camel context bean
-            Class<?> type = CdiSpiHelper.getRawType(am.getBaseType());
-            if (CdiEventEndpoint.class.equals(type)) {
-                Set<Annotation> qualifiers = new HashSet<>();
-                for (InjectionPoint ip : cdiEventEndpoints.keySet())
-                    qualifiers.addAll(ip.getQualifiers());
-                abd.addBean(manager.createBean(new BeanAttributesDecorator<>(manager.createBeanAttributes(am), qualifiers), CdiCamelFactory.class, manager.getProducerFactory(am, bean)));
-            } else if (Endpoint.class.isAssignableFrom(type) || ProducerTemplate.class.isAssignableFrom(type)) {
-                abd.addBean(manager.createBean(new BeanAttributesDecorator<>(manager.createBeanAttributes(am), producerQualifiers), CdiCamelFactory.class, manager.getProducerFactory(am, bean)));
-            }
-        }
+        Set<Annotation> producerQualifiers = contextQualifiers.stream()
+            .filter(q -> !Arrays.asList(Any.class, Default.class, Named.class).contains(q.annotationType()))
+            .collect(Collectors.toSet());
+        // TODO: would be more correct to add a bean for each Camel context bean
+        abd.getAnnotatedType(CdiCamelFactory.class, null).getMethods().stream()
+            .filter(am -> am.isAnnotationPresent(Produces.class) && (am.getTypeClosure().contains(Endpoint.class) || am.getTypeClosure().contains(ProducerTemplate.class)))
+            .map(am -> manager.createBean(new BeanAttributesDecorator<>(manager.createBeanAttributes(am), CdiEventEndpoint.class.equals(CdiSpiHelper.getRawType(am.getBaseType())) ? endpointQualifiers : producerQualifiers), CdiCamelFactory.class, manager.getProducerFactory(am, (Bean<CdiCamelFactory>) manager.resolve(manager.getBeans(CdiCamelFactory.class)))))
+            .forEach(abd::addBean);
 
         // Add CDI event endpoint observer methods
         cdiEventEndpoints.values().forEach(abd::addObserverMethod);
