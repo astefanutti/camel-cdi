@@ -38,6 +38,9 @@ import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.apache.camel.cdi.AnyLiteral.ANY;
+import static org.apache.camel.cdi.DefaultLiteral.DEFAULT;
+
 final class CamelContextProducer<T extends CamelContext> extends DelegateProducer<T> {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -73,9 +76,9 @@ final class CamelContextProducer<T extends CamelContext> extends DelegateProduce
         // Add event notifier if at least one observer is present
         Set<Annotation> qualifiers = new HashSet<>(annotated.getAnnotations());
         qualifiers.removeIf(q -> !manager.isQualifier(q.annotationType()) || Named.class.equals(q.annotationType()));
-        qualifiers.add(AnyLiteral.INSTANCE);
+        qualifiers.add(ANY);
         if (qualifiers.size() == 1)
-            qualifiers.add(DefaultLiteral.INSTANCE);
+            qualifiers.add(DEFAULT);
         qualifiers.retainAll(manager.getExtension(CdiCamelExtension.class).getObserverEvents());
         if (!qualifiers.isEmpty())
             context.getManagementStrategy().addEventNotifier(new CdiEventNotifier(manager, qualifiers));

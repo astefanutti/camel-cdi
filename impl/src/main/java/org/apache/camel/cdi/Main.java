@@ -29,6 +29,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static org.apache.camel.cdi.AnyLiteral.ANY;
+
 /**
  * Camel CDI boot integration. Allows Camel and CDI to be booted up on the command line as a JVM process.
  * See http://camel.apache.org/camel-boot.html.
@@ -71,7 +73,7 @@ public class Main extends MainSupport {
     @Override
     protected Map<String, CamelContext> getCamelContextMap() {
         BeanManager manager = cdiContainer.getBeanManager();
-        return manager.getBeans(CamelContext.class, AnyLiteral.INSTANCE).stream()
+        return manager.getBeans(CamelContext.class, ANY).stream()
             .map(bean -> BeanManagerHelper.getReference(manager, CamelContext.class, bean))
             .collect(Collectors.toMap(CamelContext::getName, Function.identity()));
     }

@@ -29,6 +29,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.apache.camel.cdi.AnyLiteral.ANY;
+
 /**
  * The {@link Registry} used by Camel to perform lookup into the CDI {@link javax.enterprise.inject.spi.BeanManager}.
  */
@@ -65,7 +67,7 @@ final class CdiCamelRegistry implements Registry {
     public <T> Map<String, T> findByTypeWithName(Class<T> type) {
         ObjectHelper.notNull(type, "type");
         logger.trace("Looking up named beans of type [{}]", type);
-        return manager.getBeans(type, AnyLiteral.INSTANCE).stream()
+        return manager.getBeans(type, ANY).stream()
             .filter(bean -> bean.getName() != null)
             .collect(Collectors.toMap(Bean::getName, bean -> BeanManagerHelper.getReference(manager, type, bean)));
     }
@@ -74,7 +76,7 @@ final class CdiCamelRegistry implements Registry {
     public <T> Set<T> findByType(Class<T> type) {
         ObjectHelper.notNull(type, "type");
         logger.trace("Looking up beans of type [{}]", type);
-        return BeanManagerHelper.getReferencesByType(manager, type, AnyLiteral.INSTANCE);
+        return BeanManagerHelper.getReferencesByType(manager, type, ANY);
     }
 
     @Override

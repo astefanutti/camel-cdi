@@ -43,6 +43,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import static org.apache.camel.cdi.DefaultLiteral.DEFAULT;
+
 final class CdiCamelFactory {
 
     @Produces
@@ -140,8 +142,8 @@ final class CdiCamelFactory {
         // TODO: understand why Weld / OSGi throws an IAE when the extension gets directly injected directly. In the meantime, retrieving the extension from the bean manager works as expected.
         Collection<Annotation> qualifiers = new HashSet<>(ip.getQualifiers());
         qualifiers.retainAll(manager.getExtension(CdiCamelExtension.class).getContextQualifiers());
-        if (qualifiers.isEmpty() && !instance.select(DefaultLiteral.INSTANCE).isUnsatisfied())
-            return instance.select(DefaultLiteral.INSTANCE).get();
+        if (qualifiers.isEmpty() && !instance.select(DEFAULT).isUnsatisfied())
+            return instance.select(DEFAULT).get();
         return instance.select(qualifiers.toArray(new Annotation[qualifiers.size()])).get();
     }
 

@@ -25,7 +25,7 @@ final class DefaultLiteral extends AnnotationLiteral<Default> implements Default
 
     private static final long serialVersionUID = 1L;
 
-    static final Default INSTANCE = new DefaultLiteral();
+    static final Default DEFAULT = new DefaultLiteral();
 
     private DefaultLiteral() {
     }

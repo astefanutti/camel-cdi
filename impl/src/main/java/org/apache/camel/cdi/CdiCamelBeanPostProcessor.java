@@ -33,6 +33,8 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.apache.camel.cdi.DefaultLiteral.DEFAULT;
+
 @Vetoed
 final class CdiCamelBeanPostProcessor extends DefaultCamelBeanPostProcessor {
 
@@ -96,7 +98,7 @@ final class CdiCamelBeanPostProcessor extends DefaultCamelBeanPostProcessor {
 
     private CamelContext getOrLookupCamelContext(String contextName) {
         // TODO: proper support for custom context qualifiers
-        return BeanManagerHelper.getReferenceByType(manager, CamelContext.class, contextName.isEmpty() ? DefaultLiteral.INSTANCE : new ContextName.Literal(contextName)).orElseThrow(()-> new UnsatisfiedResolutionException("No Camel context with name [" + contextName + "] is deployed!"));
+        return BeanManagerHelper.getReferenceByType(manager, CamelContext.class, contextName.isEmpty() ? DEFAULT : new ContextName.Literal(contextName)).orElseThrow(()-> new UnsatisfiedResolutionException("No Camel context with name [" + contextName + "] is deployed!"));
     }
 
     @Override

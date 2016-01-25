@@ -75,7 +75,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Collections.newSetFromMap;
+import static org.apache.camel.cdi.AnyLiteral.ANY;
 import static org.apache.camel.cdi.BeanManagerHelper.getReferencesByType;
+import static org.apache.camel.cdi.DefaultLiteral.DEFAULT;
 
 public class CdiCamelExtension implements Extension {
 
@@ -165,7 +167,7 @@ public class CdiCamelExtension implements Extension {
         Type type = pom.getObserverMethod().getObservedType();
         // Camel events are raw types
         if (type instanceof Class && Class.class.cast(type).getPackage().equals(AbstractExchangeEvent.class.getPackage()))
-            eventQualifiers.addAll(pom.getObserverMethod().getObservedQualifiers().isEmpty() ? Collections.singleton(AnyLiteral.INSTANCE) : pom.getObserverMethod().getObservedQualifiers());
+            eventQualifiers.addAll(pom.getObserverMethod().getObservedQualifiers().isEmpty() ? Collections.singleton(ANY) : pom.getObserverMethod().getObservedQualifiers());
     }
 
     private <T extends CamelContext> void camelContextBeans(@Observes ProcessBean<T> pb) {
@@ -182,7 +184,7 @@ public class CdiCamelExtension implements Extension {
 
     private void afterBeanDiscovery(@Observes AfterBeanDiscovery abd, BeanManager manager) {
         // Add Camel context beans
-        Set<Annotation> names = manager.getBeans(RoutesBuilder.class, AnyLiteral.INSTANCE).stream()
+        Set<Annotation> names = manager.getBeans(RoutesBuilder.class, ANY).stream()
             .flatMap(bean -> bean.getQualifiers().stream())
             .filter(qualifier -> ContextName.class.equals(qualifier.annotationType()))
             .filter(name -> manager.getBeans(CamelContext.class, name).isEmpty())
@@ -190,15 +192,15 @@ public class CdiCamelExtension implements Extension {
             .collect(Collectors.toSet());
         if (names.size() == 1)
             // Add @ContextName and @Default Camel context bean if only one
-            abd.addBean(camelContextBean(manager, AnyLiteral.INSTANCE, DefaultLiteral.INSTANCE, names.iterator().next()));
+            abd.addBean(camelContextBean(manager, ANY, DEFAULT, names.iterator().next()));
         else
             // Add missing @ContextName Camel context beans
             names.stream()
-                .map(name -> camelContextBean(manager, AnyLiteral.INSTANCE, name))
+                .map(name -> camelContextBean(manager, ANY, name))
                 .forEach(abd::addBean);
         // Add @Default Camel context bean if any
         if (contextQualifiers.size() == 0)
-            abd.addBean(camelContextBean(manager, AnyLiteral.INSTANCE, DefaultLiteral.INSTANCE));
+            abd.addBean(camelContextBean(manager, ANY, DEFAULT));
 
         // Update the CDI Camel factory beans
         Set<Annotation> producerQualifiers = contextQualifiers.stream()
@@ -231,7 +233,7 @@ public class CdiCamelExtension implements Extension {
 
     private void afterDeploymentValidation(@Observes AfterDeploymentValidation adv, BeanManager manager) {
         List<CamelContext> contexts = new ArrayList<>();
-        for (Bean<?> context : manager.getBeans(CamelContext.class, AnyLiteral.INSTANCE))
+        for (Bean<?> context : manager.getBeans(CamelContext.class, ANY))
             contexts.add(BeanManagerHelper.getReference(manager, CamelContext.class, context));
 
         // Add type converters to Camel contexts
@@ -242,9 +244,9 @@ public class CdiCamelExtension implements Extension {
 
         // Add routes to Camel contexts
         boolean deploymentException = false;
-        Set<Bean<?>> routes = new HashSet<>(manager.getBeans(RoutesBuilder.class, AnyLiteral.INSTANCE));
-        routes.addAll(manager.getBeans(RouteContainer.class, AnyLiteral.INSTANCE));
-        for (Bean<?> context : manager.getBeans(CamelContext.class, AnyLiteral.INSTANCE))
+        Set<Bean<?>> routes = new HashSet<>(manager.getBeans(RoutesBuilder.class, ANY));
+        routes.addAll(manager.getBeans(RouteContainer.class, ANY));
+        for (Bean<?> context : manager.getBeans(CamelContext.class, ANY))
             for (Bean<?> route : routes) {
                 Set<Annotation> qualifiers = new HashSet<>(context.getQualifiers());
                 qualifiers.retainAll(route.getQualifiers());
@@ -256,7 +258,7 @@ public class CdiCamelExtension implements Extension {
             return;
 
         // Trigger eager beans instantiation (calling toString is necessary to force the initialization of normal-scoped beans)
-        eagerBeans.forEach(type -> getReferencesByType(manager, type.getJavaClass(), AnyLiteral.INSTANCE).toString());
+        eagerBeans.forEach(type -> getReferencesByType(manager, type.getJavaClass(), ANY).toString());
 
         // Start Camel contexts
         for (CamelContext context : contexts) {

@@ -25,7 +25,7 @@ final class AnyLiteral extends AnnotationLiteral<Any> implements Any {
 
     private static final long serialVersionUID = 1L;
 
-    static final Any INSTANCE = new AnyLiteral();
+    static final Any ANY = new AnyLiteral();
 
     private AnyLiteral() {
     }
