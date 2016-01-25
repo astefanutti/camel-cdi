@@ -56,8 +56,8 @@ final class CamelContextProducer<T extends CamelContext> extends DelegateProduce
     }
 
     @Override
-    public T produce(CreationalContext<T> ctx) {
-        T context = super.produce(ctx);
+    public T produce(CreationalContext<T> cc) {
+        T context = super.produce(cc);
 
         // Do not override the name if it's been already set (in the bean constructor for example)
         if (context.getNameStrategy() instanceof DefaultCamelContextNameStrategy)

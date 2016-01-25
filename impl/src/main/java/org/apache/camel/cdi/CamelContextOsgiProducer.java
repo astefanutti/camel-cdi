@@ -36,8 +36,8 @@ final class CamelContextOsgiProducer<T extends CamelContext> extends DelegatePro
     }
 
     @Override
-    public T produce(CreationalContext<T> ctx) {
-        T context = super.produce(ctx);
+    public T produce(CreationalContext<T> cc) {
+        T context = super.produce(cc);
 
         // Register the context in the OSGi registry
         BundleContext bundle = BundleContextUtils.getBundleContext(getClass());

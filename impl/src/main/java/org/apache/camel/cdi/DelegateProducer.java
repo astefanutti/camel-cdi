@@ -30,8 +30,8 @@ abstract class DelegateProducer<T> implements Producer<T> {
     }
 
     @Override
-    public T produce(CreationalContext<T> ctx) {
-        return delegate.produce(ctx);
+    public T produce(CreationalContext<T> cc) {
+        return delegate.produce(cc);
     }
 
     @Override

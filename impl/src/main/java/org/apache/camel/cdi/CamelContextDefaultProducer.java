@@ -29,12 +29,12 @@ import java.util.Set;
 final class CamelContextDefaultProducer implements InjectionTarget<DefaultCamelContext> {
 
     @Override
-    public DefaultCamelContext produce(CreationalContext<DefaultCamelContext> ctx) {
+    public DefaultCamelContext produce(CreationalContext<DefaultCamelContext> cc) {
         return new DefaultCamelContext();
     }
 
     @Override
-    public void inject(DefaultCamelContext instance, CreationalContext<DefaultCamelContext> ctx) {
+    public void inject(DefaultCamelContext instance, CreationalContext<DefaultCamelContext> cc) {
     }
 
     @Override

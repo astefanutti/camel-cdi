@@ -35,8 +35,8 @@ abstract class DelegateInjectionTarget<T> extends DelegateProducer<T> implements
     }
 
     @Override
-    public void inject(T instance, CreationalContext<T> ctx) {
-        delegate.inject(instance, ctx);
+    public void inject(T instance, CreationalContext<T> cc) {
+        delegate.inject(instance, cc);
     }
 
     @Override
