@@ -41,7 +41,7 @@ final class CamelBeanInjectionTarget<T> extends DelegateInjectionTarget<T> imple
             processor.postProcessBeforeInitialization(instance, instance.getClass().getName());
             processor.postProcessAfterInitialization(instance, instance.getClass().getName());
         } catch (Exception cause) {
-            throw new InjectionException("Camel annotations post processing of [" + delegate + "] failed!", cause);
+            throw new InjectionException("Camel annotations post processing of " + delegate + " failed!", cause);
         }
     }
 }
