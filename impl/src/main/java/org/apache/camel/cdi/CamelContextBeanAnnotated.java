@@ -54,7 +54,7 @@ final class CamelContextBeanAnnotated implements Annotated {
     }
 
     @Override
-    public <U extends Annotation> U getAnnotation(Class<U> type) {
+    public <T extends Annotation> T getAnnotation(Class<T> type) {
         return annotations.stream()
             .filter(a -> a.annotationType().equals(type))
             .findAny()
