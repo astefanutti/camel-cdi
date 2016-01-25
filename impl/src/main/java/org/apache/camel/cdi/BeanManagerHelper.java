@@ -34,13 +34,13 @@ final class BeanManagerHelper {
     }
 
     static <T> Optional<T> getReferenceByName(BeanManager manager, String name, Class<T> type) {
-        return Optional.ofNullable(manager.getBeans(name))
+        return Optional.of(manager.getBeans(name))
             .map(manager::resolve)
             .map(bean -> getReference(manager, type, bean));
     }
 
     static <T> Optional<T> getReferenceByType(BeanManager manager, Class<T> type, Annotation... qualifiers) {
-        return Optional.ofNullable(manager.getBeans(type, qualifiers))
+        return Optional.of(manager.getBeans(type, qualifiers))
             .map(manager::resolve)
             .map(bean -> getReference(manager, type, bean));
     }
