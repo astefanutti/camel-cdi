@@ -36,7 +36,6 @@ import org.junit.runner.RunWith;
 
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
 import java.util.concurrent.TimeUnit;
 
 import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
@@ -85,9 +84,9 @@ public class RouteBuildersWithContextNamesTest {
     }
 
     @Test
-    public void sendMessageToFirstInbound(@Uri(value = "direct:inbound", context = "first")
+    public void sendMessageToFirstInbound(@Uri("direct:inbound") @ContextName("first")
                                           ProducerTemplate inbound,
-                                          @Uri(value = "mock:outbound", context = "first")
+                                          @Uri("mock:outbound") @ContextName("first")
                                           MockEndpoint outbound) throws InterruptedException {
         outbound.expectedMessageCount(1);
         outbound.expectedBodiesReceived("test");

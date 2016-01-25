@@ -46,18 +46,4 @@ public @interface Uri {
      * Returns the <a href="http://camel.apache.org/uris.html">Camel URI</a> of the resource.
      */
     @Nonbinding String value();
-
-    /**
-     * Returns the name of the {@code CamelContext} to use to resolve the Camel resource for this URI.
-     *
-     * @deprecated Use the {@link ContextName} qualifier to specify the name of the {@code CamelContext} instead:
-     * <pre><code>
-     * {@literal @}Inject
-     * {@literal @}ContextName("foo")
-     * {@literal @}Uri("seda:bar")
-     * Endpoint endpoint;
-     * </code></pre>
-     */
-    @Deprecated
-    @Nonbinding String context() default "";
 }

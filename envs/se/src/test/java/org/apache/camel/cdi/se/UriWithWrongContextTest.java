@@ -37,7 +37,10 @@ import org.junit.runner.RunWith;
 import javax.enterprise.inject.spi.DeploymentException;
 import javax.inject.Inject;
 
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.either;
 
 @RunWith(Arquillian.class)
 public class UriWithWrongContextTest {
@@ -56,9 +59,18 @@ public class UriWithWrongContextTest {
     @ClassRule
     public static TestRule exception = ExpectedDeploymentException.none()
         .expect(DeploymentException.class)
-        .expectMessage(containsString("Error adding routes of type [" + UriWithWrongContextRoute.class.getName() + "] to Camel context [first]"))
-        .expectMessage(containsString("Error injecting endpoint annotated with @org.apache.camel.cdi.Uri"))
-        .expectMessage(containsString("No Camel context with name [second] is deployed!"));
+        .expectMessage(
+            either(
+                anyOf(
+                    containsString("Unsatisfied dependencies for type Endpoint with qualifiers @ContextName @Uri"),
+                    containsString("Unsatisfied dependencies for type Endpoint with qualifiers @Uri @ContextName"))
+            ).or(
+                allOf(
+                    containsString("Api type [org.apache.camel.Endpoint] is not found with the qualifiers"),
+                    containsString("Qualifiers: [@org.apache.camel.cdi.Uri(value=direct:inbound),@org.apache.camel.cdi.ContextName(value=second)]")
+                )
+            )
+        );
 
     @Test
     public void test() {
@@ -69,7 +81,8 @@ public class UriWithWrongContextTest {
 class UriWithWrongContextRoute extends RouteBuilder {
 
     @Inject
-    @Uri(value = "direct:inbound", context = "second")
+    @Uri("direct:inbound")
+    @ContextName("second")
     Endpoint inbound;
 
     @Override

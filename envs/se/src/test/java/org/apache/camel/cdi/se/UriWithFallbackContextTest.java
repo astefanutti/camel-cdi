@@ -39,7 +39,7 @@ import java.util.concurrent.TimeUnit;
 import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
 
 @RunWith(Arquillian.class)
-public class UriQualifierWithContextTest {
+public class UriWithFallbackContextTest {
 
     @Deployment
     public static Archive<?> deployment() {
@@ -53,11 +53,13 @@ public class UriQualifierWithContextTest {
     }
 
     @Inject
-    @Uri(value = "mock:outbound", context = "first")
+    // @ContextName("first")
+    @Uri("mock:outbound")
     private MockEndpoint outbound;
 
     @Inject
-    @Uri(value = "direct:inbound", context = "first")
+    // @ContextName("first")
+    @Uri("direct:inbound")
     private ProducerTemplate inbound;
 
     @Test
@@ -75,11 +77,13 @@ public class UriQualifierWithContextTest {
 class UriWithContextRoute extends RouteBuilder {
 
     @Inject
-    @Uri(value = "direct:inbound", context = "first")
+    @ContextName("first")
+    @Uri("direct:inbound")
     Endpoint inbound;
 
     @Inject
-    @Uri(value = "mock:outbound", context = "first")
+    @ContextName("first")
+    @Uri("mock:outbound")
     MockEndpoint outbound;
 
     @Override
