@@ -212,7 +212,7 @@ public class CdiCamelExtension implements Extension {
         // TODO: would be more correct to add a bean for each Camel context bean
         abd.getAnnotatedType(CdiCamelFactory.class, null).getMethods().stream()
             .filter(am -> am.isAnnotationPresent(Produces.class) && (am.getTypeClosure().contains(Endpoint.class) || am.getTypeClosure().contains(ProducerTemplate.class)))
-            .map(am -> manager.createBean(new BeanAttributesDecorator<>(manager.createBeanAttributes(am), CdiEventEndpoint.class.equals(CdiSpiHelper.getRawType(am.getBaseType())) ? endpointQualifiers : producerQualifiers), CdiCamelFactory.class, manager.getProducerFactory(am, (Bean<CdiCamelFactory>) manager.resolve(manager.getBeans(CdiCamelFactory.class)))))
+            .map(am -> camelProducerBean(manager, am, CdiEventEndpoint.class.equals(CdiSpiHelper.getRawType(am.getBaseType())) ? endpointQualifiers : producerQualifiers))
             .forEach(abd::addBean);
 
         // Add CDI event endpoint observer methods
@@ -222,6 +222,10 @@ public class CdiCamelExtension implements Extension {
     private Bean<?> camelContextBean(BeanManager manager, Annotation... qualifiers) {
         CamelContextBeanAnnotated annotated = new CamelContextBeanAnnotated(manager, qualifiers);
         return manager.createBean(new CamelContextBeanAttributes(annotated), DefaultCamelContext.class, (InjectionTargetFactory<DefaultCamelContext>) bean -> environment.camelContextInjectionTarget(new CamelContextDefaultProducer(), annotated, manager));
+    }
+
+    private Bean<?> camelProducerBean(BeanManager manager, AnnotatedMethod<? super CdiCamelFactory> am, Set<Annotation> qualifiers) {
+        return manager.createBean(new BeanAttributesDecorator<>(manager.createBeanAttributes(am), qualifiers), CdiCamelFactory.class, manager.getProducerFactory(am, (Bean<CdiCamelFactory>) manager.resolve(manager.getBeans(CdiCamelFactory.class))));
     }
 
     private void afterDeploymentValidation(@Observes AfterDeploymentValidation adv, BeanManager manager) {
