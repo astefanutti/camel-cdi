@@ -38,12 +38,12 @@ import org.slf4j.LoggerFactory;
     @Override
     protected void doStart() throws Exception {
         super.doStart();
-        endpoint.registerConsumer(this);
+        endpoint.addConsumer(this);
     }
 
     @Override
     protected void doStop() throws Exception {
-        endpoint.unregisterConsumer(this);
+        endpoint.removeConsumer(this);
         super.doStop();
     }
 
