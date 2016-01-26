@@ -43,6 +43,9 @@ public class EventConsumingRoute extends RouteBuilder {
     private CdiEventEndpoint<EventPayload<Integer>> integerPayloadCdiEventEndpoint;
 
     @Inject
+    private CdiEventEndpoint<String[]> stringArrayCdiEventEndpoint;
+
+    @Inject
     @FooQualifier
     private CdiEventEndpoint<Long> fooQualifierCdiEventEndpoint;
 
@@ -59,6 +62,8 @@ public class EventConsumingRoute extends RouteBuilder {
         from(stringPayloadCdiEventEndpoint).to("mock:consumeStringPayload");
 
         from(integerPayloadCdiEventEndpoint).to("mock:consumeIntegerPayload");
+
+        from(stringArrayCdiEventEndpoint).to("mock:consumeStringArray");
 
         from(fooQualifierCdiEventEndpoint).to("mock:consumeFooQualifier");
 

@@ -42,6 +42,9 @@ public class EventProducingRoute extends RouteBuilder {
     private CdiEventEndpoint<EventPayload<Integer>> integerPayloadCdiEventEndpoint;
 
     @Inject
+    private CdiEventEndpoint<String[]> stringArrayCdiEventEndpoint;
+
+    @Inject
     @FooQualifier
     private CdiEventEndpoint<Long> fooQualifierCdiEventEndpoint;
 
@@ -58,6 +61,8 @@ public class EventProducingRoute extends RouteBuilder {
         from("direct:produceStringPayload").to(stringPayloadCdiEventEndpoint);
 
         from("direct:produceIntegerPayload").to(integerPayloadCdiEventEndpoint);
+
+        from("direct:produceStringArray").to(stringArrayCdiEventEndpoint);
 
         from("direct:produceFooQualifier").to(fooQualifierCdiEventEndpoint);
 

@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
+import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertThat;
 
@@ -80,6 +81,10 @@ public class EventEndpointTest {
     private MockEndpoint consumeIntegerPayload;
 
     @Inject
+    @Uri("mock:consumeStringArray")
+    private MockEndpoint consumeStringArray;
+
+    @Inject
     @Uri("mock:consumeFooQualifier")
     private MockEndpoint consumeFooQualifier;
 
@@ -104,6 +109,10 @@ public class EventEndpointTest {
     private ProducerTemplate produceIntegerPayload;
 
     @Inject
+    @Uri("direct:produceStringArray")
+    private ProducerTemplate produceStringArray;
+
+    @Inject
     @Uri("direct:produceFooQualifier")
     private ProducerTemplate produceFooQualifier;
 
@@ -121,6 +130,9 @@ public class EventEndpointTest {
     private Event<EventPayload<Integer>> integerPayloadEvent;
 
     @Inject
+    private Event<String[]> stringArrayEvent;
+
+    @Inject
     private EventObserver observer;
 
     @Before
@@ -130,14 +142,18 @@ public class EventEndpointTest {
         consumeString.reset();
         consumeStringPayload.reset();
         consumeIntegerPayload.reset();
+        consumeStringArray.reset();
         consumeFooQualifier.reset();
         consumeBarQualifier.reset();
     }
 
     @Test
     public void sendEventsToConsumers() throws InterruptedException {
-        consumeObject.expectedMessageCount(8);
-        consumeObject.expectedBodiesReceived(1234, new EventPayload<>("foo"), new EventPayload<>("bar"), "test", new EventPayload<>(1), new EventPayload<>(2), 123L, 987L);
+        // MockEndpoint does not logically compare arrays
+        String[] strings = {"foo", "bar"};
+
+        consumeObject.expectedMessageCount(9);
+        consumeObject.expectedBodiesReceived(1234, new EventPayload<>("foo"), new EventPayload<>("bar"), "test", new EventPayload<>(1), new EventPayload<>(2), strings, 123L, 987L);
 
         consumeString.expectedMessageCount(1);
         consumeString.expectedBodiesReceived("test");
@@ -147,6 +163,9 @@ public class EventEndpointTest {
 
         consumeIntegerPayload.expectedMessageCount(2);
         consumeIntegerPayload.expectedBodiesReceived(new EventPayload<>(1), new EventPayload<>(2));
+
+        consumeStringArray.expectedMessageCount(1);
+        consumeStringArray.expectedBodyReceived().body().isEqualTo(strings);
 
         consumeFooQualifier.expectedMessageCount(1);
         consumeFooQualifier.expectedBodiesReceived(123L);
@@ -160,10 +179,11 @@ public class EventEndpointTest {
         objectEvent.select(String.class).fire("test");
         integerPayloadEvent.fire(new EventPayload<>(1));
         integerPayloadEvent.fire(new EventPayload<>(2));
+        stringArrayEvent.fire(strings);
         objectEvent.select(Long.class, new FooQualifier.Literal()).fire(123L);
         objectEvent.select(Long.class, new BarQualifier.Literal()).fire(987L);
 
-        assertIsSatisfied(2L, TimeUnit.SECONDS, consumeObject, consumeString, consumeStringPayload, consumeIntegerPayload, consumeFooQualifier, consumeBarQualifier);
+        assertIsSatisfied(2L, TimeUnit.SECONDS, consumeObject, consumeString, consumeStringPayload, consumeIntegerPayload, consumeStringArray, consumeFooQualifier, consumeBarQualifier);
     }
 
     @Test
@@ -177,15 +197,17 @@ public class EventEndpointTest {
         produceIntegerPayload.sendBody(bar);
         EventPayload<Integer> baz = new EventPayload<>(12);
         produceIntegerPayload.sendBody(baz);
+        produceStringArray.sendBody(new String[] {"array"});
         produceFooQualifier.sendBody(456L);
         produceBarQualifier.sendBody(495L);
         produceObject.sendBody(777L);
 
-        assertThat(observer.getObjectEvents(), contains("string", foo, 1234, "test", bar, baz, 456L, 495L, 777L));
+        assertThat(observer.getObjectEvents(), contains("string", foo, 1234, "test", bar, baz, new String[] {"array"},  456L, 495L, 777L));
         assertThat(observer.getStringEvents(), contains("string", "test"));
         assertThat(observer.getStringPayloadEvents(), contains(foo));
         assertThat(observer.getIntegerPayloadEvents(), contains(bar, baz));
-        assertThat(observer.getDefaultQualifierEvents(), contains("string", foo, 1234, "test", bar, baz, 777L));
+        assertThat(observer.getStringArrayEvents(), contains(arrayContaining("array")));
+        assertThat(observer.getDefaultQualifierEvents(), contains("string", foo, 1234, "test", bar, baz, new String[] {"array"}, 777L));
         assertThat(observer.getFooQualifierEvents(), contains(456L));
         assertThat(observer.getBarQualifierEvents(), contains(495L));
     }
@@ -198,6 +220,8 @@ public class EventEndpointTest {
         private final List<Object> defaultQualifierEvents = new ArrayList<>();
 
         private final List<String> stringEvents = new ArrayList<>();
+
+        private final List<String[]> stringArrayEvents = new ArrayList<>();
 
         private final List<EventPayload<String>> stringPayloadEvents = new ArrayList<>();
 
@@ -213,6 +237,10 @@ public class EventEndpointTest {
 
         void collectStringEvents(@Observes String event) {
             stringEvents.add(event);
+        }
+
+        void collectStringArrayEvents(@Observes String[] event) {
+            stringArrayEvents.add(event);
         }
 
         void collectStringPayloadEvents(@Observes EventPayload<String> event) {
@@ -243,6 +271,10 @@ public class EventEndpointTest {
             return stringEvents;
         }
 
+        List<String[]> getStringArrayEvents() {
+            return stringArrayEvents;
+        }
+
         List<EventPayload<String>> getStringPayloadEvents() {
             return stringPayloadEvents;
         }
@@ -268,6 +300,7 @@ public class EventEndpointTest {
             stringEvents.clear();
             stringPayloadEvents.clear();
             integerPayloadEvents.clear();
+            stringArrayEvents.clear();
             defaultQualifierEvents.clear();
             fooQualifierEvents.clear();
             barQualifierEvents.clear();
