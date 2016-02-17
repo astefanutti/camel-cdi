@@ -45,16 +45,16 @@ public enum CommonPaxExamOptions {
                     .type("zip"))
             .name("Apache Karaf")
             .useDeployFolder(false)
-            .unpackDirectory(new File("target/pax-exam/unpack/")),
+            .unpackDirectory(new File("target/paxexam/unpack/")),
         keepRuntimeFolder(),
         // Don't bother with local console output as it just ends up cluttering the logs
         configureConsole().ignoreLocalConsole(),
         // Force the log level to INFO so we have more details during the test. It defaults to WARN.
         logLevel(LogLevelOption.LogLevel.INFO),
         // JaCoCo code coverage
-        System.getProperty("jacoco.agent", "").isEmpty() ?
-            new Option() {} :
-            vmOption(System.getProperty("jacoco.agent")),
+        System.getProperty("jacoco.agent", "").isEmpty()
+            ? new Option() {}
+            : vmOption(System.getProperty("jacoco.agent")),
         // JUnit and Hamcrest
         junitBundles()
     ),
@@ -83,16 +83,16 @@ public enum CommonPaxExamOptions {
             "pax-cdi")
     ),
     PAX_CDI_IMPL (
-        System.getProperty("pax.cdi.implementation", "").isEmpty() ?
-            features(
+        System.getProperty("pax.cdi.implementation", "").isEmpty()
+            ? features(
                 maven()
                     .groupId("org.ops4j.pax.cdi")
                     .artifactId("pax-cdi-features")
                     .type("xml")
                     .classifier("features")
                     .versionAsInProject(),
-                "pax-cdi-weld") :
-            features(
+                "pax-cdi-weld")
+            : features(
                 url("file:" + System.getProperty("user.dir") + "/src/test/features/features.xml"),
                 System.getProperty("pax.cdi.implementation"))
     ),
@@ -147,7 +147,7 @@ public enum CommonPaxExamOptions {
     CAMEL_METRICS (
         mavenBundle()
             .groupId("org.apache.camel")
-            .artifactId( "camel-metrics")
+            .artifactId("camel-metrics")
             .versionAsInProject(),
         mavenBundle()
             .groupId("io.dropwizard.metrics")
