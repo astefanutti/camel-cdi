@@ -73,7 +73,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <camel.version>2.16.1</camel.version>
+        <camel.version>2.16.2</camel.version>
         <cdi.version>1.2</cdi.version>
         <osgi.version>6.0.0</osgi.version>
         <pax-cdi.version>1.0.0.RC1</pax-cdi.version>
