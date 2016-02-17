@@ -25,6 +25,7 @@ script:
   - mvn -B test -Pjacoco -Powb -pl envs/se
   - mvn -B test -Pjacoco -Pwildfly-8.x -pl envs/ee
   - mvn -B test -Pjacoco -Pwildfly-9.x -pl envs/ee
+  - mvn -B test -Pjacoco -Pwildfly-10.x -pl envs/ee
   - mvn -B test -Pjacoco -Pwildfly-camel -pl envs/ee
   - mvn -B test -Pjacoco -Pkaraf,weld -pl envs/osgi/
 # OpenWebBeans faces class proxying issues in OSGi, see OWB-1103
