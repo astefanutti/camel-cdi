@@ -28,7 +28,6 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -44,7 +43,6 @@ import static org.junit.Assert.assertThat;
 @CamelAware
 @RunWith(Arquillian.class)
 @Category({Integration.class, WildFlyCamel.class})
-@Ignore("https://github.com/wildfly-extras/wildfly-camel/issues/978")
 public class CamelWildFlyEarTest {
 
     @Deployment
