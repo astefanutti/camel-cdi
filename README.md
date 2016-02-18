@@ -79,14 +79,14 @@ Besides depending on Camel (`camel-core` and `camel-core-osgi` optionally), Came
 
 This version of Camel CDI is currently successfully tested with the following containers:
 
-| Container           | Version        | Specification          |
-| ------------------- | -------------- | ---------------------- |
-| [Weld SE][]         | `2.3.3.Final`  | [CDI 1.2][JSR 346 1.2] |
-| [OpenWebBeans SE][] | `1.6.2`        | [CDI 1.2][JSR 346 1.2] |
-| [WildFly][]         | `8.2.1.Final`  | [Java EE 7][]          |
-| [WildFly][]         | `9.0.2.Final`  | [Java EE 7][]          |
-| [WildFly][]         | `10.0.0.Final` | [Java EE 7][]          |
-| [WildFly Camel][]   | `3.3.0`        | [Java EE 7][]          |
+| Container             | Version        | Environment                        |
+| --------------------- | -------------- | ---------------------------------- |
+| [Weld][]              | `2.3.3.Final`  | Java SE 8 / [CDI 1.2][JSR 346 1.2] |
+| [OpenWebBeans][]      | `1.6.2`        | Java SE 8 / [CDI 1.2][JSR 346 1.2] |
+| [WildFly 8][WildFly]  | `8.2.1.Final`  | [Java EE 7][]                      |
+| [WildFly 9][WildFly]  | `9.0.2.Final`  | [Java EE 7][]                      |
+| [WildFly 10][WildFly] | `10.0.0.Final` | [Java EE 7][]                      |
+| [WildFly Camel][]     | `3.3.0`        | [Java EE 7][]                      |
 | [Karaf][]<br/>[PAX CDI Weld][] | `4.0.4`<br/>`1.0.0.RC1` | [OSGi 6][] |
 
 WildFly 8.1 requires to be patched with Weld 2.2+ as documented in [Weld 2.2 on WildFly][].
@@ -94,8 +94,9 @@ WildFly 8.1 requires to be patched with Weld 2.2+ as documented in [Weld 2.2 on 
 [Karaf]: https://karaf.apache.org
 [OpenWebBeans]: http://openwebbeans.apache.org/
 [PAX CDI Weld]: https://ops4j1.jira.com/wiki/display/PAXCDI/Pax+CDI
-[Weld SE]: http://weld.cdi-spec.org/
+[Weld]: http://weld.cdi-spec.org/
 [WildFly]: http://www.wildfly.org/
+[WildFly Camel]: https://github.com/wildfly-extras/wildfly-camel
 
 [Java EE 7]: https://jcp.org/en/jsr/detail?id=342
 [OSGi 6]: https://www.osgi.org/osgi-release-6-javadoc/
