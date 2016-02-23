@@ -82,7 +82,7 @@ This version of Camel CDI is currently successfully tested with the following co
 | Container             | Version        | Environment                        |
 | --------------------- | -------------- | ---------------------------------- |
 | [Weld][]              | `2.3.3.Final`  | Java SE 8 / [CDI 1.2][JSR 346 1.2] |
-| [OpenWebBeans][]      | `1.6.2`        | Java SE 8 / [CDI 1.2][JSR 346 1.2] |
+| [OpenWebBeans][]      | `1.6.3`        | Java SE 8 / [CDI 1.2][JSR 346 1.2] |
 | [WildFly 8][WildFly]  | `8.2.1.Final`  | [Java EE 7][]                      |
 | [WildFly 9][WildFly]  | `9.0.2.Final`  | [Java EE 7][]                      |
 | [WildFly 10][WildFly] | `10.0.0.Final` | [Java EE 7][]                      |
