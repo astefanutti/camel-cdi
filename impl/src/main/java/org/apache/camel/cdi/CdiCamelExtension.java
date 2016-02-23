@@ -207,7 +207,7 @@ public class CdiCamelExtension implements Extension {
             .flatMap(ip -> ip.getQualifiers().stream())
             .collect(Collectors.toSet());
         Set<Annotation> producerQualifiers = contextQualifiers.stream()
-            .filter(q -> !Arrays.asList(Any.class, Default.class, Named.class).contains(q.annotationType()))
+            .filter(q -> !Arrays.asList(Default.class, Named.class).contains(q.annotationType()))
             .collect(Collectors.toSet());
         // TODO: would be more correct to add a bean for each Camel context bean
         abd.getAnnotatedType(CdiCamelFactory.class, null).getMethods().stream()
