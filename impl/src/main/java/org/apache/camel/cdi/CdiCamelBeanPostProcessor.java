@@ -98,7 +98,7 @@ final class CdiCamelBeanPostProcessor extends DefaultCamelBeanPostProcessor {
 
     private CamelContext getOrLookupCamelContext(String contextName) {
         // TODO: proper support for custom context qualifiers
-        return BeanManagerHelper.getReferenceByType(manager, CamelContext.class, contextName.isEmpty() ? DEFAULT : new ContextName.Literal(contextName)).orElseThrow(()-> new UnsatisfiedResolutionException("No Camel context with name [" + contextName + "] is deployed!"));
+        return BeanManagerHelper.getReferenceByType(manager, CamelContext.class, contextName.isEmpty() ? DEFAULT : ContextName.Literal.of(contextName)).orElseThrow(()-> new UnsatisfiedResolutionException("No Camel context with name [" + contextName + "] is deployed!"));
     }
 
     @Override

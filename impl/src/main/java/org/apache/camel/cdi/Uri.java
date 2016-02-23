@@ -16,6 +16,7 @@
  */
 package org.apache.camel.cdi;
 
+import javax.enterprise.util.AnnotationLiteral;
 import javax.enterprise.util.Nonbinding;
 import javax.inject.Qualifier;
 import java.lang.annotation.ElementType;
@@ -46,4 +47,24 @@ public @interface Uri {
      * Returns the <a href="http://camel.apache.org/uris.html">Camel URI</a> of the resource.
      */
     @Nonbinding String value();
+
+    final class Literal extends AnnotationLiteral<Uri> implements Uri {
+
+        private static final long serialVersionUID = 1L;
+
+        private final String uri;
+
+        private Literal(String uri) {
+            this.uri = uri;
+        }
+
+        public static Literal of(String uri) {
+            return new Literal(uri);
+        }
+
+        @Override
+        public String value() {
+            return uri;
+        }
+    }
 }
