@@ -206,7 +206,7 @@ public class CdiCamelExtension implements Extension {
             .filter(q -> !Arrays.asList(Default.class, Named.class).contains(q.annotationType()))
             .collect(Collectors.toSet());
         // TODO: would be more correct to add a bean for each Camel context bean
-        abd.getAnnotatedType(CdiCamelFactory.class, null).getMethods().stream()
+        manager.createAnnotatedType(CdiCamelFactory.class).getMethods().stream()
             .filter(am -> am.isAnnotationPresent(Produces.class) && (am.getTypeClosure().contains(Endpoint.class) || am.getTypeClosure().contains(ProducerTemplate.class)))
             .map(am -> camelProducerBean(manager, am, CdiEventEndpoint.class.equals(CdiSpiHelper.getRawType(am.getBaseType())) ? endpointQualifiers : producerQualifiers))
             .forEach(abd::addBean);
