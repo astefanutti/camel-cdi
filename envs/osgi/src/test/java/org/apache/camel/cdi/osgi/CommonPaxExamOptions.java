@@ -142,7 +142,7 @@ public enum CommonPaxExamOptions {
                 .type("xml")
                 .classifier("features")
                 .versionAsInProject(),
-            "activemq-broker")
+            "activemq-broker-noweb")
     ),
     CAMEL_METRICS (
         mavenBundle()
