@@ -30,7 +30,9 @@ public class UnreliableService {
     @Inject
     private Meter attempt;
 
-    public void unreliable(Exchange exchange) {
+    //@Metered
+    // TODO: to activate when global interceptors are supported in PAX CDI
+    public void attempt(Exchange exchange) {
         attempt.mark();
 
         if (Math.random() < 0.5)
