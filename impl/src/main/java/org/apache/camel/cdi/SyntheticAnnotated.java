@@ -16,31 +16,39 @@
  */
 package org.apache.camel.cdi;
 
-import org.apache.camel.impl.DefaultCamelContext;
-
+import javax.enterprise.inject.Vetoed;
 import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.BeanManager;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-final class CamelContextBeanAnnotated implements Annotated {
+@Vetoed
+final class SyntheticAnnotated implements Annotated {
+
+    private final Class<?> type;
 
     private final Set<Type> types;
 
     private final Set<Annotation> annotations;
 
-    CamelContextBeanAnnotated(BeanManager manager, Annotation... annotations) {
-        this.types = Collections.unmodifiableSet(manager.createAnnotatedType(DefaultCamelContext.class).getTypeClosure());
-        this.annotations = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(annotations)));
+    SyntheticAnnotated(BeanManager manager, Class<?> type, Annotation... annotations) {
+        this(manager, type, Arrays.asList(annotations));
+    }
+
+    SyntheticAnnotated(BeanManager manager, Class<?> type, Collection<Annotation> annotations) {
+        this.type = type;
+        this.types = Collections.unmodifiableSet(manager.createAnnotatedType(type).getTypeClosure());
+        this.annotations = Collections.unmodifiableSet(new HashSet<>(annotations));
     }
 
     @Override
     public Type getBaseType() {
-        return DefaultCamelContext.class;
+        return type;
     }
 
     @Override

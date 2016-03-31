@@ -16,53 +16,53 @@
  */
 package org.apache.camel.cdi;
 
-import javax.enterprise.inject.spi.BeanAttributes;
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.InjectionPoint;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
-class BeanAttributesDecorator<T> implements BeanAttributes<T> {
+final class BeanDecorator<T> extends BeanAttributesDecorator<T> implements Bean<T> {
 
-    private final BeanAttributes<T> attributes;
+    private final Bean<T> bean;
 
-    private final Set<Annotation> qualifiers;
+    BeanDecorator(Bean<T> bean, Annotation qualifier) {
+        this(bean, Collections.singleton(qualifier));
+    }
 
-    BeanAttributesDecorator(BeanAttributes<T> attributes, Set<? extends Annotation> qualifiers) {
-        this.attributes = attributes;
-        Set<Annotation> annotations = new HashSet<>(attributes.getQualifiers());
-        annotations.addAll(qualifiers);
-        this.qualifiers = Collections.unmodifiableSet(annotations);
+    BeanDecorator(Bean<T> bean, Set<? extends Annotation> qualifiers) {
+        super(bean, qualifiers);
+        this.bean = bean;
     }
 
     @Override
-    public Set<Type> getTypes() {
-        return attributes.getTypes();
+    public Class<?> getBeanClass() {
+        return bean.getBeanClass();
     }
 
     @Override
-    public Set<Annotation> getQualifiers() {
-        return qualifiers;
+    public Set<InjectionPoint> getInjectionPoints() {
+        return bean.getInjectionPoints();
     }
 
     @Override
-    public Class<? extends Annotation> getScope() {
-        return attributes.getScope();
+    public boolean isNullable() {
+        return bean.isNullable();
     }
 
     @Override
-    public String getName() {
-        return attributes.getName();
+    public T create(CreationalContext<T> creationalContext) {
+        return bean.create(creationalContext);
     }
 
     @Override
-    public Set<Class<? extends Annotation>> getStereotypes() {
-        return attributes.getStereotypes();
+    public void destroy(T instance, CreationalContext<T> creationalContext) {
+        bean.destroy(instance, creationalContext);
     }
 
     @Override
-    public boolean isAlternative() {
-        return attributes.isAlternative();
+    public String toString() {
+        return bean.toString();
     }
 }

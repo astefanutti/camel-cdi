@@ -16,29 +16,56 @@
  */
 package org.apache.camel.cdi;
 
-import org.apache.camel.impl.DefaultCamelContext;
-
-import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.BeanAttributes;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.inject.Named;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
-final class CamelContextBeanAttributes implements BeanAttributes<DefaultCamelContext> {
-
-    private final Set<Annotation> qualifiers;
+final class SyntheticBeanAttributes<T> implements BeanAttributes<T> {
 
     private final Set<Type> types;
 
-    CamelContextBeanAttributes(CamelContextBeanAnnotated annotated) {
-        this.qualifiers = annotated.getAnnotations();
+    private final Set<Annotation> qualifiers;
+
+    private final Class<? extends Annotation> scope;
+
+    private final String name;
+
+    private final Function<BeanAttributes, String> toString;
+
+    SyntheticBeanAttributes(BeanManager manager, Annotated annotated, Function<BeanAttributes, String> toString) {
         this.types = annotated.getTypeClosure();
+
+        this.qualifiers = annotated.getAnnotations().stream()
+            .filter(a -> manager.isQualifier(a.annotationType()))
+            .collect(Collectors.toSet());
+
+        this.scope = annotated.getAnnotations().stream()
+            .map(Annotation::annotationType)
+            .filter(manager::isScope)
+            .findAny()
+            .orElse(Dependent.class);
+
+        this.name = annotated.getAnnotations().stream()
+            .filter(a -> Named.class.equals(a.annotationType()))
+            .map(Named.class::cast)
+            .map(Named::value)
+            .findFirst()
+            .orElse(null);
+
+        this.toString = toString;
     }
 
     @Override
     public Class<? extends Annotation> getScope() {
-        return ApplicationScoped.class;
+        return scope;
     }
 
     @Override
@@ -48,8 +75,7 @@ final class CamelContextBeanAttributes implements BeanAttributes<DefaultCamelCon
 
     @Override
     public String getName() {
-        // This is not a named bean
-        return null;
+        return name;
     }
 
     @Override
@@ -69,6 +95,6 @@ final class CamelContextBeanAttributes implements BeanAttributes<DefaultCamelCon
 
     @Override
     public String toString() {
-        return "Default Camel context bean with qualifiers " + getQualifiers();
+        return toString.apply(this);
     }
 }

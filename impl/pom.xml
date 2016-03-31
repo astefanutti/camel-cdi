@@ -51,6 +51,13 @@
 
         <dependency>
             <groupId>org.apache.camel</groupId>
+            <artifactId>camel-core-xml</artifactId>
+            <version>${camel.version}</version>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.camel</groupId>
             <artifactId>camel-core-osgi</artifactId>
             <version>${camel.version}</version>
             <scope>provided</scope>

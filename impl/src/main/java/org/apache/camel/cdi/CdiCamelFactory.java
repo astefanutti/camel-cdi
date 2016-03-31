@@ -121,7 +121,7 @@ final class CdiCamelFactory {
         return instance.select(qualifiers.toArray(new Annotation[qualifiers.size()])).get();
     }
 
-    static <T extends Annotation> Optional<T> getQualifierByType(InjectionPoint ip, Class<T> type) {
+    private static <T extends Annotation> Optional<T> getQualifierByType(InjectionPoint ip, Class<T> type) {
         return ip.getQualifiers().stream()
             .filter(q -> type.equals(q.annotationType()))
             .findAny()
