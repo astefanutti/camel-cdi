@@ -109,12 +109,6 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <dependencies>
-                <dependency>
-                    <groupId>org.apache.deltaspike.cdictrl</groupId>
-                    <artifactId>deltaspike-cdictrl-weld</artifactId>
-                    <scope>runtime</scope>
-                    <optional>true</optional>
-                </dependency>
 
                 <dependency>
                     <groupId>org.jboss.weld.se</groupId>
@@ -147,12 +141,6 @@
                 <arguments>-Djava.util.logging.config.file=${project.basedir}/src/main/resources/logging.properties</arguments>
             </properties>
             <dependencies>
-                <dependency>
-                    <groupId>org.apache.deltaspike.cdictrl</groupId>
-                    <artifactId>deltaspike-cdictrl-owb</artifactId>
-                    <scope>runtime</scope>
-                    <optional>true</optional>
-                </dependency>
 
                 <dependency>
                     <groupId>org.apache.openwebbeans</groupId>
@@ -188,6 +176,7 @@
                     <artifactId>owb-arquillian-standalone</artifactId>
                     <optional>true</optional>
                 </dependency>
+
             </dependencies>
         </profile>
 

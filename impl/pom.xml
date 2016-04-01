@@ -18,7 +18,6 @@
             org.apache.camel.cdi.*
         </camel.osgi.export.pkg>
         <camel.osgi.import.pkg>
-            !org.apache.deltaspike.cdise.api.*,
             *
         </camel.osgi.import.pkg>
 
@@ -33,13 +32,6 @@
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-core</artifactId>
-        </dependency>
-
-        <!-- DeltaSpike container control is only used to provide Main support thus optional -->
-        <dependency>
-            <groupId>org.apache.deltaspike.cdictrl</groupId>
-            <artifactId>deltaspike-cdictrl-api</artifactId>
-            <optional>true</optional>
         </dependency>
 
         <!-- provided dependencies -->
@@ -102,13 +94,6 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jul-to-slf4j</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.deltaspike.cdictrl</groupId>
-            <artifactId>deltaspike-cdictrl-weld</artifactId>
-            <scope>test</scope>
-            <optional>true</optional>
         </dependency>
 
         <dependency>

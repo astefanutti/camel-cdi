@@ -17,7 +17,7 @@
             !javax.annotation.*,
             *
         </camel.osgi.import.pkg>
-        <deltaspike.version>1.6.1</deltaspike.version>
+        <deltaspike.version>1.7.1</deltaspike.version>
     </properties>
 
     <dependencies>

@@ -84,14 +84,13 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <camel.version>2.18.1</camel.version>
-        <cdi.version>1.2</cdi.version>
+        <cdi.version>2.0-EDR1</cdi.version>
         <osgi.version>6.0.0</osgi.version>
         <pax-cdi.version>1.0.0.RC2</pax-cdi.version>
-        <deltaspike.version>1.7.2</deltaspike.version>
         <javaee.version>7.0</javaee.version>
         <slf4j.version>1.7.21</slf4j.version>
         <log4j.version>2.7</log4j.version>
-        <weld.version>2.4.1.Final</weld.version>
+        <weld.version>3.0.0.Alpha15</weld.version>
         <owb.version>1.7.0</owb.version>
         <wildfly-8.version>8.2.1.Final</wildfly-8.version>
         <wildfly-9.version>9.0.2.Final</wildfly-9.version>
@@ -252,13 +251,6 @@
                         <artifactId>jaxb-impl</artifactId>
                     </exclusion>
                 </exclusions>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.deltaspike.cdictrl</groupId>
-                <artifactId>deltaspike-cdictrl-api</artifactId>
-                <version>${deltaspike.version}</version>
-                <optional>true</optional>
             </dependency>
 
             <!-- provided dependencies -->
@@ -477,13 +469,6 @@
                 <groupId>org.apache.openwebbeans.arquillian</groupId>
                 <artifactId>owb-arquillian-standalone</artifactId>
                 <version>${owb.version}</version>
-                <scope>test</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.deltaspike.cdictrl</groupId>
-                <artifactId>deltaspike-cdictrl-owb</artifactId>
-                <version>${deltaspike.version}</version>
                 <scope>test</scope>
             </dependency>
 
