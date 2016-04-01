@@ -34,7 +34,6 @@ import java.util.Set;
 
 import org.apache.camel.util.CastUtils;
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.metadata.ArtifactMetadataSource;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -47,8 +46,10 @@ import org.apache.maven.artifact.versioning.InvalidVersionSpecificationException
 import org.apache.maven.artifact.versioning.VersionRange;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Exclusion;
+import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugin.descriptor.PluginDescriptor;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectBuilder;
 import org.apache.maven.project.artifact.MavenMetadataSource;
@@ -360,8 +361,8 @@ public class RunMojo extends AbstractExecMojo {
      */
     public void execute() throws MojoExecutionException, MojoFailureException {
         boolean usingSpringJavaConfigureMain = false;
-        boolean useCdiMain = useCDI;
-        boolean usingBlueprintMain = useBlueprint;
+        boolean useCdiMain = useCDI || detectCDIOnClassPath();
+        boolean usingBlueprintMain = useBlueprint || detectBlueprintOnClassPathOrBlueprintXMLFiles();
         if (killAfter != -1) {
             getLog().warn("Warning: killAfter is now deprecated. Do you need it ? Please comment on MEXEC-6.");
         }
@@ -523,7 +524,7 @@ public class RunMojo extends AbstractExecMojo {
     class IsolatedThreadGroup extends ThreadGroup {
         Throwable uncaughtException; // synchronize access to this
 
-        public IsolatedThreadGroup(String name) {
+        IsolatedThreadGroup(String name) {
             super(name);
         }
 
@@ -663,6 +664,41 @@ public class RunMojo extends AbstractExecMojo {
                 System.setProperty(systemProperty.getKey(), value == null ? "" : value);
             }
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private boolean detectCDIOnClassPath() {
+        List<Dependency> deps = project.getCompileDependencies();
+        for (Dependency dep : deps) {
+            if ("io.astefanutti.camel.cdi".equals(dep.getGroupId()) && "camel-cdi".equals(dep.getArtifactId())) {
+                getLog().info("camel-cdi detected on classpath");
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @SuppressWarnings("unchecked")
+    private boolean detectBlueprintOnClassPathOrBlueprintXMLFiles() {
+        List<Dependency> deps = project.getCompileDependencies();
+        for (Dependency dep : deps) {
+            if ("org.apache.camel".equals(dep.getGroupId()) && "camel-blueprint".equals(dep.getArtifactId())) {
+                getLog().info("camel-blueprint detected on classpath");
+            }
+        }
+
+        // maybe there is blueprint XML files
+        List<Resource> resources = project.getResources();
+        for (Resource res : resources) {
+            File dir = new File(res.getDirectory());
+            File xml = new File(dir, "OSGI-INF/blueprint");
+            if (xml.exists() && xml.isDirectory()) {
+                getLog().info("OSGi Blueprint XML files detected in directory " + xml);
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -852,9 +888,8 @@ public class RunMojo extends AbstractExecMojo {
             }
 
             List<String> exclusions = new ArrayList<String>();
-            for (Iterator<?> j = dependency.getExclusions().iterator(); j.hasNext();) {
-                Exclusion e = (Exclusion)j.next();
-                exclusions.add(e.getGroupId() + ":" + e.getArtifactId());
+            for (Exclusion exclusion : dependency.getExclusions()) {
+                exclusions.add(exclusion.getGroupId() + ":" + exclusion.getArtifactId());
             }
 
             ArtifactFilter newFilter = new ExcludesArtifactFilter(exclusions);
@@ -888,8 +923,26 @@ public class RunMojo extends AbstractExecMojo {
                 relevantDependencies = this.resolveExecutableDependencies(executablePomArtifact, false);
             }
         } else {
-            relevantDependencies = Collections.emptySet();
-            getLog().debug("Plugin Dependencies will be excluded.");
+            getLog().debug("Only Direct Plugin Dependencies will be included.");
+            PluginDescriptor descriptor = (PluginDescriptor) getPluginContext().get("pluginDescriptor");
+            try {
+                relevantDependencies = artifactResolver
+                    .resolveTransitively(MavenMetadataSource
+                            .createArtifacts(this.artifactFactory,
+                                descriptor.getPlugin().getDependencies(),
+                                null, null, null),
+                        this.project.getArtifact(),
+                        Collections.emptyMap(),
+                        this.localRepository,
+                        this.remoteRepositories,
+                        metadataSource,
+                        new ScopeArtifactFilter(Artifact.SCOPE_RUNTIME),
+                        Collections.emptyList())
+                    .getArtifacts();
+            } catch (Exception ex) {
+                throw new MojoExecutionException("Encountered problems resolving dependencies of the plugin "
+                    + "in preparation for its execution.", ex);
+            }
         }
         return relevantDependencies;
     }
@@ -957,7 +1010,7 @@ public class RunMojo extends AbstractExecMojo {
                 Collections.emptyMap(),
                 this.localRepository,
                 this.remoteRepositories,
-                metadataSource, new ScopeArtifactFilter(DefaultArtifact.SCOPE_RUNTIME),
+                metadataSource, new ScopeArtifactFilter(Artifact.SCOPE_RUNTIME),
                 Collections.emptyList());
             executableDependencies = CastUtils.cast(result.getArtifacts());
 
