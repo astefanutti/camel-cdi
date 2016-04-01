@@ -148,7 +148,8 @@ public enum CommonPaxExamOptions {
         mavenBundle()
             .groupId("org.apache.camel")
             .artifactId("camel-metrics")
-            .versionAsInProject(),
+            .versionAsInProject()
+            .startLevel(50),
         mavenBundle()
             .groupId("io.dropwizard.metrics")
             .artifactId("metrics-json")
