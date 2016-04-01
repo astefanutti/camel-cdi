@@ -80,7 +80,7 @@ public enum CommonPaxExamOptions {
                     .versionAsInProject(),
                 "pax-cdi-weld")
             : features(
-                url("file:" + System.getProperty("user.dir") + "/src/test/features/features.xml"),
+                url("file:" + System.getProperty("user.dir") + "/target/test-classes/features.xml"),
                 System.getProperty("pax.cdi.implementation"))
     ),
     CAMEL_CDI (

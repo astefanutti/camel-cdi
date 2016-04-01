@@ -29,7 +29,7 @@
         <profile>
             <id>weld</id>
             <properties>
-                <pax.cdi.implementation>pax-cdi-weld-2.3.2.Final</pax.cdi.implementation>
+                <pax.cdi.implementation>pax-cdi-weld-2.3.3.Final</pax.cdi.implementation>
             </properties>
         </profile>
 
@@ -244,6 +244,10 @@
         <testResources>
             <testResource>
                 <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+            </testResource>
+            <testResource>
+                <directory>src/test/features</directory>
                 <filtering>true</filtering>
             </testResource>
         </testResources>
