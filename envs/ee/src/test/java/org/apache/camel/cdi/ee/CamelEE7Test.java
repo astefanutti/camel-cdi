@@ -46,7 +46,7 @@ public class CamelEE7Test {
                     .loadPomFromFile("pom.xml")
                     .resolve("io.astefanutti.camel.cdi:camel-cdi")
                     .withTransitivity()
-                    .as(JavaArchive.class))
+                    .asList(JavaArchive.class))
             .addAsModule(
                 ShrinkWrap.create(JavaArchive.class, "camel-ee7.jar")
                     // FIXME: Arquillian throws a ClassNotFoundException when removing the Bootstrap class
