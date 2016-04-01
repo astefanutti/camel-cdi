@@ -103,7 +103,12 @@
             </dependencies>
             <build>
                 <plugins>
-                    <!-- FIXME: this is required for the Camel Maven plugin that resolve the Camel CDI POM as artifact of type bundle though that should not be mandate for plain Java SE usage of Camel CDI -->
+                    <!--
+                    FIXME: this is required for the Camel Maven plugin that
+                    resolves the Camel CDI POM as artifact of type bundle though
+                    that should not be mandatory for plain Java SE usage of Camel CDI.
+                    TODO: test with the new bnd-maven-plugin
+                    -->
                     <plugin>
                         <groupId>org.apache.felix</groupId>
                         <artifactId>maven-bundle-plugin</artifactId>
