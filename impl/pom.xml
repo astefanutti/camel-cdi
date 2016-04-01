@@ -187,9 +187,6 @@
                                 <configuration>
                                     <!--<destFile>${project.basedir}/../../impl/target/jacoco.exec</destFile>-->
                                     <append>true</append>
-                                    <includes>
-                                        <include>org.apache.camel.cdi.*</include>
-                                    </includes>
                                 </configuration>
                             </execution>
                         </executions>
