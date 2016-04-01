@@ -69,6 +69,16 @@
                 <enabled>false</enabled>
             </releases>
         </repository>
+        <repository>
+            <id>sonatype-nexus-snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/ops4j-snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
     </repositories>
 
     <properties>
@@ -76,7 +86,7 @@
         <camel.version>2.17.0</camel.version>
         <cdi.version>1.2</cdi.version>
         <osgi.version>6.0.0</osgi.version>
-        <pax-cdi.version>1.0.0.RC1</pax-cdi.version>
+        <pax-cdi.version>1.0.0-SNAPSHOT</pax-cdi.version>
         <deltaspike.version>1.5.4</deltaspike.version>
         <javaee.version>7.0</javaee.version>
         <slf4j.version>1.7.16</slf4j.version>
