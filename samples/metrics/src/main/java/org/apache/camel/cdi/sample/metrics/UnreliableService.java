@@ -31,7 +31,7 @@ public class UnreliableService {
     private Meter attempt;
 
     //@Metered
-    // TODO: to activate when global interceptors are supported in PAX CDI
+    // TODO: activate global interceptor when PAXCDI-216 is fixed
     public void attempt(Exchange exchange) {
         attempt.mark();
 
