@@ -22,7 +22,6 @@ import org.ops4j.pax.exam.options.DefaultCompositeOption;
 
 import java.io.File;
 
-import static org.ops4j.pax.exam.CoreOptions.junitBundles;
 import static org.ops4j.pax.exam.CoreOptions.maven;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.url;
@@ -54,9 +53,7 @@ public enum CommonPaxExamOptions {
         // JaCoCo code coverage
         System.getProperty("jacoco.agent", "").isEmpty()
             ? new Option() {}
-            : vmOption(System.getProperty("jacoco.agent")),
-        // JUnit and Hamcrest
-        junitBundles()
+            : vmOption(System.getProperty("jacoco.agent"))
     ),
     CAMEL_COMMANDS (
         mavenBundle()
@@ -71,16 +68,6 @@ public enum CommonPaxExamOptions {
             .groupId("org.apache.camel")
             .artifactId("camel-catalog")
             .versionAsInProject()
-    ),
-    PAX_CDI (
-        features(
-            maven()
-                .groupId("org.ops4j.pax.cdi")
-                .artifactId("pax-cdi-features")
-                .type("xml")
-                .classifier("features")
-                .versionAsInProject(),
-            "pax-cdi")
     ),
     PAX_CDI_IMPL (
         System.getProperty("pax.cdi.implementation", "").isEmpty()

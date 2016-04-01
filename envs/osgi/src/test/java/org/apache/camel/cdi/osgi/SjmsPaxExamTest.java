@@ -32,11 +32,10 @@ import javax.inject.Inject;
 
 import static org.apache.camel.cdi.osgi.CommonPaxExamOptions.ACTIVEMQ;
 import static org.apache.camel.cdi.osgi.CommonPaxExamOptions.CAMEL_CDI;
+import static org.apache.camel.cdi.osgi.CommonPaxExamOptions.CAMEL_COMMANDS;
 import static org.apache.camel.cdi.osgi.CommonPaxExamOptions.CAMEL_SJMS;
 import static org.apache.camel.cdi.osgi.CommonPaxExamOptions.JMS_FEATURE;
 import static org.apache.camel.cdi.osgi.CommonPaxExamOptions.KARAF;
-import static org.apache.camel.cdi.osgi.CommonPaxExamOptions.CAMEL_COMMANDS;
-import static org.apache.camel.cdi.osgi.CommonPaxExamOptions.PAX_CDI;
 import static org.apache.camel.cdi.osgi.CommonPaxExamOptions.PAX_CDI_IMPL;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
@@ -53,7 +52,6 @@ public class SjmsPaxExamTest {
     public Option[] config() {
         return options(
             KARAF.option(),
-            PAX_CDI.option(),
             PAX_CDI_IMPL.option(),
             CAMEL_CDI.option(),
             CAMEL_COMMANDS.option(),

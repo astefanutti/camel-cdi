@@ -36,7 +36,6 @@ import static org.apache.camel.cdi.osgi.CommonPaxExamOptions.CAMEL_CDI;
 import static org.apache.camel.cdi.osgi.CommonPaxExamOptions.CAMEL_METRICS;
 import static org.apache.camel.cdi.osgi.CommonPaxExamOptions.KARAF;
 import static org.apache.camel.cdi.osgi.CommonPaxExamOptions.METRICS_CDI;
-import static org.apache.camel.cdi.osgi.CommonPaxExamOptions.PAX_CDI;
 import static org.apache.camel.cdi.osgi.CommonPaxExamOptions.PAX_CDI_IMPL;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
@@ -53,7 +52,6 @@ public class MetricsPaxExamTest {
     public Option[] config() {
         return options(
             KARAF.option(),
-            PAX_CDI.option(),
             PAX_CDI_IMPL.option(),
             CAMEL_CDI.option(),
             // Metrics sample
