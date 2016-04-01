@@ -3,7 +3,10 @@
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.0.0 ">
 
-    <feature name="camel-cdi" version="${project.version}" start-level="50">
+    <repository>mvn:org.ops4j.pax.cdi/pax-cdi-features/${pax-cdi.version}/xml/features</repository>
+
+    <feature name="camel-cdi" version="${project.version}" resolver="(obr)" start-level="50">
+        <details>camel-cdi requires that either pax-cdi-weld or pax-cdi-openwebbeans has been installed</details>
         <feature version="${pax-cdi.version}">pax-cdi</feature>
         <bundle>mvn:org.apache.camel/camel-core/${camel.version}</bundle>
         <bundle>mvn:org.apache.camel/camel-core-osgi/${camel.version}</bundle>
