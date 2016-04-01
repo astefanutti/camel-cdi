@@ -19,6 +19,7 @@ package org.apache.camel.cdi;
 import org.apache.camel.Endpoint;
 import org.apache.camel.cdi.xml.ApplicationContextFactoryBean;
 import org.apache.camel.cdi.xml.CamelContextFactoryBean;
+import org.apache.camel.cdi.xml.CamelEndpointFactoryBean;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.model.RoutesDefinition;
 
@@ -64,7 +65,6 @@ final class XmlCdiBeanFactory {
                 RoutesDefinition routes = (RoutesDefinition) node;
                 Bean<?> bean = manager.createBean(
                     new SyntheticBeanAttributes<>(manager,
-                        // TODO: scope based on singleton attribute
                         new SyntheticAnnotated(manager, RoutesDefinition.class, ANY, DEFAULT),
                         ba -> "Imported routes definition " +
                             (routes.getId() != null ? "[" + routes.getId() + "]" : "") +
@@ -123,28 +123,32 @@ final class XmlCdiBeanFactory {
                 annotated, manager));
     }
 
-    private Set<Bean<?>> camelContextBeans(CamelContextFactoryBean factory, URL url) {
+    private Set<Bean<?>> camelContextBeans(CamelContextFactoryBean context, URL url) {
         Set<Bean<?>> beans = new HashSet<>();
-        if (factory.getEndpoints() != null)
-            factory.getEndpoints().stream()
-                .peek(endpoint -> endpoint.setBeanManager(manager))
-                .peek(endpoint -> {
-                    if (endpoint.getCamelContextId() == null)
-                        endpoint.setCamelContextId(factory.getId());
-                })
-                .map(endpoint -> manager.createBean(
-                    new SyntheticBeanAttributes<>(manager,
-                        // TODO: should be the qualifier of the Camel context
-                        // TODO: scope based on singleton attribute
-                        // TODO: test if id can be null
-                        new SyntheticAnnotated(manager, endpoint.getObjectType(), ANY, DEFAULT, NamedLiteral.of(endpoint.getId())),
-                        ba -> "Imported endpoint [" + endpoint.getId() + "]" +
-                            " from resource [" + url + "]" +
-                            " with qualifiers " + ba.getQualifiers()),
-                    endpoint.getObjectType(),
-                    (InjectionTargetFactory<Endpoint>) bean -> new XmlFactoryBeanInjectionTarget<>(endpoint)))
+        if (context.getEndpoints() != null)
+            context.getEndpoints().stream()
+                // Only generate a bean for named endpoint definition
+                .filter(endpoint -> endpoint.getId() != null)
+                .map(endpoint -> endpointBean(context, endpoint, url))
                 .forEach(beans::add);
 
         return beans;
+    }
+
+    private Bean<?> endpointBean(CamelContextFactoryBean context, CamelEndpointFactoryBean endpoint, URL url) {
+        endpoint.setBeanManager(manager);
+        if (endpoint.getCamelContextId() == null)
+            endpoint.setCamelContextId(context.getId());
+
+        return manager.createBean(
+            new SyntheticBeanAttributes<>(manager,
+                // The scope is left @Dependent as the factory takes care of it
+                // depending on the 'singleton' attribute
+                new SyntheticAnnotated(manager, endpoint.getObjectType(), ANY, NamedLiteral.of(endpoint.getId())),
+                ba -> "Imported endpoint [" + endpoint.getId() + "]" +
+                    " from resource [" + url + "]" +
+                    " with qualifiers " + ba.getQualifiers()),
+            endpoint.getObjectType(),
+            (InjectionTargetFactory<Endpoint>) bean -> new XmlFactoryBeanInjectionTarget<>(endpoint));
     }
 }
