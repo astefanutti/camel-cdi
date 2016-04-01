@@ -31,14 +31,6 @@
 
         <!-- test dependencies -->
 
-        <!-- FIXME: should be removed when Weld EE Arquillian doesn't scan all classes -->
-        <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-core-xml</artifactId>
-            <version>${camel.version}</version>
-            <scope>test</scope>
-        </dependency>
-
         <dependency>
             <groupId>org.jboss.shrinkwrap.resolver</groupId>
             <artifactId>shrinkwrap-resolver-depchain</artifactId>
@@ -84,6 +76,14 @@
             <dependencies>
 
                 <!-- test dependencies -->
+
+                <!-- FIXME: should be removed when Weld EE Arquillian doesn't scan all classes -->
+                <dependency>
+                    <groupId>org.apache.camel</groupId>
+                    <artifactId>camel-core-xml</artifactId>
+                    <version>${camel.version}</version>
+                    <scope>test</scope>
+                </dependency>
 
                 <dependency>
                     <groupId>org.jboss.weld</groupId>
