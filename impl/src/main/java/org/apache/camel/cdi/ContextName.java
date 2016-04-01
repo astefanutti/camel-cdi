@@ -83,7 +83,7 @@ public @interface ContextName {
             this.name = name;
         }
 
-        public static Literal of(String name) {
+        public static ContextName of(String name) {
             return new Literal(name);
         }
 
