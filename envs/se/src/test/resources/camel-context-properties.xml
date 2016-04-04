@@ -1,0 +1,5 @@
+<camelContext id="foo" xmlns="http://camel.apache.org/schema/spring">
+
+    <propertyPlaceholder location="classpath:placeholder.properties"/>
+
+</camelContext>
