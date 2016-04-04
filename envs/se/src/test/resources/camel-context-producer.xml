@@ -1,0 +1,10 @@
+<camelContext id="foo" xmlns="http://camel.apache.org/schema/spring">
+
+    <template id="inbound" defaultEndpoint="direct:inbound" maximumCacheSize="100"/>
+
+    <route>
+        <from uri="direct:inbound"/>
+        <to uri="mock:outbound"/>
+    </route>
+
+</camelContext>
