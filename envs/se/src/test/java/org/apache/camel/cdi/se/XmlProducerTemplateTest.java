@@ -67,6 +67,10 @@ public class XmlProducerTemplateTest {
 
     @Test
     public void verifyProducerTemplate() {
+        assertThat("Producer template Camel context is incorrect!",
+            inbound.getCamelContext().getName(),
+            is(equalTo("foo")));
+
         assertThat("Producer template cache size is incorrect!",
             inbound.getMaximumCacheSize(),
             is(equalTo(100)));
