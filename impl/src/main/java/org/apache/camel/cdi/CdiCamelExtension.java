@@ -20,6 +20,7 @@ import org.apache.camel.BeanInject;
 import org.apache.camel.CamelContext;
 import org.apache.camel.CamelContextAware;
 import org.apache.camel.Consume;
+import org.apache.camel.ConsumerTemplate;
 import org.apache.camel.Converter;
 import org.apache.camel.Endpoint;
 import org.apache.camel.EndpointInject;
@@ -167,8 +168,15 @@ public class CdiCamelExtension implements Extension {
     private <T extends Endpoint> void endpointProducers(@Observes ProcessBeanAttributes<T> pba) {
         // Veto the bean as we first need to collect the metadata during the bean discovery phase.
         // The bean attributes decoration is done after the bean discovery.
-        if (pba.getAnnotated() instanceof AnnotatedMethod &&
-            CdiCamelFactory.class.equals(
+        if (pba.getAnnotated() instanceof AnnotatedMethod && CdiCamelFactory.class.equals(
+                ((AnnotatedMethod) pba.getAnnotated()).getDeclaringType().getJavaClass()))
+            pba.veto();
+    }
+
+    private void consumerTemplates(@Observes ProcessBeanAttributes<ConsumerTemplate> pba) {
+        // Veto the bean as we first need to collect the metadata during the bean discovery phase.
+        // The bean attributes decoration is done after the bean discovery.
+        if (pba.getAnnotated() instanceof AnnotatedMethod && CdiCamelFactory.class.equals(
                 ((AnnotatedMethod) pba.getAnnotated()).getDeclaringType().getJavaClass()))
             pba.veto();
     }
@@ -176,8 +184,7 @@ public class CdiCamelExtension implements Extension {
     private void producerTemplates(@Observes ProcessBeanAttributes<ProducerTemplate> pba) {
         // Veto the bean as we first need to collect the metadata during the bean discovery phase.
         // The bean attributes decoration is done after the bean discovery.
-        if (pba.getAnnotated() instanceof AnnotatedMethod &&
-            CdiCamelFactory.class.equals(
+        if (pba.getAnnotated() instanceof AnnotatedMethod && CdiCamelFactory.class.equals(
                 ((AnnotatedMethod) pba.getAnnotated()).getDeclaringType().getJavaClass()))
             pba.veto();
     }
@@ -187,11 +194,11 @@ public class CdiCamelExtension implements Extension {
         // an observer method for a super type won't activate notifiers.
         Type type = pom.getObserverMethod().getObservedType();
         // Camel events are raw types
-        if (type instanceof Class &&
-            Class.class.cast(type).getPackage().equals(AbstractExchangeEvent.class.getPackage()))
-            eventQualifiers.addAll(pom.getObserverMethod().getObservedQualifiers().isEmpty() ?
-                Collections.singleton(ANY) :
-                pom.getObserverMethod().getObservedQualifiers());
+        if (type instanceof Class
+            && Class.class.cast(type).getPackage().equals(AbstractExchangeEvent.class.getPackage()))
+            eventQualifiers.addAll(pom.getObserverMethod().getObservedQualifiers().isEmpty()
+                ? Collections.singleton(ANY)
+                : pom.getObserverMethod().getObservedQualifiers());
     }
 
     private void afterBeanDiscovery(@Observes AfterBeanDiscovery abd, BeanManager manager) throws Exception {
@@ -271,13 +278,14 @@ public class CdiCamelExtension implements Extension {
             .collect(Collectors.toSet());
         // TODO: would be more correct to add a bean for each Camel context bean
         manager.createAnnotatedType(CdiCamelFactory.class).getMethods().stream()
-            .filter(am -> am.isAnnotationPresent(Produces.class) &&
-                (am.getTypeClosure().contains(Endpoint.class) ||
-                    am.getTypeClosure().contains(ProducerTemplate.class)))
+            .filter(am -> am.isAnnotationPresent(Produces.class)
+                && (am.getTypeClosure().contains(Endpoint.class)
+                || am.getTypeClosure().contains(ConsumerTemplate.class)
+                || am.getTypeClosure().contains(ProducerTemplate.class)))
             .map(am -> camelProducerBean(manager, am,
-                CdiEventEndpoint.class.equals(CdiSpiHelper.getRawType(am.getBaseType())) ?
-                    endpointQualifiers :
-                    producerQualifiers))
+                CdiEventEndpoint.class.equals(CdiSpiHelper.getRawType(am.getBaseType()))
+                    ? endpointQualifiers
+                    : producerQualifiers))
             .forEach(abd::addBean);
 
         // Add CDI event endpoint observer methods
