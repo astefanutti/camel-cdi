@@ -1,0 +1,10 @@
+<camelContext id="foo" xmlns="http://camel.apache.org/schema/spring">
+
+    <consumerTemplate id="consumer" maximumCacheSize="100"/>
+
+    <route>
+        <from uri="direct:inbound"/>
+        <to uri="seda:outbound"/>
+    </route>
+
+</camelContext>
