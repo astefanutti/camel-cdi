@@ -24,6 +24,7 @@ import org.apache.camel.component.mock.MockEndpoint;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Any;
+import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Typed;
@@ -49,17 +50,25 @@ final class CdiCamelFactory {
         return selectContext(ip, instance, extension).getTypeConverter();
     }
 
-    @Uri("")
     @Produces
+    @Default @Uri("")
     // Qualifiers are dynamically added in CdiCamelExtension
     private static ProducerTemplate producerTemplate(InjectionPoint ip, @Any Instance<CamelContext> instance, CdiCamelExtension extension) {
-        Uri uri = getQualifierByType(ip, Uri.class).get();
+        return getQualifierByType(ip, Uri.class)
+            .map(u -> producerTemplateFromUri(ip, instance, extension, u))
+            .orElseGet(() -> defaultProducerTemplate(ip, instance, extension));
+    }
+
+    private static ProducerTemplate producerTemplateFromUri(InjectionPoint ip, @Any Instance<CamelContext> instance, CdiCamelExtension extension, Uri uri) {
         CamelContext context = selectContext(ip, instance, extension);
         ProducerTemplate producerTemplate = context.createProducerTemplate();
-        // FIXME: avoid NPE caused by missing @Uri qualifier when injection point is @ContextName qualified
         Endpoint endpoint = context.getEndpoint(uri.value(), Endpoint.class);
         producerTemplate.setDefaultEndpoint(endpoint);
         return producerTemplate;
+    }
+
+    private static ProducerTemplate defaultProducerTemplate(InjectionPoint ip, @Any Instance<CamelContext> instance, CdiCamelExtension extension) {
+        return selectContext(ip, instance, extension).createProducerTemplate();
     }
 
     @Produces
