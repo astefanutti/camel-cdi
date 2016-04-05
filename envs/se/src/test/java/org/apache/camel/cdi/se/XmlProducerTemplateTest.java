@@ -69,7 +69,7 @@ public class XmlProducerTemplateTest {
     public void verifyProducerTemplate() {
         assertThat("Producer template Camel context is incorrect!",
             inbound.getCamelContext().getName(),
-            is(equalTo("foo")));
+            is(equalTo("test")));
 
         assertThat("Producer template cache size is incorrect!",
             inbound.getMaximumCacheSize(),
@@ -83,9 +83,9 @@ public class XmlProducerTemplateTest {
     @Test
     public void sendMessageToInbound() throws InterruptedException {
         outbound.expectedMessageCount(1);
-        outbound.expectedBodiesReceived("test");
+        outbound.expectedBodiesReceived("message");
 
-        inbound.sendBody("test");
+        inbound.sendBody("message");
 
         assertIsSatisfied(2L, TimeUnit.SECONDS, outbound);
     }

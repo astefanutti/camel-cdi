@@ -1,4 +1,4 @@
-<camelContext id="foo" xmlns="http://camel.apache.org/schema/spring">
+<camelContext id="test" xmlns="http://camel.apache.org/schema/spring">
 
     <endpoint id="bar" uri="seda:inbound">
         <property key="queue" value="#queue"/>

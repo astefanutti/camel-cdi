@@ -67,9 +67,9 @@ public class XmlRoutesTest {
     @Test
     public void sendMessageToInbound() throws InterruptedException {
         outbound.expectedMessageCount(1);
-        outbound.expectedBodiesReceived("test");
+        outbound.expectedBodiesReceived("message");
 
-        inbound.sendBody("test");
+        inbound.sendBody("message");
 
         assertIsSatisfied(2L, TimeUnit.SECONDS, outbound);
     }

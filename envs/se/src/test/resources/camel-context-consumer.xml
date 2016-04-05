@@ -1,4 +1,4 @@
-<camelContext id="foo" xmlns="http://camel.apache.org/schema/spring">
+<camelContext id="test" xmlns="http://camel.apache.org/schema/spring">
 
     <consumerTemplate id="consumer" maximumCacheSize="100"/>
 

@@ -68,7 +68,7 @@ public class XmlConsumerTemplateTest {
     public void verifyConsumerTemplate() {
         assertThat("Consumer template Camel context is incorrect!",
             consumer.getCamelContext().getName(),
-            is(equalTo("foo")));
+            is(equalTo("test")));
 
         assertThat("Consumer template cache size is incorrect!",
             consumer.getMaximumCacheSize(),
@@ -77,10 +77,10 @@ public class XmlConsumerTemplateTest {
 
     @Test
     public void sendMessageToInbound() {
-        inbound.sendBody("seda:foo", "test");
+        inbound.sendBody("seda:foo", "message");
 
         String body = consumer.receiveBody("seda:foo", TimeUnit.SECONDS.toMillis(1L), String.class);
 
-        assertThat("Body is incorrect!", body, is(equalTo("test")));
+        assertThat("Body is incorrect!", body, is(equalTo("message")));
     }
 }
