@@ -62,7 +62,7 @@ import java.util.List;
 
 @XmlRootElement(name = "camelContext")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class CamelContextFactoryBean extends AbstractCamelContextFactoryBean<DefaultCamelContext> {
+public class CamelContextFactoryBean extends AbstractCamelContextFactoryBean<DefaultCamelContext> implements BeanManagerAware {
 
     @XmlAttribute(name = "depends-on")
     private String dependsOn;
@@ -115,12 +115,13 @@ public class CamelContextFactoryBean extends AbstractCamelContextFactoryBean<Def
     @XmlAttribute
     private ShutdownRunningTask shutdownRunningTask;
 
-    @XmlAttribute
     @Deprecated
-    private Boolean lazyLoadTypeConverters;
     @XmlAttribute
+    private Boolean lazyLoadTypeConverters;
 
+    @XmlAttribute
     private Boolean typeConverterStatisticsEnabled;
+
     @XmlAttribute
     private TypeConverterExists typeConverterExists;
 
@@ -154,7 +155,7 @@ public class CamelContextFactoryBean extends AbstractCamelContextFactoryBean<Def
         @XmlElement(name = "proxy", type = CamelProxyFactoryDefinition.class),
         @XmlElement(name = "export", type = CamelServiceExporterDefinition.class),
         @XmlElement(name = "errorHandler", type = ErrorHandlerDefinition.class)
-            })
+    })
     private List<?> beans;
 
     @XmlElement(name = "routeBuilder")
@@ -216,7 +217,8 @@ public class CamelContextFactoryBean extends AbstractCamelContextFactoryBean<Def
         return DefaultCamelContext.class;
     }
 
-    public void setManager(BeanManager manager) {
+    @Override
+    public void setBeanManager(BeanManager manager) {
         this.manager = manager;
     }
 
@@ -227,6 +229,7 @@ public class CamelContextFactoryBean extends AbstractCamelContextFactoryBean<Def
         if (bean == null)
             return null;
 
+        // TODO: the creational context should be that of the Camel context bean
         return (S) manager.getReference(bean, clazz, manager.createCreationalContext(bean));
     }
 
@@ -269,6 +272,7 @@ public class CamelContextFactoryBean extends AbstractCamelContextFactoryBean<Def
         setupRoutes();
     }
 
+    @Override
     public DefaultCamelContext getContext() {
         return context;
     }

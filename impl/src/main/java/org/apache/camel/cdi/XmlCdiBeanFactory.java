@@ -66,11 +66,11 @@ final class XmlCdiBeanFactory {
                 Bean<?> bean = manager.createBean(
                     new SyntheticBeanAttributes<>(manager,
                         new SyntheticAnnotated(manager, RoutesDefinition.class, ANY, DEFAULT),
-                        ba -> "Imported routes definition " +
-                            (routes.getId() != null ? "[" + routes.getId() + "]" : "") +
-                            " from resource [" + url + "]"),
+                        ba -> "Imported routes definition "
+                            + (routes.getId() != null ? "[" + routes.getId() + "] " : "")
+                            + "from resource [" + url + "]"),
                     RoutesDefinition.class,
-                    (InjectionTargetFactory<RoutesDefinition>) b ->new SyntheticInjectionTarget<>(() -> routes));
+                    (InjectionTargetFactory<RoutesDefinition>) b -> new SyntheticInjectionTarget<>(() -> routes));
                 return Collections.singleton(bean);
             } else if (node instanceof ApplicationContextFactoryBean) {
                 ApplicationContextFactoryBean app = (ApplicationContextFactoryBean) node;
@@ -102,16 +102,16 @@ final class XmlCdiBeanFactory {
         Annotated annotated = new SyntheticAnnotated(manager, DefaultCamelContext.class, annotations);
         return manager.createBean(
             new SyntheticBeanAttributes<>(manager, annotated,
-                ba -> "Imported Camel context " +
-                    (factory.getId() != null ? "[" + factory.getId() + "]" : "") +
-                    " from resource [" + url + "]" +
-                    " with qualifiers " + ba.getQualifiers()),
+                ba -> "Imported Camel context "
+                    + (factory.getId() != null ? "[" + factory.getId() + "] " : "")
+                    + "from resource [" + url + "] "
+                    + "with qualifiers " + ba.getQualifiers()),
             DefaultCamelContext.class,
             (InjectionTargetFactory<DefaultCamelContext>) b -> environment.camelContextInjectionTarget(
                 new SyntheticInjectionTarget<>(() -> {
                     DefaultCamelContext context = new DefaultCamelContext();
                     factory.setContext(context);
-                    factory.setManager(manager);
+                    factory.setBeanManager(manager);
                     return context;
                 }, context -> {
                     try {
