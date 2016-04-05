@@ -38,9 +38,9 @@ final class SyntheticBeanAttributes<T> implements BeanAttributes<T> {
 
     private final String name;
 
-    private final Function<BeanAttributes, String> toString;
+    private final Function<BeanAttributes<T>, String> toString;
 
-    SyntheticBeanAttributes(BeanManager manager, Annotated annotated, Function<BeanAttributes, String> toString) {
+    SyntheticBeanAttributes(BeanManager manager, Annotated annotated, Function<BeanAttributes<T>, String> toString) {
         this.types = annotated.getTypeClosure();
 
         this.qualifiers = annotated.getAnnotations().stream()

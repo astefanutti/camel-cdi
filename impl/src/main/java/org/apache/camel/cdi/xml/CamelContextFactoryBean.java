@@ -152,11 +152,13 @@ public class CamelContextFactoryBean extends AbstractCamelContextFactoryBean<Def
     @XmlElements({
         @XmlElement(name = "template", type = CamelProducerTemplateFactoryBean.class),
         @XmlElement(name = "consumerTemplate", type = CamelConsumerTemplateFactoryBean.class),
-        @XmlElement(name = "proxy", type = CamelProxyFactoryDefinition.class),
         @XmlElement(name = "export", type = CamelServiceExporterDefinition.class),
         @XmlElement(name = "errorHandler", type = ErrorHandlerDefinition.class)
     })
     private List<?> beans;
+
+    @XmlElement(name = "proxy")
+    private List<CamelProxyFactoryDefinition> proxies;
 
     @XmlElement(name = "routeBuilder")
     private List<RouteBuilderDefinition> builderRefs = new ArrayList<>();
@@ -277,13 +279,13 @@ public class CamelContextFactoryBean extends AbstractCamelContextFactoryBean<Def
         return context;
     }
 
+    public void setContext(DefaultCamelContext context) {
+        this.context = context;
+    }
+
     @Override
     public DefaultCamelContext getContext(boolean create) {
         return context;
-    }
-
-    public void setContext(DefaultCamelContext context) {
-        this.context = context;
     }
 
     public List<?> getBeans() {
@@ -425,10 +427,6 @@ public class CamelContextFactoryBean extends AbstractCamelContextFactoryBean<Def
 
     public void setCamelStreamCachingStrategy(CamelStreamCachingStrategyDefinition camelStreamCachingStrategy) {
         this.camelStreamCachingStrategy = camelStreamCachingStrategy;
-    }
-
-    public void setCamelJMXAgent(CamelJMXAgentDefinition agent) {
-        camelJMXAgent = agent;
     }
 
     public String getTrace() {
@@ -573,6 +571,10 @@ public class CamelContextFactoryBean extends AbstractCamelContextFactoryBean<Def
         return camelJMXAgent;
     }
 
+    public void setCamelJMXAgent(CamelJMXAgentDefinition agent) {
+        camelJMXAgent = agent;
+    }
+
     public List<RouteBuilderDefinition> getBuilderRefs() {
         return builderRefs;
     }
@@ -610,20 +612,20 @@ public class CamelContextFactoryBean extends AbstractCamelContextFactoryBean<Def
         this.errorHandlerRef = errorHandlerRef;
     }
 
-    public void setDataFormats(DataFormatsDefinition dataFormats) {
-        this.dataFormats = dataFormats;
-    }
-
     public DataFormatsDefinition getDataFormats() {
         return dataFormats;
     }
 
-    public void setOnExceptions(List<OnExceptionDefinition> onExceptions) {
-        this.onExceptions = onExceptions;
+    public void setDataFormats(DataFormatsDefinition dataFormats) {
+        this.dataFormats = dataFormats;
     }
 
     public List<OnExceptionDefinition> getOnExceptions() {
         return onExceptions;
+    }
+
+    public void setOnExceptions(List<OnExceptionDefinition> onExceptions) {
+        this.onExceptions = onExceptions;
     }
 
     public List<OnCompletionDefinition> getOnCompletions() {
@@ -664,5 +666,13 @@ public class CamelContextFactoryBean extends AbstractCamelContextFactoryBean<Def
 
     public void setDependsOn(String dependsOn) {
         this.dependsOn = dependsOn;
+    }
+
+    public List<CamelProxyFactoryDefinition> getProxies() {
+        return proxies;
+    }
+
+    public void setProxies(List<CamelProxyFactoryDefinition> proxies) {
+        this.proxies = proxies;
     }
 }

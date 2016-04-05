@@ -20,6 +20,7 @@ import org.apache.camel.cdi.xml.ApplicationContextFactoryBean;
 import org.apache.camel.cdi.xml.BeanManagerAware;
 import org.apache.camel.cdi.xml.CamelContextFactoryBean;
 import org.apache.camel.core.xml.AbstractCamelFactoryBean;
+import org.apache.camel.core.xml.CamelProxyFactoryDefinition;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.model.RoutesDefinition;
 
@@ -32,6 +33,7 @@ import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashSet;
@@ -66,7 +68,7 @@ final class XmlCdiBeanFactory {
                 Bean<?> bean = manager.createBean(
                     new SyntheticBeanAttributes<>(manager,
                         new SyntheticAnnotated(manager, RoutesDefinition.class, ANY, DEFAULT),
-                        ba -> "Imported routes definition "
+                        ba -> "imported routes definition "
                             + (routes.getId() != null ? "[" + routes.getId() + "] " : "")
                             + "from resource [" + url + "]"),
                     RoutesDefinition.class,
@@ -102,7 +104,7 @@ final class XmlCdiBeanFactory {
         Annotated annotated = new SyntheticAnnotated(manager, DefaultCamelContext.class, annotations);
         return manager.createBean(
             new SyntheticBeanAttributes<>(manager, annotated,
-                ba -> "Imported Camel context "
+                ba -> "imported Camel context "
                     + (factory.getId() != null ? "[" + factory.getId() + "] " : "")
                     + "from resource [" + url + "] "
                     + "with qualifiers " + ba.getQualifiers()),
@@ -125,9 +127,10 @@ final class XmlCdiBeanFactory {
 
     private Set<Bean<?>> camelContextBeans(CamelContextFactoryBean context, URL url) {
         Set<Bean<?>> beans = new HashSet<>();
+        // Only generate a bean for named endpoint definition
+        // TODO: add logging if not
         if (context.getEndpoints() != null)
             context.getEndpoints().stream()
-                // Only generate a bean for named endpoint definition
                 .filter(endpoint -> endpoint.getId() != null)
                 .map(endpoint -> camelContextBean(context, endpoint, url))
                 .forEach(beans::add);
@@ -139,7 +142,12 @@ final class XmlCdiBeanFactory {
                 .map(bean -> camelContextBean(context, bean, url))
                 .forEach(beans::add);
         }
-
+        if (context.getProxies() != null) {
+            context.getProxies().stream()
+                .filter(proxy -> proxy.getId() != null)
+                .map(proxy -> proxyBean(context, proxy, url))
+                .forEach(beans::add);
+        }
         return beans;
     }
 
@@ -154,10 +162,32 @@ final class XmlCdiBeanFactory {
                 // The scope is left @Dependent as the factory takes care of it
                 // depending on the 'singleton' attribute
                 new SyntheticAnnotated(manager, bean.getObjectType(), ANY, NamedLiteral.of(bean.getId())),
-                ba -> "Imported bean [" + bean.getId() + "]" +
+                ba -> "imported bean [" + bean.getId() + "]" +
                     " from resource [" + url + "]" +
                     " with qualifiers " + ba.getQualifiers()),
             bean.getObjectType(),
             (InjectionTargetFactory) b -> new XmlFactoryBeanInjectionTarget<>(bean));
+    }
+
+    private Bean<?> proxyBean(CamelContextFactoryBean context, CamelProxyFactoryDefinition proxy, URL url) {
+        Class type = getAttribute(proxy, "serviceInterface", Class.class);
+        return new XmlProxyFactoryBean<>(
+            manager, context, proxy,
+            new SyntheticBeanAttributes<>(manager,
+                new SyntheticAnnotated(manager, type, APPLICATION_SCOPED, ANY, NamedLiteral.of(proxy.getId())),
+                ba -> "imported bean [" + proxy.getId() + "]" +
+                    " from resource [" + url + "]" +
+                    " with qualifiers " + ba.getQualifiers()));
+    }
+
+    // FIXME: to remove when getters are added to CamelProxyFactoryDefinition
+    static <T> T getAttribute(Object instance, String attribute, Class<T> clazz) {
+        try {
+            Field field = instance.getClass().getDeclaredField(attribute);
+            field.setAccessible(true);
+            return clazz.cast(field.get(instance));
+        } catch (NoSuchFieldException | IllegalAccessException cause) {
+            throw new CreationException(cause);
+        }
     }
 }
