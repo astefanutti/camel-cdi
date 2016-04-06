@@ -19,8 +19,8 @@ package org.apache.camel.cdi;
 import org.apache.camel.cdi.xml.ApplicationContextFactoryBean;
 import org.apache.camel.cdi.xml.BeanManagerAware;
 import org.apache.camel.cdi.xml.CamelContextFactoryBean;
+import org.apache.camel.cdi.xml.CamelProxyFactoryDefinition;
 import org.apache.camel.core.xml.AbstractCamelFactoryBean;
-import org.apache.camel.core.xml.CamelProxyFactoryDefinition;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.model.RoutesDefinition;
 
@@ -33,7 +33,6 @@ import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashSet;
@@ -170,24 +169,12 @@ final class XmlCdiBeanFactory {
     }
 
     private Bean<?> proxyBean(CamelContextFactoryBean context, CamelProxyFactoryDefinition proxy, URL url) {
-        Class type = getAttribute(proxy, "serviceInterface", Class.class);
         return new XmlProxyFactoryBean<>(
             manager, context, proxy,
             new SyntheticBeanAttributes<>(manager,
-                new SyntheticAnnotated(manager, type, APPLICATION_SCOPED, ANY, NamedLiteral.of(proxy.getId())),
+                new SyntheticAnnotated(manager, proxy.getServiceInterface(), APPLICATION_SCOPED, ANY, NamedLiteral.of(proxy.getId())),
                 ba -> "imported bean [" + proxy.getId() + "]" +
                     " from resource [" + url + "]" +
                     " with qualifiers " + ba.getQualifiers()));
-    }
-
-    // FIXME: to remove when getters are added to CamelProxyFactoryDefinition
-    static <T> T getAttribute(Object instance, String attribute, Class<T> clazz) {
-        try {
-            Field field = instance.getClass().getDeclaredField(attribute);
-            field.setAccessible(true);
-            return clazz.cast(field.get(instance));
-        } catch (NoSuchFieldException | IllegalAccessException cause) {
-            throw new CreationException(cause);
-        }
     }
 }

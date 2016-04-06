@@ -21,8 +21,8 @@ import org.apache.camel.Endpoint;
 import org.apache.camel.Producer;
 import org.apache.camel.cdi.xml.BeanManagerAware;
 import org.apache.camel.cdi.xml.CamelContextFactoryBean;
+import org.apache.camel.cdi.xml.CamelProxyFactoryDefinition;
 import org.apache.camel.component.bean.ProxyHelper;
-import org.apache.camel.core.xml.CamelProxyFactoryDefinition;
 import org.apache.camel.util.ObjectHelper;
 import org.apache.camel.util.ServiceHelper;
 
@@ -34,8 +34,6 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
 import java.util.Collections;
 import java.util.Set;
-
-import static org.apache.camel.cdi.XmlCdiBeanFactory.getAttribute;
 
 final class XmlProxyFactoryBean<T> extends BeanAttributesDelegate<T> implements Bean<T> {
 
@@ -56,7 +54,7 @@ final class XmlProxyFactoryBean<T> extends BeanAttributesDelegate<T> implements 
 
     @Override
     public Class<?> getBeanClass() {
-        return getServiceInterface();
+        return proxy.getServiceInterface();
     }
 
     @Override
@@ -73,30 +71,30 @@ final class XmlProxyFactoryBean<T> extends BeanAttributesDelegate<T> implements 
     public T create(CreationalContext<T> creationalContext) {
         try {
             CamelContext context = BeanManagerAware.getCamelContextById(manager,
-                ObjectHelper.isNotEmpty(getCamelContextId())
-                    ? getCamelContextId()
+                ObjectHelper.isNotEmpty(proxy.getCamelContextId())
+                    ? proxy.getCamelContextId()
                     : this.context.getId());
 
             Endpoint endpoint;
-            if (ObjectHelper.isNotEmpty(getServiceRef()))
-                endpoint = context.getRegistry().lookupByNameAndType(getServiceRef(), Endpoint.class);
-            else if (ObjectHelper.isNotEmpty(getServiceUrl()))
-                endpoint = context.getEndpoint(getServiceUrl());
+            if (ObjectHelper.isNotEmpty(proxy.getServiceRef()))
+                endpoint = context.getRegistry().lookupByNameAndType(proxy.getServiceRef(), Endpoint.class);
+            else if (ObjectHelper.isNotEmpty(proxy.getServiceUrl()))
+                endpoint = context.getEndpoint(proxy.getServiceUrl());
             else
                 throw new CreationException("serviceUrl or serviceRef must not be empty!");
 
             if (endpoint == null)
                 throw new CreationException("Could not resolve endpoint: "
-                    + (ObjectHelper.isNotEmpty(getServiceRef())
-                    ? getServiceRef()
-                    : getServiceUrl()));
+                    + (ObjectHelper.isNotEmpty(proxy.getServiceRef())
+                    ? proxy.getServiceRef()
+                    : proxy.getServiceUrl()));
 
             // binding is enabled by default
-            boolean bind = getBinding() != null ? getBinding() : true;
+            boolean bind = proxy.getBinding() != null ? proxy.getBinding() : true;
 
             producer = endpoint.createProducer();
             ServiceHelper.startService(producer);
-            return ProxyHelper.createProxy(endpoint, bind, producer, getServiceInterface());
+            return ProxyHelper.createProxy(endpoint, bind, producer, (Class<T>) proxy.getServiceInterface());
         } catch (Exception cause) {
             throw new CreationException("Error while creating instance for " + this, cause);
         }
@@ -109,25 +107,5 @@ final class XmlProxyFactoryBean<T> extends BeanAttributesDelegate<T> implements 
         } catch (Exception cause) {
             throw ObjectHelper.wrapRuntimeCamelException(cause);
         }
-    }
-
-    private Class<T> getServiceInterface() {
-        return getAttribute(proxy, "serviceInterface", Class.class);
-    }
-
-    private String getServiceUrl() {
-        return getAttribute(proxy, "serviceUrl", String.class);
-    }
-
-    private String getServiceRef() {
-        return getAttribute(proxy, "serviceRef", String.class);
-    }
-
-    private Boolean getBinding() {
-        return getAttribute(proxy, "binding", Boolean.class);
-    }
-
-    private String getCamelContextId() {
-        return getAttribute(proxy, "camelContextId", String.class);
     }
 }
