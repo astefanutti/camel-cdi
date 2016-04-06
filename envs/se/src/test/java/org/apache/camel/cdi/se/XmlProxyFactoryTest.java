@@ -16,12 +16,8 @@
  */
 package org.apache.camel.cdi.se;
 
-import org.apache.camel.ProducerTemplate;
 import org.apache.camel.cdi.CdiCamelExtension;
 import org.apache.camel.cdi.ImportResource;
-import org.apache.camel.cdi.Uri;
-import org.apache.camel.cdi.se.bean.UriEndpointRoute;
-import org.apache.camel.component.mock.MockEndpoint;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -32,16 +28,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import javax.inject.Named;
 import java.nio.file.Paths;
-import java.util.concurrent.TimeUnit;
 
-import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
-@ImportResource("test-routes.xml")
-public class XmlRoutesTest {
+@ImportResource("imported-context.xml")
+public class XmlProxyFactoryTest {
 
     @Deployment
     public static Archive<?> deployment() {
@@ -50,27 +46,21 @@ public class XmlRoutesTest {
             .addPackage(CdiCamelExtension.class.getPackage())
             // Test Camel XML
             .addAsResource(
-                Paths.get("src/test/resources/routes.xml").toFile(),
-                "test-routes.xml")
+                Paths.get("src/test/resources/camel-context-proxy.xml").toFile(),
+                "imported-context.xml")
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
+    @Named
     @Inject
-    @Uri("direct:inbound")
-    private ProducerTemplate inbound;
-
-    @Inject
-    @Uri("mock:outbound")
-    private MockEndpoint outbound;
+    private Service proxy;
 
     @Test
-    public void sendMessageToInbound() throws InterruptedException {
-        outbound.expectedMessageCount(1);
-        outbound.expectedBodiesReceived("message");
+    public void sendMessageToProxy() {
+        String response = proxy.service("request");
 
-        inbound.sendBody("message");
-
-        assertIsSatisfied(2L, TimeUnit.SECONDS, outbound);
+        assertThat("Proxy response is incorrect!",
+            response,is(equalTo("Service called with: [request]")));
     }
 }
