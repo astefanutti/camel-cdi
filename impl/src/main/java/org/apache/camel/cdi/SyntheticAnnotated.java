@@ -42,7 +42,10 @@ final class SyntheticAnnotated implements Annotated {
 
     SyntheticAnnotated(BeanManager manager, Class<?> type, Collection<Annotation> annotations) {
         this.type = type;
-        this.types = Collections.unmodifiableSet(manager.createAnnotatedType(type).getTypeClosure());
+        Set<Type> types = new HashSet<>(manager.createAnnotatedType(type).getTypeClosure());
+        // Weld does not add Object.class for interfaces
+        types.add(Object.class);
+        this.types = Collections.unmodifiableSet(types);
         this.annotations = Collections.unmodifiableSet(new HashSet<>(annotations));
     }
 

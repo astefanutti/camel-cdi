@@ -1,11 +1,11 @@
 <camelContext id="test" xmlns="http://camel.apache.org/schema/spring">
 
     <proxy id="proxy"
-           serviceInterface="org.apache.camel.cdi.se.ProxyService"
-           serviceUrl="direct:start"/>
+           serviceInterface="org.apache.camel.cdi.se.Service"
+           serviceUrl="direct:service"/>
 
     <route>
-        <from uri="direct:start"/>
+        <from uri="direct:service"/>
         <transform>
             <simple>Service called with: [${body}]</simple>
         </transform>

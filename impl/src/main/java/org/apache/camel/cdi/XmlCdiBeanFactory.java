@@ -20,6 +20,7 @@ import org.apache.camel.cdi.xml.ApplicationContextFactoryBean;
 import org.apache.camel.cdi.xml.BeanManagerAware;
 import org.apache.camel.cdi.xml.CamelContextFactoryBean;
 import org.apache.camel.cdi.xml.CamelProxyFactoryDefinition;
+import org.apache.camel.cdi.xml.CamelServiceExporterDefinition;
 import org.apache.camel.core.xml.AbstractCamelFactoryBean;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.model.RoutesDefinition;
@@ -36,6 +37,7 @@ import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import static org.apache.camel.cdi.AnyLiteral.ANY;
@@ -144,7 +146,12 @@ final class XmlCdiBeanFactory {
         if (context.getProxies() != null) {
             context.getProxies().stream()
                 .filter(proxy -> proxy.getId() != null)
-                .map(proxy -> proxyBean(context, proxy, url))
+                .map(proxy -> proxyFactoryBean(context, proxy, url))
+                .forEach(beans::add);
+        }
+        if (context.getExports() != null) {
+            context.getExports().stream()
+                .map(export -> serviceExporterBean(context, export, url))
                 .forEach(beans::add);
         }
         return beans;
@@ -168,13 +175,46 @@ final class XmlCdiBeanFactory {
             (InjectionTargetFactory) b -> new XmlFactoryBeanInjectionTarget<>(bean));
     }
 
-    private Bean<?> proxyBean(CamelContextFactoryBean context, CamelProxyFactoryDefinition proxy, URL url) {
+    private Bean<?> proxyFactoryBean(CamelContextFactoryBean context, CamelProxyFactoryDefinition proxy, URL url) {
         return new XmlProxyFactoryBean<>(
             manager, context, proxy,
             new SyntheticBeanAttributes<>(manager,
-                new SyntheticAnnotated(manager, proxy.getServiceInterface(), APPLICATION_SCOPED, ANY, NamedLiteral.of(proxy.getId())),
+                new SyntheticAnnotated(manager, proxy.getServiceInterface(),
+                    APPLICATION_SCOPED, ANY, NamedLiteral.of(proxy.getId())),
                 ba -> "imported bean [" + proxy.getId() + "]" +
                     " from resource [" + url + "]" +
                     " with qualifiers " + ba.getQualifiers()));
+    }
+
+    private Bean<?> serviceExporterBean(CamelContextFactoryBean context, CamelServiceExporterDefinition exporter, URL url) {
+        Objects.requireNonNull(exporter.getServiceRef(),
+            () -> String.format("Missing [%s] attribute for imported bean [%s] from resource [%s]",
+                "serviceRef", Objects.toString(exporter.getId(), "export"), url));
+
+        Class<?> type;
+        if (exporter.getServiceInterface() != null) {
+            type = exporter.getServiceInterface();
+        } else {
+            Bean<?> bean = manager.resolve(manager.getBeans(exporter.getServiceRef()));
+            if (bean != null) {
+                type = bean.getBeanClass();
+            } else {
+                Objects.requireNonNull(exporter.getServiceInterface(),
+                    () -> String.format("Missing [%s] attribute for imported bean [%s] from resource [%s]",
+                        "serviceInterface", Objects.toString(exporter.getId(), "export"), url));
+                type = exporter.getServiceInterface();
+            }
+        }
+
+        return new XmlServiceExporterBean<>(
+            manager, context, exporter,
+            new SyntheticBeanAttributes<>(manager,
+                new SyntheticAnnotated(manager, type,
+                    APPLICATION_SCOPED, ANY, Startup.Literal.STARTUP,
+                    exporter.getId() != null ? NamedLiteral.of(exporter.getId()) : DEFAULT),
+                ba -> "imported bean [" + Objects.toString(exporter.getId(), "export")  + "]" +
+                    " from resource [" + url + "]" +
+                    " with qualifiers " + ba.getQualifiers()),
+            type);
     }
 }

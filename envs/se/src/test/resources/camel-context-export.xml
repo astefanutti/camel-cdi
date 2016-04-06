@@ -1,0 +1,9 @@
+<camelContext id="test" xmlns="http://camel.apache.org/schema/spring">
+
+    <export id="service" uri="direct:service"
+            serviceRef="implementation"/>
+            <!-- Eager instantiation of bean whose type is an interface
+            does not work in OpenWebBeans -->
+            <!--serviceInterface="org.apache.camel.cdi.se.Service"-->
+
+</camelContext>

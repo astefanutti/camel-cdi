@@ -79,6 +79,7 @@ import static org.apache.camel.cdi.ApplicationScopedLiteral.APPLICATION_SCOPED;
 import static org.apache.camel.cdi.BeanManagerHelper.getReference;
 import static org.apache.camel.cdi.BeanManagerHelper.getReferencesByType;
 import static org.apache.camel.cdi.DefaultLiteral.DEFAULT;
+import static org.apache.camel.cdi.Startup.Literal.STARTUP;
 
 public class CdiCamelExtension implements Extension {
 
@@ -341,6 +342,8 @@ public class CdiCamelExtension implements Extension {
         // the initialization of normal-scoped beans)
         eagerBeans.forEach(type ->
             getReferencesByType(manager, type.getJavaClass(), ANY).toString());
+        manager.getBeans(Object.class, ANY, STARTUP).stream()
+            .forEach(bean -> manager.getReference(bean, bean.getBeanClass(), manager.createCreationalContext(bean)).toString());
 
         // Start Camel contexts
         for (CamelContext context : contexts) {
