@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+    <camelContext id="test" xmlns="http://camel.apache.org/schema/spring"
+                  threadNamePattern="Camel (#camelId#) thread ##counter# - Profile #name#">
+        <threadPoolProfile id="thread-pool-profile"
+                           poolSize="5"/>
+
+        <route>
+            <from uri="direct:inbound"/>
+            <log message="Received [${body}] from [${threadName}]"/>
+            <threads executorServiceRef="thread-pool-profile">
+                <log message="Processing [${body}] with [${threadName}]"/>
+                <transform>
+                    <simple>Processed [${body}] with [${threadName}]</simple>
+                </transform>
+            </threads>
+        </route>
+    </camelContext>
+
+</beans>
