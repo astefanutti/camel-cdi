@@ -43,7 +43,9 @@ final class SyntheticAnnotated implements Annotated {
     SyntheticAnnotated(BeanManager manager, Class<?> type, Collection<Annotation> annotations) {
         this.type = type;
         Set<Type> types = new HashSet<>(manager.createAnnotatedType(type).getTypeClosure());
-        // Weld does not add Object.class for interfaces
+        // Weld does not add Object.class for interfaces as they do not extend Object.class.
+        // Though let's add it so that it's possible to lookup by bean type Object.class
+        // beans whose bean class is an interface (for eager beans for example).
         types.add(Object.class);
         this.types = Collections.unmodifiableSet(types);
         this.annotations = Collections.unmodifiableSet(new HashSet<>(annotations));
