@@ -652,6 +652,14 @@ public class CamelContextFactoryBean extends AbstractCamelContextFactoryBean<Def
         this.shutdownRunningTask = shutdownRunningTask;
     }
 
+    public List<CamelThreadPoolFactoryBean> getThreadPools() {
+        return threadPools;
+    }
+
+    public void setThreadPools(List<CamelThreadPoolFactoryBean> threadPools) {
+        this.threadPools = threadPools;
+    }
+
     public List<ThreadPoolProfileDefinition> getThreadPoolProfiles() {
         return threadPoolProfiles;
     }

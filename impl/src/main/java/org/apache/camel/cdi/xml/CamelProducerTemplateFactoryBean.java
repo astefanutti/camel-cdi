@@ -17,7 +17,9 @@
 package org.apache.camel.cdi.xml;
 
 import org.apache.camel.CamelContext;
+import org.apache.camel.ProducerTemplate;
 import org.apache.camel.core.xml.AbstractCamelProducerTemplateFactoryBean;
+import org.apache.camel.impl.DefaultProducerTemplate;
 
 import javax.enterprise.inject.spi.BeanManager;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -49,5 +51,13 @@ public class CamelProducerTemplateFactoryBean extends AbstractCamelProducerTempl
     @Override
     protected CamelContext discoverDefaultCamelContext() {
         return BeanManagerAware.getDefaultCamelContext(manager);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    // Work-around as DefaultProducerTemplate does not have a default no-args constructor
+    // which leads to OpenWebBeans being unable to create proxies for the corresponding bean
+    public Class getObjectType() {
+        return ProducerTemplate.class;
     }
 }

@@ -16,40 +16,32 @@
  */
 package org.apache.camel.cdi.se;
 
-import org.apache.camel.Endpoint;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.cdi.CdiCamelExtension;
 import org.apache.camel.cdi.ImportResource;
 import org.apache.camel.cdi.Uri;
-import org.apache.camel.component.mock.MockEndpoint;
-import org.apache.camel.component.seda.SedaEndpoint;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.nio.file.Paths;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ExecutorService;
 
-import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.matchesPattern;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
 @ImportResource("imported-context.xml")
-public class XmlEndpointTest {
+public class XmlThreadPoolTest {
 
     @Deployment
     public static Archive<?> deployment() {
@@ -58,51 +50,26 @@ public class XmlEndpointTest {
             .addPackage(CdiCamelExtension.class.getPackage())
             // Test Camel XML
             .addAsResource(
-                Paths.get("src/test/resources/camel-context-endpoint.xml").toFile(),
+                Paths.get("src/test/resources/camel-context-threadPool.xml").toFile(),
                 "imported-context.xml")
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
-    @Produces
-    @Named("queue")
-    private static <T> BlockingQueue<T> queue() {
-        return new MyBlockingQueue<>();
-    }
-
     @Inject
-    @Uri("seda:inbound")
+    @Uri("direct:inbound")
     private ProducerTemplate inbound;
 
-    @Inject
-    @Uri("mock:outbound")
-    private MockEndpoint outbound;
-
-    @Inject
-    @Named("bar")
-    private Endpoint endpoint;
-
     @Test
-    @Ignore("@ApplicationScoped bean proxy cannot be casted to endpoint implementation")
-    public void verifyXmlEndpoint() {
-        assertThat("Endpoint type is incorrect!", endpoint, is(instanceOf(SedaEndpoint.class)));
-        SedaEndpoint seda = (SedaEndpoint) endpoint;
-        assertThat("Endpoint queue is incorrect!",
-            seda.getQueue(), is(instanceOf(MyBlockingQueue.class)));
-        assertThat("Endpoint concurrent consumers count is incorrect!",
-            seda.getConcurrentConsumers(), is(equalTo(10)));
+    public void verifyThreadPool(@Named("thread-pool") ExecutorService executor) {
+        assertThat("Thread pool is incorrect!", executor, is(notNullValue()));
     }
 
     @Test
-    public void sendMessageToInbound() throws InterruptedException {
-        outbound.expectedMessageCount(1);
-        outbound.expectedBodiesReceived("message");
+    public void sendMessageToInbound() {
+        String body = inbound.requestBody((Object) "message", String.class);
 
-        inbound.sendBody("message");
-
-        assertIsSatisfied(2L, TimeUnit.SECONDS, outbound);
+        assertThat("Body is incorrect!", body,
+            matchesPattern("^Processed \\[message] with \\[Camel \\(test\\) thread #\\d+ - Thread Name]$"));
     }
-}
-
-class MyBlockingQueue<E> extends LinkedBlockingQueue<E> {
 }

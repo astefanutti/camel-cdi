@@ -43,6 +43,7 @@ import java.util.Set;
 import static org.apache.camel.cdi.AnyLiteral.ANY;
 import static org.apache.camel.cdi.ApplicationScopedLiteral.APPLICATION_SCOPED;
 import static org.apache.camel.cdi.DefaultLiteral.DEFAULT;
+import static org.apache.camel.cdi.Startup.Literal.STARTUP;
 
 final class XmlCdiBeanFactory {
 
@@ -135,25 +136,31 @@ final class XmlCdiBeanFactory {
                 .filter(endpoint -> endpoint.getId() != null)
                 .map(endpoint -> camelContextBean(context, endpoint, url))
                 .forEach(beans::add);
-        if (context.getBeans() != null) {
+
+        if (context.getBeans() != null)
             context.getBeans().stream()
                 .filter(bean -> AbstractCamelFactoryBean.class.isAssignableFrom(bean.getClass()))
                 .map(AbstractCamelFactoryBean.class::cast)
                 .filter(bean -> bean.getId() != null)
                 .map(bean -> camelContextBean(context, bean, url))
                 .forEach(beans::add);
-        }
-        if (context.getProxies() != null) {
+
+        if (context.getProxies() != null)
             context.getProxies().stream()
                 .filter(proxy -> proxy.getId() != null)
                 .map(proxy -> proxyFactoryBean(context, proxy, url))
                 .forEach(beans::add);
-        }
-        if (context.getExports() != null) {
+
+        if (context.getExports() != null)
             context.getExports().stream()
                 .map(export -> serviceExporterBean(context, export, url))
                 .forEach(beans::add);
-        }
+
+        if (context.getThreadPools() != null)
+            context.getThreadPools().stream()
+                .map(pool -> camelContextBean(context, pool, url))
+                .forEach(beans::add);
+
         return beans;
     }
 
@@ -163,11 +170,18 @@ final class XmlCdiBeanFactory {
         if (bean.getCamelContextId() == null)
             bean.setCamelContextId(context.getId());
 
+        Set<Annotation> annotations = new HashSet<>();
+        annotations.add(ANY);
+        // FIXME: should add @ContextName if the Camel context bean has an explicit id
+        annotations.add(bean.getId() != null ? NamedLiteral.of(bean.getId()) : DEFAULT);
+
+        // TODO: should that be @Singleton to enable injection points with bean instance type?
+        if (bean.isSingleton())
+            annotations.add(APPLICATION_SCOPED);
+
         return manager.createBean(
             new SyntheticBeanAttributes<>(manager,
-                // The scope is left @Dependent as the factory takes care of it
-                // depending on the 'singleton' attribute
-                new SyntheticAnnotated(manager, bean.getObjectType(), ANY, NamedLiteral.of(bean.getId())),
+                new SyntheticAnnotated(manager, bean.getObjectType(), annotations),
                 ba -> "imported bean [" + bean.getId() + "]" +
                     " from resource [" + url + "]" +
                     " with qualifiers " + ba.getQualifiers()),
@@ -210,7 +224,7 @@ final class XmlCdiBeanFactory {
             manager, context, exporter,
             new SyntheticBeanAttributes<>(manager,
                 new SyntheticAnnotated(manager, type,
-                    APPLICATION_SCOPED, ANY, Startup.Literal.STARTUP,
+                    APPLICATION_SCOPED, ANY, STARTUP,
                     exporter.getId() != null ? NamedLiteral.of(exporter.getId()) : DEFAULT),
                 ba -> "imported bean [" + Objects.toString(exporter.getId(), "export")  + "]" +
                     " from resource [" + url + "]" +
