@@ -43,11 +43,11 @@ public class CamelConsumerTemplateFactoryBean extends AbstractCamelConsumerTempl
 
     @Override
     protected CamelContext getCamelContextWithId(String camelContextId) {
-        return BeanManagerAware.getCamelContextById(manager, camelContextId);
+        return BeanManagerHelper.getCamelContextById(manager, camelContextId);
     }
 
     @Override
     protected CamelContext discoverDefaultCamelContext() {
-        return BeanManagerAware.getDefaultCamelContext(manager);
+        return BeanManagerHelper.getDefaultCamelContext(manager);
     }
 }

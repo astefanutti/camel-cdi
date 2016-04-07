@@ -16,10 +16,24 @@
  */
 package org.apache.camel.cdi.xml;
 
+import org.apache.camel.CamelContext;
+
+import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 
-public interface BeanManagerAware {
+final class BeanManagerHelper {
 
-    void setBeanManager(BeanManager manager);
+    private BeanManagerHelper() {
+    }
 
+    static CamelContext getCamelContextById(BeanManager manager, String camelContextId) {
+        // TODO: fallback to @ContextName lookup
+        Bean<?> bean = manager.resolve(manager.getBeans(camelContextId));
+        return (CamelContext) manager.getReference(bean, CamelContext.class, manager.createCreationalContext(bean));
+    }
+
+    static CamelContext getDefaultCamelContext(BeanManager manager) {
+        Bean<?> bean = manager.resolve(manager.getBeans(CamelContext.class));
+        return (CamelContext) manager.getReference(bean, CamelContext.class, manager.createCreationalContext(bean));
+    }
 }

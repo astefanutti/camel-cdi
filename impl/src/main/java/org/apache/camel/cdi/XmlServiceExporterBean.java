@@ -19,7 +19,6 @@ package org.apache.camel.cdi;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Consumer;
 import org.apache.camel.Endpoint;
-import org.apache.camel.cdi.xml.BeanManagerAware;
 import org.apache.camel.cdi.xml.CamelContextFactoryBean;
 import org.apache.camel.cdi.xml.CamelServiceExporterDefinition;
 import org.apache.camel.component.bean.BeanProcessor;
@@ -36,6 +35,9 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
 import java.util.Collections;
 import java.util.Set;
+
+import static org.apache.camel.cdi.BeanManagerHelper.getReferenceByName;
+import static org.apache.camel.util.ObjectHelper.isNotEmpty;
 
 final class XmlServiceExporterBean<T> extends BeanAttributesDelegate<T> implements Bean<T> {
 
@@ -75,10 +77,11 @@ final class XmlServiceExporterBean<T> extends BeanAttributesDelegate<T> implemen
     @Override
     public T create(CreationalContext<T> creationalContext) {
         try {
-            CamelContext context = BeanManagerAware.getCamelContextById(manager,
-                ObjectHelper.isNotEmpty(exporter.getCamelContextId())
+            CamelContext context = getReferenceByName(manager, isNotEmpty(exporter.getCamelContextId())
                     ? exporter.getCamelContextId()
-                    : this.context.getId());
+                    : this.context.getId(),
+                CamelContext.class)
+                .get();
 
             Bean<?> bean = manager.resolve(manager.getBeans(exporter.getServiceRef()));
             if (bean == null)

@@ -35,6 +35,9 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import java.util.Collections;
 import java.util.Set;
 
+import static org.apache.camel.cdi.BeanManagerHelper.getReferenceByName;
+import static org.apache.camel.util.ObjectHelper.isNotEmpty;
+
 final class XmlProxyFactoryBean<T> extends BeanAttributesDelegate<T> implements Bean<T> {
 
     private final BeanManager manager;
@@ -70,10 +73,11 @@ final class XmlProxyFactoryBean<T> extends BeanAttributesDelegate<T> implements 
     @Override
     public T create(CreationalContext<T> creationalContext) {
         try {
-            CamelContext context = BeanManagerAware.getCamelContextById(manager,
-                ObjectHelper.isNotEmpty(proxy.getCamelContextId())
+            CamelContext context = getReferenceByName(manager, isNotEmpty(proxy.getCamelContextId())
                     ? proxy.getCamelContextId()
-                    : this.context.getId());
+                    : this.context.getId(),
+                CamelContext.class)
+                .get();
 
             Endpoint endpoint;
             if (ObjectHelper.isNotEmpty(proxy.getServiceRef()))
