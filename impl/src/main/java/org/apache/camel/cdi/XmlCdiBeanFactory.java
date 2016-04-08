@@ -26,10 +26,8 @@ import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.model.RoutesDefinition;
 
 import javax.enterprise.inject.CreationException;
-import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.InjectionTargetFactory;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -60,58 +58,58 @@ final class XmlCdiBeanFactory {
         return new XmlCdiBeanFactory(manager, environment);
     }
 
-    Set<Bean<?>> beansFrom(URL url) throws JAXBException, IOException {
+    Set<SyntheticBean<?>> beansFrom(URL url) throws JAXBException, IOException {
         try (InputStream xml = url.openStream()) {
             Object node = XmlCdiJaxbContexts.CAMEL_CDI.instance()
                 .createUnmarshaller()
                 .unmarshal(xml);
             if (node instanceof RoutesDefinition) {
                 RoutesDefinition routes = (RoutesDefinition) node;
-                Bean<?> bean = manager.createBean(
-                    new SyntheticBeanAttributes<>(manager,
-                        new SyntheticAnnotated(manager, RoutesDefinition.class, ANY, DEFAULT),
-                        ba -> "imported routes definition "
-                            + (routes.getId() != null ? "[" + routes.getId() + "] " : "")
-                            + "from resource [" + url + "]"),
+                SyntheticBean<?> bean = new SyntheticBean<>(manager,
+                    new SyntheticAnnotated(manager, RoutesDefinition.class, ANY, DEFAULT),
                     RoutesDefinition.class,
-                    (InjectionTargetFactory<RoutesDefinition>) b -> new SyntheticInjectionTarget<>(() -> routes));
+                    new SyntheticInjectionTarget<>(() -> routes),
+                    ba -> "imported routes definition "
+                        + (routes.getId() != null ? "[" + routes.getId() + "] " : "")
+                        + "from resource [" + url + "]");
                 return Collections.singleton(bean);
             } else if (node instanceof ApplicationContextFactoryBean) {
                 ApplicationContextFactoryBean app = (ApplicationContextFactoryBean) node;
-                Set<Bean<?>> beans = new HashSet<>();
+                Set<SyntheticBean<?>> beans = new HashSet<>();
                 for (CamelContextFactoryBean factory : app.getContexts()) {
-                    beans.add(camelContextBean(factory, url));
-                    beans.addAll(camelContextBeans(factory, url));
+                    SyntheticBean<?> bean = camelContextBean(factory, url);
+                    beans.add(bean);
+                    beans.addAll(camelContextBeans(factory, bean, url));
                 }
                 return beans;
             } else if (node instanceof CamelContextFactoryBean) {
                 CamelContextFactoryBean factory = (CamelContextFactoryBean) node;
-                Set<Bean<?>> beans = camelContextBeans(factory, url);
-                beans.add(camelContextBean(factory, url));
+                Set<SyntheticBean<?>> beans = new HashSet<>();
+                SyntheticBean<?> bean = camelContextBean(factory, url);
+                beans.add(bean);
+                beans.addAll(camelContextBeans(factory, bean, url));
                 return beans;
             }
         }
         return Collections.emptySet();
     }
 
-    private Bean<?> camelContextBean(CamelContextFactoryBean factory, URL url) {
+    private SyntheticBean<?> camelContextBean(CamelContextFactoryBean factory, URL url) {
         Set<Annotation> annotations = new HashSet<>();
         annotations.add(ANY);
-        if (factory.getId() != null)
+        if (factory.getId() != null) {
             Collections.addAll(annotations,
                 ContextName.Literal.of(factory.getId()), NamedLiteral.of(factory.getId()));
-        else
+        } else {
             annotations.add(DEFAULT);
+            factory.setImplicitId(true);
+            factory.setId(new CdiCamelContextNameStrategy().getNextName());
+        }
+
         annotations.add(APPLICATION_SCOPED);
-        Annotated annotated = new SyntheticAnnotated(manager, DefaultCamelContext.class, annotations);
-        return manager.createBean(
-            new SyntheticBeanAttributes<>(manager, annotated,
-                ba -> "imported Camel context "
-                    + (factory.getId() != null ? "[" + factory.getId() + "] " : "")
-                    + "from resource [" + url + "] "
-                    + "with qualifiers " + ba.getQualifiers()),
-            DefaultCamelContext.class,
-            (InjectionTargetFactory<DefaultCamelContext>) b -> environment.camelContextInjectionTarget(
+        SyntheticAnnotated annotated = new SyntheticAnnotated(manager, DefaultCamelContext.class, annotations);
+        return new SyntheticBean<>(manager, annotated, DefaultCamelContext.class,
+            environment.camelContextInjectionTarget(
                 new SyntheticInjectionTarget<>(() -> {
                     DefaultCamelContext context = new DefaultCamelContext();
                     factory.setContext(context);
@@ -124,83 +122,85 @@ final class XmlCdiBeanFactory {
                         throw new CreationException(cause);
                     }
                 }),
-                annotated, manager));
+                annotated, manager),
+            ba -> "imported Camel context with "
+                + (factory.isImplicitId() ? "implicit " : "")
+                + "id [" + factory.getId() + "] "
+                + "from resource [" + url + "] "
+                + "with qualifiers " + ba.getQualifiers());
     }
 
-    private Set<Bean<?>> camelContextBeans(CamelContextFactoryBean context, URL url) {
-        Set<Bean<?>> beans = new HashSet<>();
+    private Set<SyntheticBean<?>> camelContextBeans(CamelContextFactoryBean factory, Bean<?> context, URL url) {
+        // TODO: WARN log if the definition doesn't have an id
+        Set<SyntheticBean<?>> beans = new HashSet<>();
         // Only generate a bean for named endpoint definition
-        // TODO: add logging if not
-        if (context.getEndpoints() != null)
-            context.getEndpoints().stream()
+        if (factory.getEndpoints() != null)
+            factory.getEndpoints().stream()
                 .filter(endpoint -> endpoint.getId() != null)
                 .map(endpoint -> camelContextBean(context, endpoint, url))
                 .forEach(beans::add);
 
-        if (context.getBeans() != null)
-            context.getBeans().stream()
+        if (factory.getBeans() != null)
+            factory.getBeans().stream()
                 .filter(bean -> AbstractCamelFactoryBean.class.isAssignableFrom(bean.getClass()))
                 .map(AbstractCamelFactoryBean.class::cast)
                 .filter(bean -> bean.getId() != null)
                 .map(bean -> camelContextBean(context, bean, url))
                 .forEach(beans::add);
 
-        if (context.getProxies() != null)
-            context.getProxies().stream()
+        if (factory.getProxies() != null)
+            factory.getProxies().stream()
                 .filter(proxy -> proxy.getId() != null)
                 .map(proxy -> proxyFactoryBean(context, proxy, url))
                 .forEach(beans::add);
 
-        if (context.getExports() != null)
-            context.getExports().stream()
+        if (factory.getExports() != null)
+            factory.getExports().stream()
                 .map(export -> serviceExporterBean(context, export, url))
                 .forEach(beans::add);
 
-        if (context.getThreadPools() != null)
-            context.getThreadPools().stream()
+        if (factory.getThreadPools() != null)
+            factory.getThreadPools().stream()
                 .map(pool -> camelContextBean(context, pool, url))
                 .forEach(beans::add);
 
         return beans;
     }
 
-    private Bean<?> camelContextBean(CamelContextFactoryBean context, AbstractCamelFactoryBean<?> bean, URL url) {
+    private SyntheticBean<?> camelContextBean(Bean<?> context, AbstractCamelFactoryBean<?> bean, URL url) {
         if (bean instanceof BeanManagerAware)
             ((BeanManagerAware) bean).setBeanManager(manager);
-        if (bean.getCamelContextId() == null)
-            bean.setCamelContextId(context.getId());
 
         Set<Annotation> annotations = new HashSet<>();
         annotations.add(ANY);
-        // FIXME: should add @ContextName if the Camel context bean has an explicit id
+        // FIXME: should add @ContextName if the Camel context bean has it
         annotations.add(bean.getId() != null ? NamedLiteral.of(bean.getId()) : DEFAULT);
 
         // TODO: should that be @Singleton to enable injection points with bean instance type?
         if (bean.isSingleton())
             annotations.add(APPLICATION_SCOPED);
 
-        return manager.createBean(
-            new SyntheticBeanAttributes<>(manager,
-                new SyntheticAnnotated(manager, bean.getObjectType(), annotations),
-                ba -> "imported bean [" + bean.getId() + "]" +
-                    " from resource [" + url + "]" +
-                    " with qualifiers " + ba.getQualifiers()),
+        return new SyntheticBean<>(manager,
+            new SyntheticAnnotated(manager, bean.getObjectType(), annotations),
             bean.getObjectType(),
-            (InjectionTargetFactory) b -> new XmlFactoryBeanInjectionTarget<>(bean));
+            new XmlFactoryBeanInjectionTarget<>(manager, bean, context),
+            ba -> "imported bean [" + bean.getId() + "] "
+                + "from resource [" + url + "] "
+                + "with qualifiers " + ba.getQualifiers());
     }
 
-    private Bean<?> proxyFactoryBean(CamelContextFactoryBean context, CamelProxyFactoryDefinition proxy, URL url) {
-        return new XmlProxyFactoryBean<>(
-            manager, context, proxy,
-            new SyntheticBeanAttributes<>(manager,
-                new SyntheticAnnotated(manager, proxy.getServiceInterface(),
-                    APPLICATION_SCOPED, ANY, NamedLiteral.of(proxy.getId())),
-                ba -> "imported bean [" + proxy.getId() + "]" +
-                    " from resource [" + url + "]" +
-                    " with qualifiers " + ba.getQualifiers()));
+    private SyntheticBean<?> proxyFactoryBean(Bean<?> context, CamelProxyFactoryDefinition proxy, URL url) {
+        return new XmlProxyFactoryBean<>(manager,
+            new SyntheticAnnotated(manager, proxy.getServiceInterface(),
+                APPLICATION_SCOPED, ANY, NamedLiteral.of(proxy.getId())),
+            proxy.getServiceInterface(),
+            ba -> "imported bean [" + proxy.getId() + "] "
+                + "from resource [" + url + "] "
+                + "with qualifiers " + ba.getQualifiers(),
+            context, proxy);
     }
 
-    private Bean<?> serviceExporterBean(CamelContextFactoryBean context, CamelServiceExporterDefinition exporter, URL url) {
+    private SyntheticBean<?> serviceExporterBean(Bean<?> context, CamelServiceExporterDefinition exporter, URL url) {
         Objects.requireNonNull(exporter.getServiceRef(),
             () -> String.format("Missing [%s] attribute for imported bean [%s] from resource [%s]",
                 "serviceRef", Objects.toString(exporter.getId(), "export"), url));
@@ -220,15 +220,14 @@ final class XmlCdiBeanFactory {
             }
         }
 
-        return new XmlServiceExporterBean<>(
-            manager, context, exporter,
-            new SyntheticBeanAttributes<>(manager,
-                new SyntheticAnnotated(manager, type,
-                    APPLICATION_SCOPED, ANY, STARTUP,
-                    exporter.getId() != null ? NamedLiteral.of(exporter.getId()) : DEFAULT),
-                ba -> "imported bean [" + Objects.toString(exporter.getId(), "export")  + "]" +
-                    " from resource [" + url + "]" +
-                    " with qualifiers " + ba.getQualifiers()),
-            type);
+        return new XmlServiceExporterBean<>(manager,
+            new SyntheticAnnotated(manager, type,
+                APPLICATION_SCOPED, ANY, STARTUP,
+                exporter.getId() != null ? NamedLiteral.of(exporter.getId()) : DEFAULT),
+            type,
+            ba -> "imported bean [" + Objects.toString(exporter.getId(), "export") + "] "
+                + "from resource [" + url + "] "
+                + "with qualifiers " + ba.getQualifiers(),
+            context, exporter);
     }
 }

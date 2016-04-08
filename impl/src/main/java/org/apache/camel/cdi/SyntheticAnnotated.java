@@ -47,8 +47,12 @@ final class SyntheticAnnotated implements Annotated {
         // Though let's add it so that it's possible to lookup by bean type Object.class
         // beans whose bean class is an interface (for eager beans for example).
         types.add(Object.class);
-        this.types = Collections.unmodifiableSet(types);
-        this.annotations = Collections.unmodifiableSet(new HashSet<>(annotations));
+        this.types = types;
+        this.annotations = new HashSet<>(annotations);
+    }
+
+    <A extends Annotation> void addAnnotation(A annotation) {
+        annotations.add(annotation);
     }
 
     @Override
@@ -58,12 +62,12 @@ final class SyntheticAnnotated implements Annotated {
 
     @Override
     public Set<Type> getTypeClosure() {
-        return types;
+        return Collections.unmodifiableSet(types);
     }
 
     @Override
     public Set<Annotation> getAnnotations() {
-        return annotations;
+        return Collections.unmodifiableSet(annotations);
     }
 
     @Override

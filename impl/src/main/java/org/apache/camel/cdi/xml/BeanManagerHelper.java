@@ -27,7 +27,6 @@ final class BeanManagerHelper {
     }
 
     static CamelContext getCamelContextById(BeanManager manager, String camelContextId) {
-        // TODO: fallback to @ContextName lookup
         Bean<?> bean = manager.resolve(manager.getBeans(camelContextId));
         return (CamelContext) manager.getReference(bean, CamelContext.class, manager.createCreationalContext(bean));
     }

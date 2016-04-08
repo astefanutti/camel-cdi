@@ -18,23 +18,56 @@ package org.apache.camel.cdi;
 
 import javax.enterprise.inject.spi.BeanAttributes;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-class BeanAttributesDecorator<T> extends BeanAttributesDelegate<T> implements BeanAttributes<T> {
+class BeanAttributesDecorator<T> implements BeanAttributes<T> {
+
+    private final BeanAttributes<T> attributes;
 
     private final Set<Annotation> qualifiers;
 
     BeanAttributesDecorator(BeanAttributes<T> attributes, Set<? extends Annotation> qualifiers) {
-        super(attributes);
+        this.attributes = attributes;
         Set<Annotation> annotations = new HashSet<>(attributes.getQualifiers());
         annotations.addAll(qualifiers);
         this.qualifiers = Collections.unmodifiableSet(annotations);
     }
 
     @Override
+    public Set<Type> getTypes() {
+        return attributes.getTypes();
+    }
+
+    @Override
     public Set<Annotation> getQualifiers() {
         return qualifiers;
+    }
+
+    @Override
+    public Class<? extends Annotation> getScope() {
+        return attributes.getScope();
+    }
+
+    @Override
+    public String getName() {
+        return attributes.getName();
+    }
+
+    @Override
+    public Set<Class<? extends Annotation>> getStereotypes() {
+        return attributes.getStereotypes();
+    }
+
+    @Override
+    public boolean isAlternative() {
+        return attributes.isAlternative();
+    }
+
+    @Override
+    public String toString() {
+        return attributes.toString();
     }
 }

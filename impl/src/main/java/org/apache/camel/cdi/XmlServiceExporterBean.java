@@ -19,7 +19,6 @@ package org.apache.camel.cdi;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Consumer;
 import org.apache.camel.Endpoint;
-import org.apache.camel.cdi.xml.CamelContextFactoryBean;
 import org.apache.camel.cdi.xml.CamelServiceExporterDefinition;
 import org.apache.camel.component.bean.BeanProcessor;
 import org.apache.camel.util.CamelContextHelper;
@@ -32,18 +31,17 @@ import javax.enterprise.inject.UnsatisfiedResolutionException;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanAttributes;
 import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.InjectionPoint;
-import java.util.Collections;
-import java.util.Set;
+import java.util.function.Function;
 
+import static org.apache.camel.cdi.BeanManagerHelper.getReference;
 import static org.apache.camel.cdi.BeanManagerHelper.getReferenceByName;
 import static org.apache.camel.util.ObjectHelper.isNotEmpty;
 
-final class XmlServiceExporterBean<T> extends BeanAttributesDelegate<T> implements Bean<T> {
+final class XmlServiceExporterBean<T> extends SyntheticBean<T> {
 
     private final BeanManager manager;
 
-    private final CamelContextFactoryBean context;
+    private final Bean<?> context;
 
     private final CamelServiceExporterDefinition exporter;
 
@@ -51,8 +49,8 @@ final class XmlServiceExporterBean<T> extends BeanAttributesDelegate<T> implemen
 
     private Consumer consumer;
 
-    XmlServiceExporterBean(BeanManager manager, CamelContextFactoryBean context, CamelServiceExporterDefinition exporter, BeanAttributes<T> attributes, Class<?> type) {
-        super(attributes);
+    XmlServiceExporterBean(BeanManager manager, SyntheticAnnotated annotated, Class<?> type, Function<BeanAttributes<T>, String> toString, Bean<?> context, CamelServiceExporterDefinition exporter) {
+        super(manager, annotated, type, null, toString);
         this.manager = manager;
         this.context = context;
         this.exporter = exporter;
@@ -60,28 +58,11 @@ final class XmlServiceExporterBean<T> extends BeanAttributesDelegate<T> implemen
     }
 
     @Override
-    public Class<?> getBeanClass() {
-        return type;
-    }
-
-    @Override
-    public Set<InjectionPoint> getInjectionPoints() {
-        return Collections.emptySet();
-    }
-
-    @Override
-    public boolean isNullable() {
-        return false;
-    }
-
-    @Override
     public T create(CreationalContext<T> creationalContext) {
         try {
-            CamelContext context = getReferenceByName(manager, isNotEmpty(exporter.getCamelContextId())
-                    ? exporter.getCamelContextId()
-                    : this.context.getId(),
-                CamelContext.class)
-                .get();
+            CamelContext context = isNotEmpty(exporter.getCamelContextId())
+                ? getReferenceByName(manager, exporter.getCamelContextId(), CamelContext.class).get()
+                : getReference(manager, CamelContext.class, this.context);
 
             Bean<?> bean = manager.resolve(manager.getBeans(exporter.getServiceRef()));
             if (bean == null)

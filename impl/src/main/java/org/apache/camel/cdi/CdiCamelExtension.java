@@ -40,7 +40,6 @@ import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.AfterDeploymentValidation;
-import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
@@ -48,7 +47,6 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.DeploymentException;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.InjectionTargetFactory;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.enterprise.inject.spi.ProcessBeanAttributes;
 import javax.enterprise.inject.spi.ProcessInjectionPoint;
@@ -204,7 +202,7 @@ public class CdiCamelExtension implements Extension {
 
     private void afterBeanDiscovery(@Observes AfterBeanDiscovery abd, BeanManager manager) throws Exception {
         // The set of programmatic beans to be added
-        Set<Bean<?>> beans = new HashSet<>();
+        Set<SyntheticBean<?>> beans = new HashSet<>();
 
         // Add beans from Camel XML resources
         // TODO: add definition errors instead of throwing exceptions
@@ -262,8 +260,8 @@ public class CdiCamelExtension implements Extension {
             Bean<?> context = contexts.iterator().next();
             if (!context.getQualifiers().contains(DEFAULT)) {
                 // Only decorate if that's a programmatic bean
-                if (beans.remove(context))
-                    beans.add(new BeanDecorator<>(context, DEFAULT));
+                if (context instanceof SyntheticBean)
+                    ((SyntheticBean<?>) context).addQualifier(DEFAULT);
             }
         }
 
@@ -293,15 +291,12 @@ public class CdiCamelExtension implements Extension {
         cdiEventEndpoints.values().forEach(abd::addObserverMethod);
     }
 
-    private Bean<?> camelContextBean(BeanManager manager, Annotation... qualifiers) {
-        Annotated annotated = new SyntheticAnnotated(manager, DefaultCamelContext.class, qualifiers);
-        return manager.createBean(
-            new SyntheticBeanAttributes<>(manager, annotated,
-                ba -> "Default Camel context bean with qualifiers " + ba.getQualifiers()),
-            DefaultCamelContext.class,
-            (InjectionTargetFactory<DefaultCamelContext>) bean ->
-                environment.camelContextInjectionTarget(
-                    new SyntheticInjectionTarget<>(DefaultCamelContext::new), annotated, manager));
+    private SyntheticBean<?> camelContextBean(BeanManager manager, Annotation... qualifiers) {
+        SyntheticAnnotated annotated = new SyntheticAnnotated(manager, DefaultCamelContext.class, qualifiers);
+        return new SyntheticBean<>(manager, annotated, DefaultCamelContext.class,
+            environment.camelContextInjectionTarget(
+                new SyntheticInjectionTarget<>(DefaultCamelContext::new), annotated, manager),
+            ba -> "Default Camel context bean with qualifiers " + ba.getQualifiers());
     }
 
     private Bean<?> camelProducerBean(BeanManager manager, AnnotatedMethod<? super CdiCamelFactory> am, Set<Annotation> qualifiers) {

@@ -16,31 +16,42 @@
  */
 package org.apache.camel.cdi;
 
+import org.apache.camel.CamelContext;
 import org.apache.camel.core.xml.AbstractCamelFactoryBean;
+import org.apache.camel.util.ObjectHelper;
 
 import javax.enterprise.inject.CreationException;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
 
 final class XmlFactoryBeanInjectionTarget<T> extends SyntheticInjectionTarget<T> {
 
-    XmlFactoryBeanInjectionTarget(AbstractCamelFactoryBean<T> factory) {
-        super(() -> {
-            try {
-                return factory.getObject();
-            } catch (Exception cause) {
-                throw new CreationException(cause);
+    XmlFactoryBeanInjectionTarget(BeanManager manager, AbstractCamelFactoryBean<T> factory, Bean<?> context) {
+        super(
+            () -> {
+                try {
+                    if (ObjectHelper.isEmpty(factory.getCamelContextId()))
+                        factory.setCamelContext(
+                            BeanManagerHelper.getReference(manager, CamelContext.class, context));
+                    return factory.getObject();
+                } catch (Exception cause) {
+                    throw new CreationException(cause);
+                }
+            },
+            i -> {
+                try {
+                    factory.afterPropertiesSet();
+                } catch (Exception cause) {
+                    throw new CreationException(cause);
+                }
+            },
+            i -> {
+                try {
+                    factory.destroy();
+                } catch (Exception cause) {
+                    throw new RuntimeException(cause);
+                }
             }
-        }, i -> {
-            try {
-                factory.afterPropertiesSet();
-            } catch (Exception cause) {
-                throw new CreationException(cause);
-            }
-        }, i -> {
-            try {
-                factory.destroy();
-            } catch (Exception cause) {
-                throw new RuntimeException(cause);
-            }
-        });
+        );
     }
 }

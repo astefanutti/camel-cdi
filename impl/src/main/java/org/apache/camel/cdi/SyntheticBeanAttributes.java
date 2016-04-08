@@ -17,7 +17,6 @@
 package org.apache.camel.cdi;
 
 import javax.enterprise.context.Dependent;
-import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.BeanAttributes;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Named;
@@ -28,54 +27,48 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-final class SyntheticBeanAttributes<T> implements BeanAttributes<T> {
+class SyntheticBeanAttributes<T> implements BeanAttributes<T> {
 
-    private final Set<Type> types;
+    private final BeanManager manager;
 
-    private final Set<Annotation> qualifiers;
-
-    private final Class<? extends Annotation> scope;
-
-    private final String name;
+    private final SyntheticAnnotated annotated;
 
     private final Function<BeanAttributes<T>, String> toString;
 
-    SyntheticBeanAttributes(BeanManager manager, Annotated annotated, Function<BeanAttributes<T>, String> toString) {
-        this.types = annotated.getTypeClosure();
+    SyntheticBeanAttributes(BeanManager manager, SyntheticAnnotated annotated, Function<BeanAttributes<T>, String> toString) {
+        this.manager = manager;
+        this.annotated = annotated;
+        this.toString = toString;
+    }
 
-        this.qualifiers = annotated.getAnnotations().stream()
-            .filter(a -> manager.isQualifier(a.annotationType()))
-            .collect(Collectors.toSet());
+    <A extends Annotation> void addQualifier(A qualifier) {
+        annotated.addAnnotation(qualifier);
+    }
 
-        this.scope = annotated.getAnnotations().stream()
+    @Override
+    public Class<? extends Annotation> getScope() {
+        return annotated.getAnnotations().stream()
             .map(Annotation::annotationType)
             .filter(manager::isScope)
             .findAny()
             .orElse(Dependent.class);
+    }
 
-        this.name = annotated.getAnnotations().stream()
+    @Override
+    public Set<Annotation> getQualifiers() {
+        return annotated.getAnnotations().stream()
+            .filter(a -> manager.isQualifier(a.annotationType()))
+            .collect(Collectors.toSet());
+    }
+
+    @Override
+    public String getName() {
+        return annotated.getAnnotations().stream()
             .filter(a -> Named.class.equals(a.annotationType()))
             .map(Named.class::cast)
             .map(Named::value)
             .findFirst()
             .orElse(null);
-
-        this.toString = toString;
-    }
-
-    @Override
-    public Class<? extends Annotation> getScope() {
-        return scope;
-    }
-
-    @Override
-    public Set<Annotation> getQualifiers() {
-        return qualifiers;
-    }
-
-    @Override
-    public String getName() {
-        return name;
     }
 
     @Override
@@ -85,7 +78,7 @@ final class SyntheticBeanAttributes<T> implements BeanAttributes<T> {
 
     @Override
     public Set<Type> getTypes() {
-        return types;
+        return annotated.getTypeClosure();
     }
 
     @Override

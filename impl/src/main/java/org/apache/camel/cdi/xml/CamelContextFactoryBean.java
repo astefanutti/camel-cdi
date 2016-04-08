@@ -214,6 +214,9 @@ public class CamelContextFactoryBean extends AbstractCamelContextFactoryBean<Def
     @XmlTransient
     private BeanManager manager;
 
+    @XmlTransient
+    private boolean implicitId;
+
     @Override
     public Class<DefaultCamelContext> getObjectType() {
         return DefaultCamelContext.class;
@@ -690,5 +693,13 @@ public class CamelContextFactoryBean extends AbstractCamelContextFactoryBean<Def
 
     public void setExports(List<CamelServiceExporterDefinition> exports) {
         this.exports = exports;
+    }
+
+    public boolean isImplicitId() {
+        return implicitId;
+    }
+
+    public void setImplicitId(boolean implicitId) {
+        this.implicitId = implicitId;
     }
 }

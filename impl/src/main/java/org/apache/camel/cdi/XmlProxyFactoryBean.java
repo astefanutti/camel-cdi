@@ -19,8 +19,6 @@ package org.apache.camel.cdi;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Endpoint;
 import org.apache.camel.Producer;
-import org.apache.camel.cdi.xml.BeanManagerAware;
-import org.apache.camel.cdi.xml.CamelContextFactoryBean;
 import org.apache.camel.cdi.xml.CamelProxyFactoryDefinition;
 import org.apache.camel.component.bean.ProxyHelper;
 import org.apache.camel.util.ObjectHelper;
@@ -31,53 +29,35 @@ import javax.enterprise.inject.CreationException;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanAttributes;
 import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.InjectionPoint;
-import java.util.Collections;
-import java.util.Set;
+import java.util.function.Function;
 
+import static org.apache.camel.cdi.BeanManagerHelper.getReference;
 import static org.apache.camel.cdi.BeanManagerHelper.getReferenceByName;
 import static org.apache.camel.util.ObjectHelper.isNotEmpty;
 
-final class XmlProxyFactoryBean<T> extends BeanAttributesDelegate<T> implements Bean<T> {
+final class XmlProxyFactoryBean<T> extends SyntheticBean<T> {
 
     private final BeanManager manager;
 
-    private final CamelContextFactoryBean context;
+    private final Bean<?> context;
 
     private final CamelProxyFactoryDefinition proxy;
 
     private Producer producer;
 
-    XmlProxyFactoryBean(BeanManager manager, CamelContextFactoryBean context, CamelProxyFactoryDefinition proxy, BeanAttributes<T> attributes) {
-        super(attributes);
+    XmlProxyFactoryBean(BeanManager manager, SyntheticAnnotated annotated, Class<?> type, Function<BeanAttributes<T>, String> toString, Bean<?> context, CamelProxyFactoryDefinition proxy) {
+        super(manager, annotated, type, null, toString);
         this.manager = manager;
         this.context = context;
         this.proxy = proxy;
     }
 
     @Override
-    public Class<?> getBeanClass() {
-        return proxy.getServiceInterface();
-    }
-
-    @Override
-    public Set<InjectionPoint> getInjectionPoints() {
-        return Collections.emptySet();
-    }
-
-    @Override
-    public boolean isNullable() {
-        return false;
-    }
-
-    @Override
     public T create(CreationalContext<T> creationalContext) {
         try {
-            CamelContext context = getReferenceByName(manager, isNotEmpty(proxy.getCamelContextId())
-                    ? proxy.getCamelContextId()
-                    : this.context.getId(),
-                CamelContext.class)
-                .get();
+            CamelContext context = isNotEmpty(proxy.getCamelContextId())
+                ? getReferenceByName(manager, proxy.getCamelContextId(), CamelContext.class).get()
+                : getReference(manager, CamelContext.class, this.context);
 
             Endpoint endpoint;
             if (ObjectHelper.isNotEmpty(proxy.getServiceRef()))
