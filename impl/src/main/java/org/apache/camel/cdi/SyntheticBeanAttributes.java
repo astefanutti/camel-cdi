@@ -24,7 +24,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 class SyntheticBeanAttributes<T> implements BeanAttributes<T> {
@@ -33,12 +32,9 @@ class SyntheticBeanAttributes<T> implements BeanAttributes<T> {
 
     private final SyntheticAnnotated annotated;
 
-    private final Function<BeanAttributes<T>, String> toString;
-
-    SyntheticBeanAttributes(BeanManager manager, SyntheticAnnotated annotated, Function<BeanAttributes<T>, String> toString) {
+    SyntheticBeanAttributes(BeanManager manager, SyntheticAnnotated annotated) {
         this.manager = manager;
         this.annotated = annotated;
-        this.toString = toString;
     }
 
     <A extends Annotation> void addQualifier(A qualifier) {
@@ -84,10 +80,5 @@ class SyntheticBeanAttributes<T> implements BeanAttributes<T> {
     @Override
     public boolean isAlternative() {
         return false;
-    }
-
-    @Override
-    public String toString() {
-        return toString.apply(this);
     }
 }

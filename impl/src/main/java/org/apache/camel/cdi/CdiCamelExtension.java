@@ -296,7 +296,7 @@ public class CdiCamelExtension implements Extension {
         return new SyntheticBean<>(manager, annotated, DefaultCamelContext.class,
             environment.camelContextInjectionTarget(
                 new SyntheticInjectionTarget<>(DefaultCamelContext::new), annotated, manager),
-            ba -> "Default Camel context bean with qualifiers " + ba.getQualifiers());
+            bean -> "Default Camel context bean with qualifiers " + bean.getQualifiers());
     }
 
     private Bean<?> camelProducerBean(BeanManager manager, AnnotatedMethod<? super CdiCamelFactory> am, Set<Annotation> qualifiers) {

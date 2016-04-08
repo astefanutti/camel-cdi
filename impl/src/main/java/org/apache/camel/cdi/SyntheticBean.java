@@ -18,7 +18,6 @@ package org.apache.camel.cdi;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanAttributes;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
@@ -32,10 +31,13 @@ class SyntheticBean<T> extends SyntheticBeanAttributes<T> implements Bean<T> {
 
     private final InjectionTarget<T> target;
 
-    SyntheticBean(BeanManager manager, SyntheticAnnotated annotated, Class<?> type, InjectionTarget<T> target, Function<BeanAttributes<T>, String> toString) {
-        super(manager, annotated, toString);
+    private final Function<Bean<T>, String> toString;
+
+    SyntheticBean(BeanManager manager, SyntheticAnnotated annotated, Class<?> type, InjectionTarget<T> target, Function<Bean<T>, String> toString) {
+        super(manager, annotated);
         this.type = type;
         this.target = target;
+        this.toString = toString;
     }
 
     @Override
@@ -69,5 +71,10 @@ class SyntheticBean<T> extends SyntheticBeanAttributes<T> implements Bean<T> {
     @Override
     public boolean isNullable() {
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return toString.apply(this);
     }
 }

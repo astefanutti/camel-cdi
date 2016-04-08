@@ -69,7 +69,7 @@ final class XmlCdiBeanFactory {
                     new SyntheticAnnotated(manager, RoutesDefinition.class, ANY, DEFAULT),
                     RoutesDefinition.class,
                     new SyntheticInjectionTarget<>(() -> routes),
-                    ba -> "imported routes definition "
+                    b -> "imported routes definition "
                         + (routes.getId() != null ? "[" + routes.getId() + "] " : "")
                         + "from resource [" + url + "]");
                 return Collections.singleton(bean);
@@ -123,11 +123,11 @@ final class XmlCdiBeanFactory {
                     }
                 }),
                 annotated, manager),
-            ba -> "imported Camel context with "
+            bean -> "imported Camel context with "
                 + (factory.isImplicitId() ? "implicit " : "")
                 + "id [" + factory.getId() + "] "
                 + "from resource [" + url + "] "
-                + "with qualifiers " + ba.getQualifiers());
+                + "with qualifiers " + bean.getQualifiers());
     }
 
     private Set<SyntheticBean<?>> camelContextBeans(CamelContextFactoryBean factory, Bean<?> context, URL url) {
@@ -167,26 +167,26 @@ final class XmlCdiBeanFactory {
         return beans;
     }
 
-    private SyntheticBean<?> camelContextBean(Bean<?> context, AbstractCamelFactoryBean<?> bean, URL url) {
-        if (bean instanceof BeanManagerAware)
-            ((BeanManagerAware) bean).setBeanManager(manager);
+    private SyntheticBean<?> camelContextBean(Bean<?> context, AbstractCamelFactoryBean<?> factory, URL url) {
+        if (factory instanceof BeanManagerAware)
+            ((BeanManagerAware) factory).setBeanManager(manager);
 
         Set<Annotation> annotations = new HashSet<>();
         annotations.add(ANY);
         // FIXME: should add @ContextName if the Camel context bean has it
-        annotations.add(bean.getId() != null ? NamedLiteral.of(bean.getId()) : DEFAULT);
+        annotations.add(factory.getId() != null ? NamedLiteral.of(factory.getId()) : DEFAULT);
 
         // TODO: should that be @Singleton to enable injection points with bean instance type?
-        if (bean.isSingleton())
+        if (factory.isSingleton())
             annotations.add(APPLICATION_SCOPED);
 
         return new SyntheticBean<>(manager,
-            new SyntheticAnnotated(manager, bean.getObjectType(), annotations),
-            bean.getObjectType(),
-            new XmlFactoryBeanInjectionTarget<>(manager, bean, context),
-            ba -> "imported bean [" + bean.getId() + "] "
+            new SyntheticAnnotated(manager, factory.getObjectType(), annotations),
+            factory.getObjectType(),
+            new XmlFactoryBeanInjectionTarget<>(manager, factory, context),
+            bean -> "imported bean [" + factory.getId() + "] "
                 + "from resource [" + url + "] "
-                + "with qualifiers " + ba.getQualifiers());
+                + "with qualifiers " + bean.getQualifiers());
     }
 
     private SyntheticBean<?> proxyFactoryBean(Bean<?> context, CamelProxyFactoryDefinition proxy, URL url) {
@@ -194,9 +194,9 @@ final class XmlCdiBeanFactory {
             new SyntheticAnnotated(manager, proxy.getServiceInterface(),
                 APPLICATION_SCOPED, ANY, NamedLiteral.of(proxy.getId())),
             proxy.getServiceInterface(),
-            ba -> "imported bean [" + proxy.getId() + "] "
+            bean -> "imported bean [" + proxy.getId() + "] "
                 + "from resource [" + url + "] "
-                + "with qualifiers " + ba.getQualifiers(),
+                + "with qualifiers " + bean.getQualifiers(),
             context, proxy);
     }
 
@@ -225,9 +225,9 @@ final class XmlCdiBeanFactory {
                 APPLICATION_SCOPED, ANY, STARTUP,
                 exporter.getId() != null ? NamedLiteral.of(exporter.getId()) : DEFAULT),
             type,
-            ba -> "imported bean [" + Objects.toString(exporter.getId(), "export") + "] "
+            bean -> "imported bean [" + Objects.toString(exporter.getId(), "export") + "] "
                 + "from resource [" + url + "] "
-                + "with qualifiers " + ba.getQualifiers(),
+                + "with qualifiers " + bean.getQualifiers(),
             context, exporter);
     }
 }

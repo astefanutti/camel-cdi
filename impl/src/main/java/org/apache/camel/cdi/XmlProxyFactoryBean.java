@@ -27,7 +27,6 @@ import org.apache.camel.util.ServiceHelper;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.CreationException;
 import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanAttributes;
 import javax.enterprise.inject.spi.BeanManager;
 import java.util.function.Function;
 
@@ -45,7 +44,7 @@ final class XmlProxyFactoryBean<T> extends SyntheticBean<T> {
 
     private Producer producer;
 
-    XmlProxyFactoryBean(BeanManager manager, SyntheticAnnotated annotated, Class<?> type, Function<BeanAttributes<T>, String> toString, Bean<?> context, CamelProxyFactoryDefinition proxy) {
+    XmlProxyFactoryBean(BeanManager manager, SyntheticAnnotated annotated, Class<?> type, Function<Bean<T>, String> toString, Bean<?> context, CamelProxyFactoryDefinition proxy) {
         super(manager, annotated, type, null, toString);
         this.manager = manager;
         this.context = context;

@@ -29,7 +29,6 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.CreationException;
 import javax.enterprise.inject.UnsatisfiedResolutionException;
 import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanAttributes;
 import javax.enterprise.inject.spi.BeanManager;
 import java.util.function.Function;
 
@@ -49,7 +48,7 @@ final class XmlServiceExporterBean<T> extends SyntheticBean<T> {
 
     private Consumer consumer;
 
-    XmlServiceExporterBean(BeanManager manager, SyntheticAnnotated annotated, Class<?> type, Function<BeanAttributes<T>, String> toString, Bean<?> context, CamelServiceExporterDefinition exporter) {
+    XmlServiceExporterBean(BeanManager manager, SyntheticAnnotated annotated, Class<?> type, Function<Bean<T>, String> toString, Bean<?> context, CamelServiceExporterDefinition exporter) {
         super(manager, annotated, type, null, toString);
         this.manager = manager;
         this.context = context;
