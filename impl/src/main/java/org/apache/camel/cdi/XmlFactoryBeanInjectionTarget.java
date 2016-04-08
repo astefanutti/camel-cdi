@@ -33,18 +33,13 @@ final class XmlFactoryBeanInjectionTarget<T> extends SyntheticInjectionTarget<T>
                     if (ObjectHelper.isEmpty(factory.getCamelContextId()))
                         factory.setCamelContext(
                             BeanManagerHelper.getReference(manager, CamelContext.class, context));
+                    factory.afterPropertiesSet();
                     return factory.getObject();
                 } catch (Exception cause) {
                     throw new CreationException(cause);
                 }
             },
-            i -> {
-                try {
-                    factory.afterPropertiesSet();
-                } catch (Exception cause) {
-                    throw new CreationException(cause);
-                }
-            },
+            i -> {},
             i -> {
                 try {
                     factory.destroy();
