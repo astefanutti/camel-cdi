@@ -18,6 +18,7 @@ package org.apache.camel.cdi;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.Endpoint;
+import org.apache.camel.FailedToCreateProducerException;
 import org.apache.camel.Producer;
 import org.apache.camel.cdi.xml.CamelProxyFactoryDefinition;
 import org.apache.camel.component.bean.ProxyHelper;
@@ -41,8 +42,6 @@ final class XmlProxyFactoryBean<T> extends SyntheticBean<T> {
     private final Bean<?> context;
 
     private final CamelProxyFactoryDefinition proxy;
-
-    private Producer producer;
 
     XmlProxyFactoryBean(BeanManager manager, SyntheticAnnotated annotated, Class<?> type, Function<Bean<T>, String> toString, Bean<?> context, CamelProxyFactoryDefinition proxy) {
         super(manager, annotated, type, null, toString);
@@ -75,9 +74,16 @@ final class XmlProxyFactoryBean<T> extends SyntheticBean<T> {
             // binding is enabled by default
             boolean bind = proxy.getBinding() != null ? proxy.getBinding() : true;
 
-            producer = endpoint.createProducer();
-            ServiceHelper.startService(producer);
-            return ProxyHelper.createProxy(endpoint, bind, producer, (Class<T>) proxy.getServiceInterface());
+            try {
+                // Start the endpoint before we create the producer
+                ServiceHelper.startService(endpoint);
+                Producer producer = endpoint.createProducer();
+                // Add and start the producer
+                context.addService(producer, true, true);
+                return ProxyHelper.createProxy(endpoint, bind, producer, (Class<T>) proxy.getServiceInterface());
+            } catch (Exception cause) {
+                throw new FailedToCreateProducerException(endpoint, cause);
+            }
         } catch (Exception cause) {
             throw new CreationException("Error while creating instance for " + this, cause);
         }
@@ -85,10 +91,7 @@ final class XmlProxyFactoryBean<T> extends SyntheticBean<T> {
 
     @Override
     public void destroy(T instance, CreationalContext<T> creationalContext) {
-        try {
-            ServiceHelper.stopService(producer);
-        } catch (Exception cause) {
-            throw ObjectHelper.wrapRuntimeCamelException(cause);
-        }
+        // We let the Camel context manage the lifecycle of the consumer and
+        // shut it down when Camel stops.
     }
 }

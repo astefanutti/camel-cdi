@@ -19,10 +19,10 @@ package org.apache.camel.cdi;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Consumer;
 import org.apache.camel.Endpoint;
+import org.apache.camel.FailedToCreateConsumerException;
 import org.apache.camel.cdi.xml.CamelServiceExporterDefinition;
 import org.apache.camel.component.bean.BeanProcessor;
 import org.apache.camel.util.CamelContextHelper;
-import org.apache.camel.util.ObjectHelper;
 import org.apache.camel.util.ServiceHelper;
 
 import javax.enterprise.context.spi.CreationalContext;
@@ -45,8 +45,6 @@ final class XmlServiceExporterBean<T> extends SyntheticBean<T> {
     private final CamelServiceExporterDefinition exporter;
 
     private final Class<?> type;
-
-    private Consumer consumer;
 
     XmlServiceExporterBean(BeanManager manager, SyntheticAnnotated annotated, Class<?> type, Function<Bean<T>, String> toString, Bean<?> context, CamelServiceExporterDefinition exporter) {
         super(manager, annotated, type, null, toString);
@@ -71,8 +69,15 @@ final class XmlServiceExporterBean<T> extends SyntheticBean<T> {
             T service = (T) manager.getReference(bean, type, manager.createCreationalContext(bean));
 
             Endpoint endpoint = CamelContextHelper.getMandatoryEndpoint(context, exporter.getUri());
-            consumer = endpoint.createConsumer(new BeanProcessor(service, context));
-            ServiceHelper.startService(consumer);
+            try {
+                // need to start endpoint before we create consumer
+                ServiceHelper.startService(endpoint);
+                Consumer consumer = endpoint.createConsumer(new BeanProcessor(service, context));
+                // add and start consumer
+                context.addService(consumer, true, true);
+            } catch (Exception cause) {
+                throw new FailedToCreateConsumerException(endpoint, cause);
+            }
 
             return service;
         } catch (Exception cause) {
@@ -82,10 +87,7 @@ final class XmlServiceExporterBean<T> extends SyntheticBean<T> {
 
     @Override
     public void destroy(T instance, CreationalContext<T> creationalContext) {
-        try {
-            ServiceHelper.stopService(consumer);
-        } catch (Exception cause) {
-            throw ObjectHelper.wrapRuntimeCamelException(cause);
-        }
+        // We let the Camel context manage the lifecycle of the consumer and
+        // shut it down when Camel stops.
     }
 }
