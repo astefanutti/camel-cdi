@@ -24,8 +24,10 @@ import org.apache.deltaspike.cdise.api.CdiContainerLoader;
 
 import javax.enterprise.inject.UnsatisfiedResolutionException;
 import javax.enterprise.inject.Vetoed;
+import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -50,7 +52,6 @@ public class Main extends MainSupport {
     public static void main(String... args) throws Exception {
         Main main = new Main();
         instance = main;
-        main.enableHangupSupport();
         main.run(args);
     }
 
@@ -87,6 +88,17 @@ public class Main extends MainSupport {
         cdiContainer = container;
         super.doStart();
         postProcessContext();
+        warnIfNoCamelFound();
+    }
+
+    private void warnIfNoCamelFound() {
+        BeanManager manager = cdiContainer.getBeanManager();
+        Set<Bean<?>> contexts = manager.getBeans(CamelContext.class);
+        // Warn if the default CDI Camel context has no routes
+        if (contexts.size() == 1 && BeanManagerHelper.getReference(manager, CamelContext.class, contexts.iterator().next()).getRoutes().isEmpty()) {
+            LOG.warn("Camel CDI main has started with no Camel routes! "
+                + "You may add some RouteBuilder beans to your project.");
+        }
     }
 
     @Override
