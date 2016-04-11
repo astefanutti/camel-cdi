@@ -20,6 +20,7 @@ import org.apache.camel.cdi.xml.ApplicationContextFactoryBean;
 import org.apache.camel.cdi.xml.BeanManagerAware;
 import org.apache.camel.cdi.xml.CamelContextFactoryBean;
 import org.apache.camel.cdi.xml.CamelProxyFactoryDefinition;
+import org.apache.camel.cdi.xml.CamelRestContextFactoryBean;
 import org.apache.camel.cdi.xml.CamelServiceExporterDefinition;
 import org.apache.camel.core.xml.AbstractCamelFactoryBean;
 import org.apache.camel.impl.DefaultCamelContext;
@@ -35,6 +36,7 @@ import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -65,6 +67,7 @@ final class XmlCdiBeanFactory {
                 .unmarshal(xml);
             if (node instanceof RoutesDefinition) {
                 RoutesDefinition routes = (RoutesDefinition) node;
+                // TODO: extract in a separate method
                 SyntheticBean<?> bean = new SyntheticBean<>(manager,
                     new SyntheticAnnotated(manager, RoutesDefinition.class, ANY, DEFAULT),
                     RoutesDefinition.class,
@@ -81,6 +84,10 @@ final class XmlCdiBeanFactory {
                     beans.add(bean);
                     beans.addAll(camelContextBeans(factory, bean, url));
                 }
+                for (CamelRestContextFactoryBean factory : app.getRestContexts()) {
+                    SyntheticBean<?> bean = restContextBean(factory, url);
+                    beans.add(bean);
+                }
                 return beans;
             } else if (node instanceof CamelContextFactoryBean) {
                 CamelContextFactoryBean factory = (CamelContextFactoryBean) node;
@@ -89,6 +96,9 @@ final class XmlCdiBeanFactory {
                 beans.add(bean);
                 beans.addAll(camelContextBeans(factory, bean, url));
                 return beans;
+            } else if (node instanceof CamelRestContextFactoryBean) {
+                CamelRestContextFactoryBean factory = (CamelRestContextFactoryBean) node;
+                return Collections.singleton(restContextBean(factory, url));
             }
         }
         return Collections.emptySet();
@@ -229,5 +239,20 @@ final class XmlCdiBeanFactory {
                 + "from resource [" + url + "] "
                 + "with qualifiers " + bean.getQualifiers(),
             context, exporter);
+    }
+
+    private SyntheticBean<?> restContextBean(CamelRestContextFactoryBean factory, URL url) {
+        Objects.requireNonNull(factory.getId(),
+            () -> String.format("Missing [%s] attribute for imported bean [%s] from resource [%s]",
+                "id", "restContext", url));
+
+        return new SyntheticBean<>(manager,
+            new SyntheticAnnotated(manager, List.class, ANY, NamedLiteral.of(factory.getId())),
+            List.class,
+            new SyntheticInjectionTarget<>(factory::getObject),
+            bean -> "imported restContext with "
+                + "id [" + factory.getId() + "] "
+                + "from resource [" + url + "] "
+                + "with qualifiers " + bean.getQualifiers());
     }
 }

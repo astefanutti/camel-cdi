@@ -1,0 +1,13 @@
+<camelContext id="test" xmlns="http://camel.apache.org/schema/spring">
+
+    <restContextRef ref="rest"/>
+
+    <route>
+        <from uri="direct:inbound"/>
+        <transform>
+            <simple>Response to ${body}</simple>
+        </transform>
+        <to uri="mock:outbound"/>
+    </route>
+
+</camelContext>

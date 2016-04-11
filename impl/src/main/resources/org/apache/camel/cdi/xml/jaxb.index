@@ -20,6 +20,7 @@ CamelContextFactoryBean
 CamelEndpointFactoryBean
 CamelProducerTemplateFactoryBean
 CamelRedeliveryPolicyFactoryBean
+CamelRestContextFactoryBean
 CamelThreadPoolFactoryBean
 ErrorHandlerDefinition
 ErrorHandlerType

@@ -16,6 +16,9 @@
  */
 package org.apache.camel.cdi.xml;
 
+import org.apache.camel.model.IdentifiedType;
+import org.apache.camel.model.rest.RestDefinition;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -23,29 +26,30 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
 
-@XmlRootElement(name = "beans", namespace = "http://www.springframework.org/schema/beans")
+@XmlRootElement(name = "restContext")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ApplicationContextFactoryBean {
+public class CamelRestContextFactoryBean extends IdentifiedType {
 
-    @XmlElement(name = "camelContext")
-    private List<CamelContextFactoryBean> contexts = new ArrayList<>();
+    @XmlElement(name = "rest", required = true)
+    private List<RestDefinition> rests = new ArrayList<>();
 
-    @XmlElement(name = "restContext")
-    private List<CamelRestContextFactoryBean> restContexts = new ArrayList<>();
-
-    public List<CamelContextFactoryBean> getContexts() {
-        return contexts;
+    public List<RestDefinition> getObject() {
+        return rests;
     }
 
-    public void setContexts(List<CamelContextFactoryBean> contexts) {
-        this.contexts = contexts;
+    public Class<?> getObjectType() {
+        return rests.getClass();
     }
 
-    public List<CamelRestContextFactoryBean> getRestContexts() {
-        return restContexts;
+    public boolean isSingleton() {
+        return true;
     }
 
-    public void setRestContexts(List<CamelRestContextFactoryBean> restContexts) {
-        this.restContexts = restContexts;
+    public List<RestDefinition> getRests() {
+        return rests;
+    }
+
+    public void setRests(List<RestDefinition> rests) {
+        this.rests = rests;
     }
 }
