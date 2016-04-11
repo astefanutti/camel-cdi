@@ -44,6 +44,7 @@ import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.DefinitionException;
 import javax.enterprise.inject.spi.DeploymentException;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.InjectionPoint;
@@ -55,6 +56,8 @@ import javax.enterprise.inject.spi.ProcessObserverMethod;
 import javax.enterprise.inject.spi.ProcessProducer;
 import javax.enterprise.inject.spi.WithAnnotations;
 import javax.inject.Named;
+import javax.xml.bind.JAXBException;
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -200,12 +203,11 @@ public class CdiCamelExtension implements Extension {
                 : pom.getObserverMethod().getObservedQualifiers());
     }
 
-    private void afterBeanDiscovery(@Observes AfterBeanDiscovery abd, BeanManager manager) throws Exception {
+    private void afterBeanDiscovery(@Observes AfterBeanDiscovery abd, BeanManager manager) {
         // The set of programmatic beans to be added
         Set<SyntheticBean<?>> beans = new HashSet<>();
 
         // Add beans from Camel XML resources
-        // TODO: add definition errors instead of throwing exceptions
         for (ImportResource resource : resources) {
             XmlCdiBeanFactory factory = XmlCdiBeanFactory.with(manager, environment);
             for (String path : resource.value()) {
@@ -218,6 +220,10 @@ public class CdiCamelExtension implements Extension {
                     if (cause.getMessage().contains("AbstractCamelContextFactoryBean"))
                         logger.error("Importing Camel XML requires to have the 'camel-core-xml' dependency in the classpath!");
                     throw cause;
+                } catch (JAXBException | IOException cause) {
+                    abd.addDefinitionError(new DeploymentException("Error while imported resource [" + url + "]", cause));
+                } catch (DefinitionException exception) {
+                    abd.addDefinitionError(exception);
                 }
             }
         }
