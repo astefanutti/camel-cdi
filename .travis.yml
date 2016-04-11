@@ -22,8 +22,7 @@ install:
 
 script:
   - mvn -B test -Pjacoco -Pweld -Pstandalone
-# Deactivated until OWB-1126 is fixed
-#  - mvn -B test -Pjacoco -Powb -pl envs/se
+  - mvn -B test -Pjacoco -Powb -pl envs/se
   - mvn -B test -Pjacoco -Pwildfly-8.x -pl envs/ee
   - mvn -B test -Pjacoco -Pwildfly-9.x -pl envs/ee
   - mvn -B test -Pjacoco -Pwildfly-10.x -pl envs/ee
