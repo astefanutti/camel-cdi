@@ -14,7 +14,6 @@
     <properties>
         <karaf.version>4.0.4</karaf.version>
         <pax-exam.version>4.8.0</pax-exam.version>
-        <gravia.version>1.1.0.Beta43</gravia.version>
         <skipTests>true</skipTests>
     </properties>
 
@@ -43,11 +42,17 @@
 
     <dependencies>
 
-        <!-- CDI -->
+        <!-- CDI and OSGi API -->
 
         <dependency>
             <groupId>javax.enterprise</groupId>
             <artifactId>cdi-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>${osgi.version}</version>
         </dependency>
 
         <!-- Camel CDI Samples -->
@@ -202,42 +207,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Arquillian, Gravia & JBoss OSGi -->
-
-        <dependency>
-            <groupId>org.jboss.arquillian.container</groupId>
-            <artifactId>arquillian-container-karaf-managed</artifactId>
-            <version>${arquillian-osgi.version}</version>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.jboss.arquillian.container</groupId>
-                    <artifactId>arquillian-container-osgi</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jboss.arquillian.osgi</groupId>
-            <artifactId>arquillian-osgi-bundle</artifactId>
-            <version>${arquillian-osgi.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jboss.gravia</groupId>
-            <artifactId>gravia-arquillian-container-managed</artifactId>
-            <version>${gravia.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jboss.osgi.metadata</groupId>
-            <artifactId>jbosgi-metadata</artifactId>
-            <version>4.0.0.CR1</version>
-            <scope>test</scope>
-        </dependency>
-
     </dependencies>
 
     <build>
@@ -267,73 +236,8 @@
             </plugin>
 
             <plugin>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>unpack-karaf</id>
-                        <phase>process-test-resources</phase>
-                        <goals>
-                            <goal>unpack</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>org.apache.karaf</groupId>
-                                    <artifactId>apache-karaf</artifactId>
-                                    <version>${karaf.version}</version>
-                                    <type>tar.gz</type>
-                                    <outputDirectory>${project.build.directory}</outputDirectory>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>unpack-karaf-patch</id>
-                        <phase>process-test-resources</phase>
-                        <goals>
-                            <goal>unpack</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>org.jboss.gravia</groupId>
-                                    <artifactId>gravia-container-karaf-patch</artifactId>
-                                    <version>${gravia.version}</version>
-                                    <type>tar.gz</type>
-                                    <outputDirectory>${project.build.directory}/apache-karaf-${karaf.version}
-                                    </outputDirectory>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <inherited>false</inherited>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <phase>process-test-resources</phase>
-                        <configuration>
-                            <target>
-                                <copy file="src/test/resources/users.properties" todir="${project.build.directory}/apache-karaf-${karaf.version}/etc" overwrite="true" />
-                            </target>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <!-- TODO: to be removed once the test passes -->
-                    <excludes>
-                        <exclude>**/CdiArquillianKarafTest.java</exclude>
-                    </excludes>
                     <forkCount>1</forkCount>
                     <reuseForks>false</reuseForks>
                     <systemPropertyVariables>
