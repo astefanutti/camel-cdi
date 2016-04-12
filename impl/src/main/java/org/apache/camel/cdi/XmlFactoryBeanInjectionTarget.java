@@ -21,6 +21,7 @@ import org.apache.camel.core.xml.AbstractCamelFactoryBean;
 import org.apache.camel.util.ObjectHelper;
 
 import javax.enterprise.inject.CreationException;
+import javax.enterprise.inject.InjectionException;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 
@@ -44,7 +45,7 @@ final class XmlFactoryBeanInjectionTarget<T> extends SyntheticInjectionTarget<T>
                 try {
                     factory.destroy();
                 } catch (Exception cause) {
-                    throw new RuntimeException(cause);
+                    throw new InjectionException(cause);
                 }
             }
         );
