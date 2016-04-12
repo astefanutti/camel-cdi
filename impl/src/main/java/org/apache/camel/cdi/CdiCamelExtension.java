@@ -61,7 +61,6 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -211,17 +210,14 @@ public class CdiCamelExtension implements Extension {
         for (ImportResource resource : resources) {
             XmlCdiBeanFactory factory = XmlCdiBeanFactory.with(manager, environment);
             for (String path : resource.value()) {
-                URL url = ResourceHelper.getResource(path);
-                if (url == null)
-                    continue;
                 try {
-                    beans.addAll(factory.beansFrom(url));
+                    beans.addAll(factory.beansFrom(path));
                 } catch (NoClassDefFoundError cause) {
                     if (cause.getMessage().contains("AbstractCamelContextFactoryBean"))
                         logger.error("Importing Camel XML requires to have the 'camel-core-xml' dependency in the classpath!");
                     throw cause;
                 } catch (JAXBException | IOException cause) {
-                    abd.addDefinitionError(new DeploymentException("Error while imported resource [" + url + "]", cause));
+                    abd.addDefinitionError(new DeploymentException("Error while importing resource [" + ResourceHelper.getResource(path) + "]", cause));
                 } catch (DefinitionException exception) {
                     abd.addDefinitionError(exception);
                 }
