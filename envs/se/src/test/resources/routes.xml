@@ -1,6 +1,0 @@
-<routes id="routes" xmlns="http://camel.apache.org/schema/spring">
-    <route id="xml-route">
-        <from uri="direct:inbound"/>
-        <to uri="mock:outbound"/>
-    </route>
-</routes>

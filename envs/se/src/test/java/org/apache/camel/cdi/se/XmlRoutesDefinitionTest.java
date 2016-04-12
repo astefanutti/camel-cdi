@@ -40,7 +40,7 @@ import java.util.concurrent.TimeUnit;
 import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
 
 @RunWith(Arquillian.class)
-@ImportResource("test-routes.xml")
+@ImportResource("imported-routes.xml")
 public class XmlRoutesDefinitionTest {
 
     @Deployment
@@ -50,8 +50,8 @@ public class XmlRoutesDefinitionTest {
             .addPackage(CdiCamelExtension.class.getPackage())
             // Test Camel XML
             .addAsResource(
-                Paths.get("src/test/resources/routes.xml").toFile(),
-                "test-routes.xml")
+                Paths.get("src/test/resources/camel-context-routes.xml").toFile(),
+                "imported-routes.xml")
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
