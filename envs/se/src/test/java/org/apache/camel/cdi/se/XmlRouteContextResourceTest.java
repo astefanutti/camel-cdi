@@ -37,8 +37,11 @@ import java.util.concurrent.TimeUnit;
 import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
 
 @RunWith(Arquillian.class)
-@ImportResource("imported-context.xml")
-public class XmlImportTest {
+@ImportResource({
+    "imported-context.xml",
+    "imported-route-context.xml"
+})
+public class XmlRouteContextResourceTest {
 
     @Deployment
     public static Archive<?> deployment() {
@@ -47,11 +50,11 @@ public class XmlImportTest {
             .addPackage(CdiCamelExtension.class.getPackage())
             // Test Camel XML
             .addAsResource(
-                Paths.get("src/test/resources/camel-context-importRef.xml").toFile(),
+                Paths.get("src/test/resources/camel-context-routeContextRef.xml").toFile(),
                 "imported-context.xml")
             .addAsResource(
-                Paths.get("src/test/resources/camel-context-import.xml").toFile(),
-                "camel-context-import.xml")
+                Paths.get("src/test/resources/camel-context-routeContext.xml").toFile(),
+                "imported-route-context.xml")
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }

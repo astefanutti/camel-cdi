@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+    <!-- Test with Camel CDI resource import -->
+    <!--<import resource="imported-route-context.xml"/>-->
+
+    <camelContext id="test" xmlns="http://camel.apache.org/schema/spring">
+
+        <routeContextRef ref="import"/>
+
+        <route>
+            <from uri="direct:outbound"/>
+            <transform>
+                <simple>Response to ${body}</simple>
+            </transform>
+            <to uri="mock:outbound"/>
+        </route>
+
+    </camelContext>
+
+</beans>
