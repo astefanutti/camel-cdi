@@ -17,6 +17,8 @@
 package org.apache.camel.cdi;
 
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.CreationException;
+import javax.enterprise.inject.InjectionException;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
@@ -47,10 +49,14 @@ class SyntheticBean<T> extends SyntheticBeanAttributes<T> implements Bean<T> {
 
     @Override
     public T create(CreationalContext<T> creationalContext) {
-        T instance = target.produce(creationalContext);
-        target.inject(instance, creationalContext);
-        target.postConstruct(instance);
-        return instance;
+        try {
+            T instance = target.produce(creationalContext);
+            target.inject(instance, creationalContext);
+            target.postConstruct(instance);
+            return instance;
+        } catch (Exception cause) {
+            throw new CreationException("Error while instantiating " + this, cause);
+        }
     }
 
     @Override
@@ -58,6 +64,8 @@ class SyntheticBean<T> extends SyntheticBeanAttributes<T> implements Bean<T> {
         try {
             target.preDestroy(instance);
             target.dispose(instance);
+        } catch (Exception cause) {
+            throw new InjectionException("Error while destroying " + this, cause);
         } finally {
             creationalContext.release();
         }
