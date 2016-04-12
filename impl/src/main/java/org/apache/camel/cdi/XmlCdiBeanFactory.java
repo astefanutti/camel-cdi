@@ -82,15 +82,7 @@ final class XmlCdiBeanFactory {
                 .unmarshal(xml);
             if (node instanceof RoutesDefinition) {
                 RoutesDefinition routes = (RoutesDefinition) node;
-                // TODO: extract in a separate method
-                SyntheticBean<?> bean = new SyntheticBean<>(manager,
-                    new SyntheticAnnotated(manager, RoutesDefinition.class, ANY, DEFAULT),
-                    RoutesDefinition.class,
-                    new SyntheticInjectionTarget<>(() -> routes),
-                    b -> "imported routes definition "
-                        + (routes.getId() != null ? "[" + routes.getId() + "] " : "")
-                        + "from resource [" + url + "]");
-                return Collections.singleton(bean);
+                return Collections.singleton(routesDefinitionBean(routes, url));
             } else if (node instanceof ApplicationContextFactoryBean) {
                 ApplicationContextFactoryBean app = (ApplicationContextFactoryBean) node;
                 Set<SyntheticBean<?>> beans = new HashSet<>();
@@ -298,5 +290,15 @@ final class XmlCdiBeanFactory {
                 + "id [" + factory.getId() + "] "
                 + "from resource [" + url + "] "
                 + "with qualifiers " + bean.getQualifiers());
+    }
+
+    private SyntheticBean<?> routesDefinitionBean(RoutesDefinition definition, URL url) {
+        return new SyntheticBean<>(manager,
+            new SyntheticAnnotated(manager, RoutesDefinition.class, ANY, DEFAULT),
+            RoutesDefinition.class,
+            new SyntheticInjectionTarget<>(() -> definition),
+            b -> "imported routes definition "
+                + (definition.getId() != null ? "[" + definition.getId() + "] " : "")
+                + "from resource [" + url + "]");
     }
 }
