@@ -34,10 +34,10 @@ public class ApplicationContextFactoryBean {
     private List<CamelImportDefinition> imports = new ArrayList<>();
 
     @XmlElement(name = "restContext")
-    private List<CamelRestContextFactoryBean> restContexts = new ArrayList<>();
+    private List<CamelRestContextDefinition> restContexts = new ArrayList<>();
 
     @XmlElement(name = "routeContext")
-    private List<CamelRouteContextFactoryBean> routeContexts = new ArrayList<>();
+    private List<CamelRouteContextDefinition> routeContexts = new ArrayList<>();
 
     public List<CamelContextFactoryBean> getContexts() {
         return contexts;
@@ -55,19 +55,19 @@ public class ApplicationContextFactoryBean {
         this.imports = imports;
     }
 
-    public List<CamelRestContextFactoryBean> getRestContexts() {
+    public List<CamelRestContextDefinition> getRestContexts() {
         return restContexts;
     }
 
-    public void setRestContexts(List<CamelRestContextFactoryBean> restContexts) {
+    public void setRestContexts(List<CamelRestContextDefinition> restContexts) {
         this.restContexts = restContexts;
     }
 
-    public List<CamelRouteContextFactoryBean> getRouteContexts() {
+    public List<CamelRouteContextDefinition> getRouteContexts() {
         return routeContexts;
     }
 
-    public void setRouteContexts(List<CamelRouteContextFactoryBean> routeContexts) {
+    public void setRouteContexts(List<CamelRouteContextDefinition> routeContexts) {
         this.routeContexts = routeContexts;
     }
 }

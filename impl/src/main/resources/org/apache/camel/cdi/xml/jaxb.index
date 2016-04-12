@@ -21,8 +21,8 @@ CamelEndpointFactoryBean
 CamelImportDefinition
 CamelProducerTemplateFactoryBean
 CamelRedeliveryPolicyFactoryBean
-CamelRestContextFactoryBean
-CamelRouteContextFactoryBean
+CamelRestContextDefinition
+CamelRouteContextDefinition
 CamelThreadPoolFactoryBean
 ErrorHandlerDefinition
 ErrorHandlerType

@@ -17,7 +17,7 @@
 package org.apache.camel.cdi.xml;
 
 import org.apache.camel.model.IdentifiedType;
-import org.apache.camel.model.rest.RestDefinition;
+import org.apache.camel.model.RouteDefinition;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -26,30 +26,18 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
 
-@XmlRootElement(name = "restContext")
+@XmlRootElement(name = "routeContext")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class CamelRestContextFactoryBean extends IdentifiedType {
+public class CamelRouteContextDefinition extends IdentifiedType {
 
-    @XmlElement(name = "rest", required = true)
-    private List<RestDefinition> rests = new ArrayList<>();
+    @XmlElement(name = "route", required = true)
+    private List<RouteDefinition> routes = new ArrayList<>();
 
-    public List<RestDefinition> getObject() {
-        return rests;
+    public List<RouteDefinition> getRoutes() {
+        return routes;
     }
 
-    public Class<?> getObjectType() {
-        return rests.getClass();
-    }
-
-    public boolean isSingleton() {
-        return true;
-    }
-
-    public List<RestDefinition> getRests() {
-        return rests;
-    }
-
-    public void setRests(List<RestDefinition> rests) {
-        this.rests = rests;
+    public void setRoutes(List<RouteDefinition> routes) {
+        this.routes = routes;
     }
 }

@@ -21,8 +21,8 @@ import org.apache.camel.cdi.xml.BeanManagerAware;
 import org.apache.camel.cdi.xml.CamelContextFactoryBean;
 import org.apache.camel.cdi.xml.CamelImportDefinition;
 import org.apache.camel.cdi.xml.CamelProxyFactoryDefinition;
-import org.apache.camel.cdi.xml.CamelRestContextFactoryBean;
-import org.apache.camel.cdi.xml.CamelRouteContextFactoryBean;
+import org.apache.camel.cdi.xml.CamelRestContextDefinition;
+import org.apache.camel.cdi.xml.CamelRouteContextDefinition;
 import org.apache.camel.cdi.xml.CamelServiceExporterDefinition;
 import org.apache.camel.core.xml.AbstractCamelFactoryBean;
 import org.apache.camel.impl.DefaultCamelContext;
@@ -105,11 +105,11 @@ final class XmlCdiBeanFactory {
                     String base = url.getProtocol() + "://" + url.getHost() + path;
                     beans.addAll(beansFrom(base + "/" + definition.getResource()));
                 }
-                for (CamelRestContextFactoryBean factory : app.getRestContexts()) {
+                for (CamelRestContextDefinition factory : app.getRestContexts()) {
                     SyntheticBean<?> bean = restContextBean(factory, url);
                     beans.add(bean);
                 }
-                for (CamelRouteContextFactoryBean factory : app.getRouteContexts()) {
+                for (CamelRouteContextDefinition factory : app.getRouteContexts()) {
                     beans.add(routeContextBean(factory, url));
                 }
                 return beans;
@@ -120,11 +120,11 @@ final class XmlCdiBeanFactory {
                 beans.add(bean);
                 beans.addAll(camelContextBeans(factory, bean, url));
                 return beans;
-            } else if (node instanceof CamelRestContextFactoryBean) {
-                CamelRestContextFactoryBean factory = (CamelRestContextFactoryBean) node;
+            } else if (node instanceof CamelRestContextDefinition) {
+                CamelRestContextDefinition factory = (CamelRestContextDefinition) node;
                 return Collections.singleton(restContextBean(factory, url));
-            } else if (node instanceof CamelRouteContextFactoryBean) {
-                CamelRouteContextFactoryBean factory = (CamelRouteContextFactoryBean) node;
+            } else if (node instanceof CamelRouteContextDefinition) {
+                CamelRouteContextDefinition factory = (CamelRouteContextDefinition) node;
                 return Collections.singleton(routeContextBean(factory, url));
             }
         }
@@ -268,7 +268,7 @@ final class XmlCdiBeanFactory {
             context, exporter);
     }
 
-    private SyntheticBean<?> restContextBean(CamelRestContextFactoryBean factory, URL url) {
+    private SyntheticBean<?> restContextBean(CamelRestContextDefinition factory, URL url) {
         Objects.requireNonNull(factory.getId(),
             () -> String.format("Missing [%s] attribute for imported bean [%s] from resource [%s]",
                 "id", "restContext", url));
@@ -277,14 +277,14 @@ final class XmlCdiBeanFactory {
             // TODO: should ideally be declared with generic type closure
             new SyntheticAnnotated(manager, List.class, ANY, NamedLiteral.of(factory.getId())),
             List.class,
-            new SyntheticInjectionTarget<>(factory::getObject),
+            new SyntheticInjectionTarget<>(factory::getRests),
             bean -> "imported restContext with "
                 + "id [" + factory.getId() + "] "
                 + "from resource [" + url + "] "
                 + "with qualifiers " + bean.getQualifiers());
     }
 
-    private SyntheticBean<?> routeContextBean(CamelRouteContextFactoryBean factory, URL url) {
+    private SyntheticBean<?> routeContextBean(CamelRouteContextDefinition factory, URL url) {
         Objects.requireNonNull(factory.getId(),
             () -> String.format("Missing [%s] attribute for imported bean [%s] from resource [%s]",
                 "id", "routeContext", url));
@@ -293,7 +293,7 @@ final class XmlCdiBeanFactory {
             // TODO: should ideally be declared with generic type closure
             new SyntheticAnnotated(manager, List.class, ANY, NamedLiteral.of(factory.getId())),
             List.class,
-            new SyntheticInjectionTarget<>(factory::getObject),
+            new SyntheticInjectionTarget<>(factory::getRoutes),
             bean -> "imported routeContext with "
                 + "id [" + factory.getId() + "] "
                 + "from resource [" + url + "] "
