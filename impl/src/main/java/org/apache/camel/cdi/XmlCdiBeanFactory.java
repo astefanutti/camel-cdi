@@ -19,12 +19,16 @@ package org.apache.camel.cdi;
 import org.apache.camel.cdi.xml.ApplicationContextFactoryBean;
 import org.apache.camel.cdi.xml.BeanManagerAware;
 import org.apache.camel.cdi.xml.CamelContextFactoryBean;
+import org.apache.camel.cdi.xml.CamelImportDefinition;
 import org.apache.camel.cdi.xml.CamelProxyFactoryDefinition;
 import org.apache.camel.cdi.xml.CamelRestContextFactoryBean;
+import org.apache.camel.cdi.xml.CamelRouteContextFactoryBean;
 import org.apache.camel.cdi.xml.CamelServiceExporterDefinition;
 import org.apache.camel.core.xml.AbstractCamelFactoryBean;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.model.RoutesDefinition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.inject.CreationException;
 import javax.enterprise.inject.spi.Bean;
@@ -47,6 +51,8 @@ import static org.apache.camel.cdi.Startup.Literal.STARTUP;
 
 final class XmlCdiBeanFactory {
 
+    private final Logger logger = LoggerFactory.getLogger(XmlCdiBeanFactory.class);
+
     private final BeanManager manager;
 
     private final CdiCamelEnvironment environment;
@@ -58,6 +64,15 @@ final class XmlCdiBeanFactory {
 
     static XmlCdiBeanFactory with(BeanManager manager, CdiCamelEnvironment environment) {
         return new XmlCdiBeanFactory(manager, environment);
+    }
+
+    Set<SyntheticBean<?>> beansFrom(String path) throws JAXBException, IOException {
+        URL url = ResourceHelper.getResource(path);
+        if (url == null) {
+            logger.warn("Unable to locate resource [{}] for import!", path);
+            return Collections.emptySet();
+        }
+        return beansFrom(url);
     }
 
     Set<SyntheticBean<?>> beansFrom(URL url) throws JAXBException, IOException {
@@ -84,9 +99,18 @@ final class XmlCdiBeanFactory {
                     beans.add(bean);
                     beans.addAll(camelContextBeans(factory, bean, url));
                 }
+                for (CamelImportDefinition definition : app.getImports()) {
+                    // Get the base URL as imports are relative to this
+                    String path = url.getFile().substring(0, url.getFile().lastIndexOf('/'));
+                    String base = url.getProtocol() + "://" + url.getHost() + path;
+                    beans.addAll(beansFrom(base + "/" + definition.getResource()));
+                }
                 for (CamelRestContextFactoryBean factory : app.getRestContexts()) {
                     SyntheticBean<?> bean = restContextBean(factory, url);
                     beans.add(bean);
+                }
+                for (CamelRouteContextFactoryBean factory : app.getRouteContexts()) {
+                    beans.add(routeContextBean(factory, url));
                 }
                 return beans;
             } else if (node instanceof CamelContextFactoryBean) {
@@ -99,6 +123,9 @@ final class XmlCdiBeanFactory {
             } else if (node instanceof CamelRestContextFactoryBean) {
                 CamelRestContextFactoryBean factory = (CamelRestContextFactoryBean) node;
                 return Collections.singleton(restContextBean(factory, url));
+            } else if (node instanceof CamelRouteContextFactoryBean) {
+                CamelRouteContextFactoryBean factory = (CamelRouteContextFactoryBean) node;
+                return Collections.singleton(routeContextBean(factory, url));
             }
         }
         return Collections.emptySet();
@@ -247,10 +274,27 @@ final class XmlCdiBeanFactory {
                 "id", "restContext", url));
 
         return new SyntheticBean<>(manager,
+            // TODO: should ideally be declared with generic type closure
             new SyntheticAnnotated(manager, List.class, ANY, NamedLiteral.of(factory.getId())),
             List.class,
             new SyntheticInjectionTarget<>(factory::getObject),
             bean -> "imported restContext with "
+                + "id [" + factory.getId() + "] "
+                + "from resource [" + url + "] "
+                + "with qualifiers " + bean.getQualifiers());
+    }
+
+    private SyntheticBean<?> routeContextBean(CamelRouteContextFactoryBean factory, URL url) {
+        Objects.requireNonNull(factory.getId(),
+            () -> String.format("Missing [%s] attribute for imported bean [%s] from resource [%s]",
+                "id", "routeContext", url));
+
+        return new SyntheticBean<>(manager,
+            // TODO: should ideally be declared with generic type closure
+            new SyntheticAnnotated(manager, List.class, ANY, NamedLiteral.of(factory.getId())),
+            List.class,
+            new SyntheticInjectionTarget<>(factory::getObject),
+            bean -> "imported routeContext with "
                 + "id [" + factory.getId() + "] "
                 + "from resource [" + url + "] "
                 + "with qualifiers " + bean.getQualifiers());
