@@ -27,8 +27,10 @@ import org.apache.camel.util.ServiceHelper;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.CreationException;
+import javax.enterprise.inject.UnsatisfiedResolutionException;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.DefinitionException;
 import java.util.function.Function;
 
 import static org.apache.camel.cdi.BeanManagerHelper.getReference;
@@ -63,10 +65,10 @@ final class XmlProxyFactoryBean<T> extends SyntheticBean<T> {
             else if (ObjectHelper.isNotEmpty(proxy.getServiceUrl()))
                 endpoint = context.getEndpoint(proxy.getServiceUrl());
             else
-                throw new CreationException("serviceUrl or serviceRef must not be empty!");
+                throw new DefinitionException("serviceUrl or serviceRef must not be empty!");
 
             if (endpoint == null)
-                throw new CreationException("Could not resolve endpoint: "
+                throw new UnsatisfiedResolutionException("Could not resolve endpoint: "
                     + (ObjectHelper.isNotEmpty(proxy.getServiceRef())
                     ? proxy.getServiceRef()
                     : proxy.getServiceUrl()));
