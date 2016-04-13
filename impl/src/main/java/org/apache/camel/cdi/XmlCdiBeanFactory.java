@@ -19,11 +19,11 @@ package org.apache.camel.cdi;
 import org.apache.camel.cdi.xml.ApplicationContextFactoryBean;
 import org.apache.camel.cdi.xml.BeanManagerAware;
 import org.apache.camel.cdi.xml.CamelContextFactoryBean;
-import org.apache.camel.cdi.xml.CamelImportDefinition;
-import org.apache.camel.cdi.xml.CamelProxyFactoryDefinition;
-import org.apache.camel.cdi.xml.CamelRestContextDefinition;
-import org.apache.camel.cdi.xml.CamelRouteContextDefinition;
-import org.apache.camel.cdi.xml.CamelServiceExporterDefinition;
+import org.apache.camel.cdi.xml.ImportDefinition;
+import org.apache.camel.cdi.xml.ProxyFactoryDefinition;
+import org.apache.camel.cdi.xml.RestContextDefinition;
+import org.apache.camel.cdi.xml.RouteContextDefinition;
+import org.apache.camel.cdi.xml.ServiceExporterDefinition;
 import org.apache.camel.cdi.xml.ErrorHandlerDefinition;
 import org.apache.camel.core.xml.AbstractCamelFactoryBean;
 import org.apache.camel.impl.DefaultCamelContext;
@@ -95,17 +95,17 @@ final class XmlCdiBeanFactory {
                 for (ErrorHandlerDefinition definition : app.getErrorHandlers()) {
                     beans.add(errorHandlerBean(definition, url));
                 }
-                for (CamelImportDefinition definition : app.getImports()) {
+                for (ImportDefinition definition : app.getImports()) {
                     // Get the base URL as imports are relative to this
                     String path = url.getFile().substring(0, url.getFile().lastIndexOf('/'));
                     String base = url.getProtocol() + "://" + url.getHost() + path;
                     beans.addAll(beansFrom(base + "/" + definition.getResource()));
                 }
-                for (CamelRestContextDefinition factory : app.getRestContexts()) {
+                for (RestContextDefinition factory : app.getRestContexts()) {
                     SyntheticBean<?> bean = restContextBean(factory, url);
                     beans.add(bean);
                 }
-                for (CamelRouteContextDefinition factory : app.getRouteContexts()) {
+                for (RouteContextDefinition factory : app.getRouteContexts()) {
                     beans.add(routeContextBean(factory, url));
                 }
                 return beans;
@@ -116,11 +116,11 @@ final class XmlCdiBeanFactory {
                 beans.add(bean);
                 beans.addAll(camelContextBeans(factory, bean, url));
                 return beans;
-            } else if (node instanceof CamelRestContextDefinition) {
-                CamelRestContextDefinition factory = (CamelRestContextDefinition) node;
+            } else if (node instanceof RestContextDefinition) {
+                RestContextDefinition factory = (RestContextDefinition) node;
                 return Collections.singleton(restContextBean(factory, url));
-            } else if (node instanceof CamelRouteContextDefinition) {
-                CamelRouteContextDefinition factory = (CamelRouteContextDefinition) node;
+            } else if (node instanceof RouteContextDefinition) {
+                RouteContextDefinition factory = (RouteContextDefinition) node;
                 return Collections.singleton(routeContextBean(factory, url));
             }
         }
@@ -228,7 +228,7 @@ final class XmlCdiBeanFactory {
                 + "with qualifiers " + bean.getQualifiers());
     }
 
-    private SyntheticBean<?> proxyFactoryBean(Bean<?> context, CamelProxyFactoryDefinition proxy, URL url) {
+    private SyntheticBean<?> proxyFactoryBean(Bean<?> context, ProxyFactoryDefinition proxy, URL url) {
         return new XmlProxyFactoryBean<>(manager,
             new SyntheticAnnotated(manager, proxy.getServiceInterface(),
                 APPLICATION_SCOPED, ANY, NamedLiteral.of(proxy.getId())),
@@ -239,7 +239,7 @@ final class XmlCdiBeanFactory {
             context, proxy);
     }
 
-    private SyntheticBean<?> serviceExporterBean(Bean<?> context, CamelServiceExporterDefinition exporter, URL url) {
+    private SyntheticBean<?> serviceExporterBean(Bean<?> context, ServiceExporterDefinition exporter, URL url) {
         Objects.requireNonNull(exporter.getServiceRef(),
             () -> String.format("Missing [%s] attribute for imported bean [%s] from resource [%s]",
                 "serviceRef", Objects.toString(exporter.getId(), "export"), url));
@@ -270,7 +270,7 @@ final class XmlCdiBeanFactory {
             context, exporter);
     }
 
-    private SyntheticBean<?> restContextBean(CamelRestContextDefinition definition, URL url) {
+    private SyntheticBean<?> restContextBean(RestContextDefinition definition, URL url) {
         Objects.requireNonNull(definition.getId(),
             () -> String.format("Missing [%s] attribute for imported bean [%s] from resource [%s]",
                 "id", "restContext", url));
@@ -286,7 +286,7 @@ final class XmlCdiBeanFactory {
                 + "with qualifiers " + bean.getQualifiers());
     }
 
-    private SyntheticBean<?> routeContextBean(CamelRouteContextDefinition definition, URL url) {
+    private SyntheticBean<?> routeContextBean(RouteContextDefinition definition, URL url) {
         Objects.requireNonNull(definition.getId(),
             () -> String.format("Missing [%s] attribute for imported bean [%s] from resource [%s]",
                 "id", "routeContext", url));

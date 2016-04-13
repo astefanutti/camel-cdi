@@ -16,38 +16,28 @@
  */
 package org.apache.camel.cdi.xml;
 
-import org.apache.camel.CamelContext;
-import org.apache.camel.Endpoint;
-import org.apache.camel.core.xml.AbstractCamelEndpointFactoryBean;
+import org.apache.camel.model.IdentifiedType;
+import org.apache.camel.model.RouteDefinition;
 
-import javax.enterprise.inject.spi.BeanManager;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- * A factory which instantiates {@link Endpoint} objects
- */
-@XmlRootElement(name = "endpoint")
+@XmlRootElement(name = "routeContext")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class CamelEndpointFactoryBean extends AbstractCamelEndpointFactoryBean implements BeanManagerAware {
+public class RouteContextDefinition extends IdentifiedType {
 
-    @XmlTransient
-    private BeanManager manager;
+    @XmlElement(name = "route", required = true)
+    private List<RouteDefinition> routes = new ArrayList<>();
 
-    @Override
-    public void setBeanManager(BeanManager manager) {
-        this.manager = manager;
+    public List<RouteDefinition> getRoutes() {
+        return routes;
     }
 
-    @Override
-    protected CamelContext getCamelContextWithId(String camelContextId) {
-        return BeanManagerHelper.getCamelContextById(manager, camelContextId);
-    }
-
-    @Override
-    protected CamelContext discoverDefaultCamelContext() {
-        return BeanManagerHelper.getDefaultCamelContext(manager);
+    public void setRoutes(List<RouteDefinition> routes) {
+        this.routes = routes;
     }
 }

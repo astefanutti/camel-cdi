@@ -27,7 +27,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 */
 // FIXME: to remove when getters are added to org.apache.camel.core.xml.CamelProxyFactoryDefinition
 @XmlRootElement(name = "proxy")
-public class CamelProxyFactoryDefinition extends IdentifiedType {
+public class ProxyFactoryDefinition extends IdentifiedType {
 
     @XmlAttribute
     private String serviceUrl;

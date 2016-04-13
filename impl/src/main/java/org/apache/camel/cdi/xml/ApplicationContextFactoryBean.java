@@ -34,13 +34,13 @@ public class ApplicationContextFactoryBean {
     private List<ErrorHandlerDefinition> errorHandlers = new ArrayList<>();
 
     @XmlElement(name = "import")
-    private List<CamelImportDefinition> imports = new ArrayList<>();
+    private List<ImportDefinition> imports = new ArrayList<>();
 
     @XmlElement(name = "restContext")
-    private List<CamelRestContextDefinition> restContexts = new ArrayList<>();
+    private List<RestContextDefinition> restContexts = new ArrayList<>();
 
     @XmlElement(name = "routeContext")
-    private List<CamelRouteContextDefinition> routeContexts = new ArrayList<>();
+    private List<RouteContextDefinition> routeContexts = new ArrayList<>();
 
     public List<CamelContextFactoryBean> getContexts() {
         return contexts;
@@ -58,27 +58,27 @@ public class ApplicationContextFactoryBean {
         this.errorHandlers = errorHandlers;
     }
 
-    public List<CamelImportDefinition> getImports() {
+    public List<ImportDefinition> getImports() {
         return imports;
     }
 
-    public void setImports(List<CamelImportDefinition> imports) {
+    public void setImports(List<ImportDefinition> imports) {
         this.imports = imports;
     }
 
-    public List<CamelRestContextDefinition> getRestContexts() {
+    public List<RestContextDefinition> getRestContexts() {
         return restContexts;
     }
 
-    public void setRestContexts(List<CamelRestContextDefinition> restContexts) {
+    public void setRestContexts(List<RestContextDefinition> restContexts) {
         this.restContexts = restContexts;
     }
 
-    public List<CamelRouteContextDefinition> getRouteContexts() {
+    public List<RouteContextDefinition> getRouteContexts() {
         return routeContexts;
     }
 
-    public void setRouteContexts(List<CamelRouteContextDefinition> routeContexts) {
+    public void setRouteContexts(List<RouteContextDefinition> routeContexts) {
         this.routeContexts = routeContexts;
     }
 }

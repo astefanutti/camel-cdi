@@ -20,7 +20,7 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.Consumer;
 import org.apache.camel.Endpoint;
 import org.apache.camel.FailedToCreateConsumerException;
-import org.apache.camel.cdi.xml.CamelServiceExporterDefinition;
+import org.apache.camel.cdi.xml.ServiceExporterDefinition;
 import org.apache.camel.component.bean.BeanProcessor;
 import org.apache.camel.util.CamelContextHelper;
 import org.apache.camel.util.ServiceHelper;
@@ -42,11 +42,11 @@ final class XmlServiceExporterBean<T> extends SyntheticBean<T> {
 
     private final Bean<?> context;
 
-    private final CamelServiceExporterDefinition exporter;
+    private final ServiceExporterDefinition exporter;
 
     private final Class<?> type;
 
-    XmlServiceExporterBean(BeanManager manager, SyntheticAnnotated annotated, Class<?> type, Function<Bean<T>, String> toString, Bean<?> context, CamelServiceExporterDefinition exporter) {
+    XmlServiceExporterBean(BeanManager manager, SyntheticAnnotated annotated, Class<?> type, Function<Bean<T>, String> toString, Bean<?> context, ServiceExporterDefinition exporter) {
         super(manager, annotated, type, null, toString);
         this.manager = manager;
         this.context = context;

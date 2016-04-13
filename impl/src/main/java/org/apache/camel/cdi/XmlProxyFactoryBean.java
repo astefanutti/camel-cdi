@@ -20,7 +20,7 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.Endpoint;
 import org.apache.camel.FailedToCreateProducerException;
 import org.apache.camel.Producer;
-import org.apache.camel.cdi.xml.CamelProxyFactoryDefinition;
+import org.apache.camel.cdi.xml.ProxyFactoryDefinition;
 import org.apache.camel.component.bean.ProxyHelper;
 import org.apache.camel.util.ObjectHelper;
 import org.apache.camel.util.ServiceHelper;
@@ -41,9 +41,9 @@ final class XmlProxyFactoryBean<T> extends SyntheticBean<T> {
 
     private final Bean<?> context;
 
-    private final CamelProxyFactoryDefinition proxy;
+    private final ProxyFactoryDefinition proxy;
 
-    XmlProxyFactoryBean(BeanManager manager, SyntheticAnnotated annotated, Class<?> type, Function<Bean<T>, String> toString, Bean<?> context, CamelProxyFactoryDefinition proxy) {
+    XmlProxyFactoryBean(BeanManager manager, SyntheticAnnotated annotated, Class<?> type, Function<Bean<T>, String> toString, Bean<?> context, ProxyFactoryDefinition proxy) {
         super(manager, annotated, type, null, toString);
         this.manager = manager;
         this.context = context;

@@ -15,14 +15,14 @@
 ## limitations under the License.
 ## ------------------------------------------------------------------------
 ApplicationContextFactoryBean
-CamelConsumerTemplateFactoryBean
 CamelContextFactoryBean
-CamelEndpointFactoryBean
-CamelImportDefinition
-CamelProducerTemplateFactoryBean
-CamelRedeliveryPolicyFactoryBean
-CamelRestContextDefinition
-CamelRouteContextDefinition
-CamelThreadPoolFactoryBean
+ConsumerTemplateFactoryBean
+EndpointFactoryBean
 ErrorHandlerDefinition
 ErrorHandlerType
+ImportDefinition
+ProducerTemplateFactoryBean
+RedeliveryPolicyFactoryBean
+RestContextDefinition
+RouteContextDefinition
+ThreadPoolFactoryBean

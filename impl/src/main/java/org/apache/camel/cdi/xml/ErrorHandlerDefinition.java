@@ -78,7 +78,7 @@ public class ErrorHandlerDefinition extends IdentifiedType {
     private String executorServiceRef;
 
     @XmlElement
-    private CamelRedeliveryPolicyFactoryBean redeliveryPolicy;
+    private RedeliveryPolicyFactoryBean redeliveryPolicy;
 
     public ErrorHandlerType getType() {
         return type;
@@ -200,11 +200,11 @@ public class ErrorHandlerDefinition extends IdentifiedType {
         this.executorServiceRef = executorServiceRef;
     }
 
-    public CamelRedeliveryPolicyFactoryBean getRedeliveryPolicy() {
+    public RedeliveryPolicyFactoryBean getRedeliveryPolicy() {
         return redeliveryPolicy;
     }
 
-    public void setRedeliveryPolicy(CamelRedeliveryPolicyFactoryBean redeliveryPolicy) {
+    public void setRedeliveryPolicy(RedeliveryPolicyFactoryBean redeliveryPolicy) {
         this.redeliveryPolicy = redeliveryPolicy;
     }
 }

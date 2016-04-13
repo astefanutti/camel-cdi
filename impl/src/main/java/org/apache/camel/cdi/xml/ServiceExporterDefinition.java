@@ -27,7 +27,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 */
 // FIXME: to remove when getters are added to org.apache.camel.core.xml.CamelServiceExporterDefinition
 @XmlRootElement(name = "export")
-public class CamelServiceExporterDefinition extends IdentifiedType {
+public class ServiceExporterDefinition extends IdentifiedType {
 
     @XmlAttribute
     private String uri;

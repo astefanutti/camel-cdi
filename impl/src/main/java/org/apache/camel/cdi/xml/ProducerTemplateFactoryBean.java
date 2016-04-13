@@ -17,7 +17,9 @@
 package org.apache.camel.cdi.xml;
 
 import org.apache.camel.CamelContext;
-import org.apache.camel.core.xml.AbstractCamelThreadPoolFactoryBean;
+import org.apache.camel.ProducerTemplate;
+import org.apache.camel.core.xml.AbstractCamelProducerTemplateFactoryBean;
+import org.apache.camel.impl.DefaultProducerTemplate;
 
 import javax.enterprise.inject.spi.BeanManager;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -26,11 +28,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- * A factory which instantiates {@link java.util.concurrent.ExecutorService} objects.
+ * A factory for creating a new {@link org.apache.camel.ProducerTemplate}
+ * instance with a minimum of XML
  */
-@XmlRootElement(name = "threadPool")
+@XmlRootElement(name = "template")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class CamelThreadPoolFactoryBean extends AbstractCamelThreadPoolFactoryBean implements BeanManagerAware {
+public class ProducerTemplateFactoryBean extends AbstractCamelProducerTemplateFactoryBean implements BeanManagerAware {
 
     @XmlTransient
     private BeanManager manager;
@@ -48,5 +51,13 @@ public class CamelThreadPoolFactoryBean extends AbstractCamelThreadPoolFactoryBe
     @Override
     protected CamelContext discoverDefaultCamelContext() {
         return BeanManagerHelper.getDefaultCamelContext(manager);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    // Work-around as DefaultProducerTemplate does not have a default no-args constructor
+    // which leads to OpenWebBeans being unable to create proxies for the corresponding bean
+    public Class getObjectType() {
+        return ProducerTemplate.class;
     }
 }

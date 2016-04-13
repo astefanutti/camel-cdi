@@ -16,28 +16,38 @@
  */
 package org.apache.camel.cdi.xml;
 
-import org.apache.camel.model.IdentifiedType;
-import org.apache.camel.model.rest.RestDefinition;
+import org.apache.camel.CamelContext;
+import org.apache.camel.Endpoint;
+import org.apache.camel.core.xml.AbstractCamelEndpointFactoryBean;
 
+import javax.enterprise.inject.spi.BeanManager;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
-import java.util.List;
+import javax.xml.bind.annotation.XmlTransient;
 
-@XmlRootElement(name = "restContext")
+/**
+ * A factory which instantiates {@link Endpoint} objects
+ */
+@XmlRootElement(name = "endpoint")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class CamelRestContextDefinition extends IdentifiedType {
+public class EndpointFactoryBean extends AbstractCamelEndpointFactoryBean implements BeanManagerAware {
 
-    @XmlElement(name = "rest", required = true)
-    private List<RestDefinition> rests = new ArrayList<>();
+    @XmlTransient
+    private BeanManager manager;
 
-    public List<RestDefinition> getRests() {
-        return rests;
+    @Override
+    public void setBeanManager(BeanManager manager) {
+        this.manager = manager;
     }
 
-    public void setRests(List<RestDefinition> rests) {
-        this.rests = rests;
+    @Override
+    protected CamelContext getCamelContextWithId(String camelContextId) {
+        return BeanManagerHelper.getCamelContextById(manager, camelContextId);
+    }
+
+    @Override
+    protected CamelContext discoverDefaultCamelContext() {
+        return BeanManagerHelper.getDefaultCamelContext(manager);
     }
 }

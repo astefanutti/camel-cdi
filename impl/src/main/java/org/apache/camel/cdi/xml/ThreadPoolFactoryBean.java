@@ -17,7 +17,7 @@
 package org.apache.camel.cdi.xml;
 
 import org.apache.camel.CamelContext;
-import org.apache.camel.core.xml.AbstractCamelRedeliveryPolicyFactoryBean;
+import org.apache.camel.core.xml.AbstractCamelThreadPoolFactoryBean;
 
 import javax.enterprise.inject.spi.BeanManager;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -26,11 +26,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- * A factory which instantiates {@link org.apache.camel.processor.RedeliveryPolicy} objects
+ * A factory which instantiates {@link java.util.concurrent.ExecutorService} objects.
  */
-@XmlRootElement(name = "redeliveryPolicyProfile")
+@XmlRootElement(name = "threadPool")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class CamelRedeliveryPolicyFactoryBean extends AbstractCamelRedeliveryPolicyFactoryBean implements BeanManagerAware {
+public class ThreadPoolFactoryBean extends AbstractCamelThreadPoolFactoryBean implements BeanManagerAware {
 
     @XmlTransient
     private BeanManager manager;

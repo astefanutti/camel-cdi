@@ -16,27 +16,38 @@
  */
 package org.apache.camel.cdi.xml;
 
+import org.apache.camel.CamelContext;
+import org.apache.camel.core.xml.AbstractCamelConsumerTemplateFactoryBean;
+
+import javax.enterprise.inject.spi.BeanManager;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
- * The &lt;import&gt; tag element.
- *
-*/
-@XmlRootElement(name = "import")
+ * A factory for creating a new {@link org.apache.camel.ConsumerTemplate}
+ * instance with a minimum of XML
+ */
+@XmlRootElement(name = "consumerTemplate")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class CamelImportDefinition {
+public class ConsumerTemplateFactoryBean extends AbstractCamelConsumerTemplateFactoryBean implements BeanManagerAware {
 
-    @XmlAttribute(required = true)
-    private String resource;
+    @XmlTransient
+    private BeanManager manager;
 
-    public String getResource() {
-        return resource;
+    @Override
+    public void setBeanManager(BeanManager manager) {
+        this.manager = manager;
     }
 
-    public void setResource(String resource) {
-        this.resource = resource;
+    @Override
+    protected CamelContext getCamelContextWithId(String camelContextId) {
+        return BeanManagerHelper.getCamelContextById(manager, camelContextId);
+    }
+
+    @Override
+    protected CamelContext discoverDefaultCamelContext() {
+        return BeanManagerHelper.getDefaultCamelContext(manager);
     }
 }

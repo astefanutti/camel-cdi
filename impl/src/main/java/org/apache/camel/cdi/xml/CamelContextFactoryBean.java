@@ -148,19 +148,19 @@ public class CamelContextFactoryBean extends AbstractCamelContextFactoryBean<Def
     private CamelJMXAgentDefinition camelJMXAgent;
 
     @XmlElements({
-        @XmlElement(name = "template", type = CamelProducerTemplateFactoryBean.class),
-        @XmlElement(name = "consumerTemplate", type = CamelConsumerTemplateFactoryBean.class),
+        @XmlElement(name = "template", type = ProducerTemplateFactoryBean.class),
+        @XmlElement(name = "consumerTemplate", type = ConsumerTemplateFactoryBean.class),
     })
     private List<?> beans;
 
     @XmlElement(name = "errorHandler", type = ErrorHandlerDefinition.class)
     private List<ErrorHandlerDefinition> errorHandlers;
 
-    @XmlElement(name = "export", type = CamelServiceExporterDefinition.class)
-    private List<CamelServiceExporterDefinition> exports;
+    @XmlElement(name = "export", type = ServiceExporterDefinition.class)
+    private List<ServiceExporterDefinition> exports;
 
     @XmlElement(name = "proxy")
-    private List<CamelProxyFactoryDefinition> proxies;
+    private List<ProxyFactoryDefinition> proxies;
 
     @XmlElement(name = "routeBuilder")
     private List<RouteBuilderDefinition> builderRefs = new ArrayList<>();
@@ -175,16 +175,16 @@ public class CamelContextFactoryBean extends AbstractCamelContextFactoryBean<Def
     private List<ThreadPoolProfileDefinition> threadPoolProfiles;
 
     @XmlElement(name = "threadPool")
-    private List<CamelThreadPoolFactoryBean> threadPools;
+    private List<ThreadPoolFactoryBean> threadPools;
 
     @XmlElement(name = "endpoint")
-    private List<CamelEndpointFactoryBean> endpoints;
+    private List<EndpointFactoryBean> endpoints;
 
     @XmlElement(name = "dataFormats")
     private DataFormatsDefinition dataFormats;
 
     @XmlElement(name = "redeliveryPolicyProfile")
-    private List<CamelRedeliveryPolicyFactoryBean> redeliveryPolicies;
+    private List<RedeliveryPolicyFactoryBean> redeliveryPolicies;
 
     @XmlElement(name = "onException")
     private List<OnExceptionDefinition> onExceptions = new ArrayList<>();
@@ -324,15 +324,15 @@ public class CamelContextFactoryBean extends AbstractCamelContextFactoryBean<Def
         this.restConfiguration = restConfiguration;
     }
 
-    public List<CamelEndpointFactoryBean> getEndpoints() {
+    public List<EndpointFactoryBean> getEndpoints() {
         return endpoints;
     }
 
-    public void setEndpoints(List<CamelEndpointFactoryBean> endpoints) {
+    public void setEndpoints(List<EndpointFactoryBean> endpoints) {
         this.endpoints = endpoints;
     }
 
-    public List<CamelRedeliveryPolicyFactoryBean> getRedeliveryPolicies() {
+    public List<RedeliveryPolicyFactoryBean> getRedeliveryPolicies() {
         return redeliveryPolicies;
     }
 
@@ -651,11 +651,11 @@ public class CamelContextFactoryBean extends AbstractCamelContextFactoryBean<Def
         this.shutdownRunningTask = shutdownRunningTask;
     }
 
-    public List<CamelThreadPoolFactoryBean> getThreadPools() {
+    public List<ThreadPoolFactoryBean> getThreadPools() {
         return threadPools;
     }
 
-    public void setThreadPools(List<CamelThreadPoolFactoryBean> threadPools) {
+    public void setThreadPools(List<ThreadPoolFactoryBean> threadPools) {
         this.threadPools = threadPools;
     }
 
@@ -675,19 +675,19 @@ public class CamelContextFactoryBean extends AbstractCamelContextFactoryBean<Def
         this.dependsOn = dependsOn;
     }
 
-    public List<CamelProxyFactoryDefinition> getProxies() {
+    public List<ProxyFactoryDefinition> getProxies() {
         return proxies;
     }
 
-    public void setProxies(List<CamelProxyFactoryDefinition> proxies) {
+    public void setProxies(List<ProxyFactoryDefinition> proxies) {
         this.proxies = proxies;
     }
 
-    public List<CamelServiceExporterDefinition> getExports() {
+    public List<ServiceExporterDefinition> getExports() {
         return exports;
     }
 
-    public void setExports(List<CamelServiceExporterDefinition> exports) {
+    public void setExports(List<ServiceExporterDefinition> exports) {
         this.exports = exports;
     }
 
