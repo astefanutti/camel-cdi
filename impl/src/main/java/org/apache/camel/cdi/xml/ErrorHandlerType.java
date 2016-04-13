@@ -18,6 +18,7 @@ package org.apache.camel.cdi.xml;
 
 import org.apache.camel.builder.DeadLetterChannelBuilder;
 import org.apache.camel.builder.DefaultErrorHandlerBuilder;
+import org.apache.camel.builder.ErrorHandlerBuilder;
 import org.apache.camel.builder.LoggingErrorHandlerBuilder;
 import org.apache.camel.builder.NoErrorHandlerBuilder;
 
@@ -31,14 +32,18 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum(String.class)
 public enum ErrorHandlerType {
 
-    DefaultErrorHandler, DeadLetterChannel, LoggingErrorHandler, NoErrorHandler, TransactionErrorHandler;
+    DefaultErrorHandler,
+    DeadLetterChannel,
+    LoggingErrorHandler,
+    NoErrorHandler,
+    TransactionErrorHandler;
 
     /**
      * Get the type as class.
      *
      * @return the class which represents the selected type.
      */
-    public Class<?> getTypeAsClass() {
+    public Class<? extends ErrorHandlerBuilder> getTypeAsClass() {
         switch (this) {
         case DefaultErrorHandler:
             return DefaultErrorHandlerBuilder.class;

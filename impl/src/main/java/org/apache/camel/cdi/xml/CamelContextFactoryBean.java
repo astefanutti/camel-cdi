@@ -150,9 +150,11 @@ public class CamelContextFactoryBean extends AbstractCamelContextFactoryBean<Def
     @XmlElements({
         @XmlElement(name = "template", type = CamelProducerTemplateFactoryBean.class),
         @XmlElement(name = "consumerTemplate", type = CamelConsumerTemplateFactoryBean.class),
-        @XmlElement(name = "errorHandler", type = ErrorHandlerDefinition.class)
     })
     private List<?> beans;
+
+    @XmlElement(name = "errorHandler", type = ErrorHandlerDefinition.class)
+    private List<ErrorHandlerDefinition> errorHandlers;
 
     @XmlElement(name = "export", type = CamelServiceExporterDefinition.class)
     private List<CamelServiceExporterDefinition> exports;
@@ -234,7 +236,6 @@ public class CamelContextFactoryBean extends AbstractCamelContextFactoryBean<Def
         if (bean == null)
             return null;
 
-        // TODO: the creational context should be that of the Camel context bean
         return (S) manager.getReference(bean, clazz, manager.createCreationalContext(bean));
     }
 
@@ -375,7 +376,7 @@ public class CamelContextFactoryBean extends AbstractCamelContextFactoryBean<Def
      * Sets the package names to be recursively searched for Java classes which
      * extend {@link org.apache.camel.builder.RouteBuilder} to be auto-wired up to the
      * {@link CamelContext} as a route. Note that classes are excluded if
-     * they are specifically configured in the spring.xml
+     * they are specifically configured in the deployment.
      * <p/>
      * A more advanced configuration can be done using {@link #setPackageScan(org.apache.camel.model.PackageScanDefinition)}
      *
@@ -406,7 +407,7 @@ public class CamelContextFactoryBean extends AbstractCamelContextFactoryBean<Def
     }
 
     /**
-     * Sets the context scanning (eg Spring's ApplicationContext) information.
+     * Sets the context scanning information.
      * Context scanning allows for the automatic discovery of Camel routes runtime for inclusion
      * e.g. {@link org.apache.camel.builder.RouteBuilder} implementations
      *
@@ -606,11 +607,6 @@ public class CamelContextFactoryBean extends AbstractCamelContextFactoryBean<Def
         return errorHandlerRef;
     }
 
-    /**
-     * Sets the name of the error handler object used to default the error handling strategy
-     *
-     * @param errorHandlerRef the Spring bean ref of the error handler
-     */
     public void setErrorHandlerRef(String errorHandlerRef) {
         this.errorHandlerRef = errorHandlerRef;
     }
@@ -701,5 +697,13 @@ public class CamelContextFactoryBean extends AbstractCamelContextFactoryBean<Def
 
     public void setImplicitId(boolean implicitId) {
         this.implicitId = implicitId;
+    }
+
+    public List<ErrorHandlerDefinition> getErrorHandlers() {
+        return errorHandlers;
+    }
+
+    public void setErrorHandlers(List<ErrorHandlerDefinition> errorHandlers) {
+        this.errorHandlers = errorHandlers;
     }
 }

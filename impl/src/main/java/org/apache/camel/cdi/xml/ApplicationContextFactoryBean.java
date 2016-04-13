@@ -30,6 +30,9 @@ public class ApplicationContextFactoryBean {
     @XmlElement(name = "camelContext")
     private List<CamelContextFactoryBean> contexts = new ArrayList<>();
 
+    @XmlElement(name = "errorHandler")
+    private List<ErrorHandlerDefinition> errorHandlers = new ArrayList<>();
+
     @XmlElement(name = "import")
     private List<CamelImportDefinition> imports = new ArrayList<>();
 
@@ -45,6 +48,14 @@ public class ApplicationContextFactoryBean {
 
     public void setContexts(List<CamelContextFactoryBean> contexts) {
         this.contexts = contexts;
+    }
+
+    public List<ErrorHandlerDefinition> getErrorHandlers() {
+        return errorHandlers;
+    }
+
+    public void setErrorHandlers(List<ErrorHandlerDefinition> errorHandlers) {
+        this.errorHandlers = errorHandlers;
     }
 
     public List<CamelImportDefinition> getImports() {

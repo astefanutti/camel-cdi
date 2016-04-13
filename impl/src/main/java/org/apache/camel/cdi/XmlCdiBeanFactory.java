@@ -24,6 +24,7 @@ import org.apache.camel.cdi.xml.CamelProxyFactoryDefinition;
 import org.apache.camel.cdi.xml.CamelRestContextDefinition;
 import org.apache.camel.cdi.xml.CamelRouteContextDefinition;
 import org.apache.camel.cdi.xml.CamelServiceExporterDefinition;
+import org.apache.camel.cdi.xml.ErrorHandlerDefinition;
 import org.apache.camel.core.xml.AbstractCamelFactoryBean;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.model.RoutesDefinition;
@@ -90,6 +91,9 @@ final class XmlCdiBeanFactory {
                     SyntheticBean<?> bean = camelContextBean(factory, url);
                     beans.add(bean);
                     beans.addAll(camelContextBeans(factory, bean, url));
+                }
+                for (ErrorHandlerDefinition definition : app.getErrorHandlers()) {
+                    beans.add(errorHandlerBean(definition, url));
                 }
                 for (CamelImportDefinition definition : app.getImports()) {
                     // Get the base URL as imports are relative to this
@@ -168,6 +172,12 @@ final class XmlCdiBeanFactory {
                 .filter(endpoint -> endpoint.getId() != null)
                 .map(endpoint -> camelContextBean(context, endpoint, url))
                 .forEach(beans::add);
+
+        if (factory.getErrorHandlers() != null)
+            factory.getErrorHandlers().stream()
+            .filter(handler -> handler.getId() != null)
+            .map(handler -> errorHandlerBean(handler, url))
+            .forEach(beans::add);
 
         if (factory.getBeans() != null)
             factory.getBeans().stream()
@@ -260,45 +270,59 @@ final class XmlCdiBeanFactory {
             context, exporter);
     }
 
-    private SyntheticBean<?> restContextBean(CamelRestContextDefinition factory, URL url) {
-        Objects.requireNonNull(factory.getId(),
+    private SyntheticBean<?> restContextBean(CamelRestContextDefinition definition, URL url) {
+        Objects.requireNonNull(definition.getId(),
             () -> String.format("Missing [%s] attribute for imported bean [%s] from resource [%s]",
                 "id", "restContext", url));
 
         return new SyntheticBean<>(manager,
             // TODO: should ideally be declared with generic type closure
-            new SyntheticAnnotated(manager, List.class, ANY, NamedLiteral.of(factory.getId())),
+            new SyntheticAnnotated(manager, List.class, ANY, NamedLiteral.of(definition.getId())),
             List.class,
-            new SyntheticInjectionTarget<>(factory::getRests),
-            bean -> "imported restContext with "
-                + "id [" + factory.getId() + "] "
+            new SyntheticInjectionTarget<>(definition::getRests),
+            bean -> "imported rest context with "
+                + "id [" + definition.getId() + "] "
                 + "from resource [" + url + "] "
                 + "with qualifiers " + bean.getQualifiers());
     }
 
-    private SyntheticBean<?> routeContextBean(CamelRouteContextDefinition factory, URL url) {
-        Objects.requireNonNull(factory.getId(),
+    private SyntheticBean<?> routeContextBean(CamelRouteContextDefinition definition, URL url) {
+        Objects.requireNonNull(definition.getId(),
             () -> String.format("Missing [%s] attribute for imported bean [%s] from resource [%s]",
                 "id", "routeContext", url));
 
         return new SyntheticBean<>(manager,
             // TODO: should ideally be declared with generic type closure
-            new SyntheticAnnotated(manager, List.class, ANY, NamedLiteral.of(factory.getId())),
+            new SyntheticAnnotated(manager, List.class, ANY, NamedLiteral.of(definition.getId())),
             List.class,
-            new SyntheticInjectionTarget<>(factory::getRoutes),
-            bean -> "imported routeContext with "
-                + "id [" + factory.getId() + "] "
+            new SyntheticInjectionTarget<>(definition::getRoutes),
+            bean -> "imported route context with "
+                + "id [" + definition.getId() + "] "
                 + "from resource [" + url + "] "
                 + "with qualifiers " + bean.getQualifiers());
     }
 
     private SyntheticBean<?> routesDefinitionBean(RoutesDefinition definition, URL url) {
         return new SyntheticBean<>(manager,
+            // TODO: should be @Named if the id is set
             new SyntheticAnnotated(manager, RoutesDefinition.class, ANY, DEFAULT),
             RoutesDefinition.class,
             new SyntheticInjectionTarget<>(() -> definition),
             b -> "imported routes definition "
                 + (definition.getId() != null ? "[" + definition.getId() + "] " : "")
                 + "from resource [" + url + "]");
+    }
+
+    private SyntheticBean<?> errorHandlerBean(ErrorHandlerDefinition definition, URL url) {
+        return new XmlErrorHandlerFactoryBean(manager,
+            new SyntheticAnnotated(manager,
+                definition.getType().getTypeAsClass(),
+                ANY, NamedLiteral.of(definition.getId())),
+            definition.getType().getTypeAsClass(),
+            bean -> "imported error handler with "
+                + "id [" + definition.getId() + "] "
+                + "from resource [" + url + "] "
+                + "with qualifiers " + bean.getQualifiers(),
+            definition);
     }
 }

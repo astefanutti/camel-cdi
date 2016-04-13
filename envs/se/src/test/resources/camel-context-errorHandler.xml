@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+    <errorHandler id="error-handler"
+                  type="DeadLetterChannel"
+                  deadLetterUri="mock:exception"
+                  onPrepareFailureRef="processor"/>
+
+    <camelContext id="test" errorHandlerRef="error-handler"
+                  xmlns="http://camel.apache.org/schema/spring">
+
+        <route>
+            <from uri="direct:inbound"/>
+            <choice>
+                <when>
+                    <simple>${body} contains 'exception'</simple>
+                    <throwException ref="failure"/>
+                </when>
+                <otherwise>
+                    <transform>
+                        <simple>Response to ${body}</simple>
+                    </transform>
+                    <to uri="mock:outbound"/>
+                </otherwise>
+            </choice>
+        </route>
+
+    </camelContext>
+
+</beans>

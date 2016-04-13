@@ -79,4 +79,132 @@ public class ErrorHandlerDefinition extends IdentifiedType {
 
     @XmlElement
     private CamelRedeliveryPolicyFactoryBean redeliveryPolicy;
+
+    public ErrorHandlerType getType() {
+        return type;
+    }
+
+    public void setType(ErrorHandlerType type) {
+        this.type = type;
+    }
+
+    public String getDeadLetterUri() {
+        return deadLetterUri;
+    }
+
+    public void setDeadLetterUri(String deadLetterUri) {
+        this.deadLetterUri = deadLetterUri;
+    }
+
+    public String getDeadLetterHandleNewException() {
+        return deadLetterHandleNewException;
+    }
+
+    public void setDeadLetterHandleNewException(String deadLetterHandleNewException) {
+        this.deadLetterHandleNewException = deadLetterHandleNewException;
+    }
+
+    public LoggingLevel getLevel() {
+        return level;
+    }
+
+    public void setLevel(LoggingLevel level) {
+        this.level = level;
+    }
+
+    public LoggingLevel getRollbackLoggingLevel() {
+        return rollbackLoggingLevel;
+    }
+
+    public void setRollbackLoggingLevel(LoggingLevel rollbackLoggingLevel) {
+        this.rollbackLoggingLevel = rollbackLoggingLevel;
+    }
+
+    public String getLogName() {
+        return logName;
+    }
+
+    public void setLogName(String logName) {
+        this.logName = logName;
+    }
+
+    public Boolean getUseOriginalMessage() {
+        return useOriginalMessage;
+    }
+
+    public void setUseOriginalMessage(Boolean useOriginalMessage) {
+        this.useOriginalMessage = useOriginalMessage;
+    }
+
+    public String getTransactionTemplateRef() {
+        return transactionTemplateRef;
+    }
+
+    public void setTransactionTemplateRef(String transactionTemplateRef) {
+        this.transactionTemplateRef = transactionTemplateRef;
+    }
+
+    public String getTransactionManagerRef() {
+        return transactionManagerRef;
+    }
+
+    public void setTransactionManagerRef(String transactionManagerRef) {
+        this.transactionManagerRef = transactionManagerRef;
+    }
+
+    public String getOnRedeliveryRef() {
+        return onRedeliveryRef;
+    }
+
+    public void setOnRedeliveryRef(String onRedeliveryRef) {
+        this.onRedeliveryRef = onRedeliveryRef;
+    }
+
+    public String getOnExceptionOccurredRef() {
+        return onExceptionOccurredRef;
+    }
+
+    public void setOnExceptionOccurredRef(String onExceptionOccurredRef) {
+        this.onExceptionOccurredRef = onExceptionOccurredRef;
+    }
+
+    public String getOnPrepareFailureRef() {
+        return onPrepareFailureRef;
+    }
+
+    public void setOnPrepareFailureRef(String onPrepareFailureRef) {
+        this.onPrepareFailureRef = onPrepareFailureRef;
+    }
+
+    public String getRetryWhileRef() {
+        return retryWhileRef;
+    }
+
+    public void setRetryWhileRef(String retryWhileRef) {
+        this.retryWhileRef = retryWhileRef;
+    }
+
+    public String getRedeliveryPolicyRef() {
+        return redeliveryPolicyRef;
+    }
+
+    public void setRedeliveryPolicyRef(String redeliveryPolicyRef) {
+        this.redeliveryPolicyRef = redeliveryPolicyRef;
+    }
+
+    public String getExecutorServiceRef() {
+        return executorServiceRef;
+    }
+
+    public void setExecutorServiceRef(String executorServiceRef) {
+        this.executorServiceRef = executorServiceRef;
+    }
+
+    public CamelRedeliveryPolicyFactoryBean getRedeliveryPolicy() {
+        return redeliveryPolicy;
+    }
+
+    public void setRedeliveryPolicy(CamelRedeliveryPolicyFactoryBean redeliveryPolicy) {
+        this.redeliveryPolicy = redeliveryPolicy;
+    }
 }
