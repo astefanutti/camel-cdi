@@ -18,7 +18,6 @@ package org.apache.camel.cdi;
 
 import javax.enterprise.inject.Vetoed;
 import javax.enterprise.inject.spi.Annotated;
-import javax.enterprise.inject.spi.BeanManager;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Arrays;
@@ -36,17 +35,12 @@ final class SyntheticAnnotated implements Annotated {
 
     private final Set<Annotation> annotations;
 
-    SyntheticAnnotated(BeanManager manager, Class<?> type, Annotation... annotations) {
-        this(manager, type, Arrays.asList(annotations));
+    SyntheticAnnotated(Class<?> type, Set<Type> types, Annotation... annotations) {
+        this(type, types, Arrays.asList(annotations));
     }
 
-    SyntheticAnnotated(BeanManager manager, Class<?> type, Collection<Annotation> annotations) {
+    SyntheticAnnotated(Class<?> type, Set<Type> types, Collection<Annotation> annotations) {
         this.type = type;
-        Set<Type> types = new HashSet<>(manager.createAnnotatedType(type).getTypeClosure());
-        // Weld does not add Object.class for interfaces as they do not extend Object.class.
-        // Though let's add it so that it's possible to lookup by bean type Object.class
-        // beans whose bean class is an interface (for eager beans for example).
-        types.add(Object.class);
         this.types = types;
         this.annotations = new HashSet<>(annotations);
     }

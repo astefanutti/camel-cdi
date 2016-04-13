@@ -21,6 +21,7 @@ import org.apache.camel.cdi.CdiCamelExtension;
 import org.apache.camel.cdi.ImportResource;
 import org.apache.camel.cdi.Uri;
 import org.apache.camel.component.mock.MockEndpoint;
+import org.apache.camel.model.RouteDefinition;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -31,10 +32,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
 @ImportResource("imported-context.xml")
@@ -63,6 +70,21 @@ public class XmlRouteContextImportTest {
     @Inject
     @Uri("mock:outbound")
     private MockEndpoint outbound;
+
+    @Inject
+    @Named("import")
+    private List<RouteDefinition> routes;
+
+    @Test
+    public void verifyRouteContext() {
+        assertThat("Route context is incorrect!", routes, hasSize(1));
+        RouteDefinition route = routes.get(0);
+
+        assertThat("Route input is incorrect!", route.getInputs(), hasSize(1));
+
+        assertThat("Route is incorrect!",
+            route.getInputs().get(0).getEndpointUri(), is(equalTo("direct:inbound")));
+    }
 
     @Test
     public void sendMessageToInbound() throws InterruptedException {

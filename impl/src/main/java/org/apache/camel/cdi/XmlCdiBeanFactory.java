@@ -16,18 +16,21 @@
  */
 package org.apache.camel.cdi;
 
+import org.apache.camel.builder.ErrorHandlerBuilder;
 import org.apache.camel.cdi.xml.ApplicationContextFactoryBean;
 import org.apache.camel.cdi.xml.BeanManagerAware;
 import org.apache.camel.cdi.xml.CamelContextFactoryBean;
+import org.apache.camel.cdi.xml.ErrorHandlerDefinition;
 import org.apache.camel.cdi.xml.ImportDefinition;
 import org.apache.camel.cdi.xml.ProxyFactoryDefinition;
 import org.apache.camel.cdi.xml.RestContextDefinition;
 import org.apache.camel.cdi.xml.RouteContextDefinition;
 import org.apache.camel.cdi.xml.ServiceExporterDefinition;
-import org.apache.camel.cdi.xml.ErrorHandlerDefinition;
 import org.apache.camel.core.xml.AbstractCamelFactoryBean;
 import org.apache.camel.impl.DefaultCamelContext;
+import org.apache.camel.model.RouteDefinition;
 import org.apache.camel.model.RoutesDefinition;
+import org.apache.camel.model.rest.RestDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,12 +41,15 @@ import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.apache.camel.cdi.AnyLiteral.ANY;
 import static org.apache.camel.cdi.ApplicationScopedLiteral.APPLICATION_SCOPED;
@@ -140,7 +146,9 @@ final class XmlCdiBeanFactory {
         }
 
         annotations.add(APPLICATION_SCOPED);
-        SyntheticAnnotated annotated = new SyntheticAnnotated(manager, DefaultCamelContext.class, annotations);
+        SyntheticAnnotated annotated = new SyntheticAnnotated(DefaultCamelContext.class,
+            manager.createAnnotatedType(DefaultCamelContext.class).getTypeClosure(),
+            annotations);
         return new SyntheticBean<>(manager, annotated, DefaultCamelContext.class,
             environment.camelContextInjectionTarget(
                 new SyntheticInjectionTarget<>(() -> {
@@ -220,7 +228,9 @@ final class XmlCdiBeanFactory {
             annotations.add(APPLICATION_SCOPED);
 
         return new SyntheticBean<>(manager,
-            new SyntheticAnnotated(manager, factory.getObjectType(), annotations),
+            new SyntheticAnnotated(factory.getObjectType(),
+                manager.createAnnotatedType(factory.getObjectType()).getTypeClosure(),
+                annotations),
             factory.getObjectType(),
             new XmlFactoryBeanInjectionTarget<>(manager, factory, context),
             bean -> "imported bean [" + factory.getId() + "] "
@@ -230,7 +240,8 @@ final class XmlCdiBeanFactory {
 
     private SyntheticBean<?> proxyFactoryBean(Bean<?> context, ProxyFactoryDefinition proxy, URL url) {
         return new XmlProxyFactoryBean<>(manager,
-            new SyntheticAnnotated(manager, proxy.getServiceInterface(),
+            new SyntheticAnnotated(proxy.getServiceInterface(),
+                manager.createAnnotatedType(proxy.getServiceInterface()).getTypeClosure(),
                 APPLICATION_SCOPED, ANY, NamedLiteral.of(proxy.getId())),
             proxy.getServiceInterface(),
             bean -> "imported bean [" + proxy.getId() + "] "
@@ -240,6 +251,7 @@ final class XmlCdiBeanFactory {
     }
 
     private SyntheticBean<?> serviceExporterBean(Bean<?> context, ServiceExporterDefinition exporter, URL url) {
+        // TODO: replace with DefinitionException
         Objects.requireNonNull(exporter.getServiceRef(),
             () -> String.format("Missing [%s] attribute for imported bean [%s] from resource [%s]",
                 "serviceRef", Objects.toString(exporter.getId(), "export"), url));
@@ -259,9 +271,14 @@ final class XmlCdiBeanFactory {
             }
         }
 
+        Set<Type> types = new HashSet<>(manager.createAnnotatedType(type).getTypeClosure());
+        // Weld does not add Object.class for interfaces as they do not extend Object.class.
+        // Though let's add it so that it's possible to lookup by bean type Object.class
+        // beans whose bean class is an interface (for startup beans).
+        types.add(Object.class);
+
         return new XmlServiceExporterBean<>(manager,
-            new SyntheticAnnotated(manager, type,
-                APPLICATION_SCOPED, ANY, STARTUP,
+            new SyntheticAnnotated(type, types, APPLICATION_SCOPED, ANY, STARTUP,
                 exporter.getId() != null ? NamedLiteral.of(exporter.getId()) : DEFAULT),
             type,
             bean -> "imported bean [" + Objects.toString(exporter.getId(), "export") + "] "
@@ -276,8 +293,10 @@ final class XmlCdiBeanFactory {
                 "id", "restContext", url));
 
         return new SyntheticBean<>(manager,
-            // TODO: should ideally be declared with generic type closure
-            new SyntheticAnnotated(manager, List.class, ANY, NamedLiteral.of(definition.getId())),
+            new SyntheticAnnotated(List.class,
+                Stream.of(List.class, new ListParameterizedType(RestDefinition.class))
+                    .collect(Collectors.toSet()),
+                ANY, NamedLiteral.of(definition.getId())),
             List.class,
             new SyntheticInjectionTarget<>(definition::getRests),
             bean -> "imported rest context with "
@@ -292,8 +311,10 @@ final class XmlCdiBeanFactory {
                 "id", "routeContext", url));
 
         return new SyntheticBean<>(manager,
-            // TODO: should ideally be declared with generic type closure
-            new SyntheticAnnotated(manager, List.class, ANY, NamedLiteral.of(definition.getId())),
+            new SyntheticAnnotated(List.class,
+                Stream.of(List.class, new ListParameterizedType(RouteDefinition.class))
+                    .collect(Collectors.toSet()),
+                ANY, NamedLiteral.of(definition.getId())),
             List.class,
             new SyntheticInjectionTarget<>(definition::getRoutes),
             bean -> "imported route context with "
@@ -305,7 +326,9 @@ final class XmlCdiBeanFactory {
     private SyntheticBean<?> routesDefinitionBean(RoutesDefinition definition, URL url) {
         return new SyntheticBean<>(manager,
             // TODO: should be @Named if the id is set
-            new SyntheticAnnotated(manager, RoutesDefinition.class, ANY, DEFAULT),
+            new SyntheticAnnotated(RoutesDefinition.class,
+                manager.createAnnotatedType(RoutesDefinition.class).getTypeClosure(),
+                ANY, DEFAULT),
             RoutesDefinition.class,
             new SyntheticInjectionTarget<>(() -> definition),
             b -> "imported routes definition "
@@ -314,11 +337,11 @@ final class XmlCdiBeanFactory {
     }
 
     private SyntheticBean<?> errorHandlerBean(ErrorHandlerDefinition definition, URL url) {
+        Class<? extends ErrorHandlerBuilder> type = definition.getType().getTypeAsClass();
         return new XmlErrorHandlerFactoryBean(manager,
-            new SyntheticAnnotated(manager,
-                definition.getType().getTypeAsClass(),
+            new SyntheticAnnotated(type, manager.createAnnotatedType(type).getTypeClosure(),
                 ANY, NamedLiteral.of(definition.getId())),
-            definition.getType().getTypeAsClass(),
+            type,
             bean -> "imported error handler with "
                 + "id [" + definition.getId() + "] "
                 + "from resource [" + url + "] "

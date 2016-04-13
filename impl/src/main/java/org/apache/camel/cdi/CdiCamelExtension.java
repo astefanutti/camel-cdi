@@ -294,7 +294,8 @@ public class CdiCamelExtension implements Extension {
     }
 
     private SyntheticBean<?> camelContextBean(BeanManager manager, Annotation... qualifiers) {
-        SyntheticAnnotated annotated = new SyntheticAnnotated(manager, DefaultCamelContext.class, qualifiers);
+        SyntheticAnnotated annotated = new SyntheticAnnotated(DefaultCamelContext.class,
+            manager.createAnnotatedType(DefaultCamelContext.class).getTypeClosure(), qualifiers);
         return new SyntheticBean<>(manager, annotated, DefaultCamelContext.class,
             environment.camelContextInjectionTarget(
                 new SyntheticInjectionTarget<>(DefaultCamelContext::new), annotated, manager),

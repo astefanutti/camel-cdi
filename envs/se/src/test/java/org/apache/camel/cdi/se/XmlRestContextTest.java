@@ -22,6 +22,7 @@ import org.apache.camel.cdi.ImportResource;
 import org.apache.camel.cdi.Uri;
 import org.apache.camel.cdi.se.test.DummyRestConsumerFactory;
 import org.apache.camel.component.mock.MockEndpoint;
+import org.apache.camel.model.rest.RestDefinition;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -33,10 +34,16 @@ import org.junit.runner.RunWith;
 
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
 @ImportResource({
@@ -71,6 +78,17 @@ public class XmlRestContextTest {
     @Inject
     @Uri("mock:outbound")
     private MockEndpoint outbound;
+
+    @Inject
+    @Named("rest")
+    private List<RestDefinition> rests;
+
+    @Test
+    public void verifyRestContext() {
+        assertThat("Rest context is incorrect!", rests, hasSize(1));
+        RestDefinition rest = rests.get(0);
+        assertThat("Rest path is incorrect!", rest.getPath(), is(equalTo("/inbound")));
+    }
 
     @Test
     public void sendMessageToInbound() throws InterruptedException {
