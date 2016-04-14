@@ -19,6 +19,7 @@ package org.apache.camel.cdi;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.DefaultErrorHandlerBuilder;
 import org.apache.camel.builder.ErrorHandlerBuilder;
+import org.apache.camel.builder.LoggingErrorHandlerBuilder;
 import org.apache.camel.cdi.xml.ErrorHandlerDefinition;
 import org.apache.camel.cdi.xml.RedeliveryPolicyFactoryBean;
 import org.apache.camel.processor.RedeliveryPolicy;
@@ -57,6 +58,7 @@ final class XmlErrorHandlerFactoryBean extends SyntheticBean<ErrorHandlerBuilder
                     setProperties((DefaultErrorHandlerBuilder) builder);
                     break;
                 case LoggingErrorHandler:
+                    setProperties((LoggingErrorHandlerBuilder) builder);
                     break;
                 case NoErrorHandler:
                     break;
@@ -120,5 +122,10 @@ final class XmlErrorHandlerFactoryBean extends SyntheticBean<ErrorHandlerBuilder
                         handler.getRedeliveryPolicyRef(), "redeliveryPolicyRef")));
             builder.setRedeliveryPolicy(policy);
         }
+    }
+
+    private void setProperties(LoggingErrorHandlerBuilder builder) {
+        builder.setLevel(handler.getLevel());
+        builder.setLogName(handler.getLogName());
     }
 }

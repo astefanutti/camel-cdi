@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<camelContext id="test" errorHandlerRef="error-handler"
+              xmlns="http://camel.apache.org/schema/spring">
+
+    <errorHandler id="error-handler"
+                  type="LoggingErrorHandler"
+                  logName="error"
+                  level="WARN"/>
+
+    <route>
+        <from uri="direct:inbound"/>
+        <choice>
+            <when>
+                <simple>${body} contains 'exception'</simple>
+                <throwException ref="failure"/>
+            </when>
+            <otherwise>
+                <transform>
+                    <simple>Response to ${body}</simple>
+                </transform>
+                <to uri="mock:outbound"/>
+            </otherwise>
+        </choice>
+    </route>
+
+</camelContext>
