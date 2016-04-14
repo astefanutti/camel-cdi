@@ -51,7 +51,7 @@ public class HelloSampleTest {
     @ClassRule
     public static TestRule verifier = new LogVerifier() {
         @Override
-        protected void verify() throws Throwable {
+        protected void verify() {
             assertThat("Log messages not found!", getMessages(),
                 containsInRelativeOrder(
                     containsString("(CamelContext: camel-1) is starting"),

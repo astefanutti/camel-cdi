@@ -63,7 +63,7 @@ public class MetricsSampleTest {
     @ClassRule
     public static TestRule verifier = new LogVerifier() {
         @Override
-        protected void verify() throws Throwable {
+        protected void verify() {
             assertThat("Log messages not found!", getMessages(),
                 hasItems(
                     containsString("(CamelContext: camel-cdi-metrics) is starting"),
