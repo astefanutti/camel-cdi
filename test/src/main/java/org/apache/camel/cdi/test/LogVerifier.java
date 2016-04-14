@@ -43,9 +43,13 @@ public class LogVerifier extends Verifier {
         this.appender = new AbstractAppender(LogVerifier.class.getSimpleName(), LevelRangeFilter.createFilter(Level.ALL, Level.ALL, Filter.Result.ACCEPT, Filter.Result.ACCEPT), PatternLayout.createDefaultLayout()) {
             @Override
             public void append(LogEvent event) {
-                messages.add(event.getMessage().getFormattedMessage());
+                LogVerifier.this.append(event);
             }
         };
+    }
+
+    protected void append(LogEvent event) {
+        messages.add(event.getMessage().getFormattedMessage());
     }
 
     public List<String> getMessages() {
