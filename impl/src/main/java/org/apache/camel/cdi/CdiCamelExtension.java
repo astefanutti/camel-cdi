@@ -56,8 +56,6 @@ import javax.enterprise.inject.spi.ProcessObserverMethod;
 import javax.enterprise.inject.spi.ProcessProducer;
 import javax.enterprise.inject.spi.WithAnnotations;
 import javax.inject.Named;
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -216,10 +214,10 @@ public class CdiCamelExtension implements Extension {
                     if (cause.getMessage().contains("AbstractCamelContextFactoryBean"))
                         logger.error("Importing Camel XML requires to have the 'camel-core-xml' dependency in the classpath!");
                     throw cause;
-                } catch (JAXBException | IOException cause) {
+                } catch (DefinitionException cause) {
+                    abd.addDefinitionError(new DefinitionException("Error while importing resource [" + ResourceHelper.getResource(path) + "]", cause));
+                } catch (Exception cause) {
                     abd.addDefinitionError(new DeploymentException("Error while importing resource [" + ResourceHelper.getResource(path) + "]", cause));
-                } catch (DefinitionException exception) {
-                    abd.addDefinitionError(exception);
                 }
             }
         }
