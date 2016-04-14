@@ -20,6 +20,8 @@ import org.apache.camel.Processor;
 import org.apache.camel.builder.DefaultErrorHandlerBuilder;
 import org.apache.camel.builder.ErrorHandlerBuilder;
 import org.apache.camel.cdi.xml.ErrorHandlerDefinition;
+import org.apache.camel.cdi.xml.RedeliveryPolicyFactoryBean;
+import org.apache.camel.processor.RedeliveryPolicy;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.CreationException;
@@ -28,7 +30,9 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import java.util.function.Function;
 
+import static java.util.Objects.nonNull;
 import static org.apache.camel.cdi.BeanManagerHelper.getReferenceByName;
+import static org.apache.camel.util.ObjectHelper.isNotEmpty;
 
 final class XmlErrorHandlerFactoryBean extends SyntheticBean<ErrorHandlerBuilder> {
 
@@ -70,12 +74,51 @@ final class XmlErrorHandlerFactoryBean extends SyntheticBean<ErrorHandlerBuilder
     public void destroy(ErrorHandlerBuilder instance, CreationalContext<ErrorHandlerBuilder> creationalContext) {
     }
 
-    private void setProperties(DefaultErrorHandlerBuilder builder) {
+    private void setProperties(DefaultErrorHandlerBuilder builder) throws Exception {
+        if (nonNull(handler.getDeadLetterHandleNewException()))
+            builder.setDeadLetterHandleNewException(handler.getDeadLetterHandleNewException());
         builder.setDeadLetterUri(handler.getDeadLetterUri());
-        Processor onPrepareFailure = getReferenceByName(manager, handler.getOnPrepareFailureRef(), Processor.class)
-            .orElseThrow(() -> new UnsatisfiedResolutionException(
-                String.format("No bean with name [%s] to satisfy attribute [%s]",
-                    handler.getOnPrepareFailureRef(), "onPrepareFailureRef")));
-        builder.setOnPrepareFailure(onPrepareFailure);
+        builder.setExecutorServiceRef(handler.getExecutorServiceRef());
+        builder.setRetryWhileRef(handler.getRetryWhileRef());
+        if (nonNull(handler.getUseOriginalMessage()))
+            builder.setUseOriginalMessage(handler.getUseOriginalMessage());
+
+        if (isNotEmpty(handler.getOnExceptionOccurredRef())) {
+            Processor processor = getReferenceByName(manager, handler.getOnExceptionOccurredRef(), Processor.class)
+                .orElseThrow(() -> new UnsatisfiedResolutionException(
+                    String.format("No bean with name [%s] to satisfy attribute [%s]",
+                        handler.getOnPrepareFailureRef(), "onExceptionOccurredRef")));
+            builder.setOnExceptionOccurred(processor);
+        }
+
+        if (isNotEmpty(handler.getOnPrepareFailureRef())) {
+            Processor processor = getReferenceByName(manager, handler.getOnPrepareFailureRef(), Processor.class)
+                .orElseThrow(() -> new UnsatisfiedResolutionException(
+                    String.format("No bean with name [%s] to satisfy attribute [%s]",
+                        handler.getOnPrepareFailureRef(), "onPrepareFailureRef")));
+            builder.setOnPrepareFailure(processor);
+        }
+
+        if (isNotEmpty(handler.getOnRedeliveryRef())) {
+            Processor processor = getReferenceByName(manager, handler.getOnRedeliveryRef(), Processor.class)
+                .orElseThrow(() -> new UnsatisfiedResolutionException(
+                    String.format("No bean with name [%s] to satisfy attribute [%s]",
+                        handler.getOnPrepareFailureRef(), "onRedeliveryRef")));
+            builder.setOnRedelivery(processor);
+        }
+
+        if (nonNull(handler.getRedeliveryPolicy())) {
+            RedeliveryPolicyFactoryBean policy = handler.getRedeliveryPolicy();
+            policy.setBeanManager(manager);
+            builder.setRedeliveryPolicy(policy.getObject());
+        }
+
+        if (isNotEmpty(handler.getRedeliveryPolicyRef())) {
+            RedeliveryPolicy policy = getReferenceByName(manager, handler.getRedeliveryPolicyRef(), RedeliveryPolicy.class)
+                .orElseThrow(() -> new UnsatisfiedResolutionException(
+                    String.format("No bean with name [%s] to satisfy attribute [%s]",
+                        handler.getRedeliveryPolicyRef(), "redeliveryPolicyRef")));
+            builder.setRedeliveryPolicy(policy);
+        }
     }
 }

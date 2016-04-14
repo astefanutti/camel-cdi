@@ -39,7 +39,7 @@ public class ErrorHandlerDefinition extends IdentifiedType {
     private String deadLetterUri;
 
     @XmlAttribute
-    private String deadLetterHandleNewException;
+    private Boolean deadLetterHandleNewException;
 
     @XmlAttribute
     private LoggingLevel level;
@@ -96,11 +96,11 @@ public class ErrorHandlerDefinition extends IdentifiedType {
         this.deadLetterUri = deadLetterUri;
     }
 
-    public String getDeadLetterHandleNewException() {
+    public Boolean getDeadLetterHandleNewException() {
         return deadLetterHandleNewException;
     }
 
-    public void setDeadLetterHandleNewException(String deadLetterHandleNewException) {
+    public void setDeadLetterHandleNewException(Boolean deadLetterHandleNewException) {
         this.deadLetterHandleNewException = deadLetterHandleNewException;
     }
 
