@@ -40,6 +40,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.apache.camel.cdi.DefaultLiteral.DEFAULT;
@@ -143,17 +144,10 @@ final class CdiCamelFactory {
     }
 
     private static String eventEndpointUri(Type type, Set<Annotation> qualifiers) {
-        String uri = "cdi-event://" + authorityFromType(type);
-
-        Optional<String> parameters = qualifiers.stream()
+        return "cdi-event://" + authorityFromType(type) + qualifiers.stream()
             .map(Annotation::annotationType)
             .map(Class::getCanonicalName)
-            .reduce((q1, q2) -> q1 + "%2C" + q2);
-
-        if (parameters.isPresent())
-            uri += "?qualifiers=" + parameters.get();
-
-        return uri;
+            .collect(Collectors.joining("%2C", qualifiers.size() > 0 ? "?qualifiers=" : "", ""));
     }
 
     private static String authorityFromType(Type type) {
@@ -163,8 +157,7 @@ final class CdiCamelFactory {
         if (type instanceof ParameterizedType)
             return Stream.of(((ParameterizedType) type).getActualTypeArguments())
                 .map(CdiCamelFactory::authorityFromType)
-                .reduce((t1, t2) -> t1 + "%2C" + t2)
-                .map(t -> "%3C" + t + "%3E").get();
+                .collect(Collectors.joining("%2C", "%3C", "%3E"));
 
         if (type instanceof GenericArrayType)
             return authorityFromType(((GenericArrayType) type).getGenericComponentType()) + "%5B%5D";
