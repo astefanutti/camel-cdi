@@ -339,6 +339,10 @@ public class CamelContextFactoryBean extends AbstractCamelContextFactoryBean<Def
         return redeliveryPolicies;
     }
 
+    public void setRedeliveryPolicies(List<RedeliveryPolicyFactoryBean> redeliveryPolicies) {
+        this.redeliveryPolicies = redeliveryPolicies;
+    }
+
     public List<InterceptDefinition> getIntercepts() {
         return intercepts;
     }

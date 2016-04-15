@@ -23,6 +23,7 @@ import org.apache.camel.cdi.xml.CamelContextFactoryBean;
 import org.apache.camel.cdi.xml.ErrorHandlerDefinition;
 import org.apache.camel.cdi.xml.ImportDefinition;
 import org.apache.camel.cdi.xml.ProxyFactoryDefinition;
+import org.apache.camel.cdi.xml.RedeliveryPolicyFactoryBean;
 import org.apache.camel.cdi.xml.RestContextDefinition;
 import org.apache.camel.cdi.xml.RouteContextDefinition;
 import org.apache.camel.cdi.xml.ServiceExporterDefinition;
@@ -107,9 +108,11 @@ final class XmlCdiBeanFactory {
                     String base = url.getProtocol() + "://" + url.getHost() + path;
                     beans.addAll(beansFrom(base + "/" + definition.getResource()));
                 }
+                for (RedeliveryPolicyFactoryBean factory : app.getRedeliveryPolicies()) {
+                    beans.add(camelContextBean(null, factory, url));
+                }
                 for (RestContextDefinition factory : app.getRestContexts()) {
-                    SyntheticBean<?> bean = restContextBean(factory, url);
-                    beans.add(bean);
+                    beans.add(restContextBean(factory, url));
                 }
                 for (RouteContextDefinition factory : app.getRouteContexts()) {
                     beans.add(routeContextBean(factory, url));
@@ -204,6 +207,12 @@ final class XmlCdiBeanFactory {
         if (factory.getExports() != null)
             factory.getExports().stream()
                 .map(export -> serviceExporterBean(context, export, url))
+                .forEach(beans::add);
+
+        if (factory.getRedeliveryPolicies() != null)
+            factory.getRedeliveryPolicies().stream()
+                .filter(policy -> policy.getId() != null)
+                .map(policy -> camelContextBean(context, policy, url))
                 .forEach(beans::add);
 
         if (factory.getThreadPools() != null)

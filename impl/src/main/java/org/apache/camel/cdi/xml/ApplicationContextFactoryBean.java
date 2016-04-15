@@ -36,6 +36,9 @@ public class ApplicationContextFactoryBean {
     @XmlElement(name = "import")
     private List<ImportDefinition> imports = new ArrayList<>();
 
+    @XmlElement(name = "redeliveryPolicyProfile")
+    private List<RedeliveryPolicyFactoryBean> redeliveryPolicies = new ArrayList<>();
+
     @XmlElement(name = "restContext")
     private List<RestContextDefinition> restContexts = new ArrayList<>();
 
@@ -64,6 +67,14 @@ public class ApplicationContextFactoryBean {
 
     public void setImports(List<ImportDefinition> imports) {
         this.imports = imports;
+    }
+
+    public List<RedeliveryPolicyFactoryBean> getRedeliveryPolicies() {
+        return redeliveryPolicies;
+    }
+
+    public void setRedeliveryPolicies(List<RedeliveryPolicyFactoryBean> redeliveryPolicies) {
+        this.redeliveryPolicies = redeliveryPolicies;
     }
 
     public List<RestContextDefinition> getRestContexts() {
