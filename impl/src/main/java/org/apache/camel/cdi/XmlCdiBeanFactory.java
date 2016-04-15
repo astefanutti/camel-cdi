@@ -21,6 +21,7 @@ import org.apache.camel.cdi.xml.ApplicationContextFactoryBean;
 import org.apache.camel.cdi.xml.BeanManagerAware;
 import org.apache.camel.cdi.xml.CamelContextFactoryBean;
 import org.apache.camel.cdi.xml.ErrorHandlerDefinition;
+import org.apache.camel.cdi.xml.ErrorHandlerType;
 import org.apache.camel.cdi.xml.ImportDefinition;
 import org.apache.camel.cdi.xml.ProxyFactoryDefinition;
 import org.apache.camel.cdi.xml.RestContextDefinition;
@@ -31,12 +32,14 @@ import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.model.RouteDefinition;
 import org.apache.camel.model.RoutesDefinition;
 import org.apache.camel.model.rest.RestDefinition;
+import org.apache.camel.util.ObjectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.inject.CreationException;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.DefinitionException;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,10 +54,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.lang.String.format;
 import static org.apache.camel.cdi.AnyLiteral.ANY;
 import static org.apache.camel.cdi.ApplicationScopedLiteral.APPLICATION_SCOPED;
 import static org.apache.camel.cdi.DefaultLiteral.DEFAULT;
 import static org.apache.camel.cdi.Startup.Literal.STARTUP;
+import static org.apache.camel.util.ObjectHelper.isNotEmpty;
 
 final class XmlCdiBeanFactory {
 
@@ -257,7 +262,7 @@ final class XmlCdiBeanFactory {
     private SyntheticBean<?> serviceExporterBean(Bean<?> context, ServiceExporterDefinition exporter, URL url) {
         // TODO: replace with DefinitionException
         Objects.requireNonNull(exporter.getServiceRef(),
-            () -> String.format("Missing [%s] attribute for imported bean [%s] from resource [%s]",
+            () -> format("Missing [%s] attribute for imported bean [%s] from resource [%s]",
                 "serviceRef", Objects.toString(exporter.getId(), "export"), url));
 
         Class<?> type;
@@ -269,7 +274,7 @@ final class XmlCdiBeanFactory {
                 type = bean.getBeanClass();
             } else {
                 Objects.requireNonNull(exporter.getServiceInterface(),
-                    () -> String.format("Missing [%s] attribute for imported bean [%s] from resource [%s]",
+                    () -> format("Missing [%s] attribute for imported bean [%s] from resource [%s]",
                         "serviceInterface", Objects.toString(exporter.getId(), "export"), url));
                 type = exporter.getServiceInterface();
             }
@@ -293,7 +298,7 @@ final class XmlCdiBeanFactory {
 
     private SyntheticBean<?> restContextBean(RestContextDefinition definition, URL url) {
         Objects.requireNonNull(definition.getId(),
-            () -> String.format("Missing [%s] attribute for imported bean [%s] from resource [%s]",
+            () -> format("Missing [%s] attribute for imported bean [%s] from resource [%s]",
                 "id", "restContext", url));
 
         return new SyntheticBean<>(manager,
@@ -311,7 +316,7 @@ final class XmlCdiBeanFactory {
 
     private SyntheticBean<?> routeContextBean(RouteContextDefinition definition, URL url) {
         Objects.requireNonNull(definition.getId(),
-            () -> String.format("Missing [%s] attribute for imported bean [%s] from resource [%s]",
+            () -> format("Missing [%s] attribute for imported bean [%s] from resource [%s]",
                 "id", "routeContext", url));
 
         return new SyntheticBean<>(manager,
@@ -341,15 +346,88 @@ final class XmlCdiBeanFactory {
     }
 
     private SyntheticBean<?> errorHandlerBean(ErrorHandlerDefinition definition, URL url) {
-        Class<? extends ErrorHandlerBuilder> type = definition.getType().getTypeAsClass();
+        ErrorHandlerType type = definition.getType();
+
+        // Validate attributes according to type
+        if (isNotEmpty(definition.getDeadLetterUri())
+            && !type.equals(ErrorHandlerType.DeadLetterChannel))
+            throw attributeNotSupported("deadLetterUri", type, definition.getId());
+
+        if (isNotEmpty(definition.getDeadLetterHandleNewException())
+            && !type.equals(ErrorHandlerType.DeadLetterChannel))
+            throw attributeNotSupported("deadLetterHandleNewException", type, definition.getId());
+
+        if (isNotEmpty(definition.getTransactionTemplateRef())
+            && !type.equals(ErrorHandlerType.TransactionErrorHandler))
+            throw attributeNotSupported("transactionTemplateRef", type, definition.getId());
+
+        if (isNotEmpty(definition.getTransactionManagerRef())
+            && !type.equals(ErrorHandlerType.TransactionErrorHandler))
+            throw attributeNotSupported("transactionManagerRef", type, definition.getId());
+
+        if (isNotEmpty(definition.getRollbackLoggingLevel())
+            && (!type.equals(ErrorHandlerType.TransactionErrorHandler)))
+            throw attributeNotSupported("rollbackLoggingLevel", type, definition.getId());
+
+        if (isNotEmpty(definition.getUseOriginalMessage())
+            && (type.equals(ErrorHandlerType.LoggingErrorHandler)
+            || type.equals(ErrorHandlerType.NoErrorHandler)))
+            throw attributeNotSupported("useOriginalMessage", type, definition.getId());
+
+        if (isNotEmpty(definition.getOnRedeliveryRef())
+            && (type.equals(ErrorHandlerType.LoggingErrorHandler)
+            || type.equals(ErrorHandlerType.NoErrorHandler)))
+            throw attributeNotSupported("onRedeliveryRef", type, definition.getId());
+
+        if (isNotEmpty(definition.getOnExceptionOccurredRef())
+            && (type.equals(ErrorHandlerType.LoggingErrorHandler)
+            || type.equals(ErrorHandlerType.NoErrorHandler)))
+            throw attributeNotSupported("onExceptionOccurredRef", type, definition.getId());
+
+        if (isNotEmpty(definition.getOnPrepareFailureRef())
+            && (type.equals(ErrorHandlerType.TransactionErrorHandler)
+            || type.equals(ErrorHandlerType.LoggingErrorHandler)
+            || type.equals(ErrorHandlerType.NoErrorHandler)))
+            throw attributeNotSupported("onPrepareFailureRef", type, definition.getId());
+
+        if (isNotEmpty(definition.getRetryWhileRef())
+            && (type.equals(ErrorHandlerType.LoggingErrorHandler)
+            || type.equals(ErrorHandlerType.NoErrorHandler)))
+            throw attributeNotSupported("retryWhileRef", type, definition.getId());
+
+        if (isNotEmpty(definition.getOnRedeliveryRef())
+            && (type.equals(ErrorHandlerType.LoggingErrorHandler)
+            || type.equals(ErrorHandlerType.NoErrorHandler)))
+            throw attributeNotSupported("redeliveryPolicyRef", type, definition.getId());
+
+        if (isNotEmpty(definition.getExecutorServiceRef())
+            && (type.equals(ErrorHandlerType.LoggingErrorHandler)
+            || type.equals(ErrorHandlerType.NoErrorHandler)))
+            throw attributeNotSupported("executorServiceRef", type, definition.getId());
+
+        if (isNotEmpty(definition.getLogName())
+            && (!type.equals(ErrorHandlerType.LoggingErrorHandler)))
+            throw attributeNotSupported("logName", type, definition.getId());
+
+        if (isNotEmpty(definition.getLevel())
+            && (!type.equals(ErrorHandlerType.LoggingErrorHandler)))
+            throw attributeNotSupported("level", type, definition.getId());
+
         return new XmlErrorHandlerFactoryBean(manager,
-            new SyntheticAnnotated(type, manager.createAnnotatedType(type).getTypeClosure(),
+            new SyntheticAnnotated(type.getTypeAsClass(),
+                manager.createAnnotatedType(type.getTypeAsClass()).getTypeClosure(),
                 ANY, NamedLiteral.of(definition.getId())),
-            type,
+            type.getTypeAsClass(),
             bean -> "imported error handler with "
                 + "id [" + definition.getId() + "] "
                 + "from resource [" + url + "] "
                 + "with qualifiers " + bean.getQualifiers(),
             definition);
+    }
+
+    private static DefinitionException attributeNotSupported(String attribute, ErrorHandlerType type, String id) {
+        return new DefinitionException(
+            format("Attribute [%s] is not supported by error handler type [%s], in error handler with id [%s]",
+                attribute, type, id));
     }
 }
