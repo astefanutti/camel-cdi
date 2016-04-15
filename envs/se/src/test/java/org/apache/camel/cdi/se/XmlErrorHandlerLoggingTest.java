@@ -80,7 +80,9 @@ public class XmlErrorHandlerLoggingTest {
                     logEvent()
                         .withLevel("WARN")
                         .withLogger("error")
-                        .withMessage(containsString("Exhausted after delivery attempt: 1 caught: org.apache.camel.CamelException: failure message!")),
+                        .withMessage(containsString(
+                            "Exhausted after delivery attempt: 1 "
+                                + "caught: org.apache.camel.CamelException: failure message!")),
                     logEvent()
                         .withLevel("INFO")
                         .withMessage(containsString("Camel CDI is stopping Camel context [test]"))
@@ -116,9 +118,12 @@ public class XmlErrorHandlerLoggingTest {
         try {
             inbound.sendBody("exception");
         } catch (Exception exception) {
-            assertThat("Exception is incorrect!", exception, is(instanceOf(CamelExecutionException.class)));
-            assertThat("Exception cause is incorrect!", exception.getCause(), is(instanceOf(CamelException.class)));
-            assertThat("Exception message is incorrect!", exception.getCause().getMessage(), is(equalTo("failure message!")));
+            assertThat("Exception is incorrect!",
+                exception, is(instanceOf(CamelExecutionException.class)));
+            assertThat("Exception cause is incorrect!",
+                exception.getCause(), is(instanceOf(CamelException.class)));
+            assertThat("Exception message is incorrect!",
+                exception.getCause().getMessage(), is(equalTo("failure message!")));
             return;
         }
         fail("No exception thrown!");
