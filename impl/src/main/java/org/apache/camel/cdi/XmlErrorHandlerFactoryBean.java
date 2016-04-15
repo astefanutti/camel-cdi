@@ -61,6 +61,7 @@ final class XmlErrorHandlerFactoryBean extends SyntheticBean<ErrorHandlerBuilder
                     setProperties((LoggingErrorHandlerBuilder) builder);
                     break;
                 case NoErrorHandler:
+                    // No configuration required
                     break;
                 case TransactionErrorHandler:
                     break;
@@ -74,6 +75,7 @@ final class XmlErrorHandlerFactoryBean extends SyntheticBean<ErrorHandlerBuilder
 
     @Override
     public void destroy(ErrorHandlerBuilder instance, CreationalContext<ErrorHandlerBuilder> creationalContext) {
+        // NOOP
     }
 
     private void setProperties(DefaultErrorHandlerBuilder builder) throws Exception {

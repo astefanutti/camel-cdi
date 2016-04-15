@@ -34,6 +34,7 @@ import java.util.function.Function;
 
 import static org.apache.camel.cdi.BeanManagerHelper.getReference;
 import static org.apache.camel.cdi.BeanManagerHelper.getReferenceByName;
+import static org.apache.camel.util.CamelContextHelper.getMandatoryEndpoint;
 import static org.apache.camel.util.ObjectHelper.isNotEmpty;
 
 final class XmlServiceExporterBean<T> extends SyntheticBean<T> {
@@ -68,7 +69,7 @@ final class XmlServiceExporterBean<T> extends SyntheticBean<T> {
             @SuppressWarnings("unchecked")
             T service = (T) manager.getReference(bean, type, manager.createCreationalContext(bean));
 
-            Endpoint endpoint = CamelContextHelper.getMandatoryEndpoint(context, exporter.getUri());
+            Endpoint endpoint = getMandatoryEndpoint(context, exporter.getUri());
             try {
                 // need to start endpoint before we create consumer
                 ServiceHelper.startService(endpoint);
