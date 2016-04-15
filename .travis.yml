@@ -27,8 +27,7 @@ script:
   - mvn -B test -Pjacoco -Pwildfly-9.x -pl envs/ee
   - mvn -B test -Pjacoco -Pwildfly-10.x -pl envs/ee
   - mvn -B test -Pjacoco -Pwildfly-camel -pl envs/ee
-# Exclude SjmsPaxExamTest as Camel Karaf commands do not work in Camel 2.18-SNAPSHOT
-  - mvn -B test -Pjacoco -Pkaraf,weld -pl envs/osgi/ -Dtest=!SjmsPaxExamTest
+  - mvn -B test -Pjacoco -Pkaraf,weld -pl envs/osgi/
 # OpenWebBeans faces class proxying issues in OSGi, see OWB-1103
 #  - mvn -B test -Pjacoco -Pkaraf,owb -pl envs/osgi/
 
