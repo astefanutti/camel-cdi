@@ -72,6 +72,9 @@ public class CamelContextFactoryBean extends AbstractCamelContextFactoryBean<Def
     private String messageHistory;
 
     @XmlAttribute
+    private String logExhaustedMessageBody;
+
+    @XmlAttribute
     private String streamCache;
 
     @XmlAttribute
@@ -447,6 +450,15 @@ public class CamelContextFactoryBean extends AbstractCamelContextFactoryBean<Def
 
     public void setMessageHistory(String messageHistory) {
         this.messageHistory = messageHistory;
+    }
+
+    @Override
+    public String getLogExhaustedMessageBody() {
+        return logExhaustedMessageBody;
+    }
+
+    public void setLogExhaustedMessageBody(String logExhaustedMessageBody) {
+        this.logExhaustedMessageBody = logExhaustedMessageBody;
     }
 
     public String getStreamCache() {
