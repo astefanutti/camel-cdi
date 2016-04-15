@@ -16,9 +16,12 @@
  */
 package org.apache.camel.cdi.xml;
 
+import org.apache.camel.core.xml.AbstractCamelFactoryBean;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,14 +39,20 @@ public class ApplicationContextFactoryBean {
     @XmlElement(name = "import")
     private List<ImportDefinition> imports = new ArrayList<>();
 
-    @XmlElement(name = "redeliveryPolicyProfile")
-    private List<RedeliveryPolicyFactoryBean> redeliveryPolicies = new ArrayList<>();
-
     @XmlElement(name = "restContext")
     private List<RestContextDefinition> restContexts = new ArrayList<>();
 
     @XmlElement(name = "routeContext")
     private List<RouteContextDefinition> routeContexts = new ArrayList<>();
+
+    @XmlElements({
+        @XmlElement(name = "consumerTemplate", type = ConsumerTemplateFactoryBean.class),
+        @XmlElement(name = "endpoint", type = EndpointFactoryBean.class),
+        @XmlElement(name = "redeliveryPolicyProfile", type = RedeliveryPolicyFactoryBean.class),
+        @XmlElement(name = "template", type = ProducerTemplateFactoryBean.class),
+        @XmlElement(name = "threadPool", type = ThreadPoolFactoryBean.class)
+    })
+    private List<AbstractCamelFactoryBean<?>> beans = new ArrayList<>();
 
     public List<CamelContextFactoryBean> getContexts() {
         return contexts;
@@ -69,14 +78,6 @@ public class ApplicationContextFactoryBean {
         this.imports = imports;
     }
 
-    public List<RedeliveryPolicyFactoryBean> getRedeliveryPolicies() {
-        return redeliveryPolicies;
-    }
-
-    public void setRedeliveryPolicies(List<RedeliveryPolicyFactoryBean> redeliveryPolicies) {
-        this.redeliveryPolicies = redeliveryPolicies;
-    }
-
     public List<RestContextDefinition> getRestContexts() {
         return restContexts;
     }
@@ -91,5 +92,13 @@ public class ApplicationContextFactoryBean {
 
     public void setRouteContexts(List<RouteContextDefinition> routeContexts) {
         this.routeContexts = routeContexts;
+    }
+
+    public List<AbstractCamelFactoryBean<?>> getBeans() {
+        return beans;
+    }
+
+    public void setBeans(List<AbstractCamelFactoryBean<?>> beans) {
+        this.beans = beans;
     }
 }

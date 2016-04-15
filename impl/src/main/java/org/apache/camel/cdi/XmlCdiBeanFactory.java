@@ -23,7 +23,6 @@ import org.apache.camel.cdi.xml.CamelContextFactoryBean;
 import org.apache.camel.cdi.xml.ErrorHandlerDefinition;
 import org.apache.camel.cdi.xml.ImportDefinition;
 import org.apache.camel.cdi.xml.ProxyFactoryDefinition;
-import org.apache.camel.cdi.xml.RedeliveryPolicyFactoryBean;
 import org.apache.camel.cdi.xml.RestContextDefinition;
 import org.apache.camel.cdi.xml.RouteContextDefinition;
 import org.apache.camel.cdi.xml.ServiceExporterDefinition;
@@ -108,14 +107,15 @@ final class XmlCdiBeanFactory {
                     String base = url.getProtocol() + "://" + url.getHost() + path;
                     beans.addAll(beansFrom(base + "/" + definition.getResource()));
                 }
-                for (RedeliveryPolicyFactoryBean factory : app.getRedeliveryPolicies()) {
-                    beans.add(camelContextBean(null, factory, url));
-                }
                 for (RestContextDefinition factory : app.getRestContexts()) {
                     beans.add(restContextBean(factory, url));
                 }
                 for (RouteContextDefinition factory : app.getRouteContexts()) {
                     beans.add(routeContextBean(factory, url));
+                }
+                for (AbstractCamelFactoryBean<?> factory : app.getBeans()) {
+                    if (factory.getId() != null)
+                        beans.add(camelContextBean(null, factory, url));
                 }
                 return beans;
             } else if (node instanceof CamelContextFactoryBean) {
@@ -175,9 +175,16 @@ final class XmlCdiBeanFactory {
     }
 
     private Set<SyntheticBean<?>> camelContextBeans(CamelContextFactoryBean factory, Bean<?> context, URL url) {
-        // TODO: WARN log if the definition doesn't have an id
         Set<SyntheticBean<?>> beans = new HashSet<>();
-        // Only generate a bean for named endpoint definition
+
+        // TODO: WARN log if the definition doesn't have an id
+        if (factory.getBeans() != null)
+            factory.getBeans().stream()
+                .filter(bean -> bean.getId() != null)
+                .map(bean -> camelContextBean(context, bean, url))
+                .forEach(beans::add);
+
+        // TODO: define in beans
         if (factory.getEndpoints() != null)
             factory.getEndpoints().stream()
                 .filter(endpoint -> endpoint.getId() != null)
@@ -190,12 +197,9 @@ final class XmlCdiBeanFactory {
             .map(handler -> errorHandlerBean(handler, url))
             .forEach(beans::add);
 
-        if (factory.getBeans() != null)
-            factory.getBeans().stream()
-                .filter(bean -> AbstractCamelFactoryBean.class.isAssignableFrom(bean.getClass()))
-                .map(AbstractCamelFactoryBean.class::cast)
-                .filter(bean -> bean.getId() != null)
-                .map(bean -> camelContextBean(context, bean, url))
+        if (factory.getExports() != null)
+            factory.getExports().stream()
+                .map(export -> serviceExporterBean(context, export, url))
                 .forEach(beans::add);
 
         if (factory.getProxies() != null)
@@ -204,20 +208,11 @@ final class XmlCdiBeanFactory {
                 .map(proxy -> proxyFactoryBean(context, proxy, url))
                 .forEach(beans::add);
 
-        if (factory.getExports() != null)
-            factory.getExports().stream()
-                .map(export -> serviceExporterBean(context, export, url))
-                .forEach(beans::add);
-
+        // TODO: define in beans
         if (factory.getRedeliveryPolicies() != null)
             factory.getRedeliveryPolicies().stream()
                 .filter(policy -> policy.getId() != null)
                 .map(policy -> camelContextBean(context, policy, url))
-                .forEach(beans::add);
-
-        if (factory.getThreadPools() != null)
-            factory.getThreadPools().stream()
-                .map(pool -> camelContextBean(context, pool, url))
                 .forEach(beans::add);
 
         return beans;

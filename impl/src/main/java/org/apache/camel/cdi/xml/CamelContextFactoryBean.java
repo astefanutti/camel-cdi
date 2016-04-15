@@ -24,6 +24,7 @@ import org.apache.camel.ShutdownRunningTask;
 import org.apache.camel.TypeConverterExists;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.core.xml.AbstractCamelContextFactoryBean;
+import org.apache.camel.core.xml.AbstractCamelFactoryBean;
 import org.apache.camel.core.xml.CamelJMXAgentDefinition;
 import org.apache.camel.core.xml.CamelPropertyPlaceholderDefinition;
 import org.apache.camel.core.xml.CamelStreamCachingStrategyDefinition;
@@ -151,10 +152,12 @@ public class CamelContextFactoryBean extends AbstractCamelContextFactoryBean<Def
     private CamelJMXAgentDefinition camelJMXAgent;
 
     @XmlElements({
-        @XmlElement(name = "template", type = ProducerTemplateFactoryBean.class),
         @XmlElement(name = "consumerTemplate", type = ConsumerTemplateFactoryBean.class),
+        @XmlElement(name = "redeliveryPolicyProfile", type = RedeliveryPolicyFactoryBean.class),
+        @XmlElement(name = "template", type = ProducerTemplateFactoryBean.class),
+        @XmlElement(name = "threadPool", type = ThreadPoolFactoryBean.class)
     })
-    private List<?> beans;
+    private List<AbstractCamelFactoryBean<?>> beans;
 
     @XmlElement(name = "errorHandler", type = ErrorHandlerDefinition.class)
     private List<ErrorHandlerDefinition> errorHandlers;
@@ -176,9 +179,6 @@ public class CamelContextFactoryBean extends AbstractCamelContextFactoryBean<Def
 
     @XmlElement(name = "threadPoolProfile")
     private List<ThreadPoolProfileDefinition> threadPoolProfiles;
-
-    @XmlElement(name = "threadPool")
-    private List<ThreadPoolFactoryBean> threadPools;
 
     @XmlElement(name = "endpoint")
     private List<EndpointFactoryBean> endpoints;
@@ -295,11 +295,11 @@ public class CamelContextFactoryBean extends AbstractCamelContextFactoryBean<Def
         return context;
     }
 
-    public List<?> getBeans() {
+    public List<AbstractCamelFactoryBean<?>> getBeans() {
         return beans;
     }
 
-    public void setBeans(List<?> beans) {
+    public void setBeans(List<AbstractCamelFactoryBean<?>> beans) {
         this.beans = beans;
     }
 
@@ -665,14 +665,6 @@ public class CamelContextFactoryBean extends AbstractCamelContextFactoryBean<Def
 
     public void setShutdownRunningTask(ShutdownRunningTask shutdownRunningTask) {
         this.shutdownRunningTask = shutdownRunningTask;
-    }
-
-    public List<ThreadPoolFactoryBean> getThreadPools() {
-        return threadPools;
-    }
-
-    public void setThreadPools(List<ThreadPoolFactoryBean> threadPools) {
-        this.threadPools = threadPools;
     }
 
     public List<ThreadPoolProfileDefinition> getThreadPoolProfiles() {

@@ -25,15 +25,16 @@ import javax.enterprise.inject.InjectionException;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 
+import static org.apache.camel.cdi.BeanManagerHelper.getReference;
+
 final class XmlFactoryBeanInjectionTarget<T> extends SyntheticInjectionTarget<T> {
 
     XmlFactoryBeanInjectionTarget(BeanManager manager, AbstractCamelFactoryBean<T> factory, Bean<?> context) {
         super(
             () -> {
                 try {
-                    if (ObjectHelper.isEmpty(factory.getCamelContextId()))
-                        factory.setCamelContext(
-                            BeanManagerHelper.getReference(manager, CamelContext.class, context));
+                    if (ObjectHelper.isEmpty(factory.getCamelContextId()) && context != null)
+                        factory.setCamelContext(getReference(manager, CamelContext.class, context));
                     factory.afterPropertiesSet();
                     return factory.getObject();
                 } catch (Exception cause) {
