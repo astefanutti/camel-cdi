@@ -4,15 +4,18 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
 
-    <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
-        <route id="xml-route">
+    <camelContext id="first" xmlns="http://camel.apache.org/schema/spring">
+        <route id="first-route">
             <from uri="direct:inbound"/>
+            <setHeader headerName="context">
+                <constant>first</constant>
+            </setHeader>
             <to uri="mock:outbound"/>
         </route>
     </camelContext>
 
-    <!--<camelContext id="test">-->
+    <camelContext id="second">
 
-    <!--</camelContext>-->
+    </camelContext>
 
 </beans>
