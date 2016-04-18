@@ -23,11 +23,15 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
+import javax.enterprise.inject.spi.PassivationCapable;
 import java.util.Collections;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.function.Function;
 
-class SyntheticBean<T> extends SyntheticBeanAttributes<T> implements Bean<T> {
+import static org.apache.camel.cdi.CdiSpiHelper.createBeanAttributesId;
+
+class SyntheticBean<T> extends SyntheticBeanAttributes<T> implements Bean<T>, PassivationCapable {
 
     private final Class<?> type;
 
@@ -84,5 +88,15 @@ class SyntheticBean<T> extends SyntheticBeanAttributes<T> implements Bean<T> {
     @Override
     public String toString() {
         return toString.apply(this);
+    }
+
+    @Override
+    public String getId() {
+        return new StringJoiner("%")
+            .add("CAMEL-CDI")
+            .add(getClass().getSimpleName())
+            .add(type.getName())
+            .add(createBeanAttributesId(this))
+            .toString();
     }
 }
