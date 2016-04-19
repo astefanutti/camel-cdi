@@ -233,21 +233,17 @@ public class CdiCamelExtension implements Extension {
 
         // From the imported Camel XML
         beans.stream()
-            .filter(b -> b.getTypes().contains(CamelContext.class))
+            .filter(bean -> bean.getTypes().contains(CamelContext.class))
             .peek(contexts::add)
             .map(Bean::getQualifiers)
             .forEach(contextQualifiers::addAll);
 
         // From the @ContextName qualifiers on RoutesBuilder beans
-        Set<Annotation> names = manager.getBeans(RoutesBuilder.class, ANY).stream()
+        manager.getBeans(RoutesBuilder.class, ANY).stream()
             .flatMap(bean -> bean.getQualifiers().stream())
             .filter(qualifier -> ContextName.class.equals(qualifier.annotationType()))
             .filter(qualifier -> !contextQualifiers.contains(qualifier))
             .peek(contextQualifiers::add)
-            .collect(Collectors.toSet());
-
-        // Add missing @ContextName Camel context beans
-        names.stream()
             .map(name -> camelContextBean(manager, ANY, name, APPLICATION_SCOPED))
             .peek(contexts::add)
             .forEach(beans::add);
@@ -338,10 +334,9 @@ public class CdiCamelExtension implements Extension {
         // the initialization of normal-scoped beans).
         // FIXME: This does not work with OpenWebBeans for bean whose bean type is an
         // interface as the Object methods does not get forwarded to the bean instances!
-        eagerBeans.forEach(type ->
-            getReferencesByType(manager, type.getJavaClass(), ANY).toString());
+        eagerBeans.forEach(type -> getReferencesByType(manager, type.getJavaClass(), ANY).toString());
         manager.getBeans(Object.class, ANY, STARTUP).stream()
-            .forEach(bean -> manager.getReference(bean, bean.getBeanClass(), manager.createCreationalContext(bean)).toString());
+            .forEach(bean -> getReference(manager, bean.getBeanClass(), bean).toString());
 
         // Start Camel contexts
         for (CamelContext context : contexts) {
@@ -369,15 +364,14 @@ public class CdiCamelExtension implements Extension {
                 else if (route instanceof RouteContainer)
                     context.addRouteDefinitions(((RouteContainer) route).getRoutes());
                 else
-                    throw new IllegalArgumentException("Invalid routes type [" +
-                        routeBean.getBeanClass().getName() +
-                        "], must be either of type RoutesBuilder or RouteContainer!");
+                    throw new IllegalArgumentException(
+                        "Invalid routes type [" + routeBean.getBeanClass().getName() + "], "
+                            + "must be either of type RoutesBuilder or RouteContainer!");
                 return true;
             } catch (Exception cause) {
                 adv.addDeploymentProblem(
-                    new DeploymentException("Error adding routes of type [" +
-                        routeBean.getBeanClass().getName() +
-                        "] to Camel context [" + context.getName() + "]", cause));
+                    new DeploymentException("Error adding routes of type [" + routeBean.getBeanClass().getName() + "] "
+                        + "to Camel context [" + context.getName() + "]", cause));
             }
         } catch (Exception exception) {
             adv.addDeploymentProblem(exception);
