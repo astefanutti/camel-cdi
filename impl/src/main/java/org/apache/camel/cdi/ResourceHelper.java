@@ -22,6 +22,9 @@ import java.net.URL;
 @Vetoed
 final class ResourceHelper {
 
+    private ResourceHelper() {
+    }
+
     static URL getResource(String path) {
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         if (loader == null)

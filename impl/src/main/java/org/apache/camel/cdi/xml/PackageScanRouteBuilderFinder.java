@@ -81,9 +81,9 @@ final class PackageScanRouteBuilderFinder {
     }
 
     private boolean isValidClass(Class<?> type) {
-        return Modifier.isPublic(type.getModifiers()) &&
-            !Modifier.isAbstract(type.getModifiers()) &&
-            !type.isInterface();
+        return Modifier.isPublic(type.getModifiers())
+            && !Modifier.isAbstract(type.getModifiers())
+            && !type.isInterface();
     }
 
     private RoutesBuilder instantiateBuilder(Class<? extends RoutesBuilder> type) {

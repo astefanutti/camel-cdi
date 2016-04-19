@@ -33,7 +33,8 @@ final class CdiCamelInjector implements Injector {
 
     @Override
     public <T> T newInstance(Class<T> type) {
-        return BeanManagerHelper.getReferenceByType(manager, type).orElseGet(() -> injector.newInstance(type));
+        return BeanManagerHelper.getReferenceByType(manager, type)
+            .orElseGet(() -> injector.newInstance(type));
     }
 
     @Override

@@ -61,6 +61,6 @@ public class XmlProxyFactoryTest {
         String response = proxy.service("request");
 
         assertThat("Proxy response is incorrect!",
-            response,is(equalTo("Service called with: [request]")));
+            response, is(equalTo("Service called with: [request]")));
     }
 }

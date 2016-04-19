@@ -35,6 +35,6 @@ import java.lang.annotation.Target;
         private Literal() {
         }
 
-        static Startup STARTUP = new Literal();
+        static final Startup STARTUP = new Literal();
     }
 }
