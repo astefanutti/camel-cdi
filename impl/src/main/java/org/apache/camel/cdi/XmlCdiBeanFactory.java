@@ -16,6 +16,7 @@
  */
 package org.apache.camel.cdi;
 
+import org.apache.camel.Endpoint;
 import org.apache.camel.cdi.xml.ApplicationContextFactoryBean;
 import org.apache.camel.cdi.xml.BeanManagerAware;
 import org.apache.camel.cdi.xml.CamelContextFactoryBean;
@@ -31,6 +32,7 @@ import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.model.RouteDefinition;
 import org.apache.camel.model.RoutesDefinition;
 import org.apache.camel.model.rest.RestDefinition;
+import org.apache.camel.util.ObjectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -246,6 +248,11 @@ final class XmlCdiBeanFactory {
     }
 
     private SyntheticBean<?> proxyFactoryBean(Bean<?> context, ProxyFactoryDefinition proxy, URL url) {
+        if (ObjectHelper.isEmpty(proxy.getServiceRef()) && ObjectHelper.isEmpty(proxy.getServiceUrl()))
+            throw new DefinitionException(
+                format("Missing [%s] or [%s] attribute for imported bean [%s] from resource [%s]",
+                    "serviceRef", "serviceUrl", proxy.getId(), url));
+
         return new XmlProxyFactoryBean<>(manager,
             new SyntheticAnnotated(proxy.getServiceInterface(),
                 manager.createAnnotatedType(proxy.getServiceInterface()).getTypeClosure(),
@@ -338,7 +345,7 @@ final class XmlCdiBeanFactory {
                 ANY, DEFAULT),
             RoutesDefinition.class,
             new SyntheticInjectionTarget<>(() -> definition),
-            b -> "imported routes definition "
+            bean -> "imported routes definition "
                 + (definition.getId() != null ? "[" + definition.getId() + "] " : "")
                 + "from resource [" + url + "]");
     }

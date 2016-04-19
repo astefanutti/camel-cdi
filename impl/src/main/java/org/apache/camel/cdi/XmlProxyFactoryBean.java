@@ -65,7 +65,7 @@ final class XmlProxyFactoryBean<T> extends SyntheticBean<T> {
             else if (ObjectHelper.isNotEmpty(proxy.getServiceUrl()))
                 endpoint = context.getEndpoint(proxy.getServiceUrl());
             else
-                throw new DefinitionException("serviceUrl or serviceRef must not be empty!");
+                throw new IllegalStateException("serviceUrl or serviceRef must not be empty!");
 
             if (endpoint == null)
                 throw new UnsatisfiedResolutionException("Could not resolve endpoint: "
