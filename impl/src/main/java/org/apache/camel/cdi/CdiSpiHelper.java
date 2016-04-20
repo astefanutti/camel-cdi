@@ -90,7 +90,7 @@ final class CdiSpiHelper {
      */
     private static String createTypeCollectionId(Collection<? extends Type> types) {
         return types.stream()
-            .sorted((t1, t2) -> createTypeId(t1).compareTo(createTypeId(t2)))
+            .sorted(Comparator.comparing(CdiSpiHelper::createTypeId))
             .map(CdiSpiHelper::createTypeId)
             .collect(Collectors.joining(",", "[", "]"));
     }
@@ -138,7 +138,7 @@ final class CdiSpiHelper {
             (PrivilegedAction<Method[]>) () -> annotation.annotationType().getDeclaredMethods());
 
         return Stream.of(methods)
-            .sorted((m1, m2) -> m1.getName().compareTo(m2.getName()))
+            .sorted(Comparator.comparing(Method::getName))
             .collect(() -> new StringJoiner(",", "@(", ")"),
                 (joiner, method) -> {
                     try {
