@@ -37,8 +37,10 @@ import java.beans.Introspector;
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.apache.camel.cdi.AnyLiteral.ANY;
+import static org.apache.camel.cdi.CdiSpiHelper.isAnnotationType;
 import static org.apache.camel.cdi.DefaultLiteral.DEFAULT;
 
 final class CamelContextProducer<T extends CamelContext> extends DelegateProducer<T> {
@@ -74,8 +76,10 @@ final class CamelContextProducer<T extends CamelContext> extends DelegateProduce
         }
 
         // Add event notifier if at least one observer is present
-        Set<Annotation> qualifiers = new HashSet<>(annotated.getAnnotations());
-        qualifiers.removeIf(q -> !manager.isQualifier(q.annotationType()) || Named.class.equals(q.annotationType()));
+        Set<Annotation> qualifiers = annotated.getAnnotations().stream()
+            .filter(isAnnotationType(Named.class).negate()
+                .and(q -> manager.isQualifier(q.annotationType())))
+            .collect(Collectors.toSet());
         qualifiers.add(ANY);
         if (qualifiers.size() == 1)
             qualifiers.add(DEFAULT);
