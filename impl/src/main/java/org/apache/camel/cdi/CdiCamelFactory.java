@@ -40,9 +40,9 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.joining;
 import static org.apache.camel.cdi.CdiSpiHelper.isAnnotationType;
 import static org.apache.camel.cdi.DefaultLiteral.DEFAULT;
 
@@ -64,7 +64,7 @@ final class CdiCamelFactory {
     // Qualifiers are dynamically added in CdiCamelExtension
     private static ProducerTemplate producerTemplate(InjectionPoint ip, @Any Instance<CamelContext> instance, CdiCamelExtension extension) {
         return getQualifierByType(ip, Uri.class)
-            .map(u -> producerTemplateFromUri(ip, instance, extension, u))
+            .map(uri -> producerTemplateFromUri(ip, instance, extension, uri))
             .orElseGet(() -> defaultProducerTemplate(ip, instance, extension));
     }
 
@@ -124,7 +124,10 @@ final class CdiCamelFactory {
                     break;
                 }
             }
-            context.addEndpoint(uri, new CdiEventEndpoint<>(event.select(literal, ip.getQualifiers().toArray(new Annotation[ip.getQualifiers().size()])), uri, context, (ForwardingObserverMethod<T>) extension.getObserverMethod(ip)));
+            context.addEndpoint(uri,
+                new CdiEventEndpoint<>(
+                    event.select(literal, ip.getQualifiers().stream().toArray(Annotation[]::new)),
+                    uri, context, (ForwardingObserverMethod<T>) extension.getObserverMethod(ip)));
         }
         return context.getEndpoint(uri, CdiEventEndpoint.class);
     }
@@ -134,7 +137,7 @@ final class CdiCamelFactory {
         qualifiers.retainAll(extension.getContextQualifiers());
         if (qualifiers.isEmpty() && !instance.select(DEFAULT).isUnsatisfied())
             return instance.select(DEFAULT).get();
-        return instance.select(qualifiers.toArray(new Annotation[qualifiers.size()])).get();
+        return instance.select(qualifiers.stream().toArray(Annotation[]::new)).get();
     }
 
     private static <T extends Annotation> Optional<T> getQualifierByType(InjectionPoint ip, Class<T> type) {
@@ -148,7 +151,7 @@ final class CdiCamelFactory {
         return "cdi-event://" + authorityFromType(type) + qualifiers.stream()
             .map(Annotation::annotationType)
             .map(Class::getCanonicalName)
-            .collect(Collectors.joining("%2C", qualifiers.size() > 0 ? "?qualifiers=" : "", ""));
+            .collect(joining("%2C", qualifiers.size() > 0 ? "?qualifiers=" : "", ""));
     }
 
     private static String authorityFromType(Type type) {
@@ -158,7 +161,7 @@ final class CdiCamelFactory {
         if (type instanceof ParameterizedType)
             return Stream.of(((ParameterizedType) type).getActualTypeArguments())
                 .map(CdiCamelFactory::authorityFromType)
-                .collect(Collectors.joining("%2C", "%3C", "%3E"));
+                .collect(joining("%2C", "%3C", "%3E"));
 
         if (type instanceof GenericArrayType)
             return authorityFromType(((GenericArrayType) type).getGenericComponentType()) + "%5B%5D";

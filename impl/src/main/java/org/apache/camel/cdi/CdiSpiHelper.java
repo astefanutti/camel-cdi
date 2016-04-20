@@ -37,6 +37,11 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.security.AccessController.doPrivileged;
+import static java.util.Comparator.comparing;
+import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.joining;
+
 @Vetoed
 final class CdiSpiHelper {
 
@@ -69,7 +74,7 @@ final class CdiSpiHelper {
     }
 
     static Predicate<Annotation> isAnnotationType(Class<? extends Annotation> clazz) {
-        Objects.requireNonNull(clazz);
+        requireNonNull(clazz);
         return annotation -> clazz.equals(annotation.annotationType());
     }
 
@@ -81,8 +86,8 @@ final class CdiSpiHelper {
                 attributes.getScope().getName(),
                 createAnnotationCollectionId(attributes.getQualifiers()),
                 createTypeCollectionId(attributes.getTypes()))
-            .filter(s -> s != null)
-            .collect(Collectors.joining(","));
+            .filter(Objects::nonNull)
+            .collect(joining(","));
     }
 
     /**
@@ -90,9 +95,9 @@ final class CdiSpiHelper {
      */
     private static String createTypeCollectionId(Collection<? extends Type> types) {
         return types.stream()
-            .sorted(Comparator.comparing(CdiSpiHelper::createTypeId))
+            .sorted(comparing(CdiSpiHelper::createTypeId))
             .map(CdiSpiHelper::createTypeId)
-            .collect(Collectors.joining(",", "[", "]"));
+            .collect(joining(",", "[", "]"));
     }
 
     /**
@@ -106,7 +111,7 @@ final class CdiSpiHelper {
             return createTypeId(((ParameterizedType) type).getRawType())
                 + Stream.of(((ParameterizedType) type).getActualTypeArguments())
                 .map(CdiSpiHelper::createTypeId)
-                .collect(Collectors.joining(",", "<", ">"));
+                .collect(joining(",", "<", ">"));
 
         if (type instanceof TypeVariable<?>)
             return TypeVariable.class.cast(type).getName();
@@ -127,18 +132,18 @@ final class CdiSpiHelper {
         return annotations.stream()
             .sorted((a1, a2) -> a1.annotationType().getName().compareTo(a2.annotationType().getName()))
             .map(CdiSpiHelper::createAnnotationId)
-            .collect(Collectors.joining(",", "[", "]"));
+            .collect(joining(",", "[", "]"));
     }
 
     /**
      * Generates a unique signature for an {@link Annotation}.
      */
     private static String createAnnotationId(Annotation annotation) {
-        Method[] methods = AccessController.doPrivileged(
+        Method[] methods = doPrivileged(
             (PrivilegedAction<Method[]>) () -> annotation.annotationType().getDeclaredMethods());
 
         return Stream.of(methods)
-            .sorted(Comparator.comparing(Method::getName))
+            .sorted(comparing(Method::getName))
             .collect(() -> new StringJoiner(",", "@(", ")"),
                 (joiner, method) -> {
                     try {

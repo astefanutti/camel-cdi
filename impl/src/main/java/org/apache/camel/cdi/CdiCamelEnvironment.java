@@ -41,7 +41,9 @@ final class CdiCamelEnvironment {
 
     <T extends CamelContext> InjectionTarget<T> camelContextInjectionTarget(InjectionTarget<T> delegate, Annotated annotated, BeanManager manager) {
         CamelContextProducer<T> producer = new CamelContextProducer<>(delegate, annotated, manager);
-        return new CamelContextInjectionTarget<>(delegate, hasBundleContext ? new CamelContextOsgiProducer<>(producer) : producer);
+        return new CamelContextInjectionTarget<>(delegate, hasBundleContext
+            ? new CamelContextOsgiProducer<>(producer)
+            : producer);
     }
 
     private static boolean isCamelCoreOsgiPresent() {

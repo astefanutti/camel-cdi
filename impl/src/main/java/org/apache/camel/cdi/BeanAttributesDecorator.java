@@ -19,9 +19,10 @@ package org.apache.camel.cdi;
 import javax.enterprise.inject.spi.BeanAttributes;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+
+import static java.util.Collections.unmodifiableSet;
 
 class BeanAttributesDecorator<T> implements BeanAttributes<T> {
 
@@ -33,7 +34,7 @@ class BeanAttributesDecorator<T> implements BeanAttributes<T> {
         this.attributes = attributes;
         Set<Annotation> annotations = new HashSet<>(attributes.getQualifiers());
         annotations.addAll(qualifiers);
-        this.qualifiers = Collections.unmodifiableSet(annotations);
+        this.qualifiers = unmodifiableSet(annotations);
     }
 
     @Override

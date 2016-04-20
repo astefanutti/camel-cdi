@@ -22,10 +22,10 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Named;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
 
+import static java.util.Collections.emptySet;
+import static java.util.stream.Collectors.toSet;
 import static org.apache.camel.cdi.CdiSpiHelper.isAnnotationType;
 
 class SyntheticBeanAttributes<T> implements BeanAttributes<T> {
@@ -56,7 +56,7 @@ class SyntheticBeanAttributes<T> implements BeanAttributes<T> {
     public Set<Annotation> getQualifiers() {
         return annotated.getAnnotations().stream()
             .filter(a -> manager.isQualifier(a.annotationType()))
-            .collect(Collectors.toSet());
+            .collect(toSet());
     }
 
     @Override
@@ -71,7 +71,7 @@ class SyntheticBeanAttributes<T> implements BeanAttributes<T> {
 
     @Override
     public Set<Class<? extends Annotation>> getStereotypes() {
-        return Collections.emptySet();
+        return emptySet();
     }
 
     @Override

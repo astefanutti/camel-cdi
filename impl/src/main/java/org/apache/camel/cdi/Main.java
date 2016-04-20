@@ -31,7 +31,12 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
 import static org.apache.camel.cdi.AnyLiteral.ANY;
+import static org.apache.camel.cdi.BeanManagerHelper.getReference;
+import static org.apache.camel.cdi.BeanManagerHelper.getReferenceByType;
+import static org.apache.deltaspike.cdise.api.CdiContainerLoader.getCdiContainer;
 
 /**
  * Camel CDI boot integration. Allows Camel and CDI to be booted up on the command line as a JVM process.
@@ -66,8 +71,10 @@ public class Main extends MainSupport {
 
     @Override
     protected ProducerTemplate findOrCreateCamelTemplate() {
-        return BeanManagerHelper.getReferenceByType(cdiContainer.getBeanManager(), CamelContext.class)
-            .orElseThrow(() -> new UnsatisfiedResolutionException("No default Camel context is deployed, cannot create default ProducerTemplate!"))
+        return getReferenceByType(cdiContainer.getBeanManager(), CamelContext.class)
+            .orElseThrow(
+                () -> new UnsatisfiedResolutionException("No default Camel context is deployed, "
+                    + "cannot create default ProducerTemplate!"))
             .createProducerTemplate();
     }
 
@@ -75,14 +82,14 @@ public class Main extends MainSupport {
     protected Map<String, CamelContext> getCamelContextMap() {
         BeanManager manager = cdiContainer.getBeanManager();
         return manager.getBeans(CamelContext.class, ANY).stream()
-            .map(bean -> BeanManagerHelper.getReference(manager, CamelContext.class, bean))
-            .collect(Collectors.toMap(CamelContext::getName, Function.identity()));
+            .map(bean -> getReference(manager, CamelContext.class, bean))
+            .collect(toMap(CamelContext::getName, identity()));
     }
 
     @Override
     protected void doStart() throws Exception {
         // TODO: Use standard CDI Java SE support when CDI 2.0 becomes a prerequisite
-        CdiContainer container = CdiContainerLoader.getCdiContainer();
+        CdiContainer container = getCdiContainer();
         container.boot();
         container.getContextControl().startContexts();
         cdiContainer = container;
@@ -95,7 +102,7 @@ public class Main extends MainSupport {
         BeanManager manager = cdiContainer.getBeanManager();
         Set<Bean<?>> contexts = manager.getBeans(CamelContext.class);
         // Warn if the default CDI Camel context has no routes
-        if (contexts.size() == 1 && BeanManagerHelper.getReference(manager, CamelContext.class, contexts.iterator().next()).getRoutes().isEmpty()) {
+        if (contexts.size() == 1 && getReference(manager, CamelContext.class, contexts.iterator().next()).getRoutes().isEmpty()) {
             LOG.warn("Camel CDI main has started with no Camel routes! "
                 + "You may add some RouteBuilder beans to your project.");
         }

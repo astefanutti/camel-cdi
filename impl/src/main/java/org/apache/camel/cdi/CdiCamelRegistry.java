@@ -17,7 +17,6 @@
 package org.apache.camel.cdi;
 
 import org.apache.camel.spi.Registry;
-import org.apache.camel.util.ObjectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,9 +25,14 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toMap;
 import static org.apache.camel.cdi.AnyLiteral.ANY;
+import static org.apache.camel.cdi.BeanManagerHelper.getReference;
+import static org.apache.camel.cdi.BeanManagerHelper.getReferenceByName;
+import static org.apache.camel.cdi.BeanManagerHelper.getReferencesByType;
+import static org.apache.camel.util.ObjectHelper.notEmpty;
+import static org.apache.camel.util.ObjectHelper.notNull;
 
 /**
  * The {@link Registry} used by Camel to perform lookup into the CDI {@link javax.enterprise.inject.spi.BeanManager}.
@@ -46,33 +50,33 @@ final class CdiCamelRegistry implements Registry {
 
     @Override
     public Object lookupByName(String name) {
-        ObjectHelper.notEmpty(name, "name");
+        notEmpty(name, "name");
         logger.trace("Looking up bean with name [{}]", name);
-        return BeanManagerHelper.getReferenceByName(manager, name, Object.class).orElse(null);
+        return getReferenceByName(manager, name, Object.class).orElse(null);
     }
 
     @Override
     public <T> T lookupByNameAndType(String name, Class<T> type) {
-        ObjectHelper.notEmpty(name, "name");
-        ObjectHelper.notNull(type, "type");
+        notEmpty(name, "name");
+        notNull(type, "type");
         logger.trace("Looking up bean with name [{}] of type [{}]", name, type);
-        return BeanManagerHelper.getReferenceByName(manager, name, type).orElse(null);
+        return getReferenceByName(manager, name, type).orElse(null);
     }
 
     @Override
     public <T> Map<String, T> findByTypeWithName(Class<T> type) {
-        ObjectHelper.notNull(type, "type");
+        notNull(type, "type");
         logger.trace("Looking up named beans of type [{}]", type);
         return manager.getBeans(type, ANY).stream()
             .filter(bean -> bean.getName() != null)
-            .collect(Collectors.toMap(Bean::getName, bean -> BeanManagerHelper.getReference(manager, type, bean)));
+            .collect(toMap(Bean::getName, bean -> getReference(manager, type, bean)));
     }
 
     @Override
     public <T> Set<T> findByType(Class<T> type) {
-        ObjectHelper.notNull(type, "type");
+        notNull(type, "type");
         logger.trace("Looking up beans of type [{}]", type);
-        return BeanManagerHelper.getReferencesByType(manager, type, ANY);
+        return getReferencesByType(manager, type, ANY);
     }
 
     @Override

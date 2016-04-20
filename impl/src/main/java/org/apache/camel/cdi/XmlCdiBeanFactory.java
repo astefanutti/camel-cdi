@@ -16,7 +16,6 @@
  */
 package org.apache.camel.cdi;
 
-import org.apache.camel.Endpoint;
 import org.apache.camel.cdi.xml.ApplicationContextFactoryBean;
 import org.apache.camel.cdi.xml.BeanManagerAware;
 import org.apache.camel.cdi.xml.CamelContextFactoryBean;
@@ -32,7 +31,6 @@ import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.model.RouteDefinition;
 import org.apache.camel.model.RoutesDefinition;
 import org.apache.camel.model.rest.RestDefinition;
-import org.apache.camel.util.ObjectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,19 +44,24 @@ import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.net.URL;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
+import static java.util.Collections.addAll;
+import static java.util.Collections.emptySet;
+import static java.util.Collections.singleton;
+import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toSet;
 import static org.apache.camel.cdi.AnyLiteral.ANY;
 import static org.apache.camel.cdi.ApplicationScopedLiteral.APPLICATION_SCOPED;
 import static org.apache.camel.cdi.DefaultLiteral.DEFAULT;
+import static org.apache.camel.cdi.ResourceHelper.getResource;
 import static org.apache.camel.cdi.Startup.Literal.STARTUP;
+import static org.apache.camel.util.ObjectHelper.isEmpty;
 import static org.apache.camel.util.ObjectHelper.isNotEmpty;
 
 final class XmlCdiBeanFactory {
@@ -79,10 +82,10 @@ final class XmlCdiBeanFactory {
     }
 
     Set<SyntheticBean<?>> beansFrom(String path) throws JAXBException, IOException {
-        URL url = ResourceHelper.getResource(path);
+        URL url = getResource(path);
         if (url == null) {
             logger.warn("Unable to locate resource [{}] for import!", path);
-            return Collections.emptySet();
+            return emptySet();
         }
         return beansFrom(url);
     }
@@ -94,7 +97,7 @@ final class XmlCdiBeanFactory {
                 .unmarshal(xml);
             if (node instanceof RoutesDefinition) {
                 RoutesDefinition routes = (RoutesDefinition) node;
-                return Collections.singleton(routesDefinitionBean(routes, url));
+                return singleton(routesDefinitionBean(routes, url));
             } else if (node instanceof ApplicationContextFactoryBean) {
                 ApplicationContextFactoryBean app = (ApplicationContextFactoryBean) node;
                 Set<SyntheticBean<?>> beans = new HashSet<>();
@@ -132,20 +135,20 @@ final class XmlCdiBeanFactory {
                 return beans;
             } else if (node instanceof RestContextDefinition) {
                 RestContextDefinition factory = (RestContextDefinition) node;
-                return Collections.singleton(restContextBean(factory, url));
+                return singleton(restContextBean(factory, url));
             } else if (node instanceof RouteContextDefinition) {
                 RouteContextDefinition factory = (RouteContextDefinition) node;
-                return Collections.singleton(routeContextBean(factory, url));
+                return singleton(routeContextBean(factory, url));
             }
         }
-        return Collections.emptySet();
+        return emptySet();
     }
 
     private SyntheticBean<?> camelContextBean(CamelContextFactoryBean factory, URL url) {
         Set<Annotation> annotations = new HashSet<>();
         annotations.add(ANY);
         if (factory.getId() != null) {
-            Collections.addAll(annotations,
+            addAll(annotations,
                 ContextName.Literal.of(factory.getId()), NamedLiteral.of(factory.getId()));
         } else {
             annotations.add(DEFAULT);
@@ -248,7 +251,7 @@ final class XmlCdiBeanFactory {
     }
 
     private SyntheticBean<?> proxyFactoryBean(Bean<?> context, ProxyFactoryDefinition proxy, URL url) {
-        if (ObjectHelper.isEmpty(proxy.getServiceRef()) && ObjectHelper.isEmpty(proxy.getServiceUrl()))
+        if (isEmpty(proxy.getServiceRef()) && isEmpty(proxy.getServiceUrl()))
             throw new DefinitionException(
                 format("Missing [%s] or [%s] attribute for imported bean [%s] from resource [%s]",
                     "serviceRef", "serviceUrl", proxy.getId(), url));
@@ -266,7 +269,7 @@ final class XmlCdiBeanFactory {
 
     private SyntheticBean<?> serviceExporterBean(Bean<?> context, ServiceExporterDefinition exporter, URL url) {
         // TODO: replace with DefinitionException
-        Objects.requireNonNull(exporter.getServiceRef(),
+        requireNonNull(exporter.getServiceRef(),
             () -> format("Missing [%s] attribute for imported bean [%s] from resource [%s]",
                 "serviceRef", Objects.toString(exporter.getId(), "export"), url));
 
@@ -278,7 +281,7 @@ final class XmlCdiBeanFactory {
             if (bean != null) {
                 type = bean.getBeanClass();
             } else {
-                Objects.requireNonNull(exporter.getServiceInterface(),
+                requireNonNull(exporter.getServiceInterface(),
                     () -> format("Missing [%s] attribute for imported bean [%s] from resource [%s]",
                         "serviceInterface", Objects.toString(exporter.getId(), "export"), url));
                 type = exporter.getServiceInterface();
@@ -302,14 +305,14 @@ final class XmlCdiBeanFactory {
     }
 
     private SyntheticBean<?> restContextBean(RestContextDefinition definition, URL url) {
-        Objects.requireNonNull(definition.getId(),
+        requireNonNull(definition.getId(),
             () -> format("Missing [%s] attribute for imported bean [%s] from resource [%s]",
                 "id", "restContext", url));
 
         return new SyntheticBean<>(manager,
             new SyntheticAnnotated(List.class,
                 Stream.of(List.class, new ListParameterizedType(RestDefinition.class))
-                    .collect(Collectors.toSet()),
+                    .collect(toSet()),
                 ANY, NamedLiteral.of(definition.getId())),
             List.class,
             new SyntheticInjectionTarget<>(definition::getRests),
@@ -320,14 +323,14 @@ final class XmlCdiBeanFactory {
     }
 
     private SyntheticBean<?> routeContextBean(RouteContextDefinition definition, URL url) {
-        Objects.requireNonNull(definition.getId(),
+        requireNonNull(definition.getId(),
             () -> format("Missing [%s] attribute for imported bean [%s] from resource [%s]",
                 "id", "routeContext", url));
 
         return new SyntheticBean<>(manager,
             new SyntheticAnnotated(List.class,
                 Stream.of(List.class, new ListParameterizedType(RouteDefinition.class))
-                    .collect(Collectors.toSet()),
+                    .collect(toSet()),
                 ANY, NamedLiteral.of(definition.getId())),
             List.class,
             new SyntheticInjectionTarget<>(definition::getRoutes),

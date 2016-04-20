@@ -60,18 +60,18 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.EventObject;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Collections.newSetFromMap;
+import static java.util.Collections.singleton;
 import static java.util.function.Predicate.isEqual;
+import static java.util.stream.Collectors.toSet;
 import static org.apache.camel.cdi.AnyLiteral.ANY;
 import static org.apache.camel.cdi.ApplicationScopedLiteral.APPLICATION_SCOPED;
 import static org.apache.camel.cdi.BeanManagerHelper.getReference;
@@ -79,6 +79,7 @@ import static org.apache.camel.cdi.BeanManagerHelper.getReferencesByType;
 import static org.apache.camel.cdi.CdiSpiHelper.getRawType;
 import static org.apache.camel.cdi.CdiSpiHelper.isAnnotationType;
 import static org.apache.camel.cdi.DefaultLiteral.DEFAULT;
+import static org.apache.camel.cdi.ResourceHelper.getResource;
 import static org.apache.camel.cdi.Startup.Literal.STARTUP;
 
 public class CdiCamelExtension implements Extension {
@@ -198,7 +199,7 @@ public class CdiCamelExtension implements Extension {
         if (type instanceof Class
             && Class.class.cast(type).getPackage().equals(AbstractExchangeEvent.class.getPackage()))
             eventQualifiers.addAll(pom.getObserverMethod().getObservedQualifiers().isEmpty()
-                ? Collections.singleton(ANY)
+                ? singleton(ANY)
                 : pom.getObserverMethod().getObservedQualifiers());
     }
 
@@ -217,9 +218,11 @@ public class CdiCamelExtension implements Extension {
                         logger.error("Importing Camel XML requires to have the 'camel-core-xml' dependency in the classpath!");
                     throw cause;
                 } catch (DefinitionException cause) {
-                    abd.addDefinitionError(new DefinitionException("Error while importing resource [" + ResourceHelper.getResource(path) + "]", cause));
+                    abd.addDefinitionError(
+                        new DefinitionException("Error while importing resource [" + getResource(path) + "]", cause));
                 } catch (Exception cause) {
-                    abd.addDefinitionError(new DeploymentException("Error while importing resource [" + ResourceHelper.getResource(path) + "]", cause));
+                    abd.addDefinitionError(
+                        new DeploymentException("Error while importing resource [" + getResource(path) + "]", cause));
                 }
             }
         }
@@ -269,10 +272,10 @@ public class CdiCamelExtension implements Extension {
         // Update the CDI Camel factory beans
         Set<Annotation> endpointQualifiers = cdiEventEndpoints.keySet().stream()
             .flatMap(ip -> ip.getQualifiers().stream())
-            .collect(Collectors.toSet());
+            .collect(toSet());
         Set<Annotation> producerQualifiers = contextQualifiers.stream()
             .filter(isAnnotationType(Default.class).or(isAnnotationType(Named.class)).negate())
-            .collect(Collectors.toSet());
+            .collect(toSet());
         // TODO: would be more correct to add a bean for each Camel context bean
         manager.createAnnotatedType(CdiCamelFactory.class).getMethods().stream()
             .filter(am -> am.isAnnotationPresent(Produces.class))

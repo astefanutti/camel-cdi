@@ -24,11 +24,11 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.PassivationCapable;
-import java.util.Collections;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.function.Function;
 
+import static java.util.Collections.emptySet;
 import static org.apache.camel.cdi.CdiSpiHelper.createBeanAttributesId;
 
 class SyntheticBean<T> extends SyntheticBeanAttributes<T> implements Bean<T>, PassivationCapable {
@@ -77,7 +77,7 @@ class SyntheticBean<T> extends SyntheticBeanAttributes<T> implements Bean<T>, Pa
 
     @Override
     public Set<InjectionPoint> getInjectionPoints() {
-        return Collections.emptySet();
+        return emptySet();
     }
 
     @Override

@@ -20,12 +20,12 @@ import javax.enterprise.inject.Vetoed;
 import javax.enterprise.inject.spi.Annotated;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.unmodifiableSet;
 import static org.apache.camel.cdi.CdiSpiHelper.isAnnotationType;
 
 @Vetoed
@@ -38,7 +38,7 @@ final class SyntheticAnnotated implements Annotated {
     private final Set<Annotation> annotations;
 
     SyntheticAnnotated(Class<?> type, Set<Type> types, Annotation... annotations) {
-        this(type, types, Arrays.asList(annotations));
+        this(type, types, asList(annotations));
     }
 
     SyntheticAnnotated(Class<?> type, Set<Type> types, Collection<Annotation> annotations) {
@@ -58,12 +58,12 @@ final class SyntheticAnnotated implements Annotated {
 
     @Override
     public Set<Type> getTypeClosure() {
-        return Collections.unmodifiableSet(types);
+        return unmodifiableSet(types);
     }
 
     @Override
     public Set<Annotation> getAnnotations() {
-        return Collections.unmodifiableSet(annotations);
+        return unmodifiableSet(annotations);
     }
 
     @Override
