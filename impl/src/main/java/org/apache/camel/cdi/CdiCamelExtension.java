@@ -71,6 +71,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Collections.newSetFromMap;
+import static java.util.function.Predicate.isEqual;
 import static org.apache.camel.cdi.AnyLiteral.ANY;
 import static org.apache.camel.cdi.ApplicationScopedLiteral.APPLICATION_SCOPED;
 import static org.apache.camel.cdi.BeanManagerHelper.getReference;
@@ -274,12 +275,12 @@ public class CdiCamelExtension implements Extension {
             .collect(Collectors.toSet());
         // TODO: would be more correct to add a bean for each Camel context bean
         manager.createAnnotatedType(CdiCamelFactory.class).getMethods().stream()
-            .filter(am -> am.isAnnotationPresent(Produces.class)
-                && (am.getTypeClosure().contains(Endpoint.class)
-                || am.getTypeClosure().contains(ConsumerTemplate.class)
-                || am.getTypeClosure().contains(ProducerTemplate.class)))
+            .filter(am -> am.isAnnotationPresent(Produces.class))
+            .filter(am -> am.getTypeClosure().stream().anyMatch(isEqual(Endpoint.class)
+                .or(isEqual(ConsumerTemplate.class))
+                .or(isEqual(ProducerTemplate.class))))
             .map(am -> camelProducerBean(manager, am,
-                CdiEventEndpoint.class.equals(CdiSpiHelper.getRawType(am.getBaseType()))
+                CdiEventEndpoint.class.equals(getRawType(am.getBaseType()))
                     ? endpointQualifiers
                     : producerQualifiers))
             .forEach(abd::addBean);
