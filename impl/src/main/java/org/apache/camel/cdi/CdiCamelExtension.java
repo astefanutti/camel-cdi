@@ -60,7 +60,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EventObject;
 import java.util.HashSet;
@@ -76,6 +75,8 @@ import static org.apache.camel.cdi.AnyLiteral.ANY;
 import static org.apache.camel.cdi.ApplicationScopedLiteral.APPLICATION_SCOPED;
 import static org.apache.camel.cdi.BeanManagerHelper.getReference;
 import static org.apache.camel.cdi.BeanManagerHelper.getReferencesByType;
+import static org.apache.camel.cdi.CdiSpiHelper.getRawType;
+import static org.apache.camel.cdi.CdiSpiHelper.isAnnotationType;
 import static org.apache.camel.cdi.DefaultLiteral.DEFAULT;
 import static org.apache.camel.cdi.Startup.Literal.STARTUP;
 
@@ -241,7 +242,7 @@ public class CdiCamelExtension implements Extension {
         // From the @ContextName qualifiers on RoutesBuilder beans
         manager.getBeans(RoutesBuilder.class, ANY).stream()
             .flatMap(bean -> bean.getQualifiers().stream())
-            .filter(qualifier -> ContextName.class.equals(qualifier.annotationType()))
+            .filter(isAnnotationType(ContextName.class))
             .filter(qualifier -> !contextQualifiers.contains(qualifier))
             .peek(contextQualifiers::add)
             .map(name -> camelContextBean(manager, ANY, name, APPLICATION_SCOPED))
@@ -269,7 +270,7 @@ public class CdiCamelExtension implements Extension {
             .flatMap(ip -> ip.getQualifiers().stream())
             .collect(Collectors.toSet());
         Set<Annotation> producerQualifiers = contextQualifiers.stream()
-            .filter(q -> !Arrays.asList(Default.class, Named.class).contains(q.annotationType()))
+            .filter(isAnnotationType(Default.class).or(isAnnotationType(Named.class)).negate())
             .collect(Collectors.toSet());
         // TODO: would be more correct to add a bean for each Camel context bean
         manager.createAnnotatedType(CdiCamelFactory.class).getMethods().stream()

@@ -26,6 +26,8 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.apache.camel.cdi.CdiSpiHelper.isAnnotationType;
+
 class SyntheticBeanAttributes<T> implements BeanAttributes<T> {
 
     private final BeanManager manager;
@@ -60,7 +62,7 @@ class SyntheticBeanAttributes<T> implements BeanAttributes<T> {
     @Override
     public String getName() {
         return annotated.getAnnotations().stream()
-            .filter(a -> Named.class.equals(a.annotationType()))
+            .filter(isAnnotationType(Named.class))
             .map(Named.class::cast)
             .map(Named::value)
             .findFirst()

@@ -43,6 +43,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.apache.camel.cdi.CdiSpiHelper.isAnnotationType;
 import static org.apache.camel.cdi.DefaultLiteral.DEFAULT;
 
 final class CdiCamelFactory {
@@ -138,7 +139,7 @@ final class CdiCamelFactory {
 
     private static <T extends Annotation> Optional<T> getQualifierByType(InjectionPoint ip, Class<T> type) {
         return ip.getQualifiers().stream()
-            .filter(q -> type.equals(q.annotationType()))
+            .filter(isAnnotationType(type))
             .findAny()
             .map(type::cast);
     }

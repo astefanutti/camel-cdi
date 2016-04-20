@@ -30,7 +30,10 @@ import java.lang.reflect.WildcardType;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.Objects;
 import java.util.StringJoiner;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -63,6 +66,11 @@ final class CdiSpiHelper {
             return Object.class;
         else
             return getRawType(bounds[0]);
+    }
+
+    static Predicate<Annotation> isAnnotationType(Class<? extends Annotation> clazz) {
+        Objects.requireNonNull(clazz);
+        return annotation -> clazz.equals(annotation.annotationType());
     }
 
     /**
