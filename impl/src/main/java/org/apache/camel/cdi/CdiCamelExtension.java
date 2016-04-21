@@ -199,8 +199,7 @@ public class CdiCamelExtension implements Extension {
         if (type instanceof Class
             && Class.class.cast(type).getPackage().equals(AbstractExchangeEvent.class.getPackage()))
             eventQualifiers.addAll(pom.getObserverMethod().getObservedQualifiers().isEmpty()
-                ? singleton(ANY)
-                : pom.getObserverMethod().getObservedQualifiers());
+                ? singleton(ANY) : pom.getObserverMethod().getObservedQualifiers());
     }
 
     private void afterBeanDiscovery(@Observes AfterBeanDiscovery abd, BeanManager manager) {
@@ -243,9 +242,11 @@ public class CdiCamelExtension implements Extension {
             .map(Bean::getQualifiers)
             .forEach(contextQualifiers::addAll);
 
-        // From the @ContextName qualifiers on RoutesBuilder beans
-        manager.getBeans(RoutesBuilder.class, ANY).stream()
-            .flatMap(bean -> bean.getQualifiers().stream())
+        // From the @ContextName qualifiers on RoutesBuilder and RouteContainer beans
+        Stream.concat(manager.getBeans(RoutesBuilder.class, ANY).stream(),
+                      manager.getBeans(RouteContainer.class, ANY).stream())
+            .map(Bean::getQualifiers)
+            .flatMap(Set::stream)
             .filter(isAnnotationType(ContextName.class))
             .filter(qualifier -> !contextQualifiers.contains(qualifier))
             .peek(contextQualifiers::add)
@@ -271,7 +272,8 @@ public class CdiCamelExtension implements Extension {
 
         // Update the CDI Camel factory beans
         Set<Annotation> endpointQualifiers = cdiEventEndpoints.keySet().stream()
-            .flatMap(ip -> ip.getQualifiers().stream())
+            .map(InjectionPoint::getQualifiers)
+            .flatMap(Set::stream)
             .collect(toSet());
         Set<Annotation> producerQualifiers = contextQualifiers.stream()
             .filter(isAnnotationType(Default.class).or(isAnnotationType(Named.class)).negate())
