@@ -45,6 +45,11 @@ import static java.util.stream.Collectors.joining;
 @Vetoed
 final class CdiSpiHelper {
 
+    static Predicate<Annotation> isAnnotationType(Class<? extends Annotation> clazz) {
+        requireNonNull(clazz);
+        return annotation -> clazz.equals(annotation.annotationType());
+    }
+
     static Class<?> getRawType(Type type) {
         if (type instanceof Class<?>) {
             return Class.class.cast(type);
@@ -73,11 +78,6 @@ final class CdiSpiHelper {
             return getRawType(bounds[0]);
     }
 
-    static Predicate<Annotation> isAnnotationType(Class<? extends Annotation> clazz) {
-        requireNonNull(clazz);
-        return annotation -> clazz.equals(annotation.annotationType());
-    }
-
     /**
      * Generates a unique signature for {@link BeanAttributes}.
      */
@@ -93,7 +93,7 @@ final class CdiSpiHelper {
     /**
      * Generates a unique signature of a collection of types.
      */
-    private static String createTypeCollectionId(Collection<? extends Type> types) {
+    private static String createTypeCollectionId(Collection<Type> types) {
         return types.stream()
             .sorted(comparing(CdiSpiHelper::createTypeId))
             .map(CdiSpiHelper::createTypeId)
