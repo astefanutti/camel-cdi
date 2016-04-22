@@ -17,6 +17,7 @@
 package org.apache.camel.cdi;
 
 import javax.enterprise.inject.Vetoed;
+import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanAttributes;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
@@ -44,6 +45,11 @@ import static java.util.stream.Collectors.joining;
 
 @Vetoed
 final class CdiSpiHelper {
+
+    static Predicate<Bean> hasType(Type type) {
+        requireNonNull(type);
+        return bean -> bean.getTypes().contains(type);
+    }
 
     static Predicate<Annotation> isAnnotationType(Class<? extends Annotation> clazz) {
         requireNonNull(clazz);
