@@ -29,6 +29,7 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.camel.PropertyInject;
 import org.apache.camel.RoutesBuilder;
 import org.apache.camel.ServiceStatus;
+import org.apache.camel.TypeConverter;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.management.event.AbstractExchangeEvent;
 import org.apache.camel.model.RouteContainer;
@@ -281,9 +282,7 @@ public class CdiCamelExtension implements Extension {
         // TODO: would be more correct to add a bean for each Camel context bean
         manager.createAnnotatedType(CdiCamelFactory.class).getMethods().stream()
             .filter(am -> am.isAnnotationPresent(Produces.class))
-            .filter(am -> am.getTypeClosure().stream().anyMatch(isEqual(Endpoint.class)
-                .or(isEqual(ConsumerTemplate.class))
-                .or(isEqual(ProducerTemplate.class))))
+            .filter(am -> am.getTypeClosure().stream().noneMatch(isEqual(TypeConverter.class)))
             .map(am -> camelProducerBean(manager, am,
                 CdiEventEndpoint.class.equals(getRawType(am.getBaseType()))
                     ? endpointQualifiers
