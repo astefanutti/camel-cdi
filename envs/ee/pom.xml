@@ -41,14 +41,8 @@
         <!-- FIXME: There should be not dependency on WildFly Camel -->
         <dependency>
             <groupId>org.wildfly.camel</groupId>
-            <artifactId>wildfly-camel-subsystem</artifactId>
+            <artifactId>wildfly-camel-subsystem-core</artifactId>
             <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.camel</groupId>
-                    <artifactId>camel-cdi</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
     </dependencies>
@@ -289,7 +283,7 @@
                                         <artifactItem>
                                             <groupId>org.wildfly</groupId>
                                             <artifactId>wildfly-dist</artifactId>
-                                            <version>${wildfly-9.version}</version>
+                                            <version>${wildfly-10.version}</version>
                                             <type>zip</type>
                                             <overWrite>false</overWrite>
                                             <outputDirectory>${project.build.directory}/wildfly-camel</outputDirectory>
@@ -299,7 +293,7 @@
                                             <artifactId>wildfly-camel-patch</artifactId>
                                             <type>tar.gz</type>
                                             <overWrite>false</overWrite>
-                                            <outputDirectory>${project.build.directory}/wildfly-camel/wildfly-${wildfly-9.version}</outputDirectory>
+                                            <outputDirectory>${project.build.directory}/wildfly-camel/wildfly-${wildfly-10.version}</outputDirectory>
                                         </artifactItem>
                                     </artifactItems>
                                 </configuration>
@@ -316,7 +310,7 @@
                                             <groupId>io.astefanutti.camel.cdi</groupId>
                                             <artifactId>camel-cdi</artifactId>
                                             <overWrite>false</overWrite>
-                                            <outputDirectory>${project.build.directory}/wildfly-camel/wildfly-${wildfly-9.version}/modules/system/layers/fuse/org/apache/camel/component/cdi/main/</outputDirectory>
+                                            <outputDirectory>${project.build.directory}/wildfly-camel/wildfly-${wildfly-10.version}/modules/system/layers/fuse/org/apache/camel/component/cdi/main/</outputDirectory>
                                         </artifactItem>
                                     </artifactItems>
                                 </configuration>
@@ -336,7 +330,7 @@
                                     <goal>replace</goal>
                                 </goals>
                                 <configuration>
-                                    <file>${project.build.directory}/wildfly-camel/wildfly-${wildfly-9.version}/modules/system/layers/fuse/org/apache/camel/component/cdi/main/module.xml</file>
+                                    <file>${project.build.directory}/wildfly-camel/wildfly-${wildfly-10.version}/modules/system/layers/fuse/org/apache/camel/component/cdi/main/module.xml</file>
                                     <unescape>false</unescape>
                                     <regex>true</regex>
                                     <replacements>
@@ -360,6 +354,8 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
+                            <!-- WFC 4.0 breaks the test with embedded Camel EAR -->
+                            <groups>org.apache.camel.cdi.ee.category.WildFlyCamel</groups>
                             <systemPropertyVariables>
                                 <arquillian.launch>wildfly-camel-managed</arquillian.launch>
                                 <jacoco.agent>${argLine}</jacoco.agent>

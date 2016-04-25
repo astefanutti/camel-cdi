@@ -36,7 +36,7 @@
 
     <container qualifier="wildfly-camel-managed" default="false">
         <configuration>
-            <property name="jbossHome">${project.build.directory}/wildfly-camel/wildfly-${wildfly-9.version}</property>
+            <property name="jbossHome">${project.build.directory}/wildfly-camel/wildfly-${wildfly-10.version}</property>
             <property name="serverConfig">standalone-camel.xml</property>
             <property name="outputToConsole">true</property>
             <property name="allowConnectingToRunningServer">false</property>
