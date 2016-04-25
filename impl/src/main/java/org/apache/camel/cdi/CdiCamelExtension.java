@@ -21,12 +21,9 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.CamelContextAware;
 import org.apache.camel.Component;
 import org.apache.camel.Consume;
-import org.apache.camel.ConsumerTemplate;
 import org.apache.camel.Converter;
-import org.apache.camel.Endpoint;
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Produce;
-import org.apache.camel.ProducerTemplate;
 import org.apache.camel.PropertyInject;
 import org.apache.camel.RoutesBuilder;
 import org.apache.camel.ServiceStatus;
@@ -52,7 +49,6 @@ import javax.enterprise.inject.spi.DeploymentException;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
-import javax.enterprise.inject.spi.ProcessBeanAttributes;
 import javax.enterprise.inject.spi.ProcessInjectionPoint;
 import javax.enterprise.inject.spi.ProcessInjectionTarget;
 import javax.enterprise.inject.spi.ProcessObserverMethod;
@@ -165,30 +161,6 @@ public class CdiCamelExtension implements Extension {
         else if (ip.getType() instanceof Class)
             cdiEventEndpoints.put(ip,
                 new ForwardingObserverMethod<>(Object.class, ip.getQualifiers()));
-    }
-
-    private <T extends Endpoint> void endpointProducers(@Observes ProcessBeanAttributes<T> pba) {
-        // Veto the bean as we first need to collect the metadata during the bean discovery phase.
-        // The bean attributes decoration is done after the bean discovery.
-        if (pba.getAnnotated() instanceof AnnotatedMethod && CdiCamelFactory.class.equals(
-                ((AnnotatedMethod) pba.getAnnotated()).getDeclaringType().getJavaClass()))
-            pba.veto();
-    }
-
-    private void consumerTemplates(@Observes ProcessBeanAttributes<ConsumerTemplate> pba) {
-        // Veto the bean as we first need to collect the metadata during the bean discovery phase.
-        // The bean attributes decoration is done after the bean discovery.
-        if (pba.getAnnotated() instanceof AnnotatedMethod && CdiCamelFactory.class.equals(
-                ((AnnotatedMethod) pba.getAnnotated()).getDeclaringType().getJavaClass()))
-            pba.veto();
-    }
-
-    private void producerTemplates(@Observes ProcessBeanAttributes<ProducerTemplate> pba) {
-        // Veto the bean as we first need to collect the metadata during the bean discovery phase.
-        // The bean attributes decoration is done after the bean discovery.
-        if (pba.getAnnotated() instanceof AnnotatedMethod && CdiCamelFactory.class.equals(
-                ((AnnotatedMethod) pba.getAnnotated()).getDeclaringType().getJavaClass()))
-            pba.veto();
     }
 
     private <T extends EventObject> void camelEventNotifiers(@Observes ProcessObserverMethod<T, ?> pom) {
@@ -337,7 +309,7 @@ public class CdiCamelExtension implements Extension {
 
     private Bean<?> camelProducerBean(BeanManager manager, AnnotatedMethod<? super CdiCamelFactory> am, Set<Annotation> qualifiers) {
         return manager.createBean(
-            new BeanAttributesDecorator<>(manager.createBeanAttributes(am), qualifiers),
+            new BeanAlternative<>(manager.createBeanAttributes(am), qualifiers),
             CdiCamelFactory.class,
             manager.getProducerFactory(am,
                 (Bean<CdiCamelFactory>) manager.resolve(manager.getBeans(CdiCamelFactory.class))));

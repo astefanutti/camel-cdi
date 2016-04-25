@@ -24,13 +24,13 @@ import java.util.Set;
 
 import static java.util.Collections.unmodifiableSet;
 
-class BeanAttributesDecorator<T> implements BeanAttributes<T> {
+class BeanAlternative<T> implements BeanAttributes<T> {
 
     private final BeanAttributes<T> attributes;
 
     private final Set<Annotation> qualifiers;
 
-    BeanAttributesDecorator(BeanAttributes<T> attributes, Set<? extends Annotation> qualifiers) {
+    BeanAlternative(BeanAttributes<T> attributes, Set<? extends Annotation> qualifiers) {
         this.attributes = attributes;
         Set<Annotation> annotations = new HashSet<>(attributes.getQualifiers());
         annotations.addAll(qualifiers);
@@ -64,7 +64,7 @@ class BeanAttributesDecorator<T> implements BeanAttributes<T> {
 
     @Override
     public boolean isAlternative() {
-        return attributes.isAlternative();
+        return true;
     }
 
     @Override

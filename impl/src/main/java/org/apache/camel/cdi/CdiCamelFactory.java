@@ -23,6 +23,7 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.camel.TypeConverter;
 import org.apache.camel.component.mock.MockEndpoint;
 
+import javax.annotation.Priority;
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Default;
@@ -31,6 +32,7 @@ import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Typed;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.util.TypeLiteral;
+import javax.interceptor.Interceptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
@@ -46,6 +48,7 @@ import static java.util.stream.Collectors.joining;
 import static org.apache.camel.cdi.CdiSpiHelper.isAnnotationType;
 import static org.apache.camel.cdi.DefaultLiteral.DEFAULT;
 
+@Priority(Interceptor.Priority.LIBRARY_BEFORE)
 final class CdiCamelFactory {
 
     @Produces
@@ -82,7 +85,7 @@ final class CdiCamelFactory {
 
     @Produces
     @Typed(MockEndpoint.class)
-    // Qualifiers are dynamically added in CdiCamelExtension
+    // Alternative is dynamically added in CdiCamelExtension
     private static MockEndpoint mockEndpointFromMember(InjectionPoint ip, @Any Instance<CamelContext> instance, CdiCamelExtension extension) {
         String uri = "mock:" + ip.getMember().getName();
         return selectContext(ip, instance, extension).getEndpoint(uri, MockEndpoint.class);
@@ -91,7 +94,7 @@ final class CdiCamelFactory {
     @Uri("")
     @Produces
     @Typed(MockEndpoint.class)
-    // Qualifiers are dynamically added in CdiCamelExtension
+    // Alternative is dynamically added in CdiCamelExtension
     private static MockEndpoint mockEndpointFromUri(InjectionPoint ip, @Any Instance<CamelContext> instance, CdiCamelExtension extension) {
         Uri uri = getQualifierByType(ip, Uri.class).get();
         return selectContext(ip, instance, extension).getEndpoint(uri.value(), MockEndpoint.class);
@@ -99,7 +102,7 @@ final class CdiCamelFactory {
 
     @Uri("")
     @Produces
-    // Qualifiers are dynamically added in CdiCamelExtension
+    // Alternative is dynamically added in CdiCamelExtension
     private static Endpoint endpoint(InjectionPoint ip, @Any Instance<CamelContext> instance, CdiCamelExtension extension) {
         Uri uri = getQualifierByType(ip, Uri.class).get();
         return selectContext(ip, instance, extension).getEndpoint(uri.value(), Endpoint.class);
@@ -107,7 +110,7 @@ final class CdiCamelFactory {
 
     @Produces
     @SuppressWarnings("unchecked")
-    // Qualifiers are dynamically added in CdiCamelExtension
+    // Alternative is dynamically added in CdiCamelExtension
     private static <T> CdiEventEndpoint<T> cdiEventEndpoint(InjectionPoint ip, @Any Instance<CamelContext> instance, CdiCamelExtension extension, @Any Event<Object> event) throws Exception {
         CamelContext context = selectContext(ip, instance, extension);
         Type type = Object.class;
