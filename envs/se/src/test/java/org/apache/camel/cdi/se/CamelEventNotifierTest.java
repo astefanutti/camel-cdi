@@ -31,7 +31,6 @@ import org.apache.camel.management.event.ExchangeCompletedEvent;
 import org.apache.camel.management.event.ExchangeCreatedEvent;
 import org.apache.camel.management.event.ExchangeSendingEvent;
 import org.apache.camel.management.event.ExchangeSentEvent;
-import org.hamcrest.Matchers;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
@@ -103,8 +102,8 @@ public class CamelEventNotifierTest {
     @Test
     @InSequence(1)
     public void startedCamelContext(List<Class> events) throws Exception {
-        assertThat("Events fired are incorrect", events,
-            Matchers.<Class>contains(
+        assertThat("Events fired are incorrect!", events,
+            contains(
                 CamelContextStartingEvent.class,
                 CamelContextStartedEvent.class));
     }
@@ -119,7 +118,7 @@ public class CamelEventNotifierTest {
 
         assertIsSatisfied(2L, TimeUnit.SECONDS, outbound);
 
-        assertThat("Events fired are incorrect", events,
+        assertThat("Events fired are incorrect!", events,
             contains(
                 CamelContextStartingEvent.class,
                 CamelContextStartedEvent.class,
@@ -136,7 +135,7 @@ public class CamelEventNotifierTest {
     public void stopCamelContext(CamelContext context, List<Class> events) throws Exception {
         context.stop();
 
-        assertThat("Events fired are incorrect", events,
+        assertThat("Events fired are incorrect!", events,
             contains(
                 CamelContextStartingEvent.class,
                 CamelContextStartedEvent.class,

@@ -168,10 +168,16 @@ public class CdiCamelExtension implements Extension {
         // an observer method for a super type won't activate notifiers.
         Type type = pom.getObserverMethod().getObservedType();
         // Camel events are raw types
-        if (type instanceof Class
-            && Class.class.cast(type).getPackage().equals(AbstractExchangeEvent.class.getPackage()))
-            eventQualifiers.addAll(pom.getObserverMethod().getObservedQualifiers().isEmpty()
-                ? singleton(ANY) : pom.getObserverMethod().getObservedQualifiers());
+        if (type instanceof Class && Class.class.cast(type).getPackage().equals(AbstractExchangeEvent.class.getPackage())) {
+            Set<Annotation> qualifiers = pom.getObserverMethod().getObservedQualifiers();
+            if (qualifiers.isEmpty())
+                eventQualifiers.add(ANY);
+            else if (qualifiers.size() == 1 && qualifiers.stream()
+                .filter(isAnnotationType(Named.class)).findAny().isPresent())
+                eventQualifiers.add(DEFAULT);
+            else
+                eventQualifiers.addAll(qualifiers);
+        }
     }
 
     private void afterBeanDiscovery(@Observes AfterBeanDiscovery abd, BeanManager manager) {
