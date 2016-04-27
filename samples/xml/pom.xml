@@ -20,16 +20,22 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-core</artifactId>
-            <version>${camel.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>io.astefanutti.camel.cdi</groupId>
             <artifactId>camel-cdi</artifactId>
             <version>${project.version}</version>
-            <!-- That example only depends on Camel and CDI API -->
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-core-xml</artifactId>
+            <version>${camel.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-stream</artifactId>
+            <version>${camel.version}</version>
             <scope>runtime</scope>
         </dependency>
 

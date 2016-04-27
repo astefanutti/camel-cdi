@@ -16,26 +16,35 @@
  */
 package org.apache.camel.cdi.sample.xml;
 
+import java.util.concurrent.TimeUnit;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.apache.camel.CamelContext;
+import org.apache.camel.Endpoint;
+import org.apache.camel.ProducerTemplate;
 import org.apache.camel.ServiceStatus;
+import org.apache.camel.builder.AdviceWithRouteBuilder;
+import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.cdi.CdiCamelExtension;
-import org.apache.camel.cdi.test.LogVerifier;
+import org.apache.camel.cdi.Uri;
+import org.apache.camel.component.mock.MockEndpoint;
+import org.apache.camel.management.event.CamelContextStartingEvent;
+import org.apache.camel.model.ModelCamelContext;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit.InSequence;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
-import static org.hamcrest.Matchers.containsInRelativeOrder;
-import static org.hamcrest.Matchers.containsString;
+import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
@@ -52,23 +61,58 @@ public class XmlSampleTest {
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
-    @ClassRule
-    public static TestRule verifier = new LogVerifier() {
+    void pipeMatrixStream(@Observes CamelContextStartingEvent event,
+                          ModelCamelContext context) throws Exception {
+        context.getRouteDefinition("matrix")
+            .adviceWith(context, new AdviceWithRouteBuilder() {
+                @Override
+                public void configure() {
+                    weaveAddLast().to("mock:matrix");
+                }
+            });
+    }
+
+    @Named
+    @Inject
+    private Endpoint neo;
+
+    @Inject
+    private ProducerTemplate prompt;
+
+    static class RescueMission extends RouteBuilder {
+
         @Override
-        protected void verify() {
-            assertThat("Log messages not found!", getMessages(),
-                containsInRelativeOrder(
-                    containsString("(CamelContext: camel-1) is starting"),
-                    startsWith("Date is"),
-                    containsString("(CamelContext: camel-1) is shutdown"))
-            );
+        public void configure() {
+            from("seda:rescue?multipleConsumers=true").routeId("rescue mission").to("mock:zion");
         }
-    };
+    }
 
     @Test
-    public void test(CamelContext context) throws InterruptedException {
-        assertThat("Route from XML DSL is not started!", context.getRouteStatus("xml-route"), is(equalTo(ServiceStatus.Started)));
-        // Wait few seconds so that the timer kicks in
-        Thread.sleep(5000L);
+    @InSequence(1)
+    public void takeTheBluePill(@Uri("mock:matrix") MockEndpoint matrix) throws InterruptedException {
+        matrix.expectedMessageCount(1);
+        matrix.expectedBodiesReceived("Matrix » Take the blue pill!");
+
+        prompt.sendBody(neo, "Take the blue pill!");
+
+        assertIsSatisfied(2L, TimeUnit.SECONDS, matrix);
+    }
+
+    @Test
+    @InSequence(2)
+    public void takeTheRedPill(@Uri("mock:zion") MockEndpoint zion) throws InterruptedException {
+        zion.expectedMessageCount(1);
+        zion.expectedHeaderReceived("location", "matrix");
+
+        prompt.sendBody(neo, "Take the red pill!");
+
+        assertIsSatisfied(2L, TimeUnit.SECONDS, zion);
+    }
+
+    @Test
+    @InSequence(3)
+    public void verifyRescue(CamelContext context) {
+        assertThat("Neo is still in the matrix!",
+            context.getRouteStatus("terminal"), is(equalTo(ServiceStatus.Stopped)));
     }
 }
