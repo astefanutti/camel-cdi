@@ -16,8 +16,14 @@
  */
 package org.apache.camel.cdi.sample.properties;
 
+import org.apache.camel.builder.AdviceWithRouteBuilder;
 import org.apache.camel.cdi.CdiCamelExtension;
+import org.apache.camel.cdi.Uri;
 import org.apache.camel.cdi.test.LogVerifier;
+import org.apache.camel.component.mock.MockEndpoint;
+import org.apache.camel.management.event.CamelContextStartingEvent;
+import org.apache.camel.model.ModelCamelContext;
+import org.apache.deltaspike.core.api.config.ConfigProperty;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -26,15 +32,16 @@ import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.rules.ExternalResource;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
-import java.util.Locale;
+import javax.enterprise.event.Observes;
 
 import static org.hamcrest.Matchers.containsInRelativeOrder;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
@@ -45,6 +52,8 @@ public class PropertiesSampleTest {
         return ShrinkWrap.create(JavaArchive.class)
             // Camel CDI
             .addPackage(CdiCamelExtension.class.getPackage())
+            // DeltaSpike
+            .addPackages(true, "org.apache.deltaspike.core.impl")
             // Test classes
             .addPackage(PropertiesSampleTest.class.getPackage())
             // Bean archive deployment descriptor
@@ -52,35 +61,45 @@ public class PropertiesSampleTest {
     }
 
     @ClassRule
-    public static TestRule locale = new ExternalResource() {
-
-        private final Locale locale = Locale.getDefault();
-
-        @Override
-        protected void before() {
-            Locale.setDefault(Locale.FRENCH);
-        }
-
-        @Override
-        protected void after() {
-            Locale.setDefault(locale);
-        }
-    };
-
-    @ClassRule
     public static TestRule verifier = new LogVerifier() {
         @Override
         protected void verify() {
             assertThat("Log messages not found!", getMessages(),
                 containsInRelativeOrder(
-                    containsString("(CamelContext: camel-1) is starting"),
-                    equalTo("Bonjour de CamelContext(camel-1)"),
-                    containsString("(CamelContext: camel-1) is shutdown"))
+                    containsString("(CamelContext: hello) is starting"),
+                    equalTo("Hello from CamelContext (hello)"),
+                    containsString("(CamelContext: hello) is shutdown"))
             );
         }
     };
 
+    static void advice(@Observes CamelContextStartingEvent event,
+                       ModelCamelContext context) throws Exception {
+        // Add a mock endpoint to the end of the route
+        context.getRouteDefinitions().get(0).adviceWith(context, new AdviceWithRouteBuilder() {
+            @Override
+            public void configure() {
+                weaveAddLast().to("mock:outbound");
+            }
+        });
+    }
+
     @Test
-    public void test() {
+    public void testRouteMessage(@Uri("mock:outbound") MockEndpoint outbound) {
+        assertThat("Exchange count is incorrect!",
+            outbound.getExchanges(),
+            hasSize(1));
+        assertThat("Exchange body is incorrect!",
+            outbound.getExchanges().get(0).getIn().getBody(String.class),
+            is(equalTo("Hello")));
+    }
+
+    @Test
+    public void testProperties(@ConfigProperty(name = "destination") String destination,
+                               @ConfigProperty(name = "message") String message) {
+        assertThat("Property 'destination' value is incorrect!", destination,
+            is(equalTo("direct:hello")));
+        assertThat("Property 'message' value is incorrect!", message,
+            is(equalTo("Hello")));
     }
 }
