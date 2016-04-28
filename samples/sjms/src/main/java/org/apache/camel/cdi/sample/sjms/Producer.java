@@ -24,7 +24,8 @@ import javax.enterprise.event.Observes;
 
 class Producer {
 
-    void sendMessage(@Observes CamelContextStartedEvent event, @Uri("sjms:sample.queue") ProducerTemplate producer) {
+    void sendMessage(@Observes CamelContextStartedEvent event,
+                     @Uri("sjms:sample.queue") ProducerTemplate producer) {
         producer.sendBodyAndHeader("Sample Message", "Sender", getClass().getSimpleName());
     }
 }
