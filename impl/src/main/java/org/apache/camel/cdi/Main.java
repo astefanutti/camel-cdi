@@ -25,9 +25,13 @@ import javax.enterprise.inject.Vetoed;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.CDI;
+import javax.enterprise.inject.spi.CDIProvider;
 import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.Set;
+import java.util.stream.StreamSupport;
 
+import static java.util.Collections.singletonMap;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 import static org.apache.camel.cdi.AnyLiteral.ANY;
@@ -40,11 +44,6 @@ import static org.apache.camel.cdi.BeanManagerHelper.getReferenceByType;
  */
 @Vetoed
 public class Main extends MainSupport {
-
-    static {
-        // Since version 2.3.0.Final and WELD-1915, Weld SE registers a shutdown hook that conflicts with Camel main support. See WELD-2051. The system property above is available starting Weld 2.3.1.Final to deactivate the registration of the shutdown hook.
-        System.setProperty("org.jboss.weld.se.shutdownHook", String.valueOf(Boolean.FALSE));
-    }
 
     private static Main instance;
 
@@ -84,7 +83,15 @@ public class Main extends MainSupport {
 
     @Override
     protected void doStart() throws Exception {
-        container = CDI.getCDIProvider().initialize();
+        container = StreamSupport.stream(
+            ServiceLoader.load(CDIProvider.class, Main.class.getClassLoader()).spliterator(), false)
+            .findFirst()
+            // Since version 2.3.0.Final and WELD-1915, Weld SE registers a shutdown hook
+            // that conflicts with Camel main support. See WELD-2051. The parameter below
+            // is available starting Weld 2.3.1.Final to deactivate the registration of
+            // the shutdown hook.
+            .map(provider -> provider.initialize(singletonMap("org.jboss.weld.se.shutdownHook", false)))
+            .orElseThrow(() -> new IllegalStateException("No CDIProvider found in the classpath!"));
         super.doStart();
         postProcessContext();
         warnIfNoCamelFound();
