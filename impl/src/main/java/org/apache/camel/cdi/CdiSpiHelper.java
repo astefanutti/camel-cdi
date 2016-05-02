@@ -28,14 +28,11 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
-import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.security.AccessController.doPrivileged;
@@ -150,12 +147,10 @@ final class CdiSpiHelper {
 
         return Stream.of(methods)
             .sorted(comparing(Method::getName))
-            .collect(() -> new StringJoiner(",", "@(", ")"),
+            .collect(() -> new StringJoiner(",", "@" + annotation.annotationType().getCanonicalName() + "(", ")"),
                 (joiner, method) -> {
                     try {
-                        joiner
-                            .add(method.getName()).add("=")
-                            .add(method.invoke(annotation).toString());
+                        joiner.add(method.getName() + "=" + method.invoke(annotation).toString());
                     } catch (NullPointerException | IllegalArgumentException | IllegalAccessException | InvocationTargetException cause) {
                         throw new RuntimeException(
                             "Error while accessing member [" + method.getName() + "]"
