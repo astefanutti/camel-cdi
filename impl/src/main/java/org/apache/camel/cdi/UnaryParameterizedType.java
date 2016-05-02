@@ -20,11 +20,14 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
 
-final class ListParameterizedType implements ParameterizedType {
+final class UnaryParameterizedType implements ParameterizedType {
+
+    private final Type type;
 
     private final Type argument;
 
-    ListParameterizedType(Type argument) {
+    UnaryParameterizedType(Type type, Type argument) {
+        this.type = type;
         this.argument = argument;
     }
 
@@ -35,7 +38,7 @@ final class ListParameterizedType implements ParameterizedType {
 
     @Override
     public Type getRawType() {
-        return List.class;
+        return type;
     }
 
     @Override

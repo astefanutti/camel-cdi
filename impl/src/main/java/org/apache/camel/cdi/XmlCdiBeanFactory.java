@@ -313,7 +313,7 @@ final class XmlCdiBeanFactory {
 
         return new SyntheticBean<>(manager,
             new SyntheticAnnotated(List.class,
-                Stream.of(List.class, new ListParameterizedType(RestDefinition.class))
+                Stream.of(List.class, new UnaryParameterizedType(List.class, RestDefinition.class))
                     .collect(toSet()),
                 ANY, NamedLiteral.of(definition.getId())),
             List.class,
@@ -331,7 +331,7 @@ final class XmlCdiBeanFactory {
 
         return new SyntheticBean<>(manager,
             new SyntheticAnnotated(List.class,
-                Stream.of(List.class, new ListParameterizedType(RouteDefinition.class))
+                Stream.of(List.class, new UnaryParameterizedType(List.class, RouteDefinition.class))
                     .collect(toSet()),
                 ANY, NamedLiteral.of(definition.getId())),
             List.class,
