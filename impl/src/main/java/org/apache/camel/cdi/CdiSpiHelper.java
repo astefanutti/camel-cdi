@@ -19,6 +19,7 @@ package org.apache.camel.cdi;
 import javax.enterprise.inject.Vetoed;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanAttributes;
+import javax.enterprise.util.Nonbinding;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;
@@ -141,11 +142,12 @@ final class CdiSpiHelper {
     /**
      * Generates a unique signature for an {@link Annotation}.
      */
-    private static String createAnnotationId(Annotation annotation) {
+    static String createAnnotationId(Annotation annotation) {
         Method[] methods = doPrivileged(
             (PrivilegedAction<Method[]>) () -> annotation.annotationType().getDeclaredMethods());
 
         return Stream.of(methods)
+            .filter(method -> !method.isAnnotationPresent(Nonbinding.class))
             .sorted(comparing(Method::getName))
             .collect(() -> new StringJoiner(",", "@" + annotation.annotationType().getCanonicalName() + "(", ")"),
                 (joiner, method) -> {

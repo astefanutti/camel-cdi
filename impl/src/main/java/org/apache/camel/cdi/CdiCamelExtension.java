@@ -60,6 +60,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.EventObject;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -68,7 +69,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 import static java.util.Collections.newSetFromMap;
-import static java.util.Collections.singleton;
 import static java.util.function.Predicate.isEqual;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.Stream.concat;
@@ -76,6 +76,7 @@ import static org.apache.camel.cdi.AnyLiteral.ANY;
 import static org.apache.camel.cdi.ApplicationScopedLiteral.APPLICATION_SCOPED;
 import static org.apache.camel.cdi.BeanManagerHelper.getReference;
 import static org.apache.camel.cdi.BeanManagerHelper.getReferencesByType;
+import static org.apache.camel.cdi.CdiEventEndpoint.eventEndpointUri;
 import static org.apache.camel.cdi.CdiSpiHelper.getRawType;
 import static org.apache.camel.cdi.CdiSpiHelper.hasType;
 import static org.apache.camel.cdi.CdiSpiHelper.isAnnotationType;
@@ -95,7 +96,7 @@ public class CdiCamelExtension implements Extension {
 
     private final Set<AnnotatedType<?>> eagerBeans = newSetFromMap(new ConcurrentHashMap<>());
 
-    private final Map<InjectionPoint, ForwardingObserverMethod<?>> cdiEventEndpoints = new ConcurrentHashMap<>();
+    private final Map<String, CdiEventEndpoint<?>> cdiEventEndpoints = new HashMap<>();
 
     private final Set<Annotation> contextQualifiers = newSetFromMap(new ConcurrentHashMap<>());
 
@@ -103,8 +104,8 @@ public class CdiCamelExtension implements Extension {
 
     private final Set<ImportResource> resources = newSetFromMap(new ConcurrentHashMap<>());
 
-    ForwardingObserverMethod<?> getObserverMethod(InjectionPoint ip) {
-        return cdiEventEndpoints.get(ip);
+    CdiEventEndpoint<?> getEventEndpoint(String uri) {
+        return cdiEventEndpoints.get(uri);
     }
 
     Set<Annotation> getObserverEvents() {
@@ -149,18 +150,13 @@ public class CdiCamelExtension implements Extension {
             pit.setInjectionTarget(new CamelBeanInjectionTarget<>(pit.getInjectionTarget(), manager));
     }
 
-    private void cdiEventEndpoints(@Observes ProcessInjectionPoint<?, CdiEventEndpoint> pip) {
+    private void cdiEventEndpoints(@Observes ProcessInjectionPoint<?, CdiEventEndpoint> pip, BeanManager manager) {
         InjectionPoint ip = pip.getInjectionPoint();
-        // TODO: refine the key to the type and qualifiers instead of the whole injection point
-        // as it leads to registering redundant observers
-        if (ip.getType() instanceof ParameterizedType)
-            cdiEventEndpoints.put(ip,
-                new ForwardingObserverMethod<>(
-                    ((ParameterizedType) ip.getType()).getActualTypeArguments()[0],
-                    ip.getQualifiers()));
-        else if (ip.getType() instanceof Class)
-            cdiEventEndpoints.put(ip,
-                new ForwardingObserverMethod<>(Object.class, ip.getQualifiers()));
+        Type type = ip.getType() instanceof ParameterizedType
+            ? ((ParameterizedType) ip.getType()).getActualTypeArguments()[0]
+            : Object.class;
+        String uri = eventEndpointUri(type, ip.getQualifiers());
+        cdiEventEndpoints.put(uri, new CdiEventEndpoint<>(uri, type, ip.getQualifiers(), manager));
     }
 
     private <T extends EventObject> void camelEventNotifiers(@Observes ProcessObserverMethod<T, ?> pom) {
@@ -243,8 +239,8 @@ public class CdiCamelExtension implements Extension {
         extraBeans.forEach(abd::addBean);
 
         // Update the CDI Camel factory beans
-        Set<Annotation> endpointQualifiers = cdiEventEndpoints.keySet().stream()
-            .map(InjectionPoint::getQualifiers)
+        Set<Annotation> endpointQualifiers = cdiEventEndpoints.values().stream()
+            .map(CdiEventEndpoint::getQualifiers)
             .flatMap(Set::stream)
             .collect(toSet());
         Set<Annotation> producerQualifiers = contextQualifiers.stream()
@@ -261,7 +257,9 @@ public class CdiCamelExtension implements Extension {
             .forEach(abd::addBean);
 
         // Add CDI event endpoint observer methods
-        cdiEventEndpoints.values().forEach(abd::addObserverMethod);
+        cdiEventEndpoints.values().stream()
+            .map(ForwardingObserverMethod::new)
+            .forEach(abd::addObserverMethod);
     }
 
     private boolean shouldDeployDefaultCamelContext(BeanManager manager, Set<SyntheticBean<?>> beans) {

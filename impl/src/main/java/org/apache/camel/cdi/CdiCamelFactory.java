@@ -24,27 +24,21 @@ import org.apache.camel.TypeConverter;
 import org.apache.camel.component.mock.MockEndpoint;
 
 import javax.annotation.Priority;
-import javax.enterprise.event.Event;
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Typed;
 import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.util.TypeLiteral;
 import javax.interceptor.Interceptor;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.joining;
+import static org.apache.camel.cdi.CdiEventEndpoint.eventEndpointUri;
 import static org.apache.camel.cdi.CdiSpiHelper.isAnnotationType;
 import static org.apache.camel.cdi.DefaultLiteral.DEFAULT;
 
@@ -111,27 +105,14 @@ final class CdiCamelFactory {
     @Produces
     @SuppressWarnings("unchecked")
     // Alternative is dynamically added in CdiCamelExtension
-    private static <T> CdiEventEndpoint<T> cdiEventEndpoint(InjectionPoint ip, @Any Instance<CamelContext> instance, CdiCamelExtension extension, @Any Event<Object> event) throws Exception {
+    private static <T> CdiEventEndpoint<T> cdiEventEndpoint(InjectionPoint ip, @Any Instance<CamelContext> instance, CdiCamelExtension extension) throws Exception {
         CamelContext context = selectContext(ip, instance, extension);
         Type type = Object.class;
         if (ip.getType() instanceof ParameterizedType)
             type = ((ParameterizedType) ip.getType()).getActualTypeArguments()[0];
         String uri = eventEndpointUri(type, ip.getQualifiers());
-        if (context.hasEndpoint(uri) == null) {
-            // FIXME: to be replaced once event firing with dynamic parameterized type is properly supported (see https://issues.jboss.org/browse/CDI-516)
-            TypeLiteral<T> literal = new TypeLiteral<T>() {};
-            for (Field field : TypeLiteral.class.getDeclaredFields()) {
-                if (field.getType().equals(Type.class)) {
-                    field.setAccessible(true);
-                    field.set(literal, type);
-                    break;
-                }
-            }
-            context.addEndpoint(uri,
-                new CdiEventEndpoint<>(
-                    event.select(literal, ip.getQualifiers().stream().toArray(Annotation[]::new)),
-                    uri, context, (ForwardingObserverMethod<T>) extension.getObserverMethod(ip)));
-        }
+        if (context.hasEndpoint(uri) == null)
+            context.addEndpoint(uri, extension.getEventEndpoint(uri));
         return context.getEndpoint(uri, CdiEventEndpoint.class);
     }
 
@@ -148,27 +129,5 @@ final class CdiCamelFactory {
             .filter(isAnnotationType(type))
             .findAny()
             .map(type::cast);
-    }
-
-    private static String eventEndpointUri(Type type, Set<Annotation> qualifiers) {
-        return "cdi-event://" + authorityFromType(type) + qualifiers.stream()
-            .map(Annotation::annotationType)
-            .map(Class::getCanonicalName)
-            .collect(joining("%2C", qualifiers.size() > 0 ? "?qualifiers=" : "", ""));
-    }
-
-    private static String authorityFromType(Type type) {
-        if (type instanceof Class)
-            return Class.class.cast(type).getName();
-
-        if (type instanceof ParameterizedType)
-            return Stream.of(((ParameterizedType) type).getActualTypeArguments())
-                .map(CdiCamelFactory::authorityFromType)
-                .collect(joining("%2C", "%3C", "%3E"));
-
-        if (type instanceof GenericArrayType)
-            return authorityFromType(((GenericArrayType) type).getGenericComponentType()) + "%5B%5D";
-
-        throw new IllegalArgumentException("Cannot create URI authority for event type [" + type + "]");
     }
 }

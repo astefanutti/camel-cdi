@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.enterprise.event.Event;
 
-/* package-private */ final class CdiEventProducer<T> extends DefaultProducer {
+final class CdiEventProducer<T> extends DefaultProducer {
 
     private final Logger logger = LoggerFactory.getLogger(CdiEventProducer.class);
 

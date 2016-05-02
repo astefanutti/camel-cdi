@@ -16,16 +16,29 @@
  */
 package org.apache.camel.cdi;
 
-import org.apache.camel.CamelContext;
 import org.apache.camel.Consumer;
 import org.apache.camel.Endpoint;
 import org.apache.camel.Processor;
-import org.apache.camel.Producer;
 import org.apache.camel.impl.DefaultEndpoint;
 
 import javax.enterprise.event.Event;
+import javax.enterprise.inject.Any;
+import javax.enterprise.inject.Vetoed;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.Unmanaged;
+import javax.enterprise.util.TypeLiteral;
+import javax.inject.Inject;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.joining;
 
 /**
  * A Camel {@link Endpoint} that bridges the CDI events facility with Camel routes so that CDI events
@@ -83,12 +96,46 @@ public final class CdiEventEndpoint<T> extends DefaultEndpoint {
 
     private final List<CdiEventConsumer<T>> consumers = new ArrayList<>();
 
-    private final Event<T> event;
+    private final Type type;
 
-    CdiEventEndpoint(Event<T> event, String endpointUri, CamelContext context, ForwardingObserverMethod<T> observer) {
-        super(endpointUri, context);
-        this.event = event;
-        observer.setObserver(this);
+    private final Set<Annotation> qualifiers;
+
+    private final BeanManager manager;
+
+    CdiEventEndpoint(String endpointUri, Type type, Set<Annotation> qualifiers, BeanManager manager) {
+        super(endpointUri);
+        this.type = type;
+        this.qualifiers = qualifiers;
+        this.manager = manager;
+    }
+
+    static String eventEndpointUri(Type type, Set<Annotation> qualifiers) {
+        return "cdi-event://" + authorityFromType(type) + qualifiers.stream()
+            .map(CdiSpiHelper::createAnnotationId)
+            .collect(joining("%2C", qualifiers.size() > 0 ? "?qualifiers=" : "", ""));
+    }
+
+    private static String authorityFromType(Type type) {
+        if (type instanceof Class)
+            return Class.class.cast(type).getName();
+
+        if (type instanceof ParameterizedType)
+            return Stream.of(((ParameterizedType) type).getActualTypeArguments())
+                .map(CdiEventEndpoint::authorityFromType)
+                .collect(joining("%2C", authorityFromType(((ParameterizedType) type).getRawType()) + "%3C", "%3E"));
+
+        if (type instanceof GenericArrayType)
+            return authorityFromType(((GenericArrayType) type).getGenericComponentType()) + "%5B%5D";
+
+        throw new IllegalArgumentException("Cannot create URI authority for event type [" + type + "]");
+    }
+
+    Set<Annotation> getQualifiers() {
+        return qualifiers;
+    }
+
+    Type getType() {
+        return type;
     }
 
     public Consumer createConsumer(Processor processor) {
@@ -96,8 +143,29 @@ public final class CdiEventEndpoint<T> extends DefaultEndpoint {
     }
 
     @Override
-    public Producer createProducer() {
-        return new CdiEventProducer<>(this, event);
+    public CdiEventProducer<T> createProducer() throws IllegalAccessException {
+        // FIXME: to be replaced once event firing with dynamic parameterized type
+        // is properly supported (see https://issues.jboss.org/browse/CDI-516)
+        TypeLiteral<T> literal = new TypeLiteral<T>() {};
+        for (Field field : TypeLiteral.class.getDeclaredFields()) {
+            if (field.getType().equals(Type.class)) {
+                field.setAccessible(true);
+                field.set(literal, type);
+                break;
+            }
+        }
+
+        return new CdiEventProducer<>(this, new Unmanaged<>(manager, AnyEvent.class)
+            .newInstance().produce().inject().get()
+            .event.select(literal, qualifiers.stream().toArray(Annotation[]::new)));
+    }
+
+    @Vetoed
+    private static class AnyEvent {
+
+        @Any
+        @Inject
+        private Event<Object> event;
     }
 
     @Override
