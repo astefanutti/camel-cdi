@@ -19,6 +19,7 @@ package org.apache.camel.cdi;
 import org.apache.camel.Consumer;
 import org.apache.camel.Endpoint;
 import org.apache.camel.Processor;
+import org.apache.camel.Producer;
 import org.apache.camel.impl.DefaultEndpoint;
 
 import javax.enterprise.event.Event;
@@ -143,7 +144,7 @@ public final class CdiEventEndpoint<T> extends DefaultEndpoint {
     }
 
     @Override
-    public CdiEventProducer<T> createProducer() throws IllegalAccessException {
+    public Producer createProducer() throws IllegalAccessException {
         // FIXME: to be replaced once event firing with dynamic parameterized type
         // is properly supported (see https://issues.jboss.org/browse/CDI-516)
         TypeLiteral<T> literal = new TypeLiteral<T>() {};
