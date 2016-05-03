@@ -60,7 +60,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.EventObject;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -96,7 +95,7 @@ public class CdiCamelExtension implements Extension {
 
     private final Set<AnnotatedType<?>> eagerBeans = newSetFromMap(new ConcurrentHashMap<>());
 
-    private final Map<String, CdiEventEndpoint<?>> cdiEventEndpoints = new HashMap<>();
+    private final Map<String, CdiEventEndpoint<?>> cdiEventEndpoints = new ConcurrentHashMap<>();
 
     private final Set<Annotation> contextQualifiers = newSetFromMap(new ConcurrentHashMap<>());
 

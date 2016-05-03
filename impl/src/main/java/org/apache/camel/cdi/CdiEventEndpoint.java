@@ -139,6 +139,7 @@ public final class CdiEventEndpoint<T> extends DefaultEndpoint {
         return type;
     }
 
+    @Override
     public Consumer createConsumer(Processor processor) {
         return new CdiEventConsumer<>(this, processor);
     }
