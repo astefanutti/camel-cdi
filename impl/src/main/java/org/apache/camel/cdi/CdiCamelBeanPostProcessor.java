@@ -25,6 +25,7 @@ import org.apache.camel.impl.CamelPostProcessorHelper;
 import org.apache.camel.impl.DefaultCamelBeanPostProcessor;
 import org.apache.camel.util.ReflectionHelper;
 
+import javax.enterprise.inject.Default;
 import javax.enterprise.inject.InjectionException;
 import javax.enterprise.inject.UnsatisfiedResolutionException;
 import javax.enterprise.inject.Vetoed;
@@ -34,7 +35,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.apache.camel.cdi.BeanManagerHelper.getReferenceByType;
-import static org.apache.camel.cdi.DefaultLiteral.DEFAULT;
 
 @Vetoed
 final class CdiCamelBeanPostProcessor extends DefaultCamelBeanPostProcessor {
@@ -100,7 +100,7 @@ final class CdiCamelBeanPostProcessor extends DefaultCamelBeanPostProcessor {
     private CamelContext getOrLookupCamelContext(String contextName) {
         // TODO: proper support for custom context qualifiers
         return getReferenceByType(manager, CamelContext.class,
-            contextName.isEmpty() ? DEFAULT : ContextName.Literal.of(contextName))
+            contextName.isEmpty() ? Default.Literal.INSTANCE : ContextName.Literal.of(contextName))
             .orElseThrow(() -> new UnsatisfiedResolutionException("No Camel context with name [" + contextName + "] is deployed!"));
     }
 

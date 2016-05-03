@@ -20,6 +20,7 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.main.MainSupport;
 
+import javax.enterprise.inject.Any;
 import javax.enterprise.inject.UnsatisfiedResolutionException;
 import javax.enterprise.inject.Vetoed;
 import javax.enterprise.inject.spi.Bean;
@@ -34,7 +35,6 @@ import java.util.stream.StreamSupport;
 import static java.util.Collections.singletonMap;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
-import static org.apache.camel.cdi.AnyLiteral.ANY;
 import static org.apache.camel.cdi.BeanManagerHelper.getReference;
 import static org.apache.camel.cdi.BeanManagerHelper.getReferenceByType;
 
@@ -76,7 +76,7 @@ public class Main extends MainSupport {
     @Override
     protected Map<String, CamelContext> getCamelContextMap() {
         BeanManager manager = container.getBeanManager();
-        return manager.getBeans(CamelContext.class, ANY).stream()
+        return manager.getBeans(CamelContext.class, Any.Literal.INSTANCE).stream()
             .map(bean -> getReference(manager, CamelContext.class, bean))
             .collect(toMap(CamelContext::getName, identity()));
     }
@@ -99,7 +99,7 @@ public class Main extends MainSupport {
 
     private void warnIfNoCamelFound() {
         BeanManager manager = container.getBeanManager();
-        Set<Bean<?>> contexts = manager.getBeans(CamelContext.class, ANY);
+        Set<Bean<?>> contexts = manager.getBeans(CamelContext.class, Any.Literal.INSTANCE);
         // Warn if there is no CDI Camel contexts
         if (contexts.isEmpty())
             LOG.warn("Camel CDI main has started with no Camel context!");

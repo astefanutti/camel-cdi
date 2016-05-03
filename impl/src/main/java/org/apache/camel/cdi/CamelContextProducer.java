@@ -25,6 +25,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.Any;
+import javax.enterprise.inject.Default;
 import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedMethod;
@@ -37,10 +39,8 @@ import java.util.Set;
 
 import static java.beans.Introspector.decapitalize;
 import static java.util.stream.Collectors.toSet;
-import static org.apache.camel.cdi.AnyLiteral.ANY;
 import static org.apache.camel.cdi.CdiSpiHelper.getRawType;
 import static org.apache.camel.cdi.CdiSpiHelper.isAnnotationType;
-import static org.apache.camel.cdi.DefaultLiteral.DEFAULT;
 import static org.apache.camel.util.ObjectHelper.wrapRuntimeCamelException;
 
 final class CamelContextProducer<T extends CamelContext> extends DelegateProducer<T> {
@@ -80,9 +80,9 @@ final class CamelContextProducer<T extends CamelContext> extends DelegateProduce
             .filter(isAnnotationType(Named.class).negate()
                 .and(q -> manager.isQualifier(q.annotationType())))
             .collect(toSet());
-        qualifiers.add(ANY);
+        qualifiers.add(Any.Literal.INSTANCE);
         if (qualifiers.size() == 1)
-            qualifiers.add(DEFAULT);
+            qualifiers.add(Default.Literal.INSTANCE);
         qualifiers.retainAll(manager.getExtension(CdiCamelExtension.class).getObserverEvents());
         if (!qualifiers.isEmpty())
             context.getManagementStrategy().addEventNotifier(new CdiEventNotifier(manager, qualifiers));

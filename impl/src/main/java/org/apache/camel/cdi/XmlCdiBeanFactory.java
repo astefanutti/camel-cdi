@@ -36,7 +36,11 @@ import org.apache.camel.model.rest.RestDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Any;
 import javax.enterprise.inject.CreationException;
+import javax.enterprise.inject.Default;
+import javax.enterprise.inject.literal.NamedLiteral;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.DefinitionException;
@@ -58,15 +62,16 @@ import static java.util.Collections.emptySet;
 import static java.util.Collections.singleton;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toSet;
-import static org.apache.camel.cdi.AnyLiteral.ANY;
-import static org.apache.camel.cdi.ApplicationScopedLiteral.APPLICATION_SCOPED;
-import static org.apache.camel.cdi.DefaultLiteral.DEFAULT;
 import static org.apache.camel.cdi.ResourceHelper.getResource;
 import static org.apache.camel.cdi.Startup.Literal.STARTUP;
 import static org.apache.camel.util.ObjectHelper.isEmpty;
 import static org.apache.camel.util.ObjectHelper.isNotEmpty;
 
 final class XmlCdiBeanFactory {
+
+    private static Any ANY = Any.Literal.INSTANCE;
+    private static Default DEFAULT = Default.Literal.INSTANCE;
+    private static ApplicationScoped APPLICATION_SCOPED = ApplicationScoped.Literal.INSTANCE;
 
     private final Logger logger = LoggerFactory.getLogger(XmlCdiBeanFactory.class);
 

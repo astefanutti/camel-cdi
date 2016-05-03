@@ -22,6 +22,7 @@ import org.apache.camel.management.event.RouteStartedEvent;
 import org.apache.camel.management.event.RouteStoppedEvent;
 import org.apache.camel.support.EventNotifierSupport;
 
+import javax.enterprise.inject.literal.NamedLiteral;
 import javax.enterprise.inject.spi.BeanManager;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;

@@ -20,6 +20,7 @@ import org.apache.camel.spi.Registry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Vetoed;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
@@ -27,7 +28,6 @@ import java.util.Map;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toMap;
-import static org.apache.camel.cdi.AnyLiteral.ANY;
 import static org.apache.camel.cdi.BeanManagerHelper.getReference;
 import static org.apache.camel.cdi.BeanManagerHelper.getReferenceByName;
 import static org.apache.camel.cdi.BeanManagerHelper.getReferencesByType;
@@ -67,7 +67,7 @@ final class CdiCamelRegistry implements Registry {
     public <T> Map<String, T> findByTypeWithName(Class<T> type) {
         notNull(type, "type");
         logger.trace("Looking up named beans of type [{}]", type);
-        return manager.getBeans(type, ANY).stream()
+        return manager.getBeans(type, Any.Literal.INSTANCE).stream()
             .filter(bean -> bean.getName() != null)
             .collect(toMap(Bean::getName, bean -> getReference(manager, type, bean)));
     }
@@ -76,7 +76,7 @@ final class CdiCamelRegistry implements Registry {
     public <T> Set<T> findByType(Class<T> type) {
         notNull(type, "type");
         logger.trace("Looking up beans of type [{}]", type);
-        return getReferencesByType(manager, type, ANY);
+        return getReferencesByType(manager, type, Any.Literal.INSTANCE);
     }
 
     @Override

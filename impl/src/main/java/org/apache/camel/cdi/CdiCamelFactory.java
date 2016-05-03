@@ -41,7 +41,6 @@ import java.util.Optional;
 
 import static org.apache.camel.cdi.CdiEventEndpoint.eventEndpointUri;
 import static org.apache.camel.cdi.CdiSpiHelper.isAnnotationType;
-import static org.apache.camel.cdi.DefaultLiteral.DEFAULT;
 
 @Priority(Interceptor.Priority.LIBRARY_BEFORE)
 final class CdiCamelFactory {
@@ -141,8 +140,8 @@ final class CdiCamelFactory {
     private static <T extends CamelContext> T selectContext(InjectionPoint ip, Instance<T> instance, CdiCamelExtension extension) {
         Collection<Annotation> qualifiers = new HashSet<>(ip.getQualifiers());
         qualifiers.retainAll(extension.getContextQualifiers());
-        if (qualifiers.isEmpty() && !instance.select(DEFAULT).isUnsatisfied())
-            return instance.select(DEFAULT).get();
+        if (qualifiers.isEmpty() && !instance.select(Default.Literal.INSTANCE).isUnsatisfied())
+            return instance.select(Default.Literal.INSTANCE).get();
         return instance.select(qualifiers.stream().toArray(Annotation[]::new)).get();
     }
 

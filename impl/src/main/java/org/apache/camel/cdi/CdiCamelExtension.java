@@ -34,7 +34,9 @@ import org.apache.camel.model.RouteContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
@@ -71,19 +73,20 @@ import static java.util.Collections.newSetFromMap;
 import static java.util.function.Predicate.isEqual;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.Stream.concat;
-import static org.apache.camel.cdi.AnyLiteral.ANY;
-import static org.apache.camel.cdi.ApplicationScopedLiteral.APPLICATION_SCOPED;
 import static org.apache.camel.cdi.BeanManagerHelper.getReference;
 import static org.apache.camel.cdi.BeanManagerHelper.getReferencesByType;
 import static org.apache.camel.cdi.CdiEventEndpoint.eventEndpointUri;
 import static org.apache.camel.cdi.CdiSpiHelper.getRawType;
 import static org.apache.camel.cdi.CdiSpiHelper.hasType;
 import static org.apache.camel.cdi.CdiSpiHelper.isAnnotationType;
-import static org.apache.camel.cdi.DefaultLiteral.DEFAULT;
 import static org.apache.camel.cdi.ResourceHelper.getResource;
 import static org.apache.camel.cdi.Startup.Literal.STARTUP;
 
 public class CdiCamelExtension implements Extension {
+
+    private static Any ANY = Any.Literal.INSTANCE;
+    private static Default DEFAULT = Default.Literal.INSTANCE;
+    private static ApplicationScoped APPLICATION_SCOPED = ApplicationScoped.Literal.INSTANCE;
 
     private final Logger logger = LoggerFactory.getLogger(CdiCamelExtension.class);
 
