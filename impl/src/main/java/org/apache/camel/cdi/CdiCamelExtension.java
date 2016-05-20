@@ -293,7 +293,7 @@ public class CdiCamelExtension implements Extension {
             .filter(bean -> !bean.getBeanClass().getPackage().equals(getClass().getPackage()))
             .map(Bean::getInjectionPoints)
             .flatMap(Set::stream)
-            .filter(ip -> getRawType(ip.getType()).getPackage().getName().startsWith("org.apache.camel"))
+            .filter(ip -> getRawType(ip.getType()).getName().startsWith("org.apache.camel"))
             .map(InjectionPoint::getQualifiers)
             .flatMap(Set::stream)
             .filter(isAnnotationType(Uri.class).or(isEqual(DEFAULT)))
