@@ -30,14 +30,11 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
-import org.wildfly.extension.camel.CamelAware;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-// Should ideally be removed so that there is no compile dependency on WildFly Camel
-@CamelAware
 @RunWith(Arquillian.class)
 @Category({Integration.class, WildFlyCamel.class})
 public class CamelWildFlyTest {

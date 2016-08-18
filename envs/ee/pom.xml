@@ -38,13 +38,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- FIXME: There should be not dependency on WildFly Camel -->
-        <dependency>
-            <groupId>org.wildfly.camel</groupId>
-            <artifactId>wildfly-camel-subsystem-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-
     </dependencies>
 
     <profiles>
@@ -338,11 +331,6 @@
                                         <replacement>
                                             <token>resource-root path="camel-cdi-.*\.jar"</token>
                                             <value>resource-root path="camel-cdi-${project.version}.jar"</value>
-                                        </replacement>
-                                        <!-- Remove DeltaSpike -->
-                                        <replacement>
-                                            <token><![CDATA[<module name="org\.apache\.deltaspike.*" />]]></token>
-                                            <value />
                                         </replacement>
                                     </replacements>
                                 </configuration>

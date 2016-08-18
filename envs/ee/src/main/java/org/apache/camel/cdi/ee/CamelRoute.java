@@ -17,7 +17,9 @@
 package org.apache.camel.cdi.ee;
 
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.cdi.ContextName;
 
+@ContextName("camel-ee")
 class CamelRoute extends RouteBuilder {
 
     @Override
