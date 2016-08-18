@@ -56,7 +56,15 @@
 
                 <dependency>
                     <groupId>org.jboss.arquillian.container</groupId>
-                    <artifactId>arquillian-weld-se-embedded-1.1</artifactId>
+                    <artifactId>arquillian-weld-embedded</artifactId>
+                </dependency>
+                <!-- FIXME: The Weld embedded Arquillian adapter requires JTA
+                     see https://issues.jboss.org/browse/ARQ-2040 -->
+                <dependency>
+                    <groupId>javax.transaction</groupId>
+                    <artifactId>jta</artifactId>
+                    <version>1.1</version>
+                    <scope>test</scope>
                 </dependency>
 
             </dependencies>
