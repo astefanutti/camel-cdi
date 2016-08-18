@@ -23,16 +23,11 @@ import org.apache.camel.main.MainSupport;
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.UnsatisfiedResolutionException;
 import javax.enterprise.inject.Vetoed;
-import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.se.SeContainer;
+import javax.enterprise.inject.se.SeContainerInitializer;
 import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.CDI;
-import javax.enterprise.inject.spi.CDIProvider;
 import java.util.Map;
-import java.util.ServiceLoader;
-import java.util.Set;
-import java.util.stream.StreamSupport;
 
-import static java.util.Collections.singletonMap;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 import static org.apache.camel.cdi.BeanManagerHelper.getReference;
@@ -47,7 +42,7 @@ public class Main extends MainSupport {
 
     private static Main instance;
 
-    private CDI container;
+    private SeContainer container;
 
     public static void main(String... args) throws Exception {
         Main main = new Main();
@@ -83,25 +78,21 @@ public class Main extends MainSupport {
 
     @Override
     protected void doStart() throws Exception {
-        container = StreamSupport.stream(
-            ServiceLoader.load(CDIProvider.class, Main.class.getClassLoader()).spliterator(), false)
-            .findFirst()
+        container = SeContainerInitializer.newInstance()
             // Since version 2.3.0.Final and WELD-1915, Weld SE registers a shutdown hook
             // that conflicts with Camel main support. See WELD-2051. The parameter below
             // is available starting Weld 2.3.1.Final to deactivate the registration of
             // the shutdown hook.
-            .map(provider -> provider.initialize(singletonMap("org.jboss.weld.se.shutdownHook", false)))
-            .orElseThrow(() -> new IllegalStateException("No CDIProvider found in the classpath!"));
+            .addProperty("org.jboss.weld.se.shutdownHook", false)
+            .initialize();
         super.doStart();
         postProcessContext();
         warnIfNoCamelFound();
     }
 
     private void warnIfNoCamelFound() {
-        BeanManager manager = container.getBeanManager();
-        Set<Bean<?>> contexts = manager.getBeans(CamelContext.class, Any.Literal.INSTANCE);
         // Warn if there is no CDI Camel contexts
-        if (contexts.isEmpty())
+        if (container.select(CamelContext.class, Any.Literal.INSTANCE).isUnsatisfied())
             LOG.warn("Camel CDI main has started with no Camel context!");
     }
 
@@ -109,6 +100,6 @@ public class Main extends MainSupport {
     protected void doStop() throws Exception {
         super.doStop();
         if (container != null)
-            container.shutdown();
+            container.close();
     }
 }
