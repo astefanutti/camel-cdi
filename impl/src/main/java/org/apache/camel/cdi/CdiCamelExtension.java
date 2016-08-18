@@ -340,16 +340,16 @@ public class CdiCamelExtension implements Extension {
                 if (qualifiers.size() > 1)
                     deploymentException |= !addRouteToContext(route, context, manager, adv);
             }
-        // Let's return to avoid starting misconfigured contexts
+        // Let's return to avoid starting mis-configured contexts
         if (deploymentException)
             return;
 
         // Trigger eager beans instantiation (calling toString is necessary to force
-        // the initialization of normal-scoped beans).
+        // the initialization of normal-scoped beans)
         // FIXME: This does not work with OpenWebBeans for bean whose bean type is an
         // interface as the Object methods does not get forwarded to the bean instances!
         eagerBeans.forEach(type -> getReferencesByType(manager, type.getJavaClass(), ANY).toString());
-        manager.getBeans(Object.class, ANY, STARTUP).stream()
+        manager.getBeans(Object.class, ANY, STARTUP)
             .forEach(bean -> getReference(manager, bean.getBeanClass(), bean).toString());
 
         // Start Camel contexts
