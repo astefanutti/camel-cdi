@@ -16,7 +16,7 @@
  */
 package org.apache.camel.cdi.se;
 
-import org.apache.camel.ProducerTemplate;
+import org.apache.camel.FluentProducerTemplate;
 import org.apache.camel.cdi.CdiCamelExtension;
 import org.apache.camel.cdi.Uri;
 import org.apache.camel.cdi.se.bean.UriEndpointRoute;
@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit;
 import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
 
 @RunWith(Arquillian.class)
-public class DefaultProducerTemplateTest {
+public class DefaultFluentProducerTemplateTest {
 
     @Deployment
     public static Archive<?> deployment() {
@@ -50,7 +50,7 @@ public class DefaultProducerTemplateTest {
     }
 
     @Inject
-    private ProducerTemplate producer;
+    private FluentProducerTemplate producer;
 
     @Inject
     @Uri("mock:outbound")
@@ -61,7 +61,7 @@ public class DefaultProducerTemplateTest {
         out.expectedMessageCount(1);
         out.expectedBodiesReceived("test");
         
-        producer.sendBody("direct:inbound", "test");
+        producer.withBody("test").to("direct:inbound").send();
 
         assertIsSatisfied(2L, TimeUnit.SECONDS, out);
     }
