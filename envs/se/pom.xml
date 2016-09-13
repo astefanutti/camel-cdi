@@ -85,7 +85,7 @@
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
                             <excludes>
-                                <!-- Reactivate when OWB-1122 is fixed -->
+                                <!-- Reactivate when OWB-1155 is fixed -->
                                 <exclude>**/ProgrammaticLookupTest.java</exclude>
                                 <!-- Reactivate when OWB-1126 is fixed -->
                                 <exclude>**/Xml*Test.java</exclude>
