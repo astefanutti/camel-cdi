@@ -92,7 +92,7 @@
         <slf4j.version>1.7.21</slf4j.version>
         <log4j.version>2.6.2</log4j.version>
         <weld.version>2.4.0.Final</weld.version>
-        <owb.version>1.6.3</owb.version>
+        <owb.version>1.7.0</owb.version>
         <wildfly-8.version>8.2.1.Final</wildfly-8.version>
         <wildfly-9.version>9.0.2.Final</wildfly-9.version>
         <wildfly-10.version>10.0.0.Final</wildfly-10.version>
