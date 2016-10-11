@@ -25,7 +25,6 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -72,8 +71,6 @@ public class UndefinedPropertyTest {
     }
 
     @Test
-    // FIXME: reactivate when CAMEL-9305 is fixed
-    @Ignore("CAMEL-9305")
     public void lookupUndefinedProperty(CamelContext context) {
         try {
             context.resolvePropertyPlaceholders("{{to}}");
