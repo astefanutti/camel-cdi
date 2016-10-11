@@ -85,8 +85,6 @@ public class SjmsPaxExamTest {
         Session session = sessionFactory.create(System.in, System.out, System.err);
         session.execute("camel:context-list");
         session.execute("camel:route-list");
-        // throws java.lang.ClassNotFoundException: org.apache.karaf.util.StringEscapeUtils
-        // with Camel 2.18-SNAPSHOT, see CAMEL-9865
-        //session.execute("camel:route-info consumer-route");
+        session.execute("camel:route-info consumer-route");
     }
 }
