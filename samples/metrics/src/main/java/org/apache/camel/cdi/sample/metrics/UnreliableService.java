@@ -18,6 +18,7 @@
 package org.apache.camel.cdi.sample.metrics;
 
 import com.codahale.metrics.Meter;
+import com.codahale.metrics.annotation.Metered;
 import org.apache.camel.Exchange;
 import org.apache.camel.RuntimeExchangeException;
 
@@ -30,11 +31,8 @@ public class UnreliableService {
     @Inject
     private Meter attempt;
 
-    //@Metered
-    // TODO: activate global interceptor when PAXCDI-216 is fixed
+    @Metered
     public void attempt(Exchange exchange) {
-        attempt.mark();
-
         if (Math.random() < 0.5)
             throw new RuntimeExchangeException("Random failure", exchange);
     }
