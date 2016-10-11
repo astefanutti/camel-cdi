@@ -102,7 +102,7 @@
         <arquillian.weld.version>2.0.0.Beta3</arquillian.weld.version>
         <shrinkwrap.resolver.version>2.2.4</shrinkwrap.resolver.version>
         <shrinkwrap.descriptors.version>2.0.0-alpha-10</shrinkwrap.descriptors.version>
-        <activemq.version>5.12.1</activemq.version>
+        <activemq.version>5.14.1</activemq.version>
     </properties>
 
     <modules>
