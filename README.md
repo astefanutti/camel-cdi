@@ -85,8 +85,8 @@ This version of Camel CDI is currently successfully tested with the following co
 | [OpenWebBeans][]      | `1.7.0`        | Java SE 8 / [CDI 1.2][JSR 346 1.2] |
 | [WildFly 8][WildFly]  | `8.2.1.Final`  | [Java EE 7][]                      |
 | [WildFly 9][WildFly]  | `9.0.2.Final`  | [Java EE 7][]                      |
-| [WildFly 10][WildFly] | `10.0.0.Final` | [Java EE 7][]                      |
-| [WildFly Camel][]     | `4.2.1`        | [Java EE 7][]                      |
+| [WildFly 10][WildFly] | `10.1.0.Final` | [Java EE 7][]                      |
+| [WildFly Camel][]     | `4.3.0`        | [Java EE 7][]                      |
 | [Karaf][]<br/>[PAX CDI Weld][] | `4.0.4`<br/>`1.0.0.RC1` | [OSGi 6][] |
 
 WildFly 8.1 requires to be patched with Weld 2.2+ as documented in [Weld 2.2 on WildFly][].
