@@ -260,7 +260,7 @@ public class CdiCamelExtension implements Extension {
             .forEach(abd::addBean);
 
         // Add CDI event endpoint observer methods
-        cdiEventEndpoints.values().stream().forEach(endpoint -> addCdiEventObserver(abd, endpoint));
+        cdiEventEndpoints.values().forEach(endpoint -> addCdiEventObserver(abd, endpoint));
     }
 
     private <T> void addCdiEventObserver(AfterBeanDiscovery abd, CdiEventEndpoint<T> endpoint) {
