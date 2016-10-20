@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<features xmlns="http://karaf.apache.org/xmlns/features/v1.0.0"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.0.0 ">
+<features name="org.ops4j.pax.cdi-test" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
 
     <repository>mvn:org.ops4j.pax.cdi/pax-cdi-features/${pax-cdi.version}/xml/features</repository>
 
-    <feature name="pax-cdi-weld-2.3.5.Final" description="Weld CDI 1.2 support" resolver="(obr)">
+    <feature name="pax-cdi-weld-2.3.5.Final" description="Weld CDI 1.2 support">
         <feature version="${pax-cdi.version}">pax-cdi-core</feature>
         <bundle dependency="true">mvn:org.jboss.weld/weld-osgi-bundle/2.3.5.Final</bundle>
-        <bundle>mvn:org.jboss.logging/jboss-logging/3.3.0.Final</bundle>
-        <bundle>mvn:org.jboss.classfilewriter/jboss-classfilewriter/1.1.2.Final</bundle>
-        <bundle>mvn:com.google.guava/guava/18.0</bundle>
+        <bundle dependency="true">mvn:org.jboss.logging/jboss-logging/3.3.0.Final</bundle>
+        <bundle dependency="true">mvn:org.jboss.classfilewriter/jboss-classfilewriter/1.1.2.Final</bundle>
+        <bundle dependency="true">mvn:com.google.guava/guava/18.0</bundle>
         <bundle>mvn:org.ops4j.pax.cdi/pax-cdi-weld/${pax-cdi.version}</bundle>
         <capability>
             pax.cdi.provider;provider:=weld
@@ -28,7 +26,7 @@
         </conditional>
     </feature>
 
-    <feature name="pax-cdi-openwebbeans-1.6.2" description="OpenWebBeans CDI 1.2 support" resolver="(obr)">
+    <feature name="pax-cdi-openwebbeans-1.6.2" description="OpenWebBeans CDI 1.2 support">
         <feature version="${pax-cdi.version}">pax-cdi</feature>
         <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-validation_1.0_spec/1.1</bundle>
         <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/1.1.1</bundle>
