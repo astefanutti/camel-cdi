@@ -5,13 +5,27 @@
 
     <repository>mvn:org.ops4j.pax.cdi/pax-cdi-features/${pax-cdi.version}/xml/features</repository>
 
-    <feature name="pax-cdi-weld-2.3.4.Final" description="Weld CDI 1.2 support" resolver="(obr)">
-        <feature version="${pax-cdi.version}">pax-cdi</feature>
-        <bundle dependency="true">mvn:org.jboss.weld/weld-osgi-bundle/2.3.4.Final</bundle>
+    <feature name="pax-cdi-weld-2.3.5.Final" description="Weld CDI 1.2 support" resolver="(obr)">
+        <feature version="${pax-cdi.version}">pax-cdi-core</feature>
+        <bundle dependency="true">mvn:org.jboss.weld/weld-osgi-bundle/2.3.5.Final</bundle>
         <bundle>mvn:org.jboss.logging/jboss-logging/3.3.0.Final</bundle>
         <bundle>mvn:org.jboss.classfilewriter/jboss-classfilewriter/1.1.2.Final</bundle>
         <bundle>mvn:com.google.guava/guava/18.0</bundle>
         <bundle>mvn:org.ops4j.pax.cdi/pax-cdi-weld/${pax-cdi.version}</bundle>
+        <capability>
+            pax.cdi.provider;provider:=weld
+        </capability>
+        <conditional>
+            <condition>pax-cdi-web</condition>
+            <condition>pax-http-jetty</condition>
+            <bundle>mvn:org.ops4j.pax.cdi/pax-cdi-jetty-weld/${pax-cdi.version}</bundle>
+        </conditional>
+        <conditional>
+            <condition>pax-cdi-web</condition>
+            <condition>pax-http-undertow</condition>
+            <bundle dependency="true">mvn:javax.el/javax.el-api/3.0.0</bundle>
+            <bundle>mvn:org.ops4j.pax.cdi/pax-cdi-undertow-weld/${pax-cdi.version}</bundle>
+        </conditional>
     </feature>
 
     <feature name="pax-cdi-openwebbeans-1.6.2" description="OpenWebBeans CDI 1.2 support" resolver="(obr)">
