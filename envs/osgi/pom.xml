@@ -12,7 +12,7 @@
     <name>Camel CDI :: Environments :: OSGi</name>
 
     <properties>
-        <karaf.version>4.0.4</karaf.version>
+        <karaf.version>4.0.7</karaf.version>
         <pax-exam.version>4.9.1</pax-exam.version>
         <skipTests>true</skipTests>
     </properties>
