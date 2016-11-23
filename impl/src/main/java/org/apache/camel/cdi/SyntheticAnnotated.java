@@ -26,6 +26,7 @@ import java.util.Set;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableSet;
+import static java.util.stream.Collectors.toSet;
 import static org.apache.camel.cdi.CdiSpiHelper.isAnnotationType;
 
 @Vetoed
@@ -73,6 +74,14 @@ final class SyntheticAnnotated implements Annotated {
             .findAny()
             .map(type::cast)
             .orElse(null);
+    }
+
+    @Override
+    public <T extends Annotation> Set<T> getAnnotations(Class<T> type) {
+        return annotations.stream()
+            .filter(isAnnotationType(type))
+            .map(type::cast)
+            .collect(toSet());
     }
 
     @Override
