@@ -167,8 +167,7 @@ public class CdiCamelExtension implements Extension {
             Set<Annotation> qualifiers = pom.getObserverMethod().getObservedQualifiers();
             if (qualifiers.isEmpty())
                 eventQualifiers.add(ANY);
-            else if (qualifiers.size() == 1 && qualifiers.stream()
-                .anyMatch(isAnnotationType(Named.class)))
+            else if (qualifiers.size() == 1 && qualifiers.stream().anyMatch(isAnnotationType(Named.class)))
                 eventQualifiers.add(DEFAULT);
             else
                 eventQualifiers.addAll(qualifiers);
