@@ -20,6 +20,7 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.ServiceStatus;
 import org.apache.karaf.shell.api.console.Session;
 import org.apache.karaf.shell.api.console.SessionFactory;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
@@ -44,6 +45,7 @@ import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.when;
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.debugConfiguration;
 
+@Ignore("CAMEL-10405")
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
 public class SjmsPaxExamTest {
