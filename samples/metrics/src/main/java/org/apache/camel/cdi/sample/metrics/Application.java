@@ -30,6 +30,7 @@ import org.apache.camel.cdi.ContextName;
 import org.apache.camel.component.metrics.MetricsConstants;
 import org.apache.camel.management.event.CamelContextStartedEvent;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
@@ -96,8 +97,7 @@ class Application {
     }
 
     @Produces
-    @Singleton
-    // TODO: change to @ApplicationScoped when ARQ-2023
+    @ApplicationScoped
     Slf4jReporter reporter(MetricRegistry registry) {
         return Slf4jReporter.forRegistry(registry)
             .convertRatesTo(TimeUnit.SECONDS)
