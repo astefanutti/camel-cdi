@@ -127,7 +127,7 @@
                 <plugin>
                     <groupId>io.hawt</groupId>
                     <artifactId>hawtio-maven-plugin</artifactId>
-                    <version>1.4.59</version>
+                    <version>1.4.67</version>
                 </plugin>
 
                 <plugin>
