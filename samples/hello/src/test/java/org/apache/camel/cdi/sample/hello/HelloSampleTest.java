@@ -16,14 +16,12 @@
  */
 package org.apache.camel.cdi.sample.hello;
 
-import org.apache.camel.cdi.CdiCamelExtension;
 import org.apache.camel.cdi.test.LogVerifier;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
@@ -39,13 +37,14 @@ public class HelloSampleTest {
 
     @Deployment
     public static Archive<?> deployment() {
-        return ShrinkWrap.create(JavaArchive.class)
+        return Maven.configureResolver().workOffline()
             // Camel CDI
-            .addPackage(CdiCamelExtension.class.getPackage())
+            .loadPomFromFile("pom.xml")
+            .resolve("io.astefanutti.camel.cdi:camel-cdi")
+            .withoutTransitivity()
+            .asSingle(JavaArchive.class)
             // Test classes
-            .addPackage(HelloSampleTest.class.getPackage())
-            // Bean archive deployment descriptor
-            .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+            .addPackage(HelloSampleTest.class.getPackage());
     }
 
     @ClassRule
