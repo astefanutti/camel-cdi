@@ -51,7 +51,7 @@ final class CdiEventConsumer<T> extends DefaultConsumer {
         logger.debug("Consuming CDI event [{}] with {}", event, this);
 
         Exchange exchange = getEndpoint().createExchange();
-        // TODO: would that be possible to propagate the event metadata?
+        // TODO: propagate the event metadata
         exchange.getIn().setBody(event);
 
         // Avoid infinite loop of exchange events

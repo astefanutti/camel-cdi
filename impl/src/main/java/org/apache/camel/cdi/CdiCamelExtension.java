@@ -268,7 +268,8 @@ public class CdiCamelExtension implements Extension {
             .beanClass(CdiEventComponent.class)
             .observedType(endpoint.getType())
             .qualifiers(endpoint.getQualifiers())
-            .notifyWith(endpoint::notify);
+            // TODO: propagate the event metadata
+            .notifyWith(context -> endpoint.notify(context.getEvent()));
     }
 
     private boolean shouldDeployDefaultCamelContext(BeanManager manager, Set<SyntheticBean<?>> beans) {
