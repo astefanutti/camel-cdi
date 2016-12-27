@@ -23,7 +23,7 @@ import org.apache.camel.cdi.CdiCamelExtension;
 import org.apache.camel.cdi.ContextName;
 import org.apache.camel.cdi.Uri;
 import org.apache.camel.cdi.se.bean.FirstCamelContextBean;
-import org.apache.camel.cdi.se.bean.SecondCamelContextBean;
+import org.apache.camel.cdi.se.bean.SecondNamedCamelContextBean;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -31,7 +31,6 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -41,7 +40,6 @@ import java.util.concurrent.TimeUnit;
 import static org.apache.camel.cdi.se.expression.ExchangeExpression.fromCamelContext;
 import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
 
-@Ignore("CDI-460")
 @RunWith(Arquillian.class)
 public class MultiCamelContextReusedRouteTest {
 
@@ -51,7 +49,7 @@ public class MultiCamelContextReusedRouteTest {
             // Camel CDI
             .addPackage(CdiCamelExtension.class.getPackage())
             // Test classes
-            .addClasses(FirstCamelContextBean.class, SecondCamelContextBean.class)
+            .addClasses(FirstCamelContextBean.class, SecondNamedCamelContextBean.class)
             // Bean archive deployment descriptor
             .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
