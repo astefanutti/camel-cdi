@@ -24,9 +24,21 @@
 
         <!-- provided dependencies -->
 
-        <dependency>
+        <!-- Let's depend on CDI API until Java EE 8 is released -->
+        <!--<dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-api</artifactId>
+        </dependency>-->
+
+        <dependency>
+            <groupId>javax.enterprise</groupId>
+            <artifactId>cdi-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.ejb</groupId>
+            <artifactId>javax.ejb-api</artifactId>
+            <version>3.2</version>
         </dependency>
 
         <!-- test dependencies -->
