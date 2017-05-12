@@ -92,9 +92,7 @@
         <log4j.version>2.7</log4j.version>
         <weld.version>3.0.0.Beta1</weld.version>
         <owb.version>1.7.0</owb.version>
-        <wildfly-8.version>8.2.1.Final</wildfly-8.version>
-        <wildfly-9.version>9.0.2.Final</wildfly-9.version>
-        <wildfly-10.version>10.1.0.Final</wildfly-10.version>
+        <wildfly.version>10.1.0.Final</wildfly.version>
         <wildfly-camel.version>4.3.0</wildfly-camel.version>
         <arquillian.version>1.1.11.Final</arquillian.version>
         <arquillian-osgi.version>2.1.0.CR18</arquillian-osgi.version>
@@ -472,22 +470,7 @@
                 <scope>test</scope>
             </dependency>
 
-            <!-- WildFly 8 Arquillian adapter -->
-
-            <dependency>
-                <groupId>org.wildfly</groupId>
-                <artifactId>wildfly-arquillian-container-managed</artifactId>
-                <version>${wildfly-8.version}</version>
-                <scope>test</scope>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.jboss.logmanager</groupId>
-                        <artifactId>log4j-jboss-logmanager</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-
-            <!-- WildFly 9+ Arquillian adapter -->
+            <!-- WildFly Arquillian adapter -->
 
             <dependency>
                 <groupId>org.wildfly.arquillian</groupId>

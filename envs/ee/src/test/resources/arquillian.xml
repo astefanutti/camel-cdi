@@ -4,29 +4,9 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://jboss.org/schema/arquillian http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
 
-    <container qualifier="wildfly-8-managed" default="false">
+    <container qualifier="wildfly-managed" default="false">
         <configuration>
-            <property name="jbossHome">${project.build.directory}/wildfly-${wildfly-8.version}</property>
-            <property name="outputToConsole">true</property>
-            <property name="allowConnectingToRunningServer">false</property>
-            <property name="javaVmArguments">-Xms128m -Xmx256m ${jacoco.agent}</property>
-            <!--<property name="javaVmArguments">-Xmx256m -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=y</property>-->
-        </configuration>
-    </container>
-
-    <container qualifier="wildfly-9-managed" default="false">
-        <configuration>
-            <property name="jbossHome">${project.build.directory}/wildfly-${wildfly-9.version}</property>
-            <property name="outputToConsole">true</property>
-            <property name="allowConnectingToRunningServer">false</property>
-            <property name="javaVmArguments">-Xms128m -Xmx256m ${jacoco.agent}</property>
-            <!--<property name="javaVmArguments">-Xmx256m -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=y</property>-->
-        </configuration>
-    </container>
-
-    <container qualifier="wildfly-10-managed" default="false">
-        <configuration>
-            <property name="jbossHome">${project.build.directory}/wildfly-${wildfly-10.version}</property>
+            <property name="jbossHome">${project.build.directory}/wildfly-${wildfly.version}</property>
             <property name="outputToConsole">true</property>
             <property name="allowConnectingToRunningServer">false</property>
             <property name="javaVmArguments">-Xms128m -Xmx256m ${jacoco.agent}</property>
@@ -36,7 +16,7 @@
 
     <container qualifier="wildfly-camel-managed" default="false">
         <configuration>
-            <property name="jbossHome">${project.build.directory}/wildfly-camel/wildfly-${wildfly-10.version}</property>
+            <property name="jbossHome">${project.build.directory}/wildfly-camel/wildfly-${wildfly.version}</property>
             <property name="serverConfig">standalone-camel.xml</property>
             <property name="outputToConsole">true</property>
             <property name="allowConnectingToRunningServer">false</property>

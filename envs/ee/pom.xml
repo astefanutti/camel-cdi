@@ -91,7 +91,7 @@
         </profile>
 
         <profile>
-            <id>wildfly-8.x</id>
+            <id>wildfly</id>
             <build>
                 <plugins>
                     <plugin>
@@ -108,7 +108,7 @@
                                         <artifactItem>
                                             <groupId>org.wildfly</groupId>
                                             <artifactId>wildfly-dist</artifactId>
-                                            <version>${wildfly-8.version}</version>
+                                            <version>${wildfly.version}</version>
                                             <type>zip</type>
                                             <overWrite>false</overWrite>
                                             <outputDirectory>${project.build.directory}</outputDirectory>
@@ -125,121 +125,7 @@
                         <configuration>
                             <excludedGroups>org.apache.camel.cdi.ee.category.WildFlyCamel</excludedGroups>
                             <systemPropertyVariables>
-                                <arquillian.launch>wildfly-8-managed</arquillian.launch>
-                                <jacoco.agent>${argLine}</jacoco.agent>
-                            </systemPropertyVariables>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-
-            <dependencies>
-
-                <!-- provided dependencies -->
-
-                <!-- test dependencies -->
-
-                <dependency>
-                    <groupId>org.wildfly</groupId>
-                    <artifactId>wildfly-arquillian-container-managed</artifactId>
-                </dependency>
-
-            </dependencies>
-        </profile>
-
-        <profile>
-            <id>wildfly-9.x</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-dependency-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>unpack-wildfly</id>
-                                <phase>generate-test-resources</phase>
-                                <goals>
-                                    <goal>unpack</goal>
-                                </goals>
-                                <configuration>
-                                    <artifactItems>
-                                        <artifactItem>
-                                            <groupId>org.wildfly</groupId>
-                                            <artifactId>wildfly-dist</artifactId>
-                                            <version>${wildfly-9.version}</version>
-                                            <type>zip</type>
-                                            <overWrite>false</overWrite>
-                                            <outputDirectory>${project.build.directory}</outputDirectory>
-                                        </artifactItem>
-                                    </artifactItems>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <excludedGroups>org.apache.camel.cdi.ee.category.WildFlyCamel</excludedGroups>
-                            <systemPropertyVariables>
-                                <arquillian.launch>wildfly-9-managed</arquillian.launch>
-                                <jacoco.agent>${argLine}</jacoco.agent>
-                            </systemPropertyVariables>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-
-            <dependencies>
-
-                <!-- provided dependencies -->
-
-                <!-- test dependencies -->
-
-                <dependency>
-                    <groupId>org.wildfly.arquillian</groupId>
-                    <artifactId>wildfly-arquillian-container-managed</artifactId>
-                </dependency>
-
-            </dependencies>
-        </profile>
-
-        <profile>
-            <id>wildfly-10.x</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-dependency-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>unpack-wildfly</id>
-                                <phase>generate-test-resources</phase>
-                                <goals>
-                                    <goal>unpack</goal>
-                                </goals>
-                                <configuration>
-                                    <artifactItems>
-                                        <artifactItem>
-                                            <groupId>org.wildfly</groupId>
-                                            <artifactId>wildfly-dist</artifactId>
-                                            <version>${wildfly-10.version}</version>
-                                            <type>zip</type>
-                                            <overWrite>false</overWrite>
-                                            <outputDirectory>${project.build.directory}</outputDirectory>
-                                        </artifactItem>
-                                    </artifactItems>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <excludedGroups>org.apache.camel.cdi.ee.category.WildFlyCamel</excludedGroups>
-                            <systemPropertyVariables>
-                                <arquillian.launch>wildfly-10-managed</arquillian.launch>
+                                <arquillian.launch>wildfly-managed</arquillian.launch>
                                 <jacoco.agent>${argLine}</jacoco.agent>
                             </systemPropertyVariables>
                         </configuration>
@@ -280,7 +166,7 @@
                                         <artifactItem>
                                             <groupId>org.wildfly</groupId>
                                             <artifactId>wildfly-dist</artifactId>
-                                            <version>${wildfly-10.version}</version>
+                                            <version>${wildfly.version}</version>
                                             <type>zip</type>
                                             <overWrite>false</overWrite>
                                             <outputDirectory>${project.build.directory}/wildfly-camel</outputDirectory>
@@ -290,7 +176,7 @@
                                             <artifactId>wildfly-camel-patch</artifactId>
                                             <type>tar.gz</type>
                                             <overWrite>false</overWrite>
-                                            <outputDirectory>${project.build.directory}/wildfly-camel/wildfly-${wildfly-10.version}</outputDirectory>
+                                            <outputDirectory>${project.build.directory}/wildfly-camel/wildfly-${wildfly.version}</outputDirectory>
                                         </artifactItem>
                                     </artifactItems>
                                 </configuration>
@@ -307,7 +193,7 @@
                                             <groupId>io.astefanutti.camel.cdi</groupId>
                                             <artifactId>camel-cdi</artifactId>
                                             <overWrite>false</overWrite>
-                                            <outputDirectory>${project.build.directory}/wildfly-camel/wildfly-${wildfly-10.version}/modules/system/layers/fuse/org/apache/camel/component/cdi/main/</outputDirectory>
+                                            <outputDirectory>${project.build.directory}/wildfly-camel/wildfly-${wildfly.version}/modules/system/layers/fuse/org/apache/camel/component/cdi/main/</outputDirectory>
                                         </artifactItem>
                                     </artifactItems>
                                 </configuration>
@@ -327,7 +213,7 @@
                                     <goal>replace</goal>
                                 </goals>
                                 <configuration>
-                                    <file>${project.build.directory}/wildfly-camel/wildfly-${wildfly-10.version}/modules/system/layers/fuse/org/apache/camel/component/cdi/main/module.xml</file>
+                                    <file>${project.build.directory}/wildfly-camel/wildfly-${wildfly.version}/modules/system/layers/fuse/org/apache/camel/component/cdi/main/module.xml</file>
                                     <unescape>false</unescape>
                                     <regex>true</regex>
                                     <replacements>
