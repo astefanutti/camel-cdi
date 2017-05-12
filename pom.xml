@@ -447,13 +447,6 @@
                 <scope>test</scope>
             </dependency>
 
-            <dependency>
-                <groupId>org.apache.deltaspike.cdictrl</groupId>
-                <artifactId>deltaspike-cdictrl-weld</artifactId>
-                <version>${deltaspike.version}</version>
-                <scope>test</scope>
-            </dependency>
-
             <!-- OpenWebBeans -->
 
             <dependency>
