@@ -22,9 +22,9 @@ install:
 
 script:
   - mvn -B test -Pjacoco -Pweld -Pstandalone
+  - mvn -B test -Pjacoco -Pwildfly -pl envs/ee
 # Disabled until CDI 2.0 becomes available for these environments
 #  - mvn -B test -Pjacoco -Powb -pl envs/se
-#  - mvn -B test -Pjacoco -Pwildfly -pl envs/ee
 #  - mvn -B test -Pjacoco -Pwildfly-camel -pl envs/ee
 #  - mvn -B test -Pjacoco -Pkaraf,weld -pl envs/osgi/
 # OpenWebBeans faces class proxying issues in OSGi, see OWB-1103
