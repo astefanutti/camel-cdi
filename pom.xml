@@ -88,7 +88,7 @@
         <osgi.version>6.0.0</osgi.version>
         <pax-cdi.version>1.0.0.RC2</pax-cdi.version>
         <javaee.version>7.0</javaee.version>
-        <slf4j.version>1.7.21</slf4j.version>
+        <slf4j.version>1.7.25</slf4j.version>
         <log4j.version>2.8.2</log4j.version>
         <weld.version>3.0.0.Final</weld.version>
         <owb.version>1.7.0</owb.version>
